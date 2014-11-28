@@ -40,7 +40,8 @@ PKG_CHECK_MODULES(PKGMGR_DEPS REQUIRED
   pkgmgr-info
   pkgmgr-parser
   pkgmgr-installer
-  libzip
+  minizip
+  zlib
   libxml-2.0
 )
 

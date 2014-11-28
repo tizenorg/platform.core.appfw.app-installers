@@ -21,5 +21,11 @@ typedef struct
 	char * unpack_directory; // temporary directory path 
 	
 } Context_installer;
-   
+
+enum {
+	APPINST_R_EINVAL = -2,		/**< Invalid argument */
+	APPINST_R_ERROR = -1,		/**< General error */
+	APPINST_R_OK = 0			/**< General success */
+};
+
 #endif
