@@ -33,6 +33,7 @@ ADD_DEFINITIONS("-fPIE")
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 INCLUDE(FindPkgConfig)
 INCLUDE(ApplyPkgConfig)
+include_directories(${Boost_INCLUDE_DIR})
 
 # Find all needed packages once
 PKG_CHECK_MODULES(PKGMGR_DEPS REQUIRED
@@ -40,9 +41,11 @@ PKG_CHECK_MODULES(PKGMGR_DEPS REQUIRED
   pkgmgr-info
   pkgmgr-parser
   pkgmgr-installer
-  libzip
+  minizip
+  zlib
   libxml-2.0
 )
+FIND_PACKAGE(Boost COMPONENTS filesystem system REQUIRED)
 
 ADD_SUBDIRECTORY(common)
 ADD_SUBDIRECTORY(wgt)
