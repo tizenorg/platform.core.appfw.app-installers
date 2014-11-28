@@ -9,12 +9,15 @@
 #include <errno.h>
 #include <assert.h>
 #include <AppInstaller.hxx>
+#include <step-unzip.hxx>
 
 int
 main (int argc, char **argv)
 {
   int result;
-  AppInstaller *Installer;
+  AppInstaller *Installer = NULL;
+  step_unzip *step_unpack = NULL;
+
   /* get request data */
   pkgmgr_installer *pi = pkgmgr_installer_new ();
   if (!pi)
@@ -30,10 +33,12 @@ main (int argc, char **argv)
   switch (pkgmgr_installer_get_request_type (pi))
     {
     case PKGMGR_REQ_INSTALL:
-		Installer = new AppInstaller(PKGMGR_REQ_INSTALL,(char*)pkgmgr_installer_get_request_info(pi),NULL);
-        //Installer->AddStep(step_unpack);
-       
-        Installer->Run();
+    Installer = new AppInstaller(PKGMGR_REQ_INSTALL,(char*)pkgmgr_installer_get_request_info(pi),NULL);
+    step_unpack = new step_unzip();
+    
+    Installer->AddStep(step_unpack);
+
+    Installer->Run();
       break;
 
     case PKGMGR_REQ_UNINSTALL:

@@ -20,24 +20,13 @@
 */
 #ifndef __STEP_H__
 #define __STEP_H__
-#include <AppInstaller.hxx>
 #include <context_installer.h>
 
-typedef int (*action_member) (Context_installer*);
-
 class Step {
-public:	
-	action_member process;
-	action_member undo;
-	action_member clean;
-	Step(action_member process_args,action_member undo_args,action_member clean_args);
+public:
+	virtual int process(Context_installer*)=0;
+	virtual int undo(Context_installer*)=0;
+	virtual int clean(Context_installer*)=0;
+
 };
-
-Step::Step(action_member process_args,action_member undo_args,action_member clean_args){
-	process = process_args;
-	undo = undo_args;
-	clean = clean_args;
-};
-
-
 #endif

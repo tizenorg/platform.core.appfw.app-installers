@@ -13,7 +13,9 @@ BuildRequires:  pkgconfig(pkgmgr-parser)
 BuildRequires:  pkgconfig(pkgmgr-info)
 BuildRequires:  pkgconfig(pkgmgr-installer)
 BuildRequires:  pkgconfig(libxml-2.0)
-BuildRequires:  pkgconfig(libzip)
+BuildRequires:  pkgconfig(zlib)
+BuildRequires:  pkgconfig(minizip)
+BuildRequires:  boost-devel
 
 %description
 This is a meta package that installs the common application
