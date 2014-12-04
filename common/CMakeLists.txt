@@ -2,6 +2,7 @@
 SET(SRCS
   src/app_installer.cc
   src/step/step_unzip.cc
+  src/step/signature_step.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})
@@ -18,6 +19,8 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   LIBXML_DEPS
   Boost
 )
+# Target in-package deps
+TARGET_LINK_LIBRARIES(${TARGET_LIBNAME_COMMON} ${TARGET_LIBNAME_SIGNATURE})
 
 # Extra
 SET_TARGET_PROPERTIES(${TARGET_LIBNAME_COMMON} PROPERTIES VERSION ${VERSION})
