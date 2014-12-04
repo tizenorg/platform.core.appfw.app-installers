@@ -6,16 +6,21 @@ Group:          Application Framework/Application State Management
 License:        Apache-2.0
 Source0:        %{name}-%{version}.tar.gz
 
-BuildRequires:  libcap-devel
+BuildRequires:  boost-devel
 BuildRequires:  cmake
+BuildRequires:  libcap-devel
 BuildRequires:  pkgconfig(pkgmgr)
 BuildRequires:  pkgconfig(pkgmgr-parser)
 BuildRequires:  pkgconfig(pkgmgr-info)
 BuildRequires:  pkgconfig(pkgmgr-installer)
+BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(minizip)
-BuildRequires:  boost-devel
+BuildRequires:  pkgconfig(libzip)
+BuildRequires:  pkgconfig(xmlsec1)
+
+Requires: ca-certificates-tizen
 
 %description
 This is a meta package that installs the common application
@@ -54,7 +59,9 @@ ln -s %{_bindir}/xpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %files
 %defattr(-,root,root)
 %{_libdir}/libcommon-installer.so*
-%license LICENSE
+%{_libdir}/libcommon-installer-signature.so*
+%{_datarootdir}/app-installers/signature_schema.xsd
+%license LICENSE LICENSE-xwalk
 
 %files -n wgt-backend
 %{_sysconfdir}/package-manager/backend/wgt
