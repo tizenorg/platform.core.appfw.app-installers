@@ -2,6 +2,11 @@
 SET(SRCS
 	src/AppInstaller.cxx
 	src/step/step-unzip.cxx
+  src/step/signature/signature_data.cxx
+  src/step/signature/signature_parser.cxx
+  src/step/signature/signature_validator.cxx
+  src/step/signature/signature_xmlsec_adaptor.cxx
+  src/step/signature/signature_step.cxx
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})
@@ -13,6 +18,8 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   PKGMGR_INFO_DEPS
   PKGMGR_PARSER_DEPS
   PKGMGR_INSTALLER_DEPS
+  OPENSSL_DEPS
+  XMLSEC1_DEPS
   MINIZIP_DEPS
   ZLIB_DEPS
   LIBXML_DEPS
