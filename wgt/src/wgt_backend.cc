@@ -8,8 +8,12 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
+
+#include <memory>
+
 #include <app_installer.h>
 #include <step_unzip.h>
+#include "step/signature_step.h"
 
 int
 main (int argc, char **argv)
@@ -33,14 +37,20 @@ main (int argc, char **argv)
   switch (pkgmgr_installer_get_request_type (pi))
     {
     case PKGMGR_REQ_INSTALL:
+    {
     Installer = new AppInstaller(PKGMGR_REQ_INSTALL,(char*)pkgmgr_installer_get_request_info(pi),NULL);
     step_unpack = new step_unzip();
     
     Installer->AddStep(step_unpack);
 
+    // FIXME: unique_ptr because steps are not freed in installer.
+    std::unique_ptr<common::SignatureStep> signature_step(
+         new common::SignatureStep);
+    Installer->AddStep(signature_step.get());
+
     Installer->Run();
       break;
-
+    }
     case PKGMGR_REQ_UNINSTALL:
 	break;
 
