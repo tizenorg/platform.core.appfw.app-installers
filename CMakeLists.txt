@@ -1,30 +1,48 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-PROJECT(CommonAppInstaller C)
+PROJECT(CommonAppInstaller)
 SET(BINDIR "${CMAKE_INSTALL_PREFIX}/bin")
-SET(LIBDIR "${LIB_INSTALL_DIR}")
+SET(LIBDIR "${CMAKE_INSTALL_LIBDIR}")
 SET(INCLUDEDIR "${PREFIX}/include")
 SET(VERSION_MAJOR 0)
 SET(VERSION "${VERSION_MAJOR}.1.0")
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE "Release")
+ENDIF(NOT CMAKE_BUILD_TYPE)
+
 # Compiler flags
 SET(CMAKE_C_FLAGS_PROFILING    "-O2")
-SET(CMAKE_CXX_FLAGS_PROFILING  "-O2 -std=c++0x")
+SET(CMAKE_CXX_FLAGS_PROFILING  "-O2 -std=c++11")
 SET(CMAKE_C_FLAGS_DEBUG        "-O0 -g")
-SET(CMAKE_CXX_FLAGS_DEBUG      "-O0 -std=c++0x -g")
+SET(CMAKE_CXX_FLAGS_DEBUG      "-O0 -std=c++11 -g")
 SET(CMAKE_C_FLAGS_RELEASE      "-O2 -g")
-SET(CMAKE_CXX_FLAGS_RELEASE    "-O2 -std=c++0x -g")
-SET(CMAKE_CXX_FLAGS_CCOV       "-O0 -std=c++0x -g --coverage")
+SET(CMAKE_CXX_FLAGS_RELEASE    "-O2 -std=c++11 -g")
+SET(CMAKE_CXX_FLAGS_CCOV       "-O0 -std=c++11 -g --coverage")
 
-
-SET(TARGET_LIBNAME_COMMON "libcommonInstaller")
+# Targets
+SET(TARGET_LIBNAME_COMMON "common-installer")
 SET(TARGET_WGT_BACKEND "wgt-backend")
 SET(TARGET_XPK_BACKEND "xpk-backend")
 SET(TARGET_NATIVE_BACKEND "native-backend")
 
+ADD_DEFINITIONS("-Wall")
+ADD_DEFINITIONS("-Wextra")
+ADD_DEFINITIONS("-fPIE")
 
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/common/include)
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 INCLUDE(FindPkgConfig)
+INCLUDE(ApplyPkgConfig)
+
+# Find all needed packages once
+PKG_CHECK_MODULES(PKGMGR_DEPS REQUIRED
+  pkgmgr
+  pkgmgr-info
+  pkgmgr-parser
+  pkgmgr-installer
+  libzip
+  libxml-2.0
+)
 
 ADD_SUBDIRECTORY(common)
 ADD_SUBDIRECTORY(wgt)
