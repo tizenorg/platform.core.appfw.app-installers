@@ -38,7 +38,7 @@ backend for standard widget files XPK
 %setup -q
 
 %build
-%cmake .
+%cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type}
 make %{?_smp_mflags}
 
 %install
@@ -57,7 +57,7 @@ ldconfig
 
 %files
 %defattr(-,root,root)
-%{_libdir}/libcommonInstaller.so*
+%{_libdir}/libcommon-installer.so*
 %license LICENSE
 
 %files -n wgt-backend
