@@ -1,5 +1,5 @@
-#include <include/AppInstaller.hxx>
-#include <include/step.hxx>
+#include <include/app_installer.h>
+#include <include/step.h>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>

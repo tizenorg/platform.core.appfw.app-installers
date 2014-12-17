@@ -1,6 +1,6 @@
 # Target - sources
 SET(SRCS
-  src/wgt-backend.cxx
+  src/wgt_backend.cc
 )
 # Target - definition
 ADD_EXECUTABLE(${TARGET_WGT_BACKEND} ${SRCS})

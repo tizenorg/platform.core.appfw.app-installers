@@ -1,6 +1,6 @@
 #ifndef __STEPUNZIP_H__
 #define __STEPUNZIP_H__
-#include <step.hxx>
+#include <step.h>
 #include <context_installer.h>
 
 class step_unzip : public Step{

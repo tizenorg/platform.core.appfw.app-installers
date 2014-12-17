@@ -1,7 +1,7 @@
 # Target - sources
 SET(SRCS
-	src/AppInstaller.cxx
-	src/step/step-unzip.cxx
+  src/app_installer.cc
+  src/step/step_unzip.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})

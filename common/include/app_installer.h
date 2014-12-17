@@ -1,7 +1,7 @@
 #ifndef __APPINSTALLER_H__
 #define __APPINSTALLER_H__
 #include <context_installer.h>
-#include <step.hxx>
+#include <step.h>
 #include <list>
 
 class AppInstaller {

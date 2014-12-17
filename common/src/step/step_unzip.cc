@@ -9,7 +9,7 @@
 #include <unzip.h>
 #include <cassert>
 #include <fcntl.h>
-#include <step-unzip.hxx>
+#include <step_unzip.h>
 #include <boost/filesystem.hpp>
 #include <boost/chrono/detail/system.hpp>
 

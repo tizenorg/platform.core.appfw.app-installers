@@ -8,8 +8,8 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
-#include <AppInstaller.hxx>
-#include <step-unzip.hxx>
+#include <app_installer.h>
+#include <step_unzip.h>
 
 int
 main (int argc, char **argv)
