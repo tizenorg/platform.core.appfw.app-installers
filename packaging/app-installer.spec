@@ -15,6 +15,7 @@ BuildRequires:  pkgconfig(pkgmgr-installer)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(minizip)
+BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  boost-devel
 
 %description

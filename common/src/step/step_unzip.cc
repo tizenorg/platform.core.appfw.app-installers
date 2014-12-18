@@ -1,3 +1,5 @@
+#include "step_unzip.h"
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,9 +11,9 @@
 #include <unzip.h>
 #include <cassert>
 #include <fcntl.h>
-#include <step_unzip.h>
 #include <boost/filesystem.hpp>
 #include <boost/chrono/detail/system.hpp>
+#include <tzplatform_config.h>
 
 #define DIR_DELIMITER '/'
 #define ZIPBUFSIZE 8192
@@ -23,7 +25,7 @@ step_unzip::step_unzip()
 __is_extracted(false)
 {}
 
-int createDir_u(const char* path) {
+int step_unzip::createDir_u(const char* path) {
 	boost::filesystem::path dir(path);
 	boost::system::error_code error;
 	boost::filesystem::create_directories(dir, error);
@@ -45,7 +47,7 @@ int createDir_u(const char* path) {
 	return 0;
 }
 
-int unzip_u(char *src, char *dest) {
+int step_unzip::unzip_u(char *src, char *dest) {
 		unz_global_info info;
 		char read_buffer[ZIPBUFSIZE];
 		unz_file_info raw_file_info;
@@ -176,9 +178,11 @@ int step_unzip::process (Context_installer* data) {
 	assert (!access (data->file_path, F_OK));
 
 	char *install_temp_dir;
-
+	const char *home_path = getuid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+													tzplatform_getenv(TZ_USER_APP) :
+													tzplatform_getenv(TZ_SYS_RW_APP);
 	for(;;) {
-		install_temp_dir = tempnam("/tmp", "unpack_dir_");
+		install_temp_dir = tempnam(home_path, "unpack_dir_");
 		if (install_temp_dir == NULL) {
 			std::cerr << "[process unzip] : Failed to allocate memory" << std::endl;
 			return APPINST_R_ERROR;
@@ -186,19 +190,24 @@ int step_unzip::process (Context_installer* data) {
 		if (mkdir(install_temp_dir, DIR_MODE) == 0)
 			break;
 
-		free(install_temp_dir);
 		if (errno != EEXIST && errno != EAGAIN) {
 			std::cerr << "[process unzip] : Failed to create temporary directory" << std::endl;
+			free(install_temp_dir);
 			return APPINST_R_ERROR;
 		}
 	}
 
 	if (extactTo_u(install_temp_dir, data->file_path) != APPINST_R_OK) {
 		std::cout << "[process unzip] : Failed to process unpack step"<< std::endl;
+		free(install_temp_dir);
 		return APPINST_R_ERROR;
 	}
 	data->unpack_directory = strdup(install_temp_dir);
 	free(install_temp_dir);
+	if (data->unpack_directory == NULL) {
+		std::cout << "[process unzip] : Failed to allocate unpack_directory" << std::endl;
+		return APPINST_R_ERROR;
+	}
 
 	std::cout << "[process unzip] : extract " << data->file_path << " into temp directory : " << data->unpack_directory << std::endl;
 	return APPINST_R_OK;
@@ -206,11 +215,17 @@ int step_unzip::process (Context_installer* data) {
 
 int step_unzip::clean (Context_installer* data) {
 	int ret = APPINST_R_OK;
-	std::cout << "[clean unzip] data->unpack_directory"<< data->unpack_directory << std::endl;
-	if (access (data->unpack_directory, F_OK) == 0) {
-		ret = boost::filesystem::remove_all(data->unpack_directory) ? APPINST_R_OK : APPINST_R_ERROR;
-		data->unpack_directory = NULL;
+
+	if (data->unpack_directory != NULL && access (data->unpack_directory, F_OK) == 0) {
+		ret = boost::filesystem::remove_all(data->unpack_directory);
+		if (ret > 0) {
+			std::cout << "[clean unzip] remove temp dir: "<< data->unpack_directory << std::endl;
+			ret = APPINST_R_OK;
+		} else
+			ret = APPINST_R_ERROR;
+		free(data->unpack_directory);
 	}
+
 	return ret;
 }
 
