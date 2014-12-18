@@ -13,7 +13,7 @@ BASE=`dirname $0`
 cd $BASE/..
 
 # filters
-FILTERS="-readability/streams,-runtime/references"
+FILTERS="-readability/streams,-build/c++11"
 
 cpplint.py --filter="$FILTERS" $(find . \( -name '*.hxx' -o -name '*.cxx' \) )
 RET=$?
