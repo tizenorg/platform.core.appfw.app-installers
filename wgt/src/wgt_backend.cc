@@ -8,15 +8,19 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
+
 #include <app_installer.h>
 #include <step_unzip.h>
+#include <step_copy.h>
+
 
 int
 main (int argc, char **argv)
 {
   int result;
   AppInstaller *Installer = NULL;
-  step_unzip *step_unpack = NULL;
+  step_unzip *stepUnpack = NULL;
+  step_copy *stepCopy = NULL;
 
   /* get request data */
   pkgmgr_installer *pi = pkgmgr_installer_new ();
@@ -34,9 +38,10 @@ main (int argc, char **argv)
     {
     case PKGMGR_REQ_INSTALL:
     Installer = new AppInstaller(PKGMGR_REQ_INSTALL,(char*)pkgmgr_installer_get_request_info(pi),NULL);
-    step_unpack = new step_unzip();
-    
-    Installer->AddStep(step_unpack);
+    stepUnpack = new step_unzip();
+    stepCopy  = new step_copy();
+    Installer->AddStep(stepUnpack);
+    Installer->AddStep(stepCopy);
 
     Installer->Run();
       break;

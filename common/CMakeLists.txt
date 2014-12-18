@@ -2,6 +2,7 @@
 SET(SRCS
   src/app_installer.cc
   src/step/step_unzip.cc
+  src/step/step_copy.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})
@@ -16,6 +17,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   MINIZIP_DEPS
   ZLIB_DEPS
   LIBXML_DEPS
+  LIBTZPLATFORM_CONFIG_DEPS
   Boost
 )
 

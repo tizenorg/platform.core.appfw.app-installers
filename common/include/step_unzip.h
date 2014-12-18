@@ -11,12 +11,12 @@ public:
 		int clean(Context_installer*);
 		int undo(Context_installer*);
 
+		static int createDir_u(const char *path);
+		static int unzip_u(char *src, char *dest);
 		/*Extracts the current entry to the given output temp directory path.
-		 * Sub directories are created based on the file path
-		 */
-		int extactTo_u(char * tmp_dir, char * source_dir);
-
+		* Sub directories are created based on the file path
+		*/
+		int extactTo_u(char * tmp_dir, char *source_dir);
 		step_unzip();
 };
 #endif
-

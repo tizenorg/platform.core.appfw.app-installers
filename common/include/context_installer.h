@@ -7,19 +7,20 @@
 
 typedef struct
 {
-	
 	int req; //type of request (Install / Reinstall / Uninstall / Update 
-	
-	manifest_x * manifest; //Contains the manifest information used to generate xml file
-	
-	char * pkgid; //pkgid passed in argument in update or uninstallation processing
-	
-	char * file_path; //file path passed in argument in installtion or Reinstallation process
-	
+
+	manifest_x *manifest; //Contains the manifest information used to generate xml file
+
+	char *pkgid; //pkgid passed in argument in update or uninstallation processing
+
+	char *file_path; //file path passed in argument in installtion or Reinstallation process
+
 	uid_t uid; // uid of the user that request the operation
-	
-	char * unpack_directory; // temporary directory path 
-	
+
+	char *unpack_directory; // temporary directory path
+
+	char *manifest_path; // manifest path
+
 } Context_installer;
 
 enum {
