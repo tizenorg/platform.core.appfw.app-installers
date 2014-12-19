@@ -2,17 +2,14 @@
 #include <iostream>
 #include <cstdio>
 
-AppInstaller::AppInstaller(int request,char * file, char* pkgid) {
-	if(asprintf(&(ctx.file_path),"%s",file) == -1)
-		ctx.file_path = NULL;
-	if(asprintf(&(ctx.pkgid),"%s",pkgid) == -1)
-		ctx.pkgid = NULL;
-	ctx.req = request;
+AppInstaller::AppInstaller(int request, const char * file, const char* pkgid){
+    ctx.file_path = file;
+    ctx.pkgid = pkgid;
+    ctx.req = request;
+
 }
 
 AppInstaller::~AppInstaller() {
-	free(ctx.file_path);
-	free(ctx.pkgid);
 }
 
 

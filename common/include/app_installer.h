@@ -10,7 +10,7 @@ protected:
 	std::list<Step*> ListStep;
 	Context_installer ctx;
 public:
-	AppInstaller(int request,char * file, char* pkgid);
+	AppInstaller(int request, const char * file, const char* pkgid);
 	~AppInstaller();
 	int AddStep(Step *step);
 	int Run();
