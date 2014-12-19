@@ -1,10 +1,10 @@
-Name:		app-installers
-Summary:	Application installers
-Version:	1.0
-Release:	0
-Group:		App Framework/Application Installer
-License:	Apache 2.0
-Source0:	%{name}-%{version}.tar.gz
+Name:           app-installers
+Summary:        Application installers
+Version:        1.0
+Release:        0
+Group:          Application Framework/Application State Management
+License:        Apache-2.0
+Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  libcap-devel
 BuildRequires:  cmake
@@ -21,20 +21,17 @@ BuildRequires:  boost-devel
 This is a meta package that installs the common application
 installers of Tizen.
 
-
 %package -n wgt-backend
-Summary: backend of WGT files
+Summary: Backend of WGT files
 
 %description -n wgt-backend
-backend for standard widget files WGT
-
+Backend for standard widget files WGT
 
 %package -n xpk-backend
-Summary: backend of XPK files
+Summary: Backend of XPK files
 
 %description -n xpk-backend
-backend for standard widget files XPK
-
+Backend for standard widget files XPK
 
 %prep
 %setup -q
@@ -47,15 +44,12 @@ make %{?_smp_mflags}
 %make_install
 
 mkdir -p %{buildroot}/etc/package-manager/backend
-ln -s /usr/bin/wgt-backend %{buildroot}/etc/package-manager/backend/wgt
-ln -s /usr/bin/xpk-backend %{buildroot}/etc/package-manager/backend/xpk
+ln -s %{_bindir}/wgt-backend %{buildroot}%{_sysconfdir}/package-manager/backend/wgt
+ln -s %{_bindir}/xpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/xpk
 
+%post -p /sbin/ldconfig
 
-
-%post
-ldconfig
-
-%postun
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -63,8 +57,8 @@ ldconfig
 %license LICENSE
 
 %files -n wgt-backend
-/etc/package-manager/backend/wgt
+%{_sysconfdir}/package-manager/backend/wgt
 %{_bindir}/wgt-backend
 
 %files -n xpk-backend
-/etc/package-manager/backend/xpk
+%{_sysconfdir}/package-manager/backend/xpk
