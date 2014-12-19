@@ -45,7 +45,7 @@ int createDir_u(const char* path) {
 	return 0;
 }
 
-int unzip_u(char *src, char *dest) {
+int unzip_u(const char *src, const char *dest) {
 		unz_global_info info;
 		char read_buffer[ZIPBUFSIZE];
 		unz_file_info raw_file_info;
@@ -154,7 +154,7 @@ int unzip_u(char *src, char *dest) {
 	return Z_OK;
 }
 
-int step_unzip::extactTo_u(char * tmp_dir, char * source_dir) {
+int step_unzip::extactTo_u(const char * tmp_dir, const char * source_dir) {
 	int ret = APPINST_R_OK;
 
 	if (__is_extracted) {
@@ -172,8 +172,8 @@ int step_unzip::extactTo_u(char * tmp_dir, char * source_dir) {
 }
 
 int step_unzip::process (Context_installer* data) {
-	assert (data->file_path != NULL);
-	assert (!access (data->file_path, F_OK));
+	assert (!data->file_path.empty());
+	assert (!access (data->file_path.c_str(), F_OK));
 
 	char *install_temp_dir;
 
@@ -193,11 +193,11 @@ int step_unzip::process (Context_installer* data) {
 		}
 	}
 
-	if (extactTo_u(install_temp_dir, data->file_path) != APPINST_R_OK) {
+	if (extactTo_u(install_temp_dir, data->file_path.c_str()) != APPINST_R_OK) {
 		std::cout << "[process unzip] : Failed to process unpack step"<< std::endl;
 		return APPINST_R_ERROR;
 	}
-	data->unpack_directory = strdup(install_temp_dir);
+	data->unpack_directory = install_temp_dir;
 	free(install_temp_dir);
 
 	std::cout << "[process unzip] : extract " << data->file_path << " into temp directory : " << data->unpack_directory << std::endl;
@@ -207,9 +207,8 @@ int step_unzip::process (Context_installer* data) {
 int step_unzip::clean (Context_installer* data) {
 	int ret = APPINST_R_OK;
 	std::cout << "[clean unzip] data->unpack_directory"<< data->unpack_directory << std::endl;
-	if (access (data->unpack_directory, F_OK) == 0) {
+	if (access (data->unpack_directory.c_str(), F_OK) == 0) {
 		ret = boost::filesystem::remove_all(data->unpack_directory) ? APPINST_R_OK : APPINST_R_ERROR;
-		data->unpack_directory = NULL;
 	}
 	return ret;
 }

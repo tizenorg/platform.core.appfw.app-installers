@@ -14,7 +14,7 @@ public:
 		/*Extracts the current entry to the given output temp directory path.
 		 * Sub directories are created based on the file path
 		 */
-		int extactTo_u(char * tmp_dir, char * source_dir);
+		int extactTo_u(const char * tmp_dir, const char * source_dir);
 
 		step_unzip();
 };
