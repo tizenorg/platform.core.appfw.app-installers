@@ -3,6 +3,7 @@ SET(SRCS
   src/app_installer.cc
   src/step/step_unzip.cc
   src/step/step_copy.cc
+  src/step/step_register.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})

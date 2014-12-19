@@ -12,7 +12,7 @@
 #include <app_installer.h>
 #include <step_unzip.h>
 #include <step_copy.h>
-
+#include <step_register.h>
 
 int
 main (int argc, char **argv)
@@ -21,6 +21,7 @@ main (int argc, char **argv)
   AppInstaller *Installer = NULL;
   step_unzip *stepUnpack = NULL;
   step_copy *stepCopy = NULL;
+  step_register *stepRegister = NULL;
 
   /* get request data */
   pkgmgr_installer *pi = pkgmgr_installer_new ();
@@ -40,8 +41,10 @@ main (int argc, char **argv)
     Installer = new AppInstaller(PKGMGR_REQ_INSTALL,(char*)pkgmgr_installer_get_request_info(pi),NULL);
     stepUnpack = new step_unzip();
     stepCopy  = new step_copy();
+    stepRegister = new step_register();
     Installer->AddStep(stepUnpack);
     Installer->AddStep(stepCopy);
+    Installer->AddStep(stepRegister);
 
     Installer->Run();
       break;
