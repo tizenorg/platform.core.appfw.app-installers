@@ -1,6 +1,6 @@
 #include <app_installer.h>
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 
 AppInstaller::AppInstaller(int request,char * file, char* pkgid) {
 	if(asprintf(&(ctx.file_path),"%s",file) == -1)
