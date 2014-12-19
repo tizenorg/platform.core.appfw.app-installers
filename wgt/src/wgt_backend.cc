@@ -1,13 +1,13 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <string.h>
-#include <errno.h>
-#include <assert.h>
+#include <cstring>
+#include <cerrno>
+#include <cassert>
 #include <app_installer.h>
 #include <step_unzip.h>
 
