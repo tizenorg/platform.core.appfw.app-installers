@@ -2,8 +2,8 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef UTILS_LOGGING_H_
-#define UTILS_LOGGING_H_
+#ifndef SIGNATURE_LOGGING_H_
+#define SIGNATURE_LOGGING_H_
 
 #include <iostream>
 #include <sstream>
@@ -27,4 +27,4 @@ class LogCatcher {
 #define LOG(LEVEL)                                                             \
     ::detail::LogCatcher() & std::ostringstream() << "[" << #LEVEL << "] "     \
 
-#endif  // UTILS_LOGGING_H_
+#endif  // SIGNATURE_LOGGING_H_

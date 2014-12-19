@@ -1,7 +1,7 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#ifndef COMMON_INCLUDE_STEP_STEP_UNZIP_H_
-#define COMMON_INCLUDE_STEP_STEP_UNZIP_H_
+#ifndef COMMON_STEP_STEP_UNZIP_H_
+#define COMMON_STEP_STEP_UNZIP_H_
 
 #include <boost/filesystem/path.hpp>
 
@@ -30,5 +30,4 @@ class StepUnzip : public Step {
 }  // namespace common_installer
 
 
-#endif  // COMMON_INCLUDE_STEP_STEP_UNZIP_H_
-
+#endif  // COMMON_STEP_STEP_UNZIP_H_

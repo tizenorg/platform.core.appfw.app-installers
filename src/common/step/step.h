@@ -20,8 +20,8 @@
   Otherwise, the returned code should be set to -1 with errno set
   to some meaningful value.
 */
-#ifndef COMMON_INCLUDE_STEP_STEP_H_
-#define COMMON_INCLUDE_STEP_STEP_H_
+#ifndef COMMON_STEP_STEP_H_
+#define COMMON_STEP_STEP_H_
 
 #include "common/context_installer.h"
 
@@ -36,4 +36,4 @@ class Step {
 
 }  // namespace common_installer
 
-#endif  // COMMON_INCLUDE_STEP_STEP_H_
+#endif  // COMMON_STEP_STEP_H_

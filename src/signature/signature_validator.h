@@ -5,8 +5,8 @@
 // Part of this file is redistributed from crosswalk project under BDS-style
 // license. Check LICENSE-xwalk file.
 
-#ifndef COMMON_STEP_SIGNATURE_SIGNATURE_VALIDATOR_H_
-#define COMMON_STEP_SIGNATURE_SIGNATURE_VALIDATOR_H_
+#ifndef SIGNATURE_SIGNATURE_VALIDATOR_H_
+#define SIGNATURE_SIGNATURE_VALIDATOR_H_
 
 #include <boost/filesystem.hpp>
 
@@ -34,4 +34,4 @@ class SignatureValidator {
 }  // namespace signature
 }  // namespace common_installer
 
-#endif  // COMMON_STEP_SIGNATURE_SIGNATURE_VALIDATOR_H_
+#endif  // SIGNATURE_SIGNATURE_VALIDATOR_H_

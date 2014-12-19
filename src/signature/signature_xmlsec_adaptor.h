@@ -26,4 +26,4 @@ class SignatureXmlSecAdaptor {
 }  // namespace signature
 }  // namespace common_installer
 
-#endif  // COMMON_STEP_SIGNATURE_SIGNATURE_XMLSEC_ADAPTOR_H_
+#endif  // SIGNATURE_SIGNATURE_XMLSEC_ADAPTOR_H_

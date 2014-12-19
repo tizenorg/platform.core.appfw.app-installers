@@ -1,7 +1,7 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#ifndef COMMON_INCLUDE_APP_INSTALLER_H_
-#define COMMON_INCLUDE_APP_INSTALLER_H_
+#ifndef COMMON_APP_INSTALLER_H_
+#define COMMON_APP_INSTALLER_H_
 
 #include <list>
 
@@ -24,4 +24,4 @@ class AppInstaller {
 
 }  // namespace common_installer
 
-#endif  // COMMON_INCLUDE_APP_INSTALLER_H_
+#endif  // COMMON_APP_INSTALLER_H_

@@ -1,7 +1,7 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#ifndef COMMON_INCLUDE_CONTEXT_INSTALLER_H_
-#define COMMON_INCLUDE_CONTEXT_INSTALLER_H_
+#ifndef COMMON_CONTEXT_INSTALLER_H_
+#define COMMON_CONTEXT_INSTALLER_H_
 
 #include <pkgmgr_parser.h>
 
@@ -78,4 +78,5 @@ class ContextInstaller {
 
 }  // namespace common_installer
 
-#endif  // COMMON_INCLUDE_CONTEXT_INSTALLER_H_
+#endif  // COMMON_CONTEXT_INSTALLER_H_
+

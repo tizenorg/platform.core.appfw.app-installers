@@ -1,7 +1,7 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#ifndef COMMON_INCLUDE_UTILS_H_
-#define COMMON_INCLUDE_UTILS_H_
+#ifndef COMMON_UTILS_H_
+#define COMMON_UTILS_H_
 
 #include <boost/filesystem.hpp>
 
@@ -14,4 +14,4 @@ bool CopyDir(const boost::filesystem::path& src,
 
 }  // namespace utils
 
-#endif  // COMMON_INCLUDE_UTILS_H_
+#endif  // COMMON_UTILS_H_
