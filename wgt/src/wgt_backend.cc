@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
       AppInstaller* Installer = new AppInstaller(PKGMGR_REQ_INSTALL,
           pkgmgr_installer_get_request_info(pi), "");
 
-      step_unzip* step_unpack = new step_unzip();
+      StepUnzip* step_unpack = new StepUnzip();
       Installer->AddStep(step_unpack);
 
       // FIXME: unique_ptr because steps are not freed in installer.

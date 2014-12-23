@@ -1,22 +1,27 @@
-#ifndef __STEPUNZIP_H__
-#define __STEPUNZIP_H__
-#include <step.h>
-#include <context_installer.h>
+/* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-class step_unzip : public Step{
-private:
-		bool __is_extracted;
-public:
-		int process(ContextInstaller*);
-		int clean(ContextInstaller*);
-		int undo(ContextInstaller*);
+#ifndef COMMON_INCLUDE_STEP_UNZIP_H_
+#define COMMON_INCLUDE_STEP_UNZIP_H_
 
-		/*Extracts the current entry to the given output temp directory path.
-		 * Sub directories are created based on the file path
-		 */
-		int extactTo_u(const char * tmp_dir, const char * source_dir);
+#include <boost/filesystem/path.hpp>
 
-		step_unzip();
+#include "include/step.h"
+#include "include/context_installer.h"
+
+class StepUnzip : public Step {
+ private:
+  bool is_extracted_;
+ public:
+  StepUnzip();
+
+  int process(ContextInstaller* context) override;
+  int clean(ContextInstaller* context) override { return 0; }
+  int undo(ContextInstaller* context) override;
+
+  boost::filesystem::path GenerateTmpDir(void);
+  int ExtractToTmpDir(const char* source_dir,
+                      const boost::filesystem::path& tmp_dir);
 };
-#endif
+
+#endif  // COMMON_INCLUDE_STEP_UNZIP_H_
 
