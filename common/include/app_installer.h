@@ -8,7 +8,7 @@ class AppInstaller {
 
 protected:
 	std::list<Step*> ListStep;
-	Context_installer ctx;
+	ContextInstaller* ctx_;
 public:
 	AppInstaller(int request, const char * file, const char* pkgid);
 	~AppInstaller();

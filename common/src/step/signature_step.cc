@@ -14,8 +14,8 @@ namespace bf = boost::filesystem;
 
 namespace common {
 
-int SignatureStep::process(Context_installer* context) {
-  return (signature::SignatureValidator::Check(bf::path(context->unpack_directory))
+int SignatureStep::process(ContextInstaller* context) {
+  return (signature::SignatureValidator::Check(bf::path(context->unpack_directory()))
       == signature::SignatureValidator::INVALID) ? -1 : 0;
 }
 

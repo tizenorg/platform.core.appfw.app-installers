@@ -2,15 +2,14 @@
 #include <iostream>
 #include <cstdio>
 
-AppInstaller::AppInstaller(int request, const char * file, const char* pkgid){
-    ctx.file_path = file;
-    ctx.pkgid = pkgid;
-    ctx.req = request;
-
+AppInstaller::AppInstaller(int request, const char * file, const char* pkgid) {
+  ctx_ = new ContextInstaller();
+  ctx_->set_request_type(request);
+  ctx_->set_pkgid(pkgid);
+  ctx_->set_file_path(file);
 }
 
-AppInstaller::~AppInstaller() {
-}
+AppInstaller::~AppInstaller() { delete ctx_; }
 
 
 int AppInstaller::AddStep(Step *step) {
@@ -29,7 +28,7 @@ int AppInstaller::Run() {
 
 	int ret = 0;
 	for(;it!=itEnd;++it) {
-		if((*it)->process(&ctx) != APPINST_R_OK) {
+		if((*it)->process(ctx_) != APPINST_R_OK) {
 			std::cout << "Error during processing" << std::endl;
 			ret = -1;
 			break;
@@ -38,7 +37,7 @@ int AppInstaller::Run() {
 	if (it!=itEnd) {
 			std::cout << "Faillure occurs" << std::endl;
 		do {
-			if((*it)->undo(&ctx) != APPINST_R_OK) {
+			if((*it)->undo(ctx_) != APPINST_R_OK) {
 				std::cout << "Error during undo operation" << std::endl;
 				ret = -2;
 				break;
@@ -46,7 +45,7 @@ int AppInstaller::Run() {
 		} while (it--!=itStart);
 	} else {
 			while (it--!=itStart) {
-				if((*it)->clean(&ctx) != APPINST_R_OK) {
+				if((*it)->clean(ctx_) != APPINST_R_OK) {
 					std::cout << "Error during clean operation" << std::endl;
 					ret = -3;
 					break;

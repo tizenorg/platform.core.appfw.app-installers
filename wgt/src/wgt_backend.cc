@@ -1,5 +1,6 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
+#include <pkgmgr_installer.h>
 #include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
@@ -32,11 +33,9 @@ main (int argc, char **argv)
     }
 
   /* treat the request */
-  switch (pkgmgr_installer_get_request_type (pi))
-    {
-    case PKGMGR_REQ_INSTALL:
-    {
-    Installer = new AppInstaller(PKGMGR_REQ_INSTALL,(char*)pkgmgr_installer_get_request_info(pi),NULL);
+  switch (pkgmgr_installer_get_request_type (pi)) {
+    case PKGMGR_REQ_INSTALL: {
+    Installer = new AppInstaller(PKGMGR_REQ_INSTALL, pkgmgr_installer_get_request_info(pi), "");
     step_unpack = new step_unzip();
     
     Installer->AddStep(step_unpack);
@@ -49,15 +48,15 @@ main (int argc, char **argv)
     Installer->Run();
       break;
     }
-    case PKGMGR_REQ_UNINSTALL:
-	break;
-
-
-    default:
+    case PKGMGR_REQ_UNINSTALL: {
+      break;
+    }
+    default: {
       /* unsupported operation */
       result = EINVAL;
       break;
     }
+  }
   pkgmgr_installer_free (pi);
   return result;
 }

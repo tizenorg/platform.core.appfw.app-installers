@@ -1,30 +1,65 @@
-#ifndef __CTX_INSTALLER_H__
-#define __CTX_INSTALLER_H__
-#include <unistd.h>
-#include <string>
-#include <sys/types.h>
+/* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
+
+#ifndef COMMON_INCLUDE_CONTEXT_INSTALLER_H_
+#define COMMON_INCLUDE_CONTEXT_INSTALLER_H_
+
 #include <pkgmgr_parser.h>
-#include <pkgmgr_installer.h>
 
-typedef struct
-{
-	int req; //type of request (Install / Reinstall / Uninstall / Update 
-	
-	manifest_x * manifest; //Contains the manifest information used to generate xml file
-	std::string pkgid; //pkgid passed in argument in update or uninstallation processing
+#include <unistd.h>
+#include <sys/types.h>
 
-	std::string file_path; //file path passed in argument in installtion or Reinstallation process
-
-	uid_t uid; // uid of the user that request the operation
-
-	std::string unpack_directory; // temporary directory path
-	
-} Context_installer;
+#include <string>
 
 enum {
-	APPINST_R_EINVAL = -2,		/**< Invalid argument */
-	APPINST_R_ERROR = -1,		/**< General error */
-	APPINST_R_OK = 0			/**< General success */
+  APPINST_R_EINVAL = -2,    /**< Invalid argument */
+  APPINST_R_ERROR = -1,   /**< General error */
+  APPINST_R_OK = 0      /**< General success */
 };
 
-#endif
+class ContextInstaller {
+ private :
+  // request type: Install, Reinstall, Uninstall, Update.
+  int req_;
+
+  //  manifest information used to generate xml file
+  manifest_x* manifest_;
+
+  // pkgid used for update or uninstallation processing
+  std::string pkgid_;
+
+  // uid of the user that request the operation
+  uid_t uid_;
+
+  // file path used for installation or reinstallation process
+  std::string file_path_;
+
+  // directory path where app data are temporarily extracted
+  std::string unpack_directory_;
+
+ public:
+  int request_type() const { return req_; }
+  void set_request_type(int req) {
+    req_ = req;
+  }
+
+  manifest_x* get_manifest_data() const { return manifest_; }
+
+  std::string pkgid() const { return pkgid_; }
+  void set_pkgid(const std::string& pkgid) {
+    pkgid_ = pkgid;
+  }
+
+  std::string file_path() const { return file_path_; }
+  void set_file_path(const std::string& file_path) {
+    file_path_ = file_path;
+  }
+
+  uid_t uid() const { return uid_; }
+
+  std::string unpack_directory() const { return unpack_directory_; }
+  void set_unpack_directory(const std::string& unpack_dir) {
+    unpack_directory_ = unpack_dir;
+  }
+};
+
+#endif  // COMMON_INCLUDE_CONTEXT_INSTALLER_H_

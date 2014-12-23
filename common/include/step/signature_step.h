@@ -14,9 +14,9 @@ class SignatureStep : public Step {
  public:
   using Step::Step;
 
-  int process(Context_installer* context) override;
-  int undo(Context_installer*) override { return 0; }
-  int clean(Context_installer*) override { return 0; }
+  int process(ContextInstaller* context) override;
+  int undo(ContextInstaller*) override { return 0; }
+  int clean(ContextInstaller*) override { return 0; }
 };
 
 }  // namespace common
