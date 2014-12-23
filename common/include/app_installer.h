@@ -1,18 +1,23 @@
-#ifndef __APPINSTALLER_H__
-#define __APPINSTALLER_H__
-#include <context_installer.h>
-#include <step.h>
+/* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
+
+#ifndef COMMON_INCLUDE_APP_INSTALLER_H_
+#define COMMON_INCLUDE_APP_INSTALLER_H_
+
 #include <list>
 
-class AppInstaller {
+#include "include/step.h"
 
-protected:
-	std::list<Step*> ListStep;
-	ContextInstaller* ctx_;
-public:
-	AppInstaller(int request, const char * file, const char* pkgid);
-	~AppInstaller();
-	int AddStep(Step *step);
-	int Run();
+class AppInstaller {
+ private:
+  std::list<Step*> ListStep;
+  ContextInstaller* ctx_;
+
+ public:
+  AppInstaller(int request, const char* file, const char* pkgid);
+  ~AppInstaller();
+
+  int AddStep(Step* step);
+  int Run();
 };
-#endif
+
+#endif  // COMMON_INCLUDE_APP_INSTALLER_H_

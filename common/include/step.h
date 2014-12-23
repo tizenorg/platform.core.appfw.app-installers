@@ -1,3 +1,5 @@
+/* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
+
 /*
   A step is made of 3 functions (that can be defined or NULL)
   and one data pointer.
@@ -18,15 +20,16 @@
   Otherwise, the returned code should be set to -1 with errno set
   to some meaningful value.
 */
-#ifndef __STEP_H__
-#define __STEP_H__
-#include <context_installer.h>
+#ifndef COMMON_INCLUDE_STEP_H_
+#define COMMON_INCLUDE_STEP_H_
+
+#include "include/context_installer.h"
 
 class Step {
-public:
-	virtual int process(ContextInstaller*)=0;
-	virtual int undo(ContextInstaller*)=0;
-	virtual int clean(ContextInstaller*)=0;
-
+ public:
+  virtual int process(ContextInstaller* context)=0;
+  virtual int undo(ContextInstaller* context)=0;
+  virtual int clean(ContextInstaller* context)=0;
 };
-#endif
+
+#endif  // COMMON_INCLUDE_STEP_H_
