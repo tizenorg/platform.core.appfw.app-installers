@@ -18,9 +18,11 @@ BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  pkgconfig(minizip)
 BuildRequires:  pkgconfig(libzip)
+BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  pkgconfig(xmlsec1)
 
 Requires: ca-certificates-tizen
+Requires: libtzplatform-config
 
 %description
 This is a meta package that installs the common application

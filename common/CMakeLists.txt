@@ -1,6 +1,7 @@
 # Target - sources
 SET(SRCS
   src/app_installer.cc
+  src/context_installer.cc
   src/step/step_unzip.cc
   src/step/signature_step.cc
 )
@@ -16,6 +17,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   PKGMGR_INSTALLER_DEPS
   MINIZIP_DEPS
   ZLIB_DEPS
+  TZPLATFORM_CONFIG_DEPS
   LIBXML_DEPS
   Boost
 )

@@ -8,7 +8,14 @@
 #include <unistd.h>
 #include <sys/types.h>
 
+#include <boost/filesystem.hpp>
 #include <string>
+
+namespace utils {
+
+bool CreateDir(const boost::filesystem::path& path);
+
+}  // namespace utils
 
 enum {
   APPINST_R_EINVAL = -2,    /**< Invalid argument */
@@ -60,6 +67,8 @@ class ContextInstaller {
   void set_unpack_directory(const std::string& unpack_dir) {
     unpack_directory_ = unpack_dir;
   }
+
+  const char* GetApplicationPath();
 };
 
 #endif  // COMMON_INCLUDE_CONTEXT_INSTALLER_H_
