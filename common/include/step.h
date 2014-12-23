@@ -24,9 +24,9 @@
 
 class Step {
 public:
-	virtual int process(Context_installer*)=0;
-	virtual int undo(Context_installer*)=0;
-	virtual int clean(Context_installer*)=0;
+	virtual int process(ContextInstaller*)=0;
+	virtual int undo(ContextInstaller*)=0;
+	virtual int clean(ContextInstaller*)=0;
 
 };
 #endif

@@ -7,9 +7,9 @@ class step_unzip : public Step{
 private:
 		bool __is_extracted;
 public:
-		int process(Context_installer*);
-		int clean(Context_installer*);
-		int undo(Context_installer*);
+		int process(ContextInstaller*);
+		int clean(ContextInstaller*);
+		int undo(ContextInstaller*);
 
 		/*Extracts the current entry to the given output temp directory path.
 		 * Sub directories are created based on the file path
