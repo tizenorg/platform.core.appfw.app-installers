@@ -1,4 +1,13 @@
 Verified+1: Corentin Lecouvey <corentin.lecouvey@open.eurogiciel.org>
+Code-Review+1: Sabera Djelti <sabera.djelti@open.eurogiciel.org>
+Code-Review+2: Pawel Sikorski <p.sikorski@samsung.com>
+Submitted-by: Pawel Sikorski <p.sikorski@samsung.com>
+Submitted-at: Mon, 29 Dec 2014 01:15:34 -0800
+Reviewed-on: https://review.tizen.org/gerrit/32767
+Project: platform/appfw/app-installers
+Branch: refs/heads/tizen
+
+Verified+1: Corentin Lecouvey <corentin.lecouvey@open.eurogiciel.org>
 Reviewed-on: https://review.tizen.org/gerrit/32767
 Project: platform/appfw/app-installers
 Branch: refs/heads/tizen
