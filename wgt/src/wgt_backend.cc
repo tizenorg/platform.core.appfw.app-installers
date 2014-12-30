@@ -15,6 +15,7 @@
 #include "include/app_installer.h"
 #include "include/step/step_unzip.h"
 #include "include/step/signature_step.h"
+#include "include/step/step_copy.h"
 
 int main(int argc, char **argv) {
   /* get request data */
@@ -41,6 +42,9 @@ int main(int argc, char **argv) {
       std::unique_ptr<common::SignatureStep> signature_step(
           new common::SignatureStep);
       Installer->AddStep(signature_step.get());
+
+      StepCopy* step_copy = new StepCopy();
+      Installer->AddStep(step_copy);
 
       Installer->Run();
       break;
