@@ -4,6 +4,7 @@ SET(SRCS
   src/context_installer.cc
   src/step/step_unzip.cc
   src/step/step_signature.cc
+  src/step/step_copy.cc
   src/utils.cc
 )
 # Target - definition
