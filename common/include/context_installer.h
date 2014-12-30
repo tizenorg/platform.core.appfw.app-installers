@@ -32,6 +32,9 @@ class ContextInstaller {
   // uid of the user that request the operation
   uid_t uid_;
 
+  // package directory path containing app data
+  std::string pkg_path_;
+
   // file path used for installation or reinstallation process
   std::string file_path_;
 
@@ -51,6 +54,11 @@ class ContextInstaller {
   std::string pkgid() const { return pkgid_; }
   void set_pkgid(const std::string& pkgid) {
     pkgid_ = pkgid;
+  }
+
+  std::string pkg_path() const { return pkg_path_;}
+  void set_pkg_path(const std::string& package_path) {
+    pkg_path_ = package_path;
   }
 
   std::string file_path() const { return file_path_; }
