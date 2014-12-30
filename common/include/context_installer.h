@@ -8,14 +8,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-#include <boost/filesystem.hpp>
 #include <string>
-
-namespace utils {
-
-bool CreateDir(const boost::filesystem::path& path);
-
-}  // namespace utils
 
 enum {
   APPINST_R_EINVAL = -2,    /**< Invalid argument */

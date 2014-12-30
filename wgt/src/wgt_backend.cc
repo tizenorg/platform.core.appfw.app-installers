@@ -13,8 +13,8 @@
 #include <memory>
 
 #include "include/app_installer.h"
-#include "include/step_unzip.h"
-#include "step/signature_step.h"
+#include "include/step/step_unzip.h"
+#include "include/step/signature_step.h"
 
 int main(int argc, char **argv) {
   /* get request data */

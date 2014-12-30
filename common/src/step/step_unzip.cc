@@ -1,6 +1,6 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#include "include/step_unzip.h"
+#include "include/step/step_unzip.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -18,6 +18,8 @@
 #include <iostream>
 #include <string>
 
+#include "include/utils.h"
+
 #define DBG(msg) std::cout << "[Unzip] " << msg << std::endl;
 #define ERR(msg) std::cout << "[ERROR: Unzip] " << msg << std::endl;
 
@@ -33,7 +35,7 @@ boost::filesystem::path StepUnzip::GenerateTmpDir(const char* app_path) {
   do {
     boost::filesystem::path model;
     boost::filesystem::path unique_dir =
-        boost::filesystem::unique_path(model="unpack-%%%%%%");
+        boost::filesystem::unique_path(model = "unpack-%%%%%%");
 
     install_tmp_dir = tmp_dir /= unique_dir;
   } while (boost::filesystem::exists(install_tmp_dir) &&
