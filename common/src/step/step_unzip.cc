@@ -94,30 +94,28 @@ int StepUnzip::ExtractToTmpDir(const char* src,
       return APPINST_R_ERROR;
     }
 
-    // Do not treat directory
-    if (is_directory(filename_in_zip_path))
-      continue;
-
-    FILE *out = fopen(raw_file_name_in_zip, "wb");
-    if (!out) {
-      ERR("Failed to open destination ");
-      unzCloseCurrentFile(zip_file);
-      return APPINST_R_ERROR;
-    }
-
-    int ret = UNZ_OK;
-    do {
-      ret = unzReadCurrentFile(zip_file, read_buffer, ZIPBUFSIZE);
-      if (ret < 0) {
-        ERR("Failed to read data: " << ret);
+    if (!is_directory(filename_in_zip_path)) {
+      FILE *out = fopen(raw_file_name_in_zip, "wb");
+      if (!out) {
+        ERR("Failed to open destination ");
         unzCloseCurrentFile(zip_file);
         return APPINST_R_ERROR;
-      } else {
-        fwrite(read_buffer, sizeof(char), ret, out);
       }
-    } while (ret > 0);
 
-    fclose(out);
+      int ret = UNZ_OK;
+      do {
+        ret = unzReadCurrentFile(zip_file, read_buffer, ZIPBUFSIZE);
+        if (ret < 0) {
+          ERR("Failed to read data: " << ret);
+          unzCloseCurrentFile(zip_file);
+          return APPINST_R_ERROR;
+        } else {
+          fwrite(read_buffer, sizeof(char), ret, out);
+        }
+      } while (ret > 0);
+
+      fclose(out);
+    }
 
     if ((i+1) < info.number_entry) {
       if (unzGoToNextFile(zip_file) != UNZ_OK) {
