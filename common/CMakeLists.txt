@@ -4,6 +4,7 @@ SET(SRCS
   src/context_installer.cc
   src/step/step_unzip.cc
   src/step/signature_step.cc
+  src/utils.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})

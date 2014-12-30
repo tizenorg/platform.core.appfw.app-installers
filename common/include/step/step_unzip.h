@@ -1,12 +1,12 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#ifndef COMMON_INCLUDE_STEP_UNZIP_H_
-#define COMMON_INCLUDE_STEP_UNZIP_H_
+#ifndef COMMON_INCLUDE_STEP_STEP_UNZIP_H_
+#define COMMON_INCLUDE_STEP_STEP_UNZIP_H_
 
 #include <boost/filesystem/path.hpp>
 
-#include "include/step.h"
 #include "include/context_installer.h"
+#include "include/step/step.h"
 
 class StepUnzip : public Step {
  private:
@@ -23,5 +23,5 @@ class StepUnzip : public Step {
                       const boost::filesystem::path& tmp_dir);
 };
 
-#endif  // COMMON_INCLUDE_STEP_UNZIP_H_
+#endif  // COMMON_INCLUDE_STEP_STEP_UNZIP_H_
 

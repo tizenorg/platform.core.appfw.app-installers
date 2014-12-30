@@ -5,7 +5,7 @@
 
 #include <list>
 
-#include "include/step.h"
+#include "include/step/step.h"
 
 class AppInstaller {
  private:

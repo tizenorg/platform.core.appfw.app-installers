@@ -20,16 +20,16 @@
   Otherwise, the returned code should be set to -1 with errno set
   to some meaningful value.
 */
-#ifndef COMMON_INCLUDE_STEP_H_
-#define COMMON_INCLUDE_STEP_H_
+#ifndef COMMON_INCLUDE_STEP_STEP_H_
+#define COMMON_INCLUDE_STEP_STEP_H_
 
 #include "include/context_installer.h"
 
 class Step {
  public:
-  virtual int process(ContextInstaller* context)=0;
-  virtual int undo(ContextInstaller* context)=0;
-  virtual int clean(ContextInstaller* context)=0;
+  virtual int process(ContextInstaller* context) = 0;
+  virtual int undo(ContextInstaller* context) = 0;
+  virtual int clean(ContextInstaller* context) = 0;
 };
 
-#endif  // COMMON_INCLUDE_STEP_H_
+#endif  // COMMON_INCLUDE_STEP_STEP_H_
