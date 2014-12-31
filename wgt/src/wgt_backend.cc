@@ -14,7 +14,7 @@
 
 #include "include/app_installer.h"
 #include "include/step/step_unzip.h"
-#include "include/step/signature_step.h"
+#include "include/step/step_signature.h"
 
 int main(int argc, char **argv) {
   /* get request data */
@@ -38,9 +38,9 @@ int main(int argc, char **argv) {
       Installer->AddStep(step_unpack);
 
       // FIXME: unique_ptr because steps are not freed in installer.
-      std::unique_ptr<common::SignatureStep> signature_step(
-          new common::SignatureStep);
-      Installer->AddStep(signature_step.get());
+      std::unique_ptr<common::StepSignature> step_signature(
+          new common::StepSignature);
+      Installer->AddStep(step_signature.get());
 
       Installer->Run();
       break;
