@@ -3,7 +3,7 @@ SET(SRCS
   src/app_installer.cc
   src/context_installer.cc
   src/step/step_unzip.cc
-  src/step/signature_step.cc
+  src/step/step_signature.cc
   src/utils.cc
 )
 # Target - definition

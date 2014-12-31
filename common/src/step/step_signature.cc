@@ -2,7 +2,7 @@
 // Use of this source code is governed by an apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include <step/signature_step.h>
+#include <step/step_signature.h>
 
 #include <boost/filesystem/path.hpp>
 
@@ -14,7 +14,7 @@ namespace bf = boost::filesystem;
 
 namespace common {
 
-int SignatureStep::process(ContextInstaller* context) {
+int StepSignature::process(ContextInstaller* context) {
   return (signature::SignatureValidator::Check(bf::path(context->unpack_directory()))
       == signature::SignatureValidator::INVALID) ? -1 : 0;
 }
