@@ -37,6 +37,8 @@ class ContextInstaller {
   std::string unpack_directory_;
 
  public:
+  ContextInstaller();
+
   int request_type() const { return req_; }
   void set_request_type(int req) {
     req_ = req;
