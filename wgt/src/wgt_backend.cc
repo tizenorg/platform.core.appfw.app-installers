@@ -31,15 +31,15 @@ int main(int argc, char **argv) {
   /* treat the request */
   switch (pkgmgr_installer_get_request_type(pi)) {
     case PKGMGR_REQ_INSTALL: {
-      AppInstaller* Installer = new AppInstaller(PKGMGR_REQ_INSTALL,
+      common::AppInstaller* Installer = new common::AppInstaller(PKGMGR_REQ_INSTALL,
           pkgmgr_installer_get_request_info(pi), "");
 
-      StepUnzip* step_unpack = new StepUnzip();
+      common::unzip::StepUnzip* step_unpack = new common::unzip::StepUnzip();
       Installer->AddStep(step_unpack);
 
       // FIXME: unique_ptr because steps are not freed in installer.
-      std::unique_ptr<common::StepSignature> step_signature(
-          new common::StepSignature);
+      std::unique_ptr<common::signature::StepSignature> step_signature(
+          new common::signature::StepSignature);
       Installer->AddStep(step_signature.get());
 
       Installer->Run();

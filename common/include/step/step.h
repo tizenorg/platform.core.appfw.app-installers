@@ -25,11 +25,15 @@
 
 #include "include/context_installer.h"
 
+namespace common {
+
 class Step {
  public:
   virtual int process(ContextInstaller* context) = 0;
   virtual int undo(ContextInstaller* context) = 0;
   virtual int clean(ContextInstaller* context) = 0;
 };
+
+}  // namespace common
 
 #endif  // COMMON_INCLUDE_STEP_STEP_H_
