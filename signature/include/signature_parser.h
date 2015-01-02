@@ -15,6 +15,7 @@
 #include <marcos.h>
 #include <signature_data.h>
 
+namespace common_installer {
 namespace signature {
 
 class SignatureParser {
@@ -27,5 +28,6 @@ class SignatureParser {
 };
 
 }  // namespace signature
+}  // namespace common_installer
 
 #endif  // SIGNATURE_SIGNATURE_PARSER_H_

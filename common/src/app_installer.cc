@@ -6,6 +6,8 @@
 #include "include/app_installer.h"
 #include "include/context_installer.h"
 
+namespace common_installer {
+
 AppInstaller::AppInstaller(int request, const char* file, const char* pkgid) {
   ctx_ = new ContextInstaller();
   ctx_->set_request_type(request);
@@ -58,3 +60,5 @@ int AppInstaller::Run() {
   }
   return ret;
 }
+
+}  // namespace common_installer

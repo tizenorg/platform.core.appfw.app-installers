@@ -24,6 +24,7 @@
 namespace bf = boost::filesystem;
 
 namespace {
+using namespace common_installer;
 
 const int kXMLLogSize = 1024;
 
@@ -251,6 +252,7 @@ bool CheckReference(const signature::SignatureData& signature_data) {
 
 }  // anonymous namespace
 
+namespace common_installer {
 namespace signature {
 // static
 SignatureValidator::Status SignatureValidator::Check(
@@ -298,3 +300,4 @@ SignatureValidator::Status SignatureValidator::Check(
 }
 
 }  // namespace signature
+}  // namespace common_installer

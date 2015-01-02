@@ -7,6 +7,8 @@
 
 #include "include/step/step.h"
 
+namespace common_installer {
+
 class AppInstaller {
  private:
   std::list<Step*> ListStep;
@@ -19,5 +21,7 @@ class AppInstaller {
   int AddStep(Step* step);
   int Run();
 };
+
+}  // namespace common_installer
 
 #endif  // COMMON_INCLUDE_APP_INSTALLER_H_

@@ -7,6 +7,7 @@
 
 #include <signature_data.h>
 
+namespace common_installer {
 namespace signature {
 
 SignatureData::SignatureData(const boost::filesystem::path& signature_file_name,
@@ -23,3 +24,4 @@ boost::filesystem::path SignatureData::GetExtractedWidgetPath() const {
 }
 
 }  // namespace signature
+}  // namespace common_installer
