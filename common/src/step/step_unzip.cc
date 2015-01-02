@@ -26,6 +26,9 @@
 #define ZIPBUFSIZE 8192
 #define ZIPMAXPATH 256
 
+namespace common {
+namespace unzip {
+
 StepUnzip::StepUnzip() : is_extracted_(false) {}
 
 boost::filesystem::path StepUnzip::GenerateTmpDir(const char* app_path) {
@@ -162,3 +165,7 @@ int StepUnzip::undo(ContextInstaller* data) {
   }
   return APPINST_R_OK;
 }
+
+
+}  // namespace unzip
+}  // namespace common

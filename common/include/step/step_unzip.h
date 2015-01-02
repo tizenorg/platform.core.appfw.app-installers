@@ -8,6 +8,9 @@
 #include "include/context_installer.h"
 #include "include/step/step.h"
 
+namespace common {
+namespace unzip {
+
 class StepUnzip : public Step {
  private:
   bool is_extracted_;
@@ -22,6 +25,10 @@ class StepUnzip : public Step {
   int ExtractToTmpDir(const char* source_dir,
                       const boost::filesystem::path& tmp_dir);
 };
+
+}  // namespace unzip
+}  // namespace common
+
 
 #endif  // COMMON_INCLUDE_STEP_STEP_UNZIP_H_
 

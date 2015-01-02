@@ -18,6 +18,7 @@
 
 #include <marcos.h>
 
+namespace common {
 namespace signature {
 
 class SignatureData {
@@ -118,6 +119,6 @@ class SignatureData {
 };
 
 }  // namespace signature
-
+}  // namespace common
 
 #endif  // SIGNATURE_SIGNATURE_DATA_H_

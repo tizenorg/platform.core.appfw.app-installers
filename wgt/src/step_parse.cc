@@ -5,7 +5,7 @@
 #include <cstdlib>
 
 
-
+namespace {
 
 API manifest_x *pkgmgr_parser_process_manifest_xml(const char *manifest)
 {
@@ -34,9 +34,10 @@ API manifest_x *pkgmgr_parser_process_manifest_xml(const char *manifest)
 	return mfx;
 }
 
+}  // namespace
 
 namespace wgt {
-namespace step_parse {
+namespace parse {
 
 
 
@@ -56,5 +57,5 @@ class Step {
 //undo
 
 
-}
-}
+}  // namespace wgt
+}  // namespace parse

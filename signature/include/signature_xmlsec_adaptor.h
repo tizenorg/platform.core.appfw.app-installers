@@ -12,6 +12,7 @@
 
 #include <signature_data.h>
 
+namespace common {
 namespace signature {
 
 class SignatureXmlSecAdaptor {
@@ -23,5 +24,6 @@ class SignatureXmlSecAdaptor {
 };
 
 }  // namespace signature
+}  // namespace common
 
 #endif  // COMMON_STEP_SIGNATURE_SIGNATURE_XMLSEC_ADAPTOR_H_

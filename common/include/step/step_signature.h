@@ -9,6 +9,7 @@
 #include "step.h"
 
 namespace common {
+namespace signature {
 
 class StepSignature : public Step {
  public:
@@ -19,6 +20,7 @@ class StepSignature : public Step {
   int clean(ContextInstaller*) override { return 0; }
 };
 
+}  // namespace signature
 }  // namespace common
 
 #endif  // COMMON_STEP_STEP_SIGNATURE_H_

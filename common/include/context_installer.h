@@ -10,6 +10,8 @@
 
 #include <string>
 
+namespace common {
+
 enum {
   APPINST_R_EINVAL = -2,    /**< Invalid argument */
   APPINST_R_ERROR = -1,   /**< General error */
@@ -65,5 +67,7 @@ class ContextInstaller {
 
   const char* GetApplicationPath();
 };
+
+}  // namespace common
 
 #endif  // COMMON_INCLUDE_CONTEXT_INSTALLER_H_
