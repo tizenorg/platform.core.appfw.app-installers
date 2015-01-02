@@ -44,7 +44,7 @@ class ContextInstaller {
     req_ = req;
   }
 
-  manifest_x* get_manifest_data() const { return manifest_; }
+  manifest_x* manifest_data() const { return manifest_; }
 
   std::string pkgid() const { return pkgid_; }
   void set_pkgid(const std::string& pkgid) {
