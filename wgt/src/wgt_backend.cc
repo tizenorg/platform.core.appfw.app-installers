@@ -16,6 +16,8 @@
 #include "include/step/step_unzip.h"
 #include "include/step/step_signature.h"
 #include "include/step/step_copy.h"
+#include "include/step/step_generateXml.h"
+#include "include/step/step_record.h"
 
 int main(int argc, char **argv) {
   /* get request data */
@@ -43,13 +45,24 @@ int main(int argc, char **argv) {
           new common_installer::signature::StepSignature);
       Installer->AddStep(step_signature.get());
 
-      StepCopy* step_copy = new StepCopy();
+      common_installer::copy::StepCopy* step_copy =
+          new common_installer::copy::StepCopy();
       Installer->AddStep(step_copy);
+
+      common_installer::generate_xml::StepGenerateXml* step_xml =
+          new common_installer::generate_xml::StepGenerateXml();
+      Installer->AddStep(step_xml);
+
+      common_installer::record::StepRecord* step_register =
+          new common_installer::record::StepRecord();
+      Installer->AddStep(step_register);
 
       Installer->Run();
 
       delete step_unpack;
       delete step_copy;
+      delete step_xml;
+      delete step_register;
       break;
     }
     case PKGMGR_REQ_UNINSTALL: {

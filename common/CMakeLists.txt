@@ -5,6 +5,8 @@ SET(SRCS
   src/step/step_unzip.cc
   src/step/step_signature.cc
   src/step/step_copy.cc
+  src/step/step_generateXml.cc
+  src/step/step_record.cc
   src/utils.cc
 )
 # Target - definition

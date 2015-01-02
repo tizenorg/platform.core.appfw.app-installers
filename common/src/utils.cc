@@ -34,8 +34,7 @@ bool CreateDir(const fs::path& path) {
   return true;
 }
 
-bool CopyDir(const fs::path& src,
-    const fs::path& dst) {
+bool CopyDir(const fs::path& src, const fs::path& dst) {
   try {
     // Check whether the function call is valid
     if (!fs::exists(src) || !fs::is_directory(src)) {

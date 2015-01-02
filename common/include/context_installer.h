@@ -51,6 +51,10 @@ class ContextInstaller {
 
   manifest_x* manifest_data() const { return manifest_; }
 
+  void set_mfx(manifest_x* manifest) {
+    manifest_ = manifest;
+  }
+
   std::string pkgid() const { return pkgid_; }
   void set_pkgid(const std::string& pkgid) {
     pkgid_ = pkgid;
