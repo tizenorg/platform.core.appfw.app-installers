@@ -14,6 +14,7 @@
 
 #include <marcos.h>
 
+namespace common_installer {
 namespace signature {
 
 class SignatureValidator {
@@ -31,5 +32,6 @@ class SignatureValidator {
 };
 
 }  // namespace signature
+}  // namespace common_installer
 
 #endif  // COMMON_STEP_SIGNATURE_SIGNATURE_VALIDATOR_H_

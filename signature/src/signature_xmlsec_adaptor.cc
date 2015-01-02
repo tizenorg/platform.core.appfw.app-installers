@@ -40,6 +40,7 @@ namespace bai = boost::archive::iterators;
 namespace bf = boost::filesystem;
 
 namespace {
+using namespace common_installer;
 
 const bf::path cert_prefix_path = "/usr/share/ca-certificates/tizen/";
 
@@ -338,6 +339,7 @@ boost::filesystem::path XmlSecContext::GetCertFromStore(
 
 }  // namespace
 
+namespace common_installer {
 namespace signature {
 
 // static
@@ -411,3 +413,4 @@ bool SignatureXmlSecAdaptor::ValidateFile(
 }
 
 }  // namespace signature
+}  // namespace common_installer

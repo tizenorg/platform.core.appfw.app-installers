@@ -123,6 +123,7 @@ std::string XmlStringToStdString(const xmlChar* xmlstring) {
 
 }  // namespace
 
+namespace common_installer {
 namespace signature {
 
 bool ParseSignedInfoElement(
@@ -329,3 +330,4 @@ std::unique_ptr<SignatureData> SignatureParser::CreateSignatureData(
 }
 
 }  // namespace signature
+}  // namespace common_installer

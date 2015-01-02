@@ -12,11 +12,13 @@
 
 namespace bf = boost::filesystem;
 
-namespace common {
+namespace common_installer {
+namespace signature {
 
 int StepSignature::process(ContextInstaller* context) {
-  return (signature::SignatureValidator::Check(bf::path(context->unpack_directory()))
-      == signature::SignatureValidator::INVALID) ? -1 : 0;
+  return (SignatureValidator::Check(bf::path(context->unpack_directory()))
+      == SignatureValidator::INVALID) ? -1 : 0;
 }
 
-}  // namespace common
+}  // namespace signature
+}  // namespace common_installer

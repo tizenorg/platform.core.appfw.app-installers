@@ -8,7 +8,8 @@
 #include "context_installer.h"
 #include "step.h"
 
-namespace common {
+namespace common_installer {
+namespace signature {
 
 class StepSignature : public Step {
  public:
@@ -19,6 +20,7 @@ class StepSignature : public Step {
   int clean(ContextInstaller*) override { return 0; }
 };
 
-}  // namespace common
+}  // namespace signature
+}  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_SIGNATURE_H_
