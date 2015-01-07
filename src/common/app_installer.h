@@ -5,6 +5,7 @@
 
 #include <pkgmgr_installer.h>
 #include <list>
+#include <memory>
 
 #include "common/step/step.h"
 
@@ -12,16 +13,29 @@
 namespace common_installer {
 
 class AppInstaller {
- private:
-  std::list<Step*> ListStep;
-  ContextInstaller* ctx_;
-
  public:
   AppInstaller(pkgmgr_installer *pi);
-  ~AppInstaller();
+  virtual ~AppInstaller();
 
-  int AddStep(Step* step);
+  // Adds new step to installer by specified type
+  // Type of template parameter is used to create requested step class instance.
+  // Context of installer is passed to step in this method
+  // and is not being exposed outside installer.
+  template<class StepT>
+  void AddStep() {
+    steps_.push_back(std::unique_ptr<Step>(new StepT(context_.get())));
+  }
+
   int Run();
+
+ protected:
+  std::unique_ptr<ContextInstaller> context_;
+
+ private:
+  AppInstaller(const AppInstaller& /*other*/) = delete;
+  AppInstaller& operator=(const AppInstaller& /*other*/) = delete;
+
+  std::list<std::unique_ptr<Step>> steps_;
 };
 
 }  // namespace common_installer

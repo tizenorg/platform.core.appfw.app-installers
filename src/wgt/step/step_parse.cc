@@ -18,10 +18,10 @@
 namespace wgt {
 namespace parse {
 
-int StepParse::process(common_installer::ContextInstaller* context) {
-  if (!StepParse::Check(context->unpack_directory())) {
+common_installer::Step::Status StepParse::process() {
+  if (!StepParse::Check(context_->unpack_directory())) {
     std::cout << "[Parse] No config.xml" << std::endl;
-    return common_installer::APPINST_R_ERROR;
+    return common_installer::Step::Status::ERROR;
   }
 
   const ManifestData* data = nullptr;
@@ -30,17 +30,17 @@ int StepParse::process(common_installer::ContextInstaller* context) {
     std::cout << "[Parse] Parse failed. " <<  error << std::endl;
     if (!ReleaseData(data, error))
       std::cout << "[Parse] Release data failed." << std::endl;
-    return common_installer::APPINST_R_ERROR;
+    return common_installer::Step::Status::ERROR;
   }
 
   // Copy data from ManifestData to ContextInstaller
-  context->config_data()->set_application_name(
+  context_->config_data()->set_application_name(
       std::string(data->name));
-  context->config_data()->set_required_version(
+  context_->config_data()->set_required_version(
       std::string(data->api_version));
-  context->set_pkgid(
+  context_->set_pkgid(
       std::string(data->package));
-  fillManifest(data, context->manifest_data());
+  fillManifest(data, context_->manifest_data());
 
   //--- Test ---
   std::cout << "[Parse] Read data -[ " << std::endl;
@@ -60,10 +60,10 @@ int StepParse::process(common_installer::ContextInstaller* context) {
 
   if (!ReleaseData(data, error)) {
     std::cout << "[Parse] Release data failed." << std::endl;
-    return common_installer::APPINST_R_ERROR;
+    return common_installer::Step::Status::ERROR;
   }
 
-  return common_installer::APPINST_R_OK;
+  return common_installer::Step::Status::OK;
 }
 
 bool StepParse::Check(const boost::filesystem::path& widget_path) {
