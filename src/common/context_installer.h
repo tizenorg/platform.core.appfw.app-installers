@@ -12,12 +12,6 @@
 
 namespace common_installer {
 
-enum {
-  APPINST_R_EINVAL = -2,    /**< Invalid argument */
-  APPINST_R_ERROR = -1,   /**< General error */
-  APPINST_R_OK = 0      /**< General success */
-};
-
 class ContextInstaller {
  private :
   // request type: Install, Reinstall, Uninstall, Update.
