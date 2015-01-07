@@ -29,21 +29,21 @@ const char kLauncher[] = "/usr/lib/xwalk/xwalk";
 namespace common_installer {
 namespace generate_xml {
 
-int StepGenerateXml::process(ContextInstaller* data) {
-  assert(data->manifest_data());
+Step::Status StepGenerateXml::process() {
+  assert(context_->manifest_data());
 
-  fs::path xml_path = fs::path(getUserManifestPath(data->uid()))
-      / fs::path(data->pkgid());
+  fs::path xml_path = fs::path(getUserManifestPath(context_->uid()))
+      / fs::path(context_->pkgid());
   xml_path.replace_extension(".xml");
 
-  data->set_xml_path(xml_path.string());
+  context_->set_xml_path(xml_path.string());
   boost::system::error_code error;
-  uiapplication_x* ui = data->manifest_data()->uiapplication;
-  serviceapplication_x* svc = data->manifest_data()->serviceapplication;
+  uiapplication_x* ui = context_->manifest_data()->uiapplication;
+  serviceapplication_x* svc = context_->manifest_data()->serviceapplication;
   if ((!ui) && (!svc)) {
-    ERR("There is neither UI applications nor Services applications \
-     described!\n");
-    return APPINST_R_ERROR;
+    ERR("There is neither UI applications nor"
+        << "Services applications described!\n");
+    return Step::Status::ERROR;
   }
   appcontrol_x* appc_ui = nullptr;
   appcontrol_x* appc_svc = nullptr;
@@ -52,17 +52,17 @@ int StepGenerateXml::process(ContextInstaller* data) {
   if (svc)
     appc_svc = svc->appcontrol;
 
-  privileges_x* pvlg =  data->manifest_data()->privileges;
+  privileges_x* pvlg =  context_->manifest_data()->privileges;
 
   fs::path default_icon(
       tzplatform_mkpath(TZ_SYS_RW_ICONS, "app-installers.png"));
 
   xmlTextWriterPtr writer;
 
-  writer = xmlNewTextWriterFilename(data->xml_path().c_str(), 0);
+  writer = xmlNewTextWriterFilename(context_->xml_path().c_str(), 0);
   if (!writer) {
     ERR("Failed to create new file\n");
-    return APPINST_R_ERROR;
+    return Step::Status::ERROR;
   }
 
   xmlTextWriterStartDocument(writer, NULL, NULL, NULL);
@@ -75,17 +75,17 @@ int StepGenerateXml::process(ContextInstaller* data) {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns",
       BAD_CAST "http://tizen.org/ns/packages");
   xmlTextWriterWriteAttribute(writer, BAD_CAST "package",
-      BAD_CAST data->manifest_data()->package);
+      BAD_CAST context_->manifest_data()->package);
   xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
-      BAD_CAST data->manifest_data()->type);
+      BAD_CAST context_->manifest_data()->type);
   xmlTextWriterWriteAttribute(writer, BAD_CAST "version",
-      BAD_CAST data->manifest_data()->version);
+      BAD_CAST context_->manifest_data()->version);
 
   xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
-      "%s", BAD_CAST data->manifest_data()->label->name);
+      "%s", BAD_CAST context_->manifest_data()->label->name);
 
   xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
-      "%s", BAD_CAST data->manifest_data()->description->name);
+      "%s", BAD_CAST context_->manifest_data()->description->name);
 
   // add ui-application element per ui application
   for (; ui != nullptr; ui = ui->next) {
@@ -95,7 +95,7 @@ int StepGenerateXml::process(ContextInstaller* data) {
                                       BAD_CAST ui->appid);
 
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path = fs::path(data->pkg_path()) / fs::path(ui->appid)
+    fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(ui->appid)
         / fs::path("bin");
     utils::CreateDir(exec_path);
 
@@ -106,7 +106,7 @@ int StepGenerateXml::process(ContextInstaller* data) {
       ERR("Failed to set symbolic link "
         << boost::system::system_error(error).what());
         xmlFreeTextWriter(writer);
-      return APPINST_R_ERROR;
+      return Step::Status::ERROR;
     }
     xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
         BAD_CAST exec_path.string().c_str());
@@ -121,11 +121,11 @@ int StepGenerateXml::process(ContextInstaller* data) {
     // the icon is renamed to <appid.png>
     // and located in TZ_USER_ICON/TZ_SYS_ICON
     // if the icon isn't exist print the default icon app-installers.png
-    icon_path_ = fs::path(getIconPath(data->uid()));
+    icon_path_ = fs::path(getIconPath(context_->uid()));
     utils::CreateDir(icon_path_);
     fs::path icon = fs::path(ui->appid) += fs::path(".png");
 
-    fs::path app_icon = fs::path(data->pkg_path()) / fs::path(ui->appid)
+    fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(ui->appid)
         / fs::path(ui->icon->name);
     if (fs::exists(app_icon)) {
       fs::rename(app_icon, icon_path_ /= icon);
@@ -176,7 +176,7 @@ int StepGenerateXml::process(ContextInstaller* data) {
     xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST svc->appid);
 
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path = fs::path(data->pkg_path()) / fs::path(svc->appid)
+    fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(svc->appid)
         / fs::path("bin");
     utils::CreateDir(exec_path);
 
@@ -187,7 +187,7 @@ int StepGenerateXml::process(ContextInstaller* data) {
       ERR("Failed to set symbolic link "
         << boost::system::system_error(error).what());
         xmlFreeTextWriter(writer);
-      return APPINST_R_ERROR;
+      return Step::Status::ERROR;
     }
 
     xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
@@ -201,11 +201,11 @@ int StepGenerateXml::process(ContextInstaller* data) {
     // the icon is renamed to <appid.png>
     // and located in TZ_USER_ICON/TZ_SYS_ICON
     // if the icon isn't exist print the default icon app-installers.png
-    icon_path_ = fs::path(getIconPath(data->uid()));
+    icon_path_ = fs::path(getIconPath(context_->uid()));
     utils::CreateDir(icon_path_);
     fs::path icon = fs::path(ui->appid) += fs::path(".png");
 
-    fs::path app_icon = fs::path(data->pkg_path()) / fs::path(ui->appid)
+    fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(ui->appid)
         / fs::path(ui->icon->name);
     if (fs::exists(app_icon)) {
       fs::rename(app_icon, icon_path_ /= icon);
@@ -269,31 +269,32 @@ int StepGenerateXml::process(ContextInstaller* data) {
   xmlTextWriterEndDocument(writer);
 
   if (!writer)
-    return APPINST_R_ERROR;
+    return Step::Status::ERROR;
 
   xmlFreeTextWriter(writer);
 
-  if (pkgmgr_parser_check_manifest_validation(data->xml_path().c_str()) != 0) {
-      DBG("Manifest is not valid");
-      return APPINST_R_ERROR;
+  if (pkgmgr_parser_check_manifest_validation(
+      context_->xml_path().c_str()) != 0) {
+    DBG("Manifest is not valid");
+    return Step::Status::ERROR;
   }
 
-  DBG("Successfully create manifest xml " << data->xml_path());
-  return APPINST_R_OK;
+  DBG("Successfully create manifest xml " << context_->xml_path());
+  return Status::OK;
 }
 
-int StepGenerateXml::clean(ContextInstaller* data) {
-  return APPINST_R_OK;
+Step::Status StepGenerateXml::clean() {
+  return Status::OK;
 }
 
-int StepGenerateXml::undo(ContextInstaller* data) {
-  if (fs::exists(data->xml_path()))
-    fs::remove_all(data->xml_path());
+Step::Status  StepGenerateXml::undo() {
+  if (fs::exists(context_->xml_path()))
+    fs::remove_all(context_->xml_path());
 
   if (fs::exists(icon_path_))
     fs::remove_all(icon_path_);
 
-  return APPINST_R_OK;
+  return Status::OK;
 }
 
 }  // namespace generate_xml

@@ -14,12 +14,15 @@ namespace signal {
 
 class StepSignal : public Step {
  public:
-  int process(ContextInstaller* context) override;
-  int clean(ContextInstaller* context) override;
-  int undo(ContextInstaller* context) override;
+  using Step::Step;
+
+  Status process() override;
+  Status clean() override;
+  Status undo() override;
+
  private:
   bool sendSignal(ContextInstaller* data, const std::string& key,
-    const std::string& value);
+      const std::string& value);
 };
 
 }  // namespace signal

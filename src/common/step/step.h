@@ -10,15 +10,12 @@
     - clean    remove temporary data of the step after success
 
   These functions all have the same signature: they accept
-  a pointer to something and they return an integer value stating
-  the execution issue. 
+  a pointer to something and they return a value which states
+  the execution issue.
 
-  At the execution time, this functions if not NULL, will receive
-  the 'data' pointer as first argument.
-
-  The returned code of 0 indicates a succeful execution.
-  Otherwise, the returned code should be set to -1 with errno set
-  to some meaningful value.
+  The returned code of Step::Status::OK indicates a succeful execution.
+  Otherwise, the returned code should be set to value different than
+  Step::Status::OK.
 */
 #ifndef COMMON_STEP_STEP_H_
 #define COMMON_STEP_STEP_H_
@@ -29,9 +26,21 @@ namespace common_installer {
 
 class Step {
  public:
-  virtual int process(ContextInstaller* context) = 0;
-  virtual int undo(ContextInstaller* context) = 0;
-  virtual int clean(ContextInstaller* context) = 0;
+  enum class Status {
+    INVALID_VALUE = -2,     /**< Invalid argument */
+    ERROR = -1,             /**< General error */
+    OK = 0                  /**< General success */
+  };
+
+  explicit Step(ContextInstaller* context) : context_(context) { }
+  virtual ~Step() { }
+
+  virtual Step::Status process() = 0;
+  virtual Step::Status undo() = 0;
+  virtual Step::Status clean() = 0;
+
+ protected:
+  ContextInstaller* context_;
 };
 
 }  // namespace common_installer

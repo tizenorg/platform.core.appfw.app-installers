@@ -20,34 +20,33 @@ namespace remove {
 
 namespace fs = boost::filesystem;
 
-int StepRemove::process(ContextInstaller* data) {
-  uiapplication_x* ui = data->manifest_data()->uiapplication;
+Step::Status StepRemove::process() {
+  uiapplication_x* ui = context_->manifest_data()->uiapplication;
 
-  if (!fs::exists(data->pkg_path()))
-    DBG("dir: " << data->pkg_path() << "not exist");
+  if (!fs::exists(context_->pkg_path()))
+    DBG("dir: " << context_->pkg_path() << "not exist");
 
-  fs::remove_all(data->pkg_path());
+  fs::remove_all(context_->pkg_path());
   for (; ui != nullptr; ui = ui->next) {
-    fs::path app_icon = fs::path(getIconPath(data->uid()))
+    fs::path app_icon = fs::path(getIconPath(context_->uid()))
       / fs::path(ui->appid);
     app_icon += fs::path(".png");
     if (fs::exists(app_icon))
       fs::remove_all(app_icon);
   }
-  fs::remove_all(data->xml_path());
+  fs::remove_all(context_->xml_path());
 
-  DBG("Removing dir: " << data->pkg_path());
+  DBG("Removing dir: " << context_->pkg_path());
 
-
-  return APPINST_R_OK;
+  return Status::OK;
 }
 
-int StepRemove::clean(ContextInstaller* data) {
-  return APPINST_R_OK;
+Step::Status StepRemove::clean() {
+  return Status::OK;
 }
 
-int StepRemove::undo(ContextInstaller* data) {
-  return APPINST_R_OK;
+Step::Status StepRemove::undo() {
+  return Status::OK;
 }
 
 }  // namespace remove
