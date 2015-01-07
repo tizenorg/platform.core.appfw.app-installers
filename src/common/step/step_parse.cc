@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
+
 #include "common/utils.h"
 
 #define DBG(msg) std::cout << "[Parse] " << msg << std::endl;
@@ -21,34 +22,34 @@ namespace parse {
 
 namespace fs = boost::filesystem;
 
-int StepParse::process(ContextInstaller* data) {
-  fs::path xml_path = fs::path(getUserManifestPath(data->uid()))
-      / fs::path(data->pkgid());
+Step::Status StepParse::process() {
+  fs::path xml_path = fs::path(getUserManifestPath(context_->uid()))
+      / fs::path(context_->pkgid());
   xml_path.replace_extension(".xml");
 
-  data->set_xml_path(xml_path.string());
+  context_->set_xml_path(xml_path.string());
   xmlInitParser();
   manifest_x* mfx = pkgmgr_parser_usr_process_manifest_xml(
-    data->xml_path().c_str(), data->uid());
+    context_->xml_path().c_str(), context_->uid());
   if (!mfx) {
-    DBG("Failed to parse tizen manifest xml " << data->xml_path().c_str());
-    return APPINST_R_ERROR;
+    DBG("Failed to parse tizen manifest xml " << context_->xml_path().c_str());
+    return Step::Status::ERROR;
   }
 
-  data->set_manifest(mfx);
-  data->set_pkg_path(data->GetApplicationPath());
+  context_->set_manifest(mfx);
+  context_->set_pkg_path(context_->GetApplicationPath());
 
   DBG("Successfully parse tizen manifest xml");
 
-  return APPINST_R_OK;
+  return Status::OK;
 }
 
-int StepParse::clean(ContextInstaller* data) {
-  return APPINST_R_OK;
+Step::Status StepParse::clean() {
+  return Status::OK;
 }
 
-int StepParse::undo(ContextInstaller* data) {
-  return APPINST_R_OK;
+Step::Status StepParse::undo() {
+  return Status::OK;
 }
 
 }  // namespace parse
