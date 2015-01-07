@@ -13,9 +13,11 @@ namespace unregister {
 
 class StepUnregister : public Step {
  public:
-  int process(ContextInstaller* context) override;
-  int clean(ContextInstaller* context) override;
-  int undo(ContextInstaller* context) override;
+  using Step::Step;
+
+  Step::Status process() override;
+  Step::Status clean() override;
+  Step::Status undo() override;
 };
 
 }  // namespace unregister

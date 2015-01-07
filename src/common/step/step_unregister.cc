@@ -19,34 +19,34 @@ namespace unregister {
 
 namespace fs = boost::filesystem;
 
-int StepUnregister::process(ContextInstaller* data) {
-  assert(!data->pkgid().empty());
+Step::Status StepUnregister::process() {
+  assert(!context_->pkgid().empty());
 
   char* const appinst_tags[] = {"removable=true", nullptr, };
 
-  int ret = data->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+  int ret = context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       pkgmgr_parser_parse_usr_manifest_for_uninstallation(
-          data->xml_path().c_str(), data->uid(), appinst_tags) :
+          context_->xml_path().c_str(), context_->uid(), appinst_tags) :
       pkgmgr_parser_parse_manifest_for_uninstallation(
-          data->xml_path().c_str(), appinst_tags);
+          context_->xml_path().c_str(), appinst_tags);
 
   if (ret != 0) {
     DBG("Failed to unregister package into database");
-    return APPINST_R_ERROR;
+    return Status::ERROR;
   }
   DBG("Successfully unregister the application");
 
-  return APPINST_R_OK;
+  return Status::OK;
 }
 
-int StepUnregister::clean(ContextInstaller* data) {
+Step::Status StepUnregister::clean() {
   DBG("Empty 'clean' method");
-  return APPINST_R_OK;
+  return Status::OK;
 }
 
-int StepUnregister::undo(ContextInstaller* data) {
+Step::Status StepUnregister::undo() {
   DBG("Empty 'undo' method");
-  return APPINST_R_OK;
+  return Status::OK;
 }
 
 }  // namespace unregister

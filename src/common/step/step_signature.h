@@ -15,9 +15,9 @@ class StepSignature : public Step {
  public:
   using Step::Step;
 
-  int process(ContextInstaller* context) override;
-  int undo(ContextInstaller* /*context*/) override { return 0; }
-  int clean(ContextInstaller* /*context*/) override { return 0; }
+  Status process() override;
+  Status undo() override { return Status::OK; }
+  Status clean() override { return Status::OK; }
 };
 
 }  // namespace signature
