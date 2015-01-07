@@ -30,8 +30,8 @@ namespace record {
 
 namespace fs = boost::filesystem;
 
-int StepRecord::process(ContextInstaller* data) {
-  assert(!data->xml_path().empty());
+Step::Status StepRecord::process() {
+  assert(!context_->xml_path().empty());
 
   char* const appinst_tags[] = {"removable=true", nullptr, };
   // TODO(sdi2): Check if data->removable is correctly setting
@@ -41,38 +41,38 @@ int StepRecord::process(ContextInstaller* data) {
   // Having a specific step to implement a installer commandline tool
   // for image build could be usefull also.
 
-  int ret = data->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+  int ret = context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       pkgmgr_parser_parse_usr_manifest_for_installation(
-          data->xml_path().c_str(), data->uid(), appinst_tags) :
+          context_->xml_path().c_str(), context_->uid(), appinst_tags) :
       pkgmgr_parser_parse_manifest_for_installation(
-          data->xml_path().c_str(), appinst_tags);
+          context_->xml_path().c_str(), appinst_tags);
 
   if (ret != 0) {
     DBG("Failed to record package into database");
-    return APPINST_R_ERROR;
+    return Step::Status::ERROR;
   }
   DBG("Successfully install the application");
-  return APPINST_R_OK;
+  return Status::OK;
 }
 
-int StepRecord::clean(ContextInstaller* data) {
-  return APPINST_R_OK;
+Step::Status  StepRecord::clean() {
+  return Status::OK;
 }
 
-int StepRecord::undo(ContextInstaller* data) {
+Step::Status  StepRecord::undo() {
   std::string cmd;
-  if (fs::exists(data->xml_path()))
-    fs::remove_all(data->xml_path());
+  if (fs::exists(context_->xml_path()))
+    fs::remove_all(context_->xml_path());
 
-  data->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+  context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       cmd = std::string(kAilInitUser) + ";" + kPkgInitUser :
       cmd = std::string(kAilInit) + ";" + kPkgInit;
 
   if (execv(cmd.c_str(), nullptr) == -1)
-      return APPINST_R_ERROR;
+      return Step::Status::ERROR;
 
   DBG("Successfuly clean database");
-  return APPINST_R_OK;
+  return Status::OK;
 }
 
 }  // namespace record

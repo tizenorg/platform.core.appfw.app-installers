@@ -16,9 +16,12 @@ namespace fs = boost::filesystem;
 
 class StepGenerateXml : public Step {
  public:
-  int process(ContextInstaller* context) override;
-  int clean(ContextInstaller* context) override;
-  int undo(ContextInstaller* context) override;
+  using Step::Step;
+
+  Status process() override;
+  Status clean() override;
+  Status undo() override;
+
  private:
   fs::path icon_path_;
 };
