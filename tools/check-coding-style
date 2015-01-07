@@ -15,7 +15,7 @@ cd $BASE/..
 # filters
 FILTERS="-readability/streams,-build/c++11"
 
-cpplint.py --filter="$FILTERS" $(find . \( -name '*.h' -o -name '*.cc' \) )
+cpplint.py --root=src --filter="$FILTERS" $(find . \( -name '*.h' -o -name '*.cc' \) )
 RET=$?
 
 JS_RET_VAL=$?
