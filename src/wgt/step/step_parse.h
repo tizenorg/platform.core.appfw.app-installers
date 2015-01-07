@@ -12,19 +12,13 @@
 namespace wgt {
 namespace parse {
 
-//TODO MAYBE fill later
-//class ConfigFileParser {
-// public:
-//  ConfigFileParser(char * file);
-//};
-
-class StepParse: public common_installer::Step {
+class StepParse : public common_installer::Step {
  public:
-  StepParse() {}
+  using Step::Step;
 
-  int process(common_installer::ContextInstaller* context) override;
-  int clean(common_installer::ContextInstaller*) override { return 0; }
-  int undo(common_installer::ContextInstaller*) override { return 0; }
+  Step::Status process() override;
+  Step::Status clean() override { return Step::Status::OK; }
+  Step::Status undo() override { return Step::Status::OK; }
 
  private:
   boost::filesystem::path config_;

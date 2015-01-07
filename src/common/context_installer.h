@@ -13,12 +13,6 @@
 
 namespace common_installer {
 
-enum {
-  APPINST_R_EINVAL = -2,    /**< Invalid argument */
-  APPINST_R_ERROR = -1,   /**< General error */
-  APPINST_R_OK = 0      /**< General success */
-};
-
 class ConfigData;
 using ConfigDataPtr = std::unique_ptr<ConfigData>;
 
@@ -47,31 +41,31 @@ class ContextInstaller {
 
   int request_type() const { return req_; }
   void set_request_type(int req) {
-   req_ = req;
+    req_ = req;
   }
 
   manifest_x* manifest_data() const { return manifest_; }
 
   std::string pkgid() const { return pkgid_; }
   void set_pkgid(const std::string& pkgid) {
-   pkgid_ = pkgid;
+    pkgid_ = pkgid;
   }
 
   std::string pkg_path() const { return pkg_path_; }
   void set_pkg_path(const std::string& package_path) {
-   pkg_path_ = package_path;
+    pkg_path_ = package_path;
   }
 
   std::string file_path() const { return file_path_; }
   void set_file_path(const std::string& file_path) {
-   file_path_ = file_path;
+    file_path_ = file_path;
   }
 
   uid_t uid() const { return uid_; }
 
   std::string unpack_directory() const { return unpack_directory_; }
   void set_unpack_directory(const std::string& unpack_dir) {
-   unpack_directory_ = unpack_dir;
+    unpack_directory_ = unpack_dir;
   }
 
   ConfigData* config_data() { return config_data_.get(); }

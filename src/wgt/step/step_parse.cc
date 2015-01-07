@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 #include "common/app_installer.h"
 #include "common/context_installer.h"
@@ -18,14 +19,10 @@
 namespace wgt {
 namespace parse {
 
-//TODO MAYBE fill later
-//ConfigFileParser::ConfigFileParser(char * file) {
-//}
-
-int StepParse::process(common_installer::ContextInstaller* context) {
-  if (!StepParse::Check(context->unpack_directory())) {
+common_installer::Step::Status StepParse::process() {
+  if (!StepParse::Check(context_->unpack_directory())) {
     std::cout << "[Parse] No config.xml" << std::endl;
-    return common_installer::APPINST_R_ERROR;
+    return common_installer::Step::Status::ERROR;
   }
 
   const ManifestData* data = nullptr;
@@ -34,39 +31,39 @@ int StepParse::process(common_installer::ContextInstaller* context) {
     std::cout << "[Parse] Parse failed. " <<  error << std::endl;
     if (!ReleaseData(data, error))
       std::cout << "[Parse] Release data failed." << std::endl;
-    return common_installer::APPINST_R_ERROR;
+    return common_installer::Step::Status::ERROR;
   }
 
   // Copy data from ManifestData to ContextInstaller
-  context->config_data()->set_application_name(
+  context_->config_data()->set_application_name(
       std::string(data->name));
-  context->config_data()->set_required_version(
+  context_->config_data()->set_required_version(
       std::string(data->api_version));
   unsigned int privilege_len;
-  privileges_x *ctx_privileges = context->manifest_data()->privileges;
+  privileges_x *ctx_privileges = context_->manifest_data()->privileges;
 
-  if(!ctx_privileges) {
+  if (!ctx_privileges) {
     privileges_x *privileges = reinterpret_cast<privileges_x*>(
         malloc(sizeof(privileges_x)));
-    if(!privileges)
-      return common_installer::APPINST_R_ERROR;
+    if (!privileges)
+      return common_installer::Step::Status::ERROR;
 
     memset(privileges, '\0', sizeof(privileges_x));
     LISTADD(ctx_privileges, privileges);
-    context->manifest_data()->privileges = ctx_privileges;
+    context_->manifest_data()->privileges = ctx_privileges;
   }
   for (unsigned int i = 0; i < data->privilege_count; ++i) {
     privilege_x *privilege = reinterpret_cast<privilege_x*>(
         malloc(sizeof(privilege_x)));
-    if(!privilege)
-      return common_installer::APPINST_R_ERROR;
+    if (!privilege)
+      return common_installer::Step::Status::ERROR;
 
     privilege_len = strlen(data->privilege_list[i]);
     char* tmp = reinterpret_cast<char*>(malloc(privilege_len + 1));
-    if(!tmp)
-      return common_installer::APPINST_R_ERROR;
+    if (!tmp)
+      return common_installer::Step::Status::ERROR;
 
-    strcpy(tmp, data->privilege_list[i]);
+    strncpy(tmp, data->privilege_list[i], privilege_len + 1);
     memset(privilege, '\0', sizeof(privilege_x));
     privilege->text = const_cast<const char*>(tmp);
     LISTADD(ctx_privileges->privilege, privilege);
@@ -90,10 +87,10 @@ int StepParse::process(common_installer::ContextInstaller* context) {
 
   if (!ReleaseData(data, error)) {
     std::cout << "[Parse] Release data failed." << std::endl;
-    return common_installer::APPINST_R_ERROR;
+    return common_installer::Step::Status::ERROR;
   }
 
-  return common_installer::APPINST_R_OK;
+  return common_installer::Step::Status::OK;
 }
 
 bool StepParse::Check(const boost::filesystem::path& widget_path) {
@@ -102,7 +99,7 @@ bool StepParse::Check(const boost::filesystem::path& widget_path) {
 
   std::cout << "[Parse] config.xml path: " << config << std::endl;
 
-  if(!boost::filesystem::exists(config))
+  if (!boost::filesystem::exists(config))
     return false;
 
   config_ = config;
