@@ -46,11 +46,11 @@ ConfigFileParser(char * file)
 }
 
 class Step {
-//prcess
+// process
 
-//clean
+// clean
 
-//undo
+// undo
 };
 
 }  // namespace wgt
