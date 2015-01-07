@@ -1,7 +1,7 @@
 # Target - sources
 SET(SRCS
-  wgt_backend.cc
   step/step_parse.cc
+  wgt_backend.cc
 )
 # Target - definition
 ADD_EXECUTABLE(${TARGET_WGT_BACKEND} ${SRCS})

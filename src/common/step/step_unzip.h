@@ -12,18 +12,19 @@ namespace common_installer {
 namespace unzip {
 
 class StepUnzip : public Step {
- private:
-  bool is_extracted_;
  public:
-  StepUnzip();
+  explicit StepUnzip(ContextInstaller* context);
 
-  int process(ContextInstaller* context) override;
-  int clean(ContextInstaller* /*context*/) override { return 0; }
-  int undo(ContextInstaller* context) override;
+  Status process() override;
+  Status clean() override { return Step::Status::OK; }
+  Status undo() override;
 
+ private:
   boost::filesystem::path GenerateTmpDir(const char* app_path);
-  int ExtractToTmpDir(const char* source_dir,
-                      const boost::filesystem::path& tmp_dir);
+  Step::Status ExtractToTmpDir(const char* source_dir,
+      const boost::filesystem::path& tmp_dir);
+
+  bool is_extracted_;
 };
 
 }  // namespace unzip

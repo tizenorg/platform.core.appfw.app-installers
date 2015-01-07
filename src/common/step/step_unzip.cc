@@ -29,7 +29,9 @@
 namespace common_installer {
 namespace unzip {
 
-StepUnzip::StepUnzip() : is_extracted_(false) {}
+StepUnzip::StepUnzip(ContextInstaller* context)
+    : Step(context),
+      is_extracted_(false) {}
 
 boost::filesystem::path StepUnzip::GenerateTmpDir(const char* app_path) {
   boost::filesystem::path install_tmp_dir;
@@ -47,11 +49,11 @@ boost::filesystem::path StepUnzip::GenerateTmpDir(const char* app_path) {
   return install_tmp_dir;
 }
 
-int StepUnzip::ExtractToTmpDir(const char* src,
-                               const boost::filesystem::path& tmp_dir) {
+Step::Status StepUnzip::ExtractToTmpDir(const char* src,
+    const boost::filesystem::path& tmp_dir) {
   if (is_extracted_) {
     ERR(src << " is already extracted");
-    return APPINST_R_OK;
+    return Step::Status::OK;
   }
 
   unz_global_info info;
@@ -64,13 +66,13 @@ int StepUnzip::ExtractToTmpDir(const char* src,
   unzFile* zip_file = static_cast<unzFile*>(unzOpen(src));
   if (zip_file == NULL) {
     ERR("Failed to open the source dir: " << src);
-    return APPINST_R_ERROR;
+    return Step::Status::ERROR;
   }
 
   if (unzGetGlobalInfo(zip_file, &info) != UNZ_OK) {
     ERR("Failed to read global info");
     unzClose(zip_file);
-    return APPINST_R_ERROR;
+    return Step::Status::ERROR;
   }
 
   for (uLong i = 0; i < info.number_entry; i++) {
@@ -78,25 +80,25 @@ int StepUnzip::ExtractToTmpDir(const char* src,
         sizeof(raw_file_name_in_zip), NULL, 0, NULL, 0) != UNZ_OK) {
       ERR("Failed to read file info");
       unzClose(zip_file);
-      return APPINST_R_ERROR;
+      return Step::Status::ERROR;
     }
 
     if (raw_file_name_in_zip[0] == '\0')
-      return APPINST_R_ERROR;
+      return Step::Status::ERROR;
 
     boost::filesystem::path filename_in_zip_path(raw_file_name_in_zip);
     if (!filename_in_zip_path.parent_path().empty()) {
       if (!utils::CreateDir(filename_in_zip_path.parent_path())) {
         ERR("Failed to create directory: "
             << filename_in_zip_path.parent_path());
-        return APPINST_R_ERROR;
+        return Step::Status::ERROR;
       }
     }
 
     if (unzOpenCurrentFile(zip_file) != UNZ_OK) {
       ERR("Failed to open file");
       unzClose(zip_file);
-      return APPINST_R_ERROR;
+      return Step::Status::ERROR;
     }
 
     if (!is_directory(filename_in_zip_path)) {
@@ -104,7 +106,7 @@ int StepUnzip::ExtractToTmpDir(const char* src,
       if (!out) {
         ERR("Failed to open destination ");
         unzCloseCurrentFile(zip_file);
-        return APPINST_R_ERROR;
+        return Step::Status::ERROR;
       }
 
       int ret = UNZ_OK;
@@ -113,7 +115,7 @@ int StepUnzip::ExtractToTmpDir(const char* src,
         if (ret < 0) {
           ERR("Failed to read data: " << ret);
           unzCloseCurrentFile(zip_file);
-          return APPINST_R_ERROR;
+          return Step::Status::ERROR;
         } else {
           fwrite(read_buffer, sizeof(char), ret, out);
         }
@@ -126,44 +128,46 @@ int StepUnzip::ExtractToTmpDir(const char* src,
       if (unzGoToNextFile(zip_file) != UNZ_OK) {
         ERR("Failed to read next file");
         unzCloseCurrentFile(zip_file);
-        return APPINST_R_ERROR;
+        return Step::Status::ERROR;
       }
     }
   }
 
   unzClose(zip_file);
   is_extracted_ = true;
-  return APPINST_R_OK;
+  return Step::Status::OK;
 }
 
-int StepUnzip::process(ContextInstaller* data) {
-  assert(!data->file_path().empty());
-  assert(!access(data->file_path().c_str(), F_OK));
+Step::Status StepUnzip::process() {
+  assert(!context_->file_path().empty());
+  assert(!access(context_->file_path().c_str(), F_OK));
 
-  boost::filesystem::path tmp_dir = GenerateTmpDir(data->GetApplicationPath());
+  boost::filesystem::path tmp_dir = GenerateTmpDir(
+      context_->GetApplicationPath());
 
   if (!utils::CreateDir(tmp_dir)) {
     ERR("Failed to create temp directory: " << tmp_dir);
-    return APPINST_R_ERROR;
+    return Step::Status::ERROR;
   }
 
-  if (ExtractToTmpDir(data->file_path().c_str(), tmp_dir) != APPINST_R_OK) {
+  if (ExtractToTmpDir(context_->file_path().c_str(), tmp_dir)
+      != Step::Status::OK) {
     ERR("Failed to process unpack step");
-    return APPINST_R_ERROR;
+    return Step::Status::ERROR;
   }
-  data->set_unpack_directory(tmp_dir.string());
+  context_->set_unpack_directory(tmp_dir.string());
 
-  DBG(data->file_path() << " was successfully unzipped into "
-      << data->unpack_directory());
-  return APPINST_R_OK;
+  DBG(context_->file_path() << " was successfully unzipped into "
+      << context_->unpack_directory());
+  return Step::Status::OK;
 }
 
-int StepUnzip::undo(ContextInstaller* data) {
-  if (access(data->unpack_directory().c_str(), F_OK) == 0) {
-    boost::filesystem::remove_all(data->unpack_directory());
-    DBG("remove temp dir: " << data->unpack_directory());
+Step::Status StepUnzip::undo() {
+  if (access(context_->unpack_directory().c_str(), F_OK) == 0) {
+    boost::filesystem::remove_all(context_->unpack_directory());
+    DBG("remove temp dir: " << context_->unpack_directory());
   }
-  return APPINST_R_OK;
+  return Step::Status::OK;
 }
 
 
