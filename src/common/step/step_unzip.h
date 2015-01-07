@@ -21,7 +21,7 @@ class StepUnzip : public Step {
   int clean(ContextInstaller* /*context*/) override { return 0; }
   int undo(ContextInstaller* context) override;
 
-  boost::filesystem::path GenerateTmpDir(const char*);
+  boost::filesystem::path GenerateTmpDir(const char* app_path);
   int ExtractToTmpDir(const char* source_dir,
                       const boost::filesystem::path& tmp_dir);
 };

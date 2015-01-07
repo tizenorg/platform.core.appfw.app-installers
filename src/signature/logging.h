@@ -22,7 +22,7 @@ class LogCatcher {
   }
 };
 
-}
+}  // namespace detail
 
 #define LOG(LEVEL)                                                             \
     ::detail::LogCatcher() & std::ostringstream() << "[" << #LEVEL << "] "     \

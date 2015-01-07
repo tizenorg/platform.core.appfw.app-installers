@@ -24,7 +24,6 @@
 namespace bf = boost::filesystem;
 
 namespace {
-using namespace common_installer;
 
 const int kXMLLogSize = 1024;
 
@@ -155,7 +154,7 @@ bool XMLSchemaValidate(
 }
 
 bool CheckObjectID(
-    const signature::SignatureData& signature_data) {
+    const common_installer::signature::SignatureData& signature_data) {
   std::string object_id = signature_data.object_id();
   std::set<std::string> reference_set = signature_data.reference_set();
 
@@ -169,7 +168,7 @@ bool CheckObjectID(
 }
 
 bool CheckRoleURI(
-    const signature::SignatureData& signature_data) {
+    const common_installer::signature::SignatureData& signature_data) {
   std::string role_uri = signature_data.role_uri();
 
   if (role_uri.empty()) {
@@ -193,7 +192,8 @@ bool CheckRoleURI(
   return true;
 }
 
-bool CheckProfileURI(const signature::SignatureData& signature_data) {
+bool CheckProfileURI(
+    const common_installer::signature::SignatureData& signature_data) {
   if (kTokenProfileURI != signature_data.profile_uri()) {
     LOG(ERROR) << "Profile tag contains unsupported value in URI attribute.";
     return false;
@@ -225,7 +225,8 @@ boost::filesystem::path RelativePath(const boost::filesystem::path& path,
   return path_str.substr(index);
 }
 
-bool CheckReference(const signature::SignatureData& signature_data) {
+bool CheckReference(
+    const common_installer::signature::SignatureData& signature_data) {
   const bf::path& widget_path = signature_data.GetExtractedWidgetPath();
   const std::set<std::string>& reference_set = signature_data.reference_set();
 

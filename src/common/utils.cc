@@ -4,6 +4,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <iostream>
+#include <string>
 
 #define ERR(msg) std::cout << "[ERROR] " << msg << std::endl;
 

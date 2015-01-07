@@ -1,3 +1,5 @@
+/* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
+
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -7,8 +9,7 @@
 
 namespace {
 
-API manifest_x *pkgmgr_parser_process_manifest_xml(const char *manifest)
-{
+API manifest_x *pkgmgr_parser_process_manifest_xml(const char *manifest) {
   _LOGD("parsing start pkgmgr_parser_process_manifest_xml\n");
   xmlTextReaderPtr reader;
   manifest_x *mfx = NULL;
@@ -22,8 +23,9 @@ API manifest_x *pkgmgr_parser_process_manifest_xml(const char *manifest)
         _LOGD("Parsing Failed\n");
         pkgmgr_parser_free_manifest_xml(mfx);
         mfx = NULL;
-      } else
+      } else {
         _LOGD("Parsing Success\n");
+      }
     } else {
       _LOGD("Memory allocation error\n");
     }
@@ -40,8 +42,7 @@ namespace wgt {
 namespace parse {
 
 Class ConfigFileParser {
-ConfigFileParser(char * file)
-{
+ConfigFileParser(char * file) {
 }
 }
 
@@ -53,5 +54,5 @@ class Step {
 // undo
 };
 
-}  // namespace wgt
 }  // namespace parse
+}  // namespace wgt

@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstring>
 #include <iostream>
+#include <string>
 
 #include "common/utils.h"
 

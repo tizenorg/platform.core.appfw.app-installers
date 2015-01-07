@@ -40,7 +40,6 @@ namespace bai = boost::archive::iterators;
 namespace bf = boost::filesystem;
 
 namespace {
-using namespace common_installer;
 
 const bf::path cert_prefix_path = "/usr/share/ca-certificates/tizen/";
 
@@ -130,11 +129,13 @@ std::string ConvertBase64ToDerCert(const std::string& cert_in) {
 
 class XmlSecContext {
  public:
-  static void GetExtractedPath(const signature::SignatureData& data);
+  static void GetExtractedPath(
+      const common_installer::signature::SignatureData& data);
   static xmlSecKeysMngrPtr LoadTrustedCerts(
-      const signature::SignatureData& signature_data);
+      const common_installer::signature::SignatureData& signature_data);
   static bool VerifyFile(
-      xmlSecKeysMngrPtr mngr, const signature::SignatureData& data);
+      xmlSecKeysMngrPtr mngr,
+      const common_installer::signature::SignatureData& data);
 
  private:
   static int FileMatchCallback(const char* file_name);
@@ -151,7 +152,7 @@ bf::path XmlSecContext::prefix_path_;
 std::pair<void*, bool> XmlSecContext::file_wrapper_;
 
 void XmlSecContext::GetExtractedPath(
-    const signature::SignatureData& data) {
+    const common_installer::signature::SignatureData& data) {
   prefix_path_ = data.GetExtractedWidgetPath();
 }
 
@@ -194,7 +195,7 @@ int XmlSecContext::FileCloseCallback(void* context) {
 }
 
 xmlSecKeysMngrPtr XmlSecContext::LoadTrustedCerts(
-    const signature::SignatureData& signature_data) {
+    const common_installer::signature::SignatureData& signature_data) {
   xmlSecKeysMngrPtr mngr = xmlSecKeysMngrCreate();
   if (!mngr) {
     LOG(ERROR) << "Error: failed to create keys manager.";
@@ -269,7 +270,7 @@ xmlSecKeysMngrPtr XmlSecContext::LoadTrustedCerts(
 }
 
 bool XmlSecContext::VerifyFile(xmlSecKeysMngrPtr mngr,
-                              const signature::SignatureData& data) {
+    const common_installer::signature::SignatureData& data) {
   LOG(INFO) << "Verify " << data.signature_file_name();
   xmlSecIOCleanupCallbacks();
   XmlSecContext::GetExtractedPath(data);
