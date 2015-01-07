@@ -32,22 +32,25 @@ int main(int argc, char **argv) {
   /* treat the request */
   switch (pkgmgr_installer_get_request_type(pi)) {
     case PKGMGR_REQ_INSTALL: {
-      common_installer::AppInstaller* Installer = new common_installer::AppInstaller(PKGMGR_REQ_INSTALL,
-          pkgmgr_installer_get_request_info(pi), "");
+      common_installer::AppInstaller* installer =
+          new common_installer::AppInstaller(PKGMGR_REQ_INSTALL,
+              pkgmgr_installer_get_request_info(pi), "");
 
-      common_installer::unzip::StepUnzip* step_unpack = new common_installer::unzip::StepUnzip();
-      Installer->AddStep(step_unpack);
+      common_installer::unzip::StepUnzip* step_unpack =
+          new common_installer::unzip::StepUnzip();
+      installer->AddStep(step_unpack);
 
       // FIXME: unique_ptr because steps are not freed in installer.
-      std::unique_ptr<common_installer::signature::StepSignature> step_signature(
-          new common_installer::signature::StepSignature);
-      Installer->AddStep(step_signature.get());
+      std::unique_ptr<common_installer::signature::StepSignature>
+          step_signature(
+              new common_installer::signature::StepSignature);
+      installer->AddStep(step_signature.get());
 
       common_installer::copy::StepCopy* step_copy =
           new common_installer::copy::StepCopy();
-      Installer->AddStep(step_copy);
+      installer->AddStep(step_copy);
 
-      Installer->Run();
+      installer->Run();
 
       delete step_unpack;
       delete step_copy;
