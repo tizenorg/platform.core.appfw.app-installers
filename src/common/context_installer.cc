@@ -2,12 +2,22 @@
 
 #include "common/context_installer.h"
 
+#include <pkgmgr_installer.h>
 #include <tzplatform_config.h>
 #include <unistd.h>
 
 namespace common_installer {
 
-ContextInstaller::ContextInstaller() : uid_(getuid()) {}
+ContextInstaller::ContextInstaller() : req_(PKGMGR_REQ_INVALID),
+                                       uid_(getuid()),
+                                       manifest_(new manifest_x()),
+                                       config_data_(new ConfigData()) {
+}
+
+ContextInstaller::~ContextInstaller() {
+  if (manifest_)
+    pkgmgr_parser_free_manifest_xml(manifest_);
+}
 
 const char* ContextInstaller::GetApplicationPath() {
   return uid_ != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
