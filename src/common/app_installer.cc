@@ -41,7 +41,7 @@ int AppInstaller::Run() {
     }
   }
   if (it != itEnd) {
-    std::cout << "Faillure occurs" << std::endl;
+    std::cout << "Failure occurs" << std::endl;
     do {
       if ((*it)->undo(ctx_) != APPINST_R_OK) {
         std::cout << "Error during undo operation" << std::endl;
