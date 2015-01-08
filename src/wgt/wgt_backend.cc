@@ -16,6 +16,7 @@
 #include "common/step/step_unzip.h"
 #include "common/step/step_signature.h"
 #include "common/step/step_copy.h"
+#include "wgt/step/step_parse.h"
 
 int main(int argc, char **argv) {
   /* get request data */
@@ -46,6 +47,10 @@ int main(int argc, char **argv) {
               new common_installer::signature::StepSignature);
       installer->AddStep(step_signature.get());
 
+      wgt::parse::StepParse* step_parse = new
+              wgt::parse::StepParse();
+      installer->AddStep(step_parse);
+
       common_installer::copy::StepCopy* step_copy =
           new common_installer::copy::StepCopy();
       installer->AddStep(step_copy);
@@ -54,6 +59,7 @@ int main(int argc, char **argv) {
 
       delete step_unpack;
       delete step_copy;
+      delete step_parse;
       break;
     }
     case PKGMGR_REQ_UNINSTALL: {
