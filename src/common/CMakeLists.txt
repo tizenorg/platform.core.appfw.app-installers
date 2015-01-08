@@ -5,6 +5,8 @@ SET(SRCS
   step/step_unzip.cc
   step/step_signature.cc
   step/step_copy.cc
+  step/step_generate_xml.cc
+  step/step_record.cc
   utils.cc
 )
 # Target - definition
