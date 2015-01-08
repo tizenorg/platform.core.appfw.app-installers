@@ -52,6 +52,11 @@ class ContextInstaller {
 
   manifest_x* manifest_data() const { return manifest_; }
 
+  std::string xml_path() const { return xml_path_; }
+  void set_xml_path(const std::string& xml) {
+    xml_path_ = xml;
+  }
+
   std::string pkgid() const { return pkgid_; }
   void set_pkgid(const std::string& pkgid) {
    pkgid_ = pkgid;
@@ -84,6 +89,9 @@ class ContextInstaller {
 
   //  manifest information used to generate xml file
   manifest_x* manifest_;
+
+  // path to manifest xml file used to register data in databases
+  std::string xml_path_;
 
   // pkgid used for update or uninstallation processing
   std::string pkgid_;
