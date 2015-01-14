@@ -39,6 +39,7 @@ int StepGenerateXml::process(ContextInstaller* data) {
   data->set_xml_path(xml_path.string());
   boost::system::error_code error;
   uiapplication_x* ui = data->manifest_data()->uiapplication;
+  appcontrol_x* appc = ui->appcontrol;
   serviceapplication_x* svc = data->manifest_data()->serviceapplication;
 
   fs::path default_icon(
@@ -47,7 +48,7 @@ int StepGenerateXml::process(ContextInstaller* data) {
   xmlTextWriterPtr writer;
 
   writer = xmlNewTextWriterFilename(data->xml_path().c_str(), 0);
-  if (writer == NULL) {
+  if (!writer) {
     ERR("Failed to create new file\n");
     return APPINST_R_ERROR;
   }
@@ -75,7 +76,7 @@ int StepGenerateXml::process(ContextInstaller* data) {
       "%s", BAD_CAST data->manifest_data()->description->name);
 
   // add ui-application element per ui application
-  for (ui; ui != NULL; ui = ui->next) {
+  for (ui; ui != nullptr; ui = ui->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
 
     xmlTextWriterWriteAttribute(writer, BAD_CAST "appid",
@@ -124,7 +125,7 @@ int StepGenerateXml::process(ContextInstaller* data) {
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
                                          "%s", BAD_CAST icon.c_str());
 
-    for (appcontrol_x* appc = ui->appcontrol; appc != NULL; appc = appc->next) {
+    for (; appc != nullptr; appc = appc->next) {
       xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
       xmlTextWriterStartElement(writer, BAD_CAST "operation");
@@ -145,19 +146,19 @@ int StepGenerateXml::process(ContextInstaller* data) {
 
       xmlTextWriterEndElement(writer);
 
-      if (appc->next == NULL)
+      if (!appc->next)
         break;
 
       xmlTextWriterEndElement(writer);
     }
 
-    if (ui->next == NULL)
+    if (!ui->next)
       break;
     xmlTextWriterEndElement(writer);
   }
 
   // add service-application element per service application
-  for (svc; svc != NULL; svc = svc->next) {
+  for (svc; svc != nullptr; svc = svc->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "service-application");
 
     xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST svc->appid);
@@ -202,7 +203,7 @@ int StepGenerateXml::process(ContextInstaller* data) {
     }
 
     for (appcontrol_x* appc = svc->appcontrol;
-        appc != NULL; appc = appc->next) {
+        appc != nullptr; appc = appc->next) {
       xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
       xmlTextWriterStartElement(writer, BAD_CAST "operation");
@@ -223,13 +224,13 @@ int StepGenerateXml::process(ContextInstaller* data) {
 
       xmlTextWriterEndElement(writer);
 
-      if (appc->next == NULL)
+      if (!appc->next)
         break;
 
       xmlTextWriterEndElement(writer);
     }
 
-    if (svc->next == NULL)
+    if (!svc->next)
       break;
     xmlTextWriterEndElement(writer);
   }
@@ -238,7 +239,7 @@ int StepGenerateXml::process(ContextInstaller* data) {
 
   xmlTextWriterEndDocument(writer);
 
-  if (writer == NULL)
+  if (!writer)
     return APPINST_R_ERROR;
 
   xmlFreeTextWriter(writer);

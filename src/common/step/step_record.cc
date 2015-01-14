@@ -5,6 +5,7 @@
 #include <pkgmgr-info.h>
 #include <unistd.h>
 
+#include <boost/filesystem.hpp>
 #include <cassert>
 #include <cstring>
 #include <iostream>
@@ -27,10 +28,12 @@ const char kPkgInitUser[] = "/usr/bin/pkg_initdb_user";
 namespace common_installer {
 namespace record {
 
+namespace fs = boost::filesystem;
+
 int StepRecord::process(ContextInstaller* data) {
   assert(!data->xml_path().empty());
 
-  char* const appinst_tags[] = {"removable=true", NULL, };
+  char* const appinst_tags[] = {"removable=true", nullptr, };
   // TODO(sdi2): Check if data->removable is correctly setting
   // during parsing step.
   // Same check should be done for preload field.
@@ -57,15 +60,15 @@ int StepRecord::clean(ContextInstaller* data) {
 }
 
 int StepRecord::undo(ContextInstaller* data) {
-  char* cmd;
+  std::string cmd;
   if (fs::exists(data->xml_path()))
     fs::remove_all(data->xml_path());
 
   data->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
-      sprintf(cmd, "%s;%s", kAilInitUser, kPkgInitUser) :
-      sprintf(cmd, "%s;%s", kAilInit, kPkgInit);
+      cmd = std::string(kAilInitUser) + ";" + kPkgInitUser :
+      cmd = std::string(kAilInit) + ";" + kPkgInit;
 
-  if (execv(cmd, NULL) == -1)
+  if (execv(cmd.c_str(), nullptr) == -1)
       return APPINST_R_ERROR;
 
   DBG("Successfuly clean database");

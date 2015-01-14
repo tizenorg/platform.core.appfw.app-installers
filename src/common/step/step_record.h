@@ -3,15 +3,11 @@
 #ifndef COMMON_STEP_STEP_RECORD_H_
 #define COMMON_STEP_STEP_RECORD_H_
 
-#include <boost/filesystem/path.hpp>
-
 #include "common/context_installer.h"
 #include "common/step/step.h"
 
 namespace common_installer {
 namespace record {
-
-namespace fs = boost::filesystem;
 
 class StepRecord : public Step {
  public:
