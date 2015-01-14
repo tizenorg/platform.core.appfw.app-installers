@@ -90,6 +90,9 @@ class ContextInstaller {
   //  manifest information used to generate xml file
   manifest_x* manifest_;
 
+  // path to manifest xml file used to register data in databases
+  std::string xml_path_;
+
   // pkgid used for update or uninstallation processing
   std::string pkgid_;
 
