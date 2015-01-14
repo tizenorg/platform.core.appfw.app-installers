@@ -85,6 +85,7 @@ class ContextInstaller {
   //  manifest information used to generate xml file
   manifest_x* manifest_;
 
+  //TODO this field should be moved to step-parse (as it is copied to manifest_x anyway)
   // pkgid used for update or uninstallation processing
   std::string pkgid_;
 

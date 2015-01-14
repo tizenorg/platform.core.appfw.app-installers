@@ -29,6 +29,7 @@ class StepParse: public common_installer::Step {
  private:
   boost::filesystem::path config_;
   bool Check(const boost::filesystem::path& widget_path);
+  void fillManifest();
 };
 
 }  // namespace parse
