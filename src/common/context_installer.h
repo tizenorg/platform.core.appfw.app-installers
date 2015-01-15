@@ -40,6 +40,12 @@ class ConfigData {
   std::string required_version_;
 };
 
+//TODO(p.sikorski@samsung.com) this class should be divided into:
+//Base Context class
+//CtxInstall class that inherits from Context
+//CtxUninstall class that inherits from Context
+//It is because Uninstallation does not need so many fields.
+//similarly, installation may not need some of them
 class ContextInstaller {
  public:
   ContextInstaller();
@@ -51,6 +57,9 @@ class ContextInstaller {
   }
 
   manifest_x* manifest_data() const { return manifest_; }
+  void set_manifest(manifest_x* manifest) {
+    manifest_ = manifest;
+  }
 
   std::string xml_path() const { return xml_path_; }
   void set_xml_path(const std::string& xml) {
@@ -82,6 +91,7 @@ class ContextInstaller {
   ConfigData* config_data() { return config_data_.get(); }
 
   const char* GetApplicationPath();
+  const char* GetRootApplicationPath();
 
  private :
   // request type: Install, Reinstall, Uninstall, Update.

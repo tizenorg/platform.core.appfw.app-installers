@@ -17,7 +17,7 @@ namespace signature {
 
 int StepSignature::process(ContextInstaller* context) {
   return (SignatureValidator::Check(bf::path(context->unpack_directory()))
-      == SignatureValidator::INVALID) ? -1 : 0;
+      == SignatureValidator::INVALID) ? APPINST_R_ERROR : APPINST_R_OK;
 }
 
 }  // namespace signature

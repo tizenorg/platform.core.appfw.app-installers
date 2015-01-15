@@ -17,10 +17,6 @@
 namespace wgt {
 namespace parse {
 
-//TODO MAYBE fill later
-//ConfigFileParser::ConfigFileParser(char * file) {
-//}
-
 int StepParse::process(common_installer::ContextInstaller* context) {
   if (!StepParse::Check(context->unpack_directory())) {
     std::cout << "[Parse] No config.xml" << std::endl;
@@ -41,6 +37,8 @@ int StepParse::process(common_installer::ContextInstaller* context) {
       std::string(data->name));
   context->config_data()->set_required_version(
       std::string(data->api_version));
+  context->set_pkgid(
+      std::string(data->package));
   fillManifest(data, context->manifest_data());
 
   //--- Test ---

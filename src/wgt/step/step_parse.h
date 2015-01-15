@@ -14,12 +14,6 @@
 namespace wgt {
 namespace parse {
 
-//TODO MAYBE fill later
-//class ConfigFileParser {
-// public:
-//  ConfigFileParser(char * file);
-//};
-
 class StepParse: public common_installer::Step {
  public:
   StepParse() {}
