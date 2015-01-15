@@ -20,6 +20,10 @@
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_record.h"
 
+//uninstall includes:
+#include "common/step/step_remove.h"
+#include "common/step/step_unregister.h"
+
 int main(int argc, char **argv) {
   /* get request data */
   pkgmgr_installer *pi = pkgmgr_installer_new();
@@ -76,6 +80,23 @@ int main(int argc, char **argv) {
       break;
     }
     case PKGMGR_REQ_UNINSTALL: {
+	  common_installer::AppInstaller* installer =
+          new common_installer::AppInstaller(PKGMGR_REQ_UNINSTALL,
+              "", pkgmgr_installer_get_request_info(pi));//TODO not sure how to get pkginfo here
+
+	  common_installer::remove::StepRemove* step_remove =
+          new common_installer::remove::StepRemove();
+      installer->AddStep(step_remove);
+			  
+      common_installer::unregister::StepUnregister* step_unregister =
+          new common_installer::unregister::StepUnregister();
+      installer->AddStep(step_unregister);
+	  
+	  installer->Run();
+	  
+	  delete step_remove;
+	  delete step_unregister;
+	  
       break;
     }
     default: {
