@@ -7,6 +7,8 @@ SET(SRCS
   step/step_copy.cc
   step/step_generate_xml.cc
   step/step_record.cc
+  step/step_remove.cc
+  step/step_unregister.cc
   utils.cc
 )
 # Target - definition

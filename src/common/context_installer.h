@@ -40,6 +40,12 @@ class ConfigData {
   std::string required_version_;
 };
 
+//TODO this class should be divided into:
+//Base Context class
+//CtxInstall class that inherits from Context
+//CtxUninstall class that inherits from Context
+//It is because Uninstallation does not need so many fields. 
+//similarly, installation may not need some of them
 class ContextInstaller {
  public:
   ContextInstaller();
