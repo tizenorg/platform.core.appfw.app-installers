@@ -29,7 +29,8 @@ int StepCopy::process(ContextInstaller* data) {
   // If there is 1 app in package, app's data are stored in <pkg_path>/<app_id>
   // If there are >1 apps in package, app's data are stored in <pkg_path>
   // considering that multiple apps data are already separated in folders.
-  if (!data->manifest_data()->uiapplication->next)
+  if (data->manifest_data()->uiapplication &&
+      !data->manifest_data()->uiapplication->next)
     install_path /= fs::path(data->manifest_data()->mainapp_id);
 
   if (!utils::CopyDir(fs::path(data->unpack_directory()), install_path)) {
