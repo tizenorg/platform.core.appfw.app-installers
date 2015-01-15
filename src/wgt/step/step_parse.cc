@@ -41,6 +41,7 @@ int StepParse::process(common_installer::ContextInstaller* context) {
       std::string(data->name));
   context->config_data()->set_required_version(
       std::string(data->api_version));
+  context->set_pkgid(data->package);
   fillManifest(data, context->manifest_data());
 
   //--- Test ---
