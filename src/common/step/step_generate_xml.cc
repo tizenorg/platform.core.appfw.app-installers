@@ -41,7 +41,8 @@ int StepGenerateXml::process(ContextInstaller* data) {
   uiapplication_x* ui = data->manifest_data()->uiapplication;
   serviceapplication_x* svc = data->manifest_data()->serviceapplication;
   if ((!ui) && (!svc)) {
-    ERR("There is neither UI applications nor Services applications described!\n");
+    ERR("There is neither UI applications nor Services applications \
+     described!\n");
     return APPINST_R_ERROR;
   }
   appcontrol_x* appc_ui = nullptr;
@@ -246,24 +247,24 @@ int StepGenerateXml::process(ContextInstaller* data) {
   }
 
   // add privilege element
-  for (;pvlg != nullptr; pvlg = pvlg->next) {
+  for (; pvlg != nullptr; pvlg = pvlg->next) {
     privilege_x* pv = pvlg->privilege;
 
-    for (;pv != nullptr; pv = pv->next) {
+    for (; pv != nullptr; pv = pv->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "privilege");
     xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
                                       BAD_CAST pv->text);
       if (!pv->next)
         break;
 
-      xmlTextWriterEndElement(writer);  // </privileges> tag
+      xmlTextWriterEndElement(writer);
       }
     if (!pvlg->next)
       break;
   }
 
 
-  xmlTextWriterEndElement(writer); // </manifest> tag
+  xmlTextWriterEndElement(writer);
 
   xmlTextWriterEndDocument(writer);
 

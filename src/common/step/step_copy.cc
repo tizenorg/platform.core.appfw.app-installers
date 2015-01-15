@@ -20,8 +20,7 @@ namespace fs = boost::filesystem;
 int StepCopy::process(ContextInstaller* data) {
   assert(!data->pkgid().empty());
 
-  fs::path install_path = fs::path(data->GetApplicationPath()) /
-      fs::path(data->pkgid());
+  fs::path install_path = fs::path(data->GetApplicationPath());
 
   data->set_pkg_path(install_path.string());
 

@@ -1,4 +1,4 @@
-/* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
+/* 2014, Copyright © Intel Coporation, APACHE-2.0, see LICENSE file */
 
 #include "common/step/step_unzip.h"
 
@@ -140,7 +140,8 @@ int StepUnzip::process(ContextInstaller* data) {
   assert(!data->file_path().empty());
   assert(!access(data->file_path().c_str(), F_OK));
 
-  boost::filesystem::path tmp_dir = GenerateTmpDir(data->GetApplicationPath());
+  boost::filesystem::path tmp_dir =
+    GenerateTmpDir(data->GetRootApplicationPath());
 
   if (!utils::CreateDir(tmp_dir)) {
     ERR("Failed to create temp directory: " << tmp_dir);
