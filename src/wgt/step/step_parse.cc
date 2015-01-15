@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 #include "common/app_installer.h"
 #include "common/context_installer.h"
@@ -16,10 +17,6 @@
 
 namespace wgt {
 namespace parse {
-
-//TODO MAYBE fill later
-//ConfigFileParser::ConfigFileParser(char * file) {
-//}
 
 int StepParse::process(common_installer::ContextInstaller* context) {
   if (!StepParse::Check(context->unpack_directory())) {
@@ -41,6 +38,8 @@ int StepParse::process(common_installer::ContextInstaller* context) {
       std::string(data->name));
   context->config_data()->set_required_version(
       std::string(data->api_version));
+  context->set_pkgid(
+      std::string(data->package));
   fillManifest(data, context->manifest_data());
 
   //--- Test ---
@@ -73,7 +72,7 @@ bool StepParse::Check(const boost::filesystem::path& widget_path) {
 
   std::cout << "[Parse] config.xml path: " << config << std::endl;
 
-  if(!boost::filesystem::exists(config))
+  if (!boost::filesystem::exists(config))
     return false;
 
   config_ = config;
@@ -81,20 +80,22 @@ bool StepParse::Check(const boost::filesystem::path& widget_path) {
 }
 
 void StepParse::fillManifest(const ManifestData* data, manifest_x* manifest) {
-
   // package data
-  manifest->label = (label_x*) calloc(1, sizeof(label_x));
-  manifest->description = (description_x*) calloc(1, sizeof(description_x));
-  manifest->privileges = (privileges_x*) calloc(1, sizeof(privileges_x));
+  manifest->label =  reinterpret_cast<label_x*>
+    (calloc(1, sizeof(label_x)));
+  manifest->description =  reinterpret_cast<description_x*>
+    (calloc(1, sizeof(description_x)));
+  manifest->privileges =  reinterpret_cast<privileges_x*>
+    (calloc(1, sizeof(privileges_x)));
   manifest->privileges->next = nullptr;
   manifest->privileges->privilege = nullptr;
 
-  manifest->package = strdup (data->package);
-  manifest->type = strdup ("wgt");
-  manifest->version = strdup (data->version);
-  manifest->label->name = strdup (data->name);
+  manifest->package = strdup(data->package);
+  manifest->type = strdup("wgt");
+  manifest->version = strdup(data->version);
+  manifest->label->name = strdup(data->name);
   manifest->description->name = nullptr;
-  manifest->mainapp_id = strdup (data->id);
+  manifest->mainapp_id = strdup(data->id);
 
   for (unsigned int i = 0; i < data->privilege_count; i++) {
      privilege_x *privilege = reinterpret_cast<privilege_x*>(
@@ -104,18 +105,22 @@ void StepParse::fillManifest(const ManifestData* data, manifest_x* manifest) {
   }
   // application data
   manifest->serviceapplication = nullptr;
-  manifest->uiapplication = (uiapplication_x*) calloc (1, sizeof(uiapplication_x));
-  manifest->uiapplication->icon = (icon_x*) calloc(1, sizeof(icon_x));
-  manifest->uiapplication->label = (label_x*) calloc(1, sizeof(label_x));
-  manifest->description = (description_x*) calloc(1, sizeof(description_x));
+  manifest->uiapplication = reinterpret_cast<uiapplication_x*>
+    (calloc (1, sizeof(uiapplication_x)));
+  manifest->uiapplication->icon = reinterpret_cast<icon_x*>
+    (calloc(1, sizeof(icon_x)));
+  manifest->uiapplication->label = reinterpret_cast<label_x*>
+    (calloc(1, sizeof(label_x)));
+  manifest->description = reinterpret_cast<description_x*>
+    (calloc(1, sizeof(description_x)));
   manifest->uiapplication->appcontrol = nullptr;
 
-  manifest->uiapplication->appid = strdup (data->id);
-  manifest->uiapplication->label->name = strdup (data->short_name);
-  manifest->uiapplication->icon->name = strdup (data->icon);
+  manifest->uiapplication->appid = strdup(data->id);
+  manifest->uiapplication->label->name = strdup(data->short_name);
+  manifest->uiapplication->icon->name = strdup(data->icon);
   manifest->uiapplication->next = nullptr;
 
-  //context->manifest_data()->?? = strdup (data->api_version);
+  // context->manifest_data()->?? = strdup (data->api_version);
 }
 
 

@@ -40,6 +40,12 @@ class ConfigData {
   std::string required_version_;
 };
 
+// TODO(p.sikorski@samsung.com) this class should be divided into:
+//  Base Context class
+//  CtxInstall class that inherits from Context
+//  CtxUninstall class that inherits from Context
+//  It is because Uninstallation does not need so many fields.
+//  similarly, installation may not need some of them
 class ContextInstaller {
  public:
   ContextInstaller();
@@ -47,10 +53,13 @@ class ContextInstaller {
 
   int request_type() const { return req_; }
   void set_request_type(int req) {
-   req_ = req;
+    req_ = req;
   }
 
   manifest_x* manifest_data() const { return manifest_; }
+  void set_manifest(manifest_x* manifest) {
+    manifest_ = manifest;
+  }
 
   std::string xml_path() const { return xml_path_; }
   void set_xml_path(const std::string& xml) {
@@ -59,29 +68,30 @@ class ContextInstaller {
 
   std::string pkgid() const { return pkgid_; }
   void set_pkgid(const std::string& pkgid) {
-   pkgid_ = pkgid;
+    pkgid_ = pkgid;
   }
 
   std::string pkg_path() const { return pkg_path_; }
   void set_pkg_path(const std::string& package_path) {
-   pkg_path_ = package_path;
+    pkg_path_ = package_path;
   }
 
   std::string file_path() const { return file_path_; }
   void set_file_path(const std::string& file_path) {
-   file_path_ = file_path;
+    file_path_ = file_path;
   }
 
   uid_t uid() const { return uid_; }
 
   std::string unpack_directory() const { return unpack_directory_; }
   void set_unpack_directory(const std::string& unpack_dir) {
-   unpack_directory_ = unpack_dir;
+    unpack_directory_ = unpack_dir;
   }
 
   ConfigData* config_data() { return config_data_.get(); }
 
   const char* GetApplicationPath();
+  const char* GetRootApplicationPath();
 
  private :
   // request type: Install, Reinstall, Uninstall, Update.
