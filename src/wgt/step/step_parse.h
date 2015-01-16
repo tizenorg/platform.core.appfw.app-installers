@@ -5,6 +5,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include <widget-manifest-parser/widget-manifest-parser.h>
+
 #include "common/app_installer.h"
 #include "common/context_installer.h"
 #include "common/step/step.h"
@@ -29,6 +31,7 @@ class StepParse: public common_installer::Step {
  private:
   boost::filesystem::path config_;
   bool Check(const boost::filesystem::path& widget_path);
+  void fillManifest(const ManifestData* data, manifest_x* manifest);
 };
 
 }  // namespace parse

@@ -5,7 +5,6 @@
 #include <string.h>
 
 #include <pkgmgr/pkgmgr_parser.h>
-#include <widget-manifest-parser/widget-manifest-parser.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -42,35 +41,7 @@ int StepParse::process(common_installer::ContextInstaller* context) {
       std::string(data->name));
   context->config_data()->set_required_version(
       std::string(data->api_version));
-  unsigned int privilege_len;
-  privileges_x *ctx_privileges = context->manifest_data()->privileges;
-
-  if(!ctx_privileges) {
-    privileges_x *privileges = reinterpret_cast<privileges_x*>(
-        malloc(sizeof(privileges_x)));
-    if(!privileges)
-      return common_installer::APPINST_R_ERROR;
-
-    memset(privileges, '\0', sizeof(privileges_x));
-    LISTADD(ctx_privileges, privileges);
-    context->manifest_data()->privileges = ctx_privileges;
-  }
-  for (unsigned int i = 0; i < data->privilege_count; ++i) {
-    privilege_x *privilege = reinterpret_cast<privilege_x*>(
-        malloc(sizeof(privilege_x)));
-    if(!privilege)
-      return common_installer::APPINST_R_ERROR;
-
-    privilege_len = strlen(data->privilege_list[i]);
-    char* tmp = reinterpret_cast<char*>(malloc(privilege_len + 1));
-    if(!tmp)
-      return common_installer::APPINST_R_ERROR;
-
-    strcpy(tmp, data->privilege_list[i]);
-    memset(privilege, '\0', sizeof(privilege_x));
-    privilege->text = const_cast<const char*>(tmp);
-    LISTADD(ctx_privileges->privilege, privilege);
-  }
+  fillManifest(data, context->manifest_data());
 
   //--- Test ---
   std::cout << "[Parse] Read data -[ " << std::endl;
@@ -108,6 +79,45 @@ bool StepParse::Check(const boost::filesystem::path& widget_path) {
   config_ = config;
   return true;
 }
+
+void StepParse::fillManifest(const ManifestData* data, manifest_x* manifest) {
+
+  // package data
+  manifest->label = (label_x*) calloc(1, sizeof(label_x));
+  manifest->description = (description_x*) calloc(1, sizeof(description_x));
+  manifest->privileges = (privileges_x*) calloc(1, sizeof(privileges_x));
+  manifest->privileges->next = nullptr;
+  manifest->privileges->privilege = nullptr;
+
+  manifest->package = strdup (data->package);
+  manifest->type = strdup ("wgt");
+  manifest->version = strdup (data->version);
+  manifest->label->name = strdup (data->name);
+  manifest->description->name = nullptr;
+  manifest->mainapp_id = strdup (data->id);
+
+  for (unsigned int i = 0; i < data->privilege_count; i++) {
+     privilege_x *privilege = reinterpret_cast<privilege_x*>(
+             malloc(sizeof(privilege_x)));
+     privilege->text = strdup(data->privilege_list[i]);
+     LISTADD(manifest->privileges->privilege, privilege);
+  }
+  // application data
+  manifest->serviceapplication = nullptr;
+  manifest->uiapplication = (uiapplication_x*) calloc (1, sizeof(uiapplication_x));
+  manifest->uiapplication->icon = (icon_x*) calloc(1, sizeof(icon_x));
+  manifest->uiapplication->label = (label_x*) calloc(1, sizeof(label_x));
+  manifest->description = (description_x*) calloc(1, sizeof(description_x));
+  manifest->uiapplication->appcontrol = nullptr;
+
+  manifest->uiapplication->appid = strdup (data->id);
+  manifest->uiapplication->label->name = strdup (data->short_name);
+  manifest->uiapplication->icon->name = strdup (data->icon);
+  manifest->uiapplication->next = nullptr;
+
+  //context->manifest_data()->?? = strdup (data->api_version);
+}
+
 
 }  // namespace parse
 }  // namespace wgt
