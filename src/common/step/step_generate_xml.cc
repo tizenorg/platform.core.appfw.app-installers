@@ -40,8 +40,17 @@ int StepGenerateXml::process(ContextInstaller* data) {
   boost::system::error_code error;
   uiapplication_x* ui = data->manifest_data()->uiapplication;
   serviceapplication_x* svc = data->manifest_data()->serviceapplication;
-  appcontrol_x* appc_ui = ui->appcontrol;
-  appcontrol_x* appc_svc = svc->appcontrol;
+  if ((!ui) && (!svc)) {
+    ERR("There is neither UI applications nor Services applications described!\n");
+    return APPINST_R_ERROR;
+  }
+  appcontrol_x* appc_ui = nullptr;
+  appcontrol_x* appc_svc = nullptr;
+  if (ui)
+    appc_ui = ui->appcontrol;
+  if (svc)
+    appc_svc = svc->appcontrol;
+
   privileges_x* pvlg =  data->manifest_data()->privileges;
 
   fs::path default_icon(
@@ -239,25 +248,22 @@ int StepGenerateXml::process(ContextInstaller* data) {
   // add privilege element
   for (;pvlg != nullptr; pvlg = pvlg->next) {
     privilege_x* pv = pvlg->privilege;
-    xmlTextWriterStartElement(writer, BAD_CAST "privilege");
 
     for (;pv != nullptr; pv = pv->next) {
-       xmlTextWriterWriteAttribute(writer, BAD_CAST "text",
+    xmlTextWriterStartElement(writer, BAD_CAST "privilege");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
                                       BAD_CAST pv->text);
-
-      xmlTextWriterEndElement(writer);
-
       if (!pv->next)
         break;
-        xmlTextWriterEndElement(writer);
+
+      xmlTextWriterEndElement(writer);  // </privileges> tag
       }
     if (!pvlg->next)
       break;
-    xmlTextWriterEndElement(writer);
   }
 
 
-  xmlTextWriterEndElement(writer);
+  xmlTextWriterEndElement(writer); // </manifest> tag
 
   xmlTextWriterEndDocument(writer);
 
