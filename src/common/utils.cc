@@ -25,7 +25,7 @@ bool CreateDir(const fs::path& path) {
   }
 
   fs::permissions(path, fs::owner_all
-      | fs::group_read | fs::others_read,
+      | fs::group_read | fs::others_exe,
       error);
   if (error) {
     ERR("Failed to set permission: "

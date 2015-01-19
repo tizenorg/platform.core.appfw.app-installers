@@ -128,7 +128,10 @@ int StepGenerateXml::process(ContextInstaller* data) {
     fs::path app_icon = fs::path(data->pkg_path()) / fs::path(ui->appid)
         / fs::path(ui->icon->name);
     if (fs::exists(app_icon)) {
-      fs::rename(app_icon, icon_path_ /= icon);
+      if (data->uid() == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER))
+        fs::rename(app_icon, icon_path_ /= fs::path("default/small") /= icon);
+      else
+        fs::rename(app_icon, icon_path_ /= icon);
     } else {
       fs::create_symlink(default_icon, icon_path_ /= icon, error);
       DBG("Icon is not found in package, the default icon is setting");
@@ -208,7 +211,11 @@ int StepGenerateXml::process(ContextInstaller* data) {
     fs::path app_icon = fs::path(data->pkg_path()) / fs::path(ui->appid)
         / fs::path(ui->icon->name);
     if (fs::exists(app_icon)) {
-      fs::rename(app_icon, icon_path_ /= icon);
+      if (data->uid() == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER))
+        fs::rename(app_icon, icon_path_ /= fs::path("default/small") /= icon);
+      else
+        fs::rename(app_icon, icon_path_ /= icon);
+
     } else {
       fs::rename(default_icon, icon_path_ /= icon);
       DBG("Icon is not found in package, the default icon is setting");
