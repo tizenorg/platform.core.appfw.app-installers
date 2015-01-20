@@ -18,6 +18,8 @@
 #include "common/step/step_parse.h"
 #include "common/step/step_record.h"
 #include "common/step/step_remove.h"
+#include "common/step/step_revoke_security.h"
+#include "common/step/step_security.h"
 #include "common/step/step_signature.h"
 #include "common/step/step_unregister.h"
 #include "common/step/step_unzip.h"
@@ -49,6 +51,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::signature::StepSignature>();
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::copy::StepCopy>();
+      installer.AddStep<ci::security::StepSecurity>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
       installer.AddStep<ci::record::StepRecord>();
 
@@ -62,6 +65,7 @@ int main(int argc, char** argv) {
           pkgmgr_installer_get_request_info(pi));
 
       installer.AddStep<ci::parse::StepParse>();
+      installer.AddStep<ci::revoke_security::StepRevokeSecurity>();
       installer.AddStep<ci::unregister::StepUnregister>();
       installer.AddStep<ci::remove::StepRemove>();
 
