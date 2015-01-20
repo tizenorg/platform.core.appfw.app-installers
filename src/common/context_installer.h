@@ -87,12 +87,12 @@ class ContextInstaller {
     unpack_directory_ = unpack_dir;
   }
 
-  ConfigData* config_data() { return config_data_.get(); }
+  ConfigData* config_data() const { return config_data_.get(); }
 
   pkgmgr_installer* pi() const { return pi_; }
 
-  const char* GetApplicationPath();
-  const char* GetRootApplicationPath();
+  const char* GetApplicationPath() const;
+  const char* GetRootApplicationPath() const;
 
  private :
   // request type: Install, Reinstall, Uninstall, Update.
