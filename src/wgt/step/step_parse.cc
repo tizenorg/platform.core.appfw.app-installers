@@ -40,6 +40,7 @@ common_installer::Step::Status StepParse::process() {
       std::string(data->api_version));
   context_->set_pkgid(
       std::string(data->package));
+
   fillManifest(data, context_->manifest_data());
 
   //--- Test ---

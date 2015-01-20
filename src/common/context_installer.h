@@ -82,10 +82,10 @@ class ContextInstaller {
     unpack_directory_ = unpack_dir;
   }
 
-  ConfigData* config_data() { return config_data_.get(); }
+  ConfigData* config_data() const { return config_data_.get(); }
 
-  const char* GetApplicationPath();
-  const char* GetRootApplicationPath();
+  const char* GetApplicationPath() const;
+  const char* GetRootApplicationPath() const;
 
  private :
   // request type: Install, Reinstall, Uninstall, Update.

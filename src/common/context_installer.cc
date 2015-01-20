@@ -23,12 +23,12 @@ ContextInstaller::~ContextInstaller() {
     pkgmgr_parser_free_manifest_xml(manifest_);
 }
 
-const char* ContextInstaller::GetRootApplicationPath() {
+const char* ContextInstaller::GetRootApplicationPath() const {
   return uid_ != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
       ? tzplatform_getenv(TZ_USER_APP) : tzplatform_getenv(TZ_SYS_RW_APP);
 }
 
-const char* ContextInstaller::GetApplicationPath() {
+const char* ContextInstaller::GetApplicationPath() const {
   return (fs::path(GetRootApplicationPath()) / fs::path(pkgid())).c_str();
 }
 
