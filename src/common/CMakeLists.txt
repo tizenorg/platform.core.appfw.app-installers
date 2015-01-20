@@ -2,6 +2,7 @@
 SET(SRCS
   app_installer.cc
   context_installer.cc
+  security_registration.cc
   step/step_unzip.cc
   step/step_signature.cc
   step/step_copy.cc
@@ -9,6 +10,8 @@ SET(SRCS
   step/step_record.cc
   step/step_parse.cc
   step/step_remove.cc
+  step/step_revoke_security.cc
+  step/step_security.cc
   step/step_signal.cc
   step/step_unregister.cc
   utils.cc
@@ -23,6 +26,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   PKGMGR_INFO_DEPS
   PKGMGR_PARSER_DEPS
   PKGMGR_INSTALLER_DEPS
+  SECURITY_MANAGER_DEPS
   MINIZIP_DEPS
   ZLIB_DEPS
   TZPLATFORM_CONFIG_DEPS

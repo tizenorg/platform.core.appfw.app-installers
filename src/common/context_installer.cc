@@ -8,14 +8,17 @@
 #include <tzplatform_config.h>
 #include <unistd.h>
 
+#include <cstdlib>
+
 namespace common_installer {
 
 namespace fs = boost::filesystem;
 
-ContextInstaller::ContextInstaller() : req_(PKGMGR_REQ_INVALID),
-                                       uid_(getuid()),
-                                       manifest_(new manifest_x()),
-                                       config_data_(new ConfigData()) {
+ContextInstaller::ContextInstaller()
+    : req_(PKGMGR_REQ_INVALID),
+      manifest_(static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)))),
+      uid_(getuid()),
+      config_data_(new ConfigData()) {
 }
 
 ContextInstaller::~ContextInstaller() {
@@ -23,12 +26,12 @@ ContextInstaller::~ContextInstaller() {
     pkgmgr_parser_free_manifest_xml(manifest_);
 }
 
-const char* ContextInstaller::GetRootApplicationPath() {
+const char* ContextInstaller::GetRootApplicationPath() const {
   return uid_ != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
       ? tzplatform_getenv(TZ_USER_APP) : tzplatform_getenv(TZ_SYS_RW_APP);
 }
 
-const char* ContextInstaller::GetApplicationPath() {
+const char* ContextInstaller::GetApplicationPath() const {
   return (fs::path(GetRootApplicationPath()) / fs::path(pkgid())).c_str();
 }
 
