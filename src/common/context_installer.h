@@ -4,6 +4,7 @@
 #define COMMON_CONTEXT_INSTALLER_H_
 
 #include <pkgmgr_parser.h>
+#include <pkgmgr_installer.h>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -81,6 +82,10 @@ class ContextInstaller {
     file_path_ = file_path;
   }
 
+  void set_pi(pkgmgr_installer* pi) {
+    pi_ = pi;
+  }
+  
   uid_t uid() const { return uid_; }
 
   std::string unpack_directory() const { return unpack_directory_; }
@@ -89,6 +94,8 @@ class ContextInstaller {
   }
 
   ConfigData* config_data() { return config_data_.get(); }
+
+  pkgmgr_installer* pi() const { return pi_; }
 
   const char* GetApplicationPath();
   const char* GetRootApplicationPath();
@@ -120,6 +127,9 @@ class ContextInstaller {
 
   // data from config.xml
   ConfigDataPtr config_data_;
+  
+  //data used to send signal
+  pkgmgr_installer *pi_;
 };
 
 }  // namespace common_installer
