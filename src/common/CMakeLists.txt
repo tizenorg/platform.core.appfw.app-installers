@@ -9,6 +9,7 @@ SET(SRCS
   step/step_record.cc
   step/step_parse.cc
   step/step_remove.cc
+  step/step_signal.cc
   step/step_unregister.cc
   utils.cc
 )
