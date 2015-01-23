@@ -19,6 +19,7 @@
 #include "wgt/step/step_parse.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_record.h"
+#include "common/step/step_signal.h"
 
 // uninstall includes:
 #include "common/step/step_parse.h"
@@ -36,14 +37,11 @@ int main(int argc, char **argv) {
     pkgmgr_installer_free(pi);
     return -result;
   }
-
+  common_installer::AppInstaller* installer =
+      new common_installer::AppInstaller(pi);
   /* treat the request */
   switch (pkgmgr_installer_get_request_type(pi)) {
     case PKGMGR_REQ_INSTALL: {
-      common_installer::AppInstaller* installer =
-          new common_installer::AppInstaller(PKGMGR_REQ_INSTALL,
-              pkgmgr_installer_get_request_info(pi), "");
-
       common_installer::unzip::StepUnzip* step_unpack =
           new common_installer::unzip::StepUnzip();
       common_installer::signature::StepSignature* step_signature =
@@ -52,6 +50,8 @@ int main(int argc, char **argv) {
               wgt::parse::StepParse();
       common_installer::copy::StepCopy* step_copy =
           new common_installer::copy::StepCopy();
+      common_installer::signal::StepSignal* step_sendsignal =
+          new common_installer::signal::StepSignal();
       common_installer::generate_xml::StepGenerateXml* step_xml =
           new common_installer::generate_xml::StepGenerateXml();
       common_installer::record::StepRecord* step_record =
@@ -60,6 +60,7 @@ int main(int argc, char **argv) {
       installer->AddStep(step_unpack);
       installer->AddStep(step_signature);
       installer->AddStep(step_parse);
+      installer->AddStep(step_sendsignal);
       installer->AddStep(step_copy);
       installer->AddStep(step_xml);
       installer->AddStep(step_record);
@@ -69,24 +70,22 @@ int main(int argc, char **argv) {
       delete step_signature;
       delete step_parse;
       delete step_copy;
-      delete installer;
+      delete step_sendsignal;
       delete step_xml;
       delete step_record;
       break;
     }
     case PKGMGR_REQ_UNINSTALL: {
-      common_installer::AppInstaller* installer =
-          new common_installer::AppInstaller(PKGMGR_REQ_UNINSTALL,
-              "", pkgmgr_installer_get_request_info(pi));
-
       common_installer::parse::StepParse* step_parse =
           new common_installer::parse::StepParse();
       common_installer::remove::StepRemove* step_remove =
           new common_installer::remove::StepRemove();
       common_installer::unregister::StepUnregister* step_unregister =
           new common_installer::unregister::StepUnregister();
-
+      common_installer::signal::StepSignal* step_sendsignal =
+          new common_installer::signal::StepSignal();
       installer->AddStep(step_parse);
+      installer->AddStep(step_sendsignal);
       installer->AddStep(step_unregister);
       installer->AddStep(step_remove);
 
@@ -95,6 +94,8 @@ int main(int argc, char **argv) {
       delete step_remove;
       delete step_unregister;
       delete step_parse;
+      delete step_sendsignal;
+
       break;
     }
     default: {
@@ -103,6 +104,7 @@ int main(int argc, char **argv) {
       break;
     }
   }
+  delete installer;
   pkgmgr_installer_free(pi);
   return result;
 }

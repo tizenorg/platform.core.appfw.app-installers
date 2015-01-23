@@ -8,11 +8,21 @@
 
 namespace common_installer {
 
-AppInstaller::AppInstaller(int request, const char* file, const char* pkgid) {
+AppInstaller::AppInstaller(pkgmgr_installer *pi) {
   ctx_ = new ContextInstaller();
-  ctx_->set_request_type(request);
-  ctx_->set_pkgid(pkgid);
-  ctx_->set_file_path(file);
+  int request_type = pkgmgr_installer_get_request_type(pi);
+  ctx_->set_pi(pi);
+  ctx_->set_request_type(request_type);
+  switch (request_type) {
+    case PKGMGR_REQ_INSTALL:
+     ctx_->set_file_path(pkgmgr_installer_get_request_info(pi));
+     ctx_->set_pkgid("");
+    break;
+    case PKGMGR_REQ_UNINSTALL:
+     ctx_->set_pkgid(pkgmgr_installer_get_request_info(pi));
+     ctx_->set_file_path("");
+    break;
+  }
 }
 
 AppInstaller::~AppInstaller() { delete ctx_; }
@@ -26,6 +36,7 @@ int AppInstaller::AddStep(Step *step) {
   }
   return 0;
 }
+
 
 int AppInstaller::Run() {
   std::list<Step *>::iterator it(ListStep.begin());

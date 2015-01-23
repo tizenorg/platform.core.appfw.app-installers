@@ -3,9 +3,11 @@
 #ifndef COMMON_APP_INSTALLER_H_
 #define COMMON_APP_INSTALLER_H_
 
+#include <pkgmgr_installer.h>
 #include <list>
 
 #include "common/step/step.h"
+
 
 namespace common_installer {
 
@@ -15,7 +17,7 @@ class AppInstaller {
   ContextInstaller* ctx_;
 
  public:
-  AppInstaller(int request, const char* file, const char* pkgid);
+  AppInstaller(pkgmgr_installer *pi);
   ~AppInstaller();
 
   int AddStep(Step* step);
