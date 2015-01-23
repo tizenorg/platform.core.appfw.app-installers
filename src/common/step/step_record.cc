@@ -48,7 +48,7 @@ int StepRecord::process(ContextInstaller* data) {
           data->xml_path().c_str(), appinst_tags);
 
   if (ret != 0) {
-    DBG("Failed to record package into database");
+    ERR("Failed to record package into database");
     return APPINST_R_ERROR;
   }
   DBG("Successfully install the application");
@@ -68,9 +68,10 @@ int StepRecord::undo(ContextInstaller* data) {
       cmd = std::string(kAilInitUser) + ";" + kPkgInitUser :
       cmd = std::string(kAilInit) + ";" + kPkgInit;
 
-  if (execv(cmd.c_str(), nullptr) == -1)
+  if (execv(cmd.c_str(), nullptr) == -1) {
+      ERR("Error during execvp %s");
       return APPINST_R_ERROR;
-
+  }
   DBG("Successfuly clean database");
   return APPINST_R_OK;
 }

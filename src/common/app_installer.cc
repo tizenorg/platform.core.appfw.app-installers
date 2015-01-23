@@ -57,7 +57,6 @@ int AppInstaller::Run() {
       if ((*it)->undo(ctx_) != APPINST_R_OK) {
         std::cout << "Error during undo operation" << std::endl;
         ret = -2;
-        break;
       }
     } while (it-- != itStart);
   } else {
