@@ -15,7 +15,7 @@
 namespace common_installer {
 namespace signal {
 
-bool StepSignal::sendSignal(ContextInstaller* context, const std::string& key,
+bool StepSignal::SendSignal(ContextInstaller* context, const std::string& key,
                               const std::string& value) {
     if (!context->pi()) {
         ERR("PkgmgrSingal not yet intialized");
@@ -29,8 +29,10 @@ bool StepSignal::sendSignal(ContextInstaller* context, const std::string& key,
 
     // send pkgmgr signal
     if (pkgmgr_installer_send_signal(
-            context->pi(), context->manifest_data()->type,
-            context->pkgid().c_str(),
+            context->pi(),
+            context->manifest_data()->type ?
+                context->manifest_data()->type : "",
+            context->pkgid().empty() ? "Unknown" : context->pkgid().c_str(),
             key.c_str(), value.c_str())) {
         ERR("Fail to send pkgmgr signal");
         return false;
@@ -41,29 +43,33 @@ bool StepSignal::sendSignal(ContextInstaller* context, const std::string& key,
 }
 
 Step::Status StepSignal::process() {
-  sendSignal(context_, PKGMGR_INSTALLER_START_KEY_STR,
-      PKGMGR_INSTALLER_INSTALL_EVENT_STR);
+  switch (context_->request_type()) {
+    case PKGMGR_REQ_INSTALL:
+      SendSignal(context_, PKGMGR_INSTALLER_START_KEY_STR,
+          PKGMGR_INSTALLER_INSTALL_EVENT_STR);
+    break;
+    case PKGMGR_REQ_UNINSTALL:
+      SendSignal(context_, PKGMGR_INSTALLER_START_KEY_STR,
+          PKGMGR_INSTALLER_UNINSTALL_EVENT_STR);
+    break;
+  }
   DBG("Send Start");
   return Status::OK;
 }
 
 Step::Status StepSignal::clean() {
-  sendSignal(context_, PKGMGR_INSTALLER_END_KEY_STR,
+  SendSignal(context_, PKGMGR_INSTALLER_END_KEY_STR,
       PKGMGR_INSTALLER_OK_EVENT_STR);
   DBG("Send Success");
   return Status::OK;
 }
 
 Step::Status StepSignal::undo() {
-  sendSignal(context_, PKGMGR_INSTALLER_END_KEY_STR,
+  SendSignal(context_, PKGMGR_INSTALLER_END_KEY_STR,
       PKGMGR_INSTALLER_FAIL_EVENT_STR);
   DBG("Send Error");
   return Status::OK;
 }
-
-
-
-
 
 }  // namespace signal
 }  // namespace common_installer

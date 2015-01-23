@@ -44,10 +44,10 @@ int main(int argc, char** argv) {
     case PKGMGR_REQ_INSTALL: {
       ci::AppInstaller installer(pi);
 
+      installer.AddStep<ci::signal::StepSignal>();
       installer.AddStep<ci::unzip::StepUnzip>();
       installer.AddStep<ci::signature::StepSignature>();
       installer.AddStep<wgt::parse::StepParse>();
-      installer.AddStep<ci::signal::StepSignal>();
       installer.AddStep<ci::copy::StepCopy>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
       installer.AddStep<ci::record::StepRecord>();
@@ -58,8 +58,8 @@ int main(int argc, char** argv) {
     case PKGMGR_REQ_UNINSTALL: {
       ci::AppInstaller installer(pi);
 
-      installer.AddStep<ci::parse::StepParse>();
       installer.AddStep<ci::signal::StepSignal>();
+      installer.AddStep<ci::parse::StepParse>();
       installer.AddStep<ci::unregister::StepUnregister>();
       installer.AddStep<ci::remove::StepRemove>();
 
