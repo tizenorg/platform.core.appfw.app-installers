@@ -23,6 +23,7 @@ BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  pkgconfig(xmlsec1)
 BuildRequires:  pkgconfig(widget-manifest-parser)
+BuildRequires:  pkgconfig(vconf)
 
 Requires: ca-certificates-tizen
 Requires: libtzplatform-config
@@ -68,6 +69,7 @@ ln -s %{_bindir}/xpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %{_libdir}/libcommon-installer.so*
 %{_libdir}/libcommon-installer-signature.so*
 %{_libdir}/libcommon-installer-utils.so*
+%{_libdir}/libcommon-installer-widget-manifest-parser.so*
 %{_datarootdir}/app-installers/signature_schema.xsd
 %license LICENSE LICENSE-xwalk
 
