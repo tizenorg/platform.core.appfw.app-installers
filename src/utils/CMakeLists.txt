@@ -1,5 +1,6 @@
 # Target - sources
 SET(SRCS
+  system_locale.cc
   utf_converter.cc
   values.cc
 )
@@ -10,6 +11,7 @@ TARGET_INCLUDE_DIRECTORIES(${TARGET_LIBNAME_UTILS} PUBLIC "${CMAKE_CURRENT_SOURC
 
 # Target - deps
 APPLY_PKG_CONFIG(${TARGET_LIBNAME_UTILS} PUBLIC
+  VCONF_DEPS
   Boost
 )
 
