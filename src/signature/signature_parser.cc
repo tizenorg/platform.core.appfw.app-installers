@@ -126,6 +126,34 @@ std::string XmlStringToStdString(const xmlChar* xmlstring) {
 namespace common_installer {
 namespace signature {
 
+int hexToInt(char a) {
+  if (a >= '0' && a <= '9') return a - '0';
+  if (a >= 'A' && a <= 'F') return a - 'A' + 10;
+  if (a >= 'a' && a <= 'f') return a - 'a' + 10;
+  return -1;
+}
+
+std::string decodeProcent(const std::string& path) {
+  std::vector<int> input(path.begin(), path.end());
+  std::vector<char> output;
+  int i = 0;
+  while (i < input.size()) {
+    if ('%' == input[i]) {
+      if (i + 2 >= input.size())
+        return std::string();
+      int result = hexToInt(input[i + 1]) * 16 + hexToInt(input[i + 2]);
+      if (result >= 128)
+        return std::string();
+      output.push_back(static_cast<char>(result));
+      i += 3;
+    } else {
+      output.push_back(static_cast<char>(input[i]));
+      ++i;
+    }
+  }
+  return std::string(output.begin(), output.end());
+}
+
 bool ParseSignedInfoElement(
     const xmlNodePtr node, const xmlNsPtr signature_ns, SignatureData* data) {
   xmlNodePtr signed_info_node =
@@ -166,6 +194,7 @@ bool ParseSignedInfoElement(
   }
 
   std::string uri;
+  std::string decoded_uri;
   xmlNodePtr refer_node;
   std::set<std::string> reference_set;
   for (size_t i = 0; i < reference_vec.size(); ++i) {
@@ -174,6 +203,12 @@ bool ParseSignedInfoElement(
     if (uri.empty()) {
       LOG(ERROR) << "Missing URI attribute.";
       return false;
+    }
+    decoded_uri = decodeProcent(uri);
+    if (!decoded_uri.empty()) {
+      uri = decoded_uri;
+    } else {
+      LOG(WARNING) << "Failing to decode URI.";
     }
     reference_set.insert(uri);
   }
