@@ -121,6 +121,39 @@ std::string XmlStringToStdString(const xmlChar* xmlstring) {
     return "";
 }
 
+int HexDigitToInt(char c) {
+  if (c >= '0' && c <= '9')
+    return c - '0';
+  if (c >= 'A' && c <= 'F')
+    return c - 'A' + 10;
+  if (c >= 'a' && c <= 'f')
+    return c - 'a' + 10;
+  return 0;
+}
+
+std::string DecodeProcent(const std::string& path) {
+  std::vector<int> input(path.begin(), path.end());
+  std::vector<char> output;
+  int i = 0;
+  while (i < input.size()) {
+    if ('%' == input[i]) {
+      if (i + 2 >= input.size())
+        return std::string();
+      int result = HexDigitToInt(input[i + 1]) * 16
+          + HexDigitToInt(input[i + 2]);
+      // RFC 1738 - octets 80 to FF are not allowed
+      if (result >= 128)
+        return std::string();
+      output.push_back(static_cast<char>(result));
+      i += 3;
+    } else {
+      output.push_back(static_cast<char>(input[i]));
+      ++i;
+    }
+  }
+  return std::string(output.begin(), output.end());
+}
+
 }  // namespace
 
 namespace common_installer {
@@ -174,6 +207,12 @@ bool ParseSignedInfoElement(
     if (uri.empty()) {
       LOG(ERROR) << "Missing URI attribute.";
       return false;
+    }
+    std::string decoded_uri = DecodeProcent(uri);
+    if (!decoded_uri.empty()) {
+      uri = decoded_uri;
+    } else {
+      LOG(WARNING) << "Failing to decode URI.";
     }
     reference_set.insert(uri);
   }
