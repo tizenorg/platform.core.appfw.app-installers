@@ -95,8 +95,12 @@ Step::Status StepGenerateXml::process() {
 
     xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
         BAD_CAST exec_path.string().c_str());
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
-        BAD_CAST "webapp");
+    if ( ui->type )
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
+          BAD_CAST ui->type);
+    else
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
+          BAD_CAST "capp");
     xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
         BAD_CAST "true");
 
