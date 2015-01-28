@@ -5,7 +5,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include <widget-manifest-parser/widget-manifest-parser.h>
+#include <widget-manifest-parser/widget_manifest_parser.h>
 
 #include "common/app_installer.h"
 #include "common/context_installer.h"
