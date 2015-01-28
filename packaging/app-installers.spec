@@ -49,7 +49,7 @@ Backend for standard widget files XPK
 cp %{SOURCE1001} .
 
 %build
-%cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type}
+%cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type} -DWRT_LAUNCHER=%{_bindir}/xwalk-launcher
 make %{?_smp_mflags}
 
 %install
