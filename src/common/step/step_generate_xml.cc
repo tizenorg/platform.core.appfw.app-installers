@@ -20,11 +20,6 @@
 #define DBG(msg) std::cout << "[GenerateXML] " << msg << std::endl;
 #define ERR(msg) std::cout << "[ERROR: GenerateXML] " << msg << std::endl;
 
-namespace {
-
-const char kLauncher[] = "/usr/lib/xwalk/xwalk";
-
-}  // anonymous namespace
 
 namespace common_installer {
 namespace generate_xml {
@@ -96,18 +91,8 @@ Step::Status StepGenerateXml::process() {
 
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
     fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(ui->appid)
-        / fs::path("bin");
-    utils::CreateDir(exec_path);
+        / fs::path("bin") / fs::path(ui->appid);
 
-    exec_path /= fs::path(ui->appid);
-
-    fs::create_symlink(fs::path(kLauncher), exec_path, error);
-    if (error) {
-      ERR("Failed to set symbolic link "
-        << boost::system::system_error(error).what());
-        xmlFreeTextWriter(writer);
-      return Step::Status::ERROR;
-    }
     xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
         BAD_CAST exec_path.string().c_str());
     xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
@@ -177,18 +162,7 @@ Step::Status StepGenerateXml::process() {
 
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
     fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(svc->appid)
-        / fs::path("bin");
-    utils::CreateDir(exec_path);
-
-    exec_path /= fs::path(svc->appid);
-
-    fs::create_symlink(fs::path(kLauncher), exec_path, error);
-    if (error) {
-      ERR("Failed to set symbolic link "
-        << boost::system::system_error(error).what());
-        xmlFreeTextWriter(writer);
-      return Step::Status::ERROR;
-    }
+        / fs::path("bin") / fs::path(svc->appid);
 
     xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
         BAD_CAST exec_path.string().c_str());
