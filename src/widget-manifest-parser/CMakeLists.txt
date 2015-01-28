@@ -1,7 +1,14 @@
 # Target - sources
 SET(SRCS
+  application_data.cc
   application_manifest_constants.cc
   manifest.cc
+  manifest_handler.cc
+  manifest_handlers/permissions_handler.cc
+  manifest_handlers/tizen_application_handler.cc
+  manifest_handlers/widget_handler.cc
+  manifest_util.cc
+  widget_manifest_parser.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} SHARED ${SRCS})

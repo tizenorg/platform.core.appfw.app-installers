@@ -22,7 +22,6 @@ BuildRequires:  pkgconfig(minizip)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  pkgconfig(xmlsec1)
-BuildRequires:  pkgconfig(widget-manifest-parser)
 BuildRequires:  pkgconfig(vconf)
 
 Requires: ca-certificates-tizen
