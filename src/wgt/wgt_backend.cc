@@ -25,6 +25,8 @@
 #include "common/step/step_unregister.h"
 #include "common/step/step_unzip.h"
 #include "wgt/step/step_parse.h"
+#include "wgt/step/step_symbolic_link.h"
+
 
 namespace ci = common_installer;
 
@@ -51,6 +53,7 @@ int main(int argc, char** argv) {
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::signal::StepSignal>();
       installer.AddStep<ci::copy::StepCopy>();
+      installer.AddStep<wgt::symbolic_link::StepSymbolicLink>();
       installer.AddStep<ci::security::StepSecurity>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
       installer.AddStep<ci::record::StepRecord>();
