@@ -1,8 +1,17 @@
 # Target - sources
 SET(SRCS
   step/step_parse.cc
+  step/step_symbolic_link.cc
   wgt_backend.cc
 )
+
+IF(WRT_LAUNCHER)
+    ADD_DEFINITIONS("-DWRT_LAUNCHER=\"${WRT_LAUNCHER}\"")
+    MESSAGE( "WRT LAUNCHER binary path is  set to ${WRT_LAUNCHER}")
+ELSE(WRT_LAUNCHER)
+    MESSAGE(FATAL_ERROR, "WRT LAUNCHER binary path is not set")
+ENDIF(WRT_LAUNCHER)
+
 # Target - definition
 ADD_EXECUTABLE(${TARGET_WGT_BACKEND} ${SRCS})
 # Target - includes
