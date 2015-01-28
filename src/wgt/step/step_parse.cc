@@ -116,6 +116,7 @@ void StepParse::fillManifest(const ManifestData* data, manifest_x* manifest) {
   manifest->uiapplication->appcontrol = nullptr;
 
   manifest->uiapplication->appid = strdup(data->id);
+  manifest->uiapplication->type = strdup("webapp");
   manifest->uiapplication->label->name = strdup(data->short_name);
   manifest->uiapplication->icon->name = strdup(data->icon);
   manifest->uiapplication->next = nullptr;
