@@ -117,7 +117,13 @@ void StepParse::fillManifest(const ManifestData* data, manifest_x* manifest) {
 
   manifest->uiapplication->appid = strdup(data->id);
   manifest->uiapplication->type = strdup("webapp");
-  manifest->uiapplication->label->name = strdup(data->short_name);
+
+  // For wgt package use the long name if the short name is emty
+  if ( ( data->short_name ) && ( strlen(data->short_name) ) )
+    manifest->uiapplication->label->name = strdup(data->short_name);
+  else
+    manifest->uiapplication->label->name = strdup(data->name);
+
   manifest->uiapplication->icon->name = strdup(data->icon);
   manifest->uiapplication->next = nullptr;
 
