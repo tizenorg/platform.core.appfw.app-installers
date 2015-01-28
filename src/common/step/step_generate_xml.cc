@@ -78,9 +78,12 @@ Step::Status StepGenerateXml::process() {
 
   xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
       "%s", BAD_CAST context_->manifest_data()->label->name);
-
-  xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
-      "%s", BAD_CAST context_->manifest_data()->description->name);
+  if ( context_->manifest_data()->description->name )
+    xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
+        "%s", BAD_CAST context_->manifest_data()->description->name);
+  else
+    xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
+        "%s", BAD_CAST "");
 
   // add ui-application element per ui application
   for (; ui != nullptr; ui = ui->next) {
