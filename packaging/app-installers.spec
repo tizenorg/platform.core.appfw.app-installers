@@ -5,6 +5,7 @@ Release:        0
 Group:          Application Framework/Package Management
 License:        Apache-2.0
 Source0:        %{name}-%{version}.tar.gz
+Source1001:     wgt-backend.manifest
 
 BuildRequires:  boost-devel
 BuildRequires:  cmake
@@ -45,6 +46,8 @@ Backend for standard widget files XPK
 %prep
 %setup -q
 
+cp %{SOURCE1001} .
+
 %build
 %cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type}
 make %{?_smp_mflags}
@@ -68,6 +71,7 @@ ln -s %{_bindir}/xpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %license LICENSE LICENSE-xwalk
 
 %files -n wgt-backend
+%manifest wgt-backend.manifest
 %{_sysconfdir}/package-manager/backend/wgt
 %{_bindir}/wgt-backend
 
