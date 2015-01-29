@@ -20,8 +20,8 @@
 #include <utility>
 #include <vector>
 
-#include "signature/logging.h"
-#include "signature/marcos.h"
+#include "utils/logging.h"
+#include "utils/macros.h"
 
 namespace {
 const char kExpectedXmlns[] = "http://www.w3.org/2000/09/xmldsig#";
