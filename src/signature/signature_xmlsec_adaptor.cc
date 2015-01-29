@@ -34,7 +34,7 @@
 #include <string>
 #include <utility>
 
-#include "signature/logging.h"
+#include "utils/logging.h"
 
 namespace bai = boost::archive::iterators;
 namespace bf = boost::filesystem;

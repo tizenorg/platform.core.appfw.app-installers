@@ -16,7 +16,7 @@
 #include <set>
 #include <string>
 
-#include "signature/logging.h"
+#include "utils/logging.h"
 #include "signature/signature_data.h"
 #include "signature/signature_parser.h"
 #include "signature/signature_xmlsec_adaptor.h"
