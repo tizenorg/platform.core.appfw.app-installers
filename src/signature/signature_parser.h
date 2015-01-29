@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "signature/marcos.h"
+#include "utils/macros.h"
 #include "signature/signature_data.h"
 
 namespace common_installer {

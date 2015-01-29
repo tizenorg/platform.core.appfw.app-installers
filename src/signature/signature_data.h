@@ -16,7 +16,7 @@
 #include <set>
 #include <string>
 
-#include "signature/marcos.h"
+#include "utils/macros.h"
 
 namespace common_installer {
 namespace signature {
