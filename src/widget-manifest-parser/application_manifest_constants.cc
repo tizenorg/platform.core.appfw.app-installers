@@ -152,17 +152,17 @@ const char kTizenNamespacePrefix[] = "http://tizen.org/ns/widgets";
 }  // namespace application_widget_keys
 
 namespace application_manifest_errors {
-const char16_t kInvalidDescription[] =
-    u"Invalid value for 'description'.";
-const char16_t kInvalidKey[] =
-    u"Value 'key' is missing or invalid.";
-const char16_t kInvalidName[] =
-    u"Required value 'name' is missing or invalid.";
-const char16_t kInvalidVersion[] =
-    u"Required value 'version' is missing or invalid. It must be between 1-4 "
-    u"dot-separated integers each between 0 and 65536.";
-const char16_t kManifestParseError[] =
-    u"Manifest is not valid JSON.";
+const char kInvalidDescription[] =
+    "Invalid value for 'description'.";
+const char kInvalidKey[] =
+    "Value 'key' is missing or invalid.";
+const char kInvalidName[] =
+    "Required value 'name' is missing or invalid.";
+const char kInvalidVersion[] =
+    "Required value 'version' is missing or invalid. It must be between 1-4 "
+    "dot-separated integers each between 0 and 65536.";
+const char kManifestParseError[] =
+    "Manifest is not valid JSON.";
 const char kManifestUnreadable[] =
     "Manifest file is missing or unreadable.";
 }  // namespace application_manifest_errors

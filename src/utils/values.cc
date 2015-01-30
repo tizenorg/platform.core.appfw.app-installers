@@ -16,8 +16,6 @@
 #include <iostream>
 #include <ostream>
 
-#include "utils/utf_converter.h"
-
 namespace common_installer {
 namespace utils {
 
@@ -105,10 +103,6 @@ bool Value::GetAsDouble(double* out_value) const {
 }
 
 bool Value::GetAsString(std::string* out_value) const {
-  return false;
-}
-
-bool Value::GetAsString(std::u16string* out_value) const {
   return false;
 }
 
@@ -249,12 +243,6 @@ bool FundamentalValue::Equals(const Value* other) const {
 StringValue::StringValue(const std::string& in_value)
     : Value(TYPE_STRING),
       value_(in_value) {
-  assert(utf_converter::IsStringUTF8(in_value));
-}
-
-StringValue::StringValue(const std::u16string& in_value)
-    : Value(TYPE_STRING),
-      value_(utf_converter::UTF16ToUTF8(in_value)) {
 }
 
 StringValue::~StringValue() {
@@ -271,12 +259,6 @@ const std::string& StringValue::GetString() const {
 bool StringValue::GetAsString(std::string* out_value) const {
   if (out_value)
     *out_value = value_;
-  return true;
-}
-
-bool StringValue::GetAsString(std::u16string* out_value) const {
-  if (out_value)
-    *out_value = utf_converter::UTF8ToUTF16(value_);
   return true;
 }
 
@@ -358,7 +340,6 @@ bool DictionaryValue::GetAsDictionary(const DictionaryValue** out_value) const {
 }
 
 bool DictionaryValue::HasKey(const std::string& key) const {
-  assert(utf_converter::IsStringUTF8(key));
   ValueMap::const_iterator current_entry = dictionary_.find(key);
   assert((current_entry == dictionary_.end()) || current_entry->second);
   return current_entry != dictionary_.end();
@@ -375,8 +356,7 @@ void DictionaryValue::Clear() {
 }
 
 void DictionaryValue::Set(const std::string& path, Value* in_value) {
-  assert(utf_converter::IsStringUTF8(path));
-    assert(in_value);
+  assert(in_value);
 
   std::string current_path(path);
   DictionaryValue* current_dictionary = this;
@@ -415,11 +395,6 @@ void DictionaryValue::SetString(const std::string& path,
   Set(path, new StringValue(in_value));
 }
 
-void DictionaryValue::SetString(const std::string& path,
-                                const std::u16string& in_value) {
-  Set(path, new StringValue(in_value));
-}
-
 void DictionaryValue::SetWithoutPathExpansion(const std::string& key,
                                               Value* in_value) {
   // If there's an existing value here, we need to delete it, because
@@ -453,14 +428,8 @@ void DictionaryValue::SetStringWithoutPathExpansion(
   SetWithoutPathExpansion(path, new StringValue(in_value));
 }
 
-void DictionaryValue::SetStringWithoutPathExpansion(
-    const std::string& path, const std::u16string& in_value) {
-  SetWithoutPathExpansion(path, new StringValue(in_value));
-}
-
 bool DictionaryValue::Get(const std::string& path,
                           const Value** out_value) const {
-  assert(utf_converter::IsStringUTF8(path));
   std::string current_path(path);
   const DictionaryValue* current_dictionary = this;
   for (size_t delimiter_position = current_path.find('.');
@@ -518,30 +487,6 @@ bool DictionaryValue::GetString(const std::string& path,
     return false;
 
   return value->GetAsString(out_value);
-}
-
-bool DictionaryValue::GetString(const std::string& path,
-                                std::u16string* out_value) const {
-  const Value* value;
-  if (!Get(path, &value))
-    return false;
-
-  return value->GetAsString(out_value);
-}
-
-bool DictionaryValue::GetStringASCII(const std::string& path,
-                                     std::string* out_value) const {
-  std::string out;
-  if (!GetString(path, &out))
-    return false;
-
-  if (!utf_converter::IsStringASCII(out)) {
-    std::cerr << "Not reached.\n";
-    return false;
-  }
-
-  out_value->assign(out);
-  return true;
 }
 
 bool DictionaryValue::GetBinary(const std::string& path,
@@ -605,7 +550,6 @@ bool DictionaryValue::GetList(const std::string& path, ListValue** out_value) {
 
 bool DictionaryValue::GetWithoutPathExpansion(const std::string& key,
                                               const Value** out_value) const {
-  assert(utf_converter::IsStringUTF8(key));
   ValueMap::const_iterator entry_iterator = dictionary_.find(key);
   if (entry_iterator == dictionary_.end())
     return false;
@@ -653,15 +597,6 @@ bool DictionaryValue::GetDoubleWithoutPathExpansion(const std::string& key,
 bool DictionaryValue::GetStringWithoutPathExpansion(
     const std::string& key,
     std::string* out_value) const {
-  const Value* value;
-  if (!GetWithoutPathExpansion(key, &value))
-    return false;
-
-  return value->GetAsString(out_value);
-}
-
-bool DictionaryValue::GetStringWithoutPathExpansion(const std::string& key,
-    std::u16string* out_value) const {
   const Value* value;
   if (!GetWithoutPathExpansion(key, &value))
     return false;
@@ -717,7 +652,6 @@ bool DictionaryValue::GetListWithoutPathExpansion(const std::string& key,
 
 bool DictionaryValue::Remove(const std::string& path,
                              std::unique_ptr<Value>* out_value) {
-  assert(utf_converter::IsStringUTF8(path));
   std::string current_path(path);
   DictionaryValue* current_dictionary = this;
   size_t delimiter_position = current_path.rfind('.');
@@ -734,7 +668,6 @@ bool DictionaryValue::Remove(const std::string& path,
 
 bool DictionaryValue::RemoveWithoutPathExpansion(
     const std::string& key, std::unique_ptr<Value>* out_value) {
-  assert(utf_converter::IsStringUTF8(key));
   ValueMap::iterator entry_iterator = dictionary_.find(key);
   if (entry_iterator == dictionary_.end())
     return false;
@@ -914,14 +847,6 @@ bool ListValue::GetString(size_t index, std::string* out_value) const {
   return value->GetAsString(out_value);
 }
 
-bool ListValue::GetString(size_t index, std::u16string* out_value) const {
-  const Value* value;
-  if (!Get(index, &value))
-    return false;
-
-  return value->GetAsString(out_value);
-}
-
 bool ListValue::GetBinary(size_t index, const BinaryValue** out_value) const {
   const Value* value;
   bool result = Get(index, &value);
@@ -1036,19 +961,8 @@ void ListValue::AppendString(const std::string& in_value) {
   Append(new StringValue(in_value));
 }
 
-void ListValue::AppendString(const std::u16string& in_value) {
-  Append(new StringValue(in_value));
-}
-
 void ListValue::AppendStrings(const std::vector<std::string>& in_values) {
   for (std::vector<std::string>::const_iterator it = in_values.begin();
-       it != in_values.end(); ++it) {
-    AppendString(*it);
-  }
-}
-
-void ListValue::AppendStrings(const std::vector<std::u16string>& in_values) {
-  for (std::vector<std::u16string>::const_iterator it = in_values.begin();
        it != in_values.end(); ++it) {
     AppendString(*it);
   }

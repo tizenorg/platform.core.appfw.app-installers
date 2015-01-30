@@ -82,7 +82,6 @@ class Value {
   virtual bool GetAsInteger(int* out_value) const;
   virtual bool GetAsDouble(double* out_value) const;
   virtual bool GetAsString(std::string* out_value) const;
-  virtual bool GetAsString(std::u16string* out_value) const;
   virtual bool GetAsString(const StringValue** out_value) const;
   virtual bool GetAsList(ListValue** out_value);
   virtual bool GetAsList(const ListValue** out_value) const;
@@ -141,11 +140,8 @@ class FundamentalValue : public Value {
 
 class StringValue : public Value {
  public:
-  // Initializes a StringValue with a UTF-8 narrow character string.
+  // Initializes a StringValue with a std::string.
   explicit StringValue(const std::string& in_value);
-
-  // Initializes a StringValue with a std::u16string.
-  explicit StringValue(const std::u16string& in_value);
 
   ~StringValue() override;
 
@@ -155,7 +151,6 @@ class StringValue : public Value {
 
   // Overridden from Value:
   bool GetAsString(std::string* out_value) const override;
-  bool GetAsString(std::u16string* out_value) const override;
   bool GetAsString(const StringValue** out_value) const override;
   StringValue* DeepCopy() const override;
   bool Equals(const Value* other) const override;
@@ -197,7 +192,7 @@ class BinaryValue: public Value {
 
 // DictionaryValue provides a key-value dictionary with (optional) "path"
 // parsing for recursive access; see the comment at the top of the file. Keys
-// are |std::string|s and should be UTF-8 encoded.
+// are |std::string|s.
 class DictionaryValue : public Value {
  public:
   DictionaryValue();
@@ -236,7 +231,6 @@ class DictionaryValue : public Value {
   void SetInteger(const std::string& path, int in_value);
   void SetDouble(const std::string& path, double in_value);
   void SetString(const std::string& path, const std::string& in_value);
-  void SetString(const std::string& path, const std::u16string& in_value);
 
   // Like Set(), but without special treatment of '.'.  This allows e.g. URLs to
   // be used as paths.
@@ -248,8 +242,6 @@ class DictionaryValue : public Value {
   void SetDoubleWithoutPathExpansion(const std::string& path, double in_value);
   void SetStringWithoutPathExpansion(const std::string& path,
                                      const std::string& in_value);
-  void SetStringWithoutPathExpansion(const std::string& path,
-                                     const std::u16string& in_value);
 
   // Gets the Value associated with the given path starting from this object.
   // A path has the form "<key>" or "<key>.<key>.[...]", where "." indexes
@@ -272,8 +264,6 @@ class DictionaryValue : public Value {
   // doubles.
   bool GetDouble(const std::string& path, double* out_value) const;
   bool GetString(const std::string& path, std::string* out_value) const;
-  bool GetString(const std::string& path, std::u16string* out_value) const;
-  bool GetStringASCII(const std::string& path, std::string* out_value) const;
   bool GetBinary(const std::string& path, const BinaryValue** out_value) const;
   bool GetBinary(const std::string& path, BinaryValue** out_value);
   bool GetDictionary(const std::string& path,
@@ -295,8 +285,6 @@ class DictionaryValue : public Value {
                                      double* out_value) const;
   bool GetStringWithoutPathExpansion(const std::string& key,
                                      std::string* out_value) const;
-  bool GetStringWithoutPathExpansion(const std::string& key,
-                                     std::u16string* out_value) const;
   bool GetDictionaryWithoutPathExpansion(
       const std::string& key,
       const DictionaryValue** out_value) const;
@@ -408,7 +396,6 @@ class ListValue : public Value {
   // doubles.
   bool GetDouble(size_t index, double* out_value) const;
   bool GetString(size_t index, std::string* out_value) const;
-  bool GetString(size_t index, std::u16string* out_value) const;
   bool GetBinary(size_t index, const BinaryValue** out_value) const;
   bool GetBinary(size_t index, BinaryValue** out_value);
   bool GetDictionary(size_t index, const DictionaryValue** out_value) const;
@@ -442,9 +429,7 @@ class ListValue : public Value {
   void AppendInteger(int in_value);
   void AppendDouble(double in_value);
   void AppendString(const std::string& in_value);
-  void AppendString(const std::u16string& in_value);
   void AppendStrings(const std::vector<std::string>& in_values);
-  void AppendStrings(const std::vector<std::u16string>& in_values);
 
   // Appends a Value if it's not already present. Takes ownership of the
   // |in_value|. Returns true if successful, or false if the value was already

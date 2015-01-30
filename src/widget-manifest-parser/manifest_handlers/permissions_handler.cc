@@ -32,7 +32,7 @@ PermissionsHandler::~PermissionsHandler() {
 }
 
 bool PermissionsHandler::Parse(
-    std::shared_ptr<ApplicationData> application, std::u16string* error) {
+    std::shared_ptr<ApplicationData> application, std::string* error) {
   std::shared_ptr<PermissionsInfo> permissions_info(new PermissionsInfo);
   if (!application->GetManifest()->HasPath(keys::kTizenPermissionsKey)) {
     application->SetManifestData(
@@ -42,7 +42,7 @@ bool PermissionsHandler::Parse(
 
   utils::Value* value;
   if (!application->GetManifest()->Get(keys::kTizenPermissionsKey, &value)) {
-    *error = u"Invalid value of tizen permissions.";
+    *error = "Invalid value of tizen permissions.";
     return false;
   }
 
@@ -58,7 +58,7 @@ bool PermissionsHandler::Parse(
   }
 
   if (!permission_list) {
-    *error = u"Invalid value of permissions.";
+    *error = "Invalid value of permissions.";
     return false;
   }
   PermissionSet api_permissions;

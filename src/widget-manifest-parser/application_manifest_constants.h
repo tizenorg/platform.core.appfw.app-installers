@@ -135,11 +135,11 @@ extern const char kTizenNamespacePrefix[];
 
 
 namespace application_manifest_errors {
-extern const char16_t kInvalidDescription[];
-extern const char16_t kInvalidKey[];
-extern const char16_t kInvalidName[];
-extern const char16_t kInvalidVersion[];
-extern const char16_t kManifestParseError[];
+extern const char kInvalidDescription[];
+extern const char kInvalidKey[];
+extern const char kInvalidName[];
+extern const char kInvalidVersion[];
+extern const char kManifestParseError[];
 // TODO(t.iwanek): fix unicode inconsistent usage
 extern const char kManifestUnreadable[];
 }  // namespace application_manifest_errors

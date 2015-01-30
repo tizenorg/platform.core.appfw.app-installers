@@ -12,7 +12,6 @@
 #include <regex>
 
 #include "utils/logging.h"
-#include "utils/utf_converter.h"
 #include "widget-manifest-parser/application_manifest_constants.h"
 #include "widget-manifest-parser/manifest.h"
 #include "widget-manifest-parser/manifest_handler.h"
@@ -56,14 +55,14 @@ std::shared_ptr<ApplicationData> ApplicationData::Create(
     SourceType source_type, std::unique_ptr<Manifest> manifest,
     std::string* error_message) {
   assert(error_message);
-  std::u16string error;
+  std::string error;
   if (!manifest->ValidateManifest(error_message))
     return nullptr;
 
   std::shared_ptr<ApplicationData> app_data(
       new ApplicationData(path, source_type, std::move(manifest)));
   if (!app_data->Init(explicit_id, &error)) {
-    *error_message = utils::utf_converter::UTF16ToUTF8(error);
+    *error_message = error;
     return nullptr;
   }
 
@@ -132,7 +131,7 @@ ApplicationData::~ApplicationData() {
 }
 
 bool ApplicationData::Init(const std::string& explicit_id,
-                           std::u16string* error) {
+                           std::string* error) {
   assert(error);
   ManifestHandlerRegistry* registry =
       ManifestHandlerRegistry::GetInstance(manifest_type());
@@ -152,7 +151,7 @@ bool ApplicationData::Init(const std::string& explicit_id,
 }
 
 bool ApplicationData::LoadID(const std::string& explicit_id,
-                             std::u16string* error) {
+                             std::string* error) {
   std::string application_id;
   auto iter = manifest_data_.find(widget_keys::kTizenApplicationKey);
   if (iter == manifest_data_.end())
@@ -172,9 +171,9 @@ bool ApplicationData::LoadID(const std::string& explicit_id,
   return false;
 }
 
-bool ApplicationData::LoadName(std::u16string* error) {
+bool ApplicationData::LoadName(std::string* error) {
   assert(error);
-  std::u16string localized_name;
+  std::string localized_name;
   std::string name_key(GetNameKey(manifest_type()));
 
   if (!manifest_->GetString(name_key, &localized_name) &&
@@ -182,16 +181,15 @@ bool ApplicationData::LoadName(std::u16string* error) {
     *error = errors::kInvalidName;
     return false;
   }
-  non_localized_name_ = common_installer::utils::utf_converter::UTF16ToUTF8(
-      localized_name);
+  non_localized_name_ = localized_name;
 
   // TODO(jizydorczyk): This needs to be implemented
   // utils::AdjustStringForLocaleDirection(&localized_name);
-  name_ = common_installer::utils::utf_converter::UTF16ToUTF8(localized_name);
+  name_ = localized_name;
   return true;
 }
 
-bool ApplicationData::LoadVersion(std::u16string* error) {
+bool ApplicationData::LoadVersion(std::string* error) {
   assert(error);
   std::string version_str;
 
@@ -208,7 +206,7 @@ bool ApplicationData::LoadVersion(std::u16string* error) {
 }
 
 bool ApplicationData::SetApplicationLocale(const std::string& locale,
-                                           std::u16string* error) {
+                                           std::string* error) {
   manifest_->SetSystemLocale(locale);
   if (!LoadName(error))
     return false;

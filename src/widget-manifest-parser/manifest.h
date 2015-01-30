@@ -59,7 +59,6 @@ class Manifest {
   // Auto ("en-us"(tizen is "en-gb") will be considered as a default)
   // First (the worst case we get the first element)              | low
   bool GetString(const std::string& path, std::string* out_value) const;
-  bool GetString(const std::string& path, std::u16string* out_value) const;
 
   bool GetDictionary(const std::string& path,
                      const utils::DictionaryValue** out_value) const;
