@@ -47,8 +47,8 @@ int AppInstaller::Run() {
   std::list<std::unique_ptr<Step>>::iterator itStart(steps_.begin());
   std::list<std::unique_ptr<Step>>::iterator itEnd(steps_.end());
 
-  sendSignal(PKGMGR_INSTALLER_START_KEY_STR,
-             getEventStr(context_->request_type()));
+  PkgmgrSignal *pi = context_->pi();
+  pi->sendStarted();
 
   int ret = 0;
   for (; it != itEnd; ++it) {
@@ -76,9 +76,9 @@ int AppInstaller::Run() {
     }
   }
   if (0 != ret) {
-    sendSignal(PKGMGR_INSTALLER_END_KEY_STR, PKGMGR_INSTALLER_FAIL_EVENT_STR);
+    pi->sendFinished(PkgmgrSignal::Result::FAILED);
   } else {
-    sendSignal(PKGMGR_INSTALLER_END_KEY_STR, PKGMGR_INSTALLER_OK_EVENT_STR);
+    pi->sendFinished(PkgmgrSignal::Result::SUCCESS);
   }
 
   EnsureSignalSend();
@@ -103,12 +103,4 @@ AppInstaller::getEventStr(const int request) {
   }
 }
 
-
-void
-AppInstaller::sendSignal(const char* signal_key, const char* val) {
-  pkgmgr_installer_send_signal(context_->pi(),
-                               context_->pkg_type().c_str(),
-                               context_->pkgid().c_str(),
-                               signal_key, val);
-}
 }  // namespace common_installer

@@ -43,6 +43,12 @@ Summary: Backend of XPK files
 %description -n xpk-backend
 Backend for standard widget files XPK
 
+%package -n tpk-backend
+Summary: Backend of TPK files
+
+%description -n tpk-backend
+Backend for tizen package files
+
 %prep
 %setup -q
 
@@ -58,6 +64,7 @@ make %{?_smp_mflags}
 mkdir -p %{buildroot}/etc/package-manager/backend
 ln -s %{_bindir}/wgt-backend %{buildroot}%{_sysconfdir}/package-manager/backend/wgt
 ln -s %{_bindir}/xpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/xpk
+ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/tpk
 
 %post -p /sbin/ldconfig
 
@@ -78,3 +85,8 @@ ln -s %{_bindir}/xpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 
 %files -n xpk-backend
 %{_sysconfdir}/package-manager/backend/xpk
+
+%files -n tpk-backend
+%{_sysconfdir}/package-manager/backend/tpk
+%{_bindir}/tpk-backend
+

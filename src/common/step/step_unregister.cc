@@ -31,7 +31,7 @@ Step::Status StepUnregister::process() {
           context_->xml_path().c_str(), appinst_tags);
 
   if (ret != 0) {
-    DBG("Failed to unregister package into database");
+    ERR("Failed to unregister package into database");
     return Status::ERROR;
   }
   DBG("Successfully unregister the application");
@@ -40,12 +40,10 @@ Step::Status StepUnregister::process() {
 }
 
 Step::Status StepUnregister::clean() {
-  DBG("Empty 'clean' method");
   return Status::OK;
 }
 
 Step::Status StepUnregister::undo() {
-  DBG("Empty 'undo' method");
   return Status::OK;
 }
 

@@ -41,12 +41,11 @@ int main(int argc, char** argv) {
     pkgmgr_installer_free(pi);
     return -result;
   }
-  common_installer::AppInstaller* installer =
-      new common_installer::AppInstaller(pi, "wgt");
+  common_installer::AppInstaller installer(pi, "wgt");
   /* treat the request */
   switch (pkgmgr_installer_get_request_type(pi)) {
     case PKGMGR_REQ_INSTALL: {
-      ci::AppInstaller installer(pi, "wgt");
+      //ci::AppInstaller installer(pi, "wgt");
 
       installer.AddStep<ci::unzip::StepUnzip>();
       installer.AddStep<ci::signature::StepSignature>();
@@ -60,7 +59,7 @@ int main(int argc, char** argv) {
       break;
     }
     case PKGMGR_REQ_UNINSTALL: {
-      ci::AppInstaller installer(pi, "wgt");
+      //ci::AppInstaller installer(pi, "wgt");
 
       installer.AddStep<ci::parse::StepParse>();
       installer.AddStep<ci::signal::StepSignal>();
