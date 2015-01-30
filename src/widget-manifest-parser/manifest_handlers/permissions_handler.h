@@ -38,7 +38,7 @@ class PermissionsHandler: public ManifestHandler {
   virtual ~PermissionsHandler();
 
   bool Parse(std::shared_ptr<ApplicationData> application,
-                     std::u16string* error) override;
+             std::string* error) override;
   bool AlwaysParseForType(Manifest::Type type) const override;
   std::vector<std::string> Keys() const override;
 

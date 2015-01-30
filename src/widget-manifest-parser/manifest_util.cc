@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "utils/string_util.h"
-#include "utils/utf_converter.h"
 #include "utils/values.h"
 #include "widget-manifest-parser/application_data.h"
 #include "widget-manifest-parser/application_manifest_constants.h"
@@ -57,19 +56,6 @@ const char* kSingletonElements[] = {
   "content"
 };
 
-inline char* ToCharPointer(void* ptr) {
-  return reinterpret_cast<char *>(ptr);
-}
-
-inline const char* ToConstCharPointer(const void* ptr) {
-  return reinterpret_cast<const char*>(ptr);
-}
-
-std::u16string ToSting16(const xmlChar* string_ptr) {
-  return common_installer::utils::utf_converter::UTF8ToUTF16(
-      std::string(ToConstCharPointer(string_ptr)));
-}
-
 std::string GetNodeDir(xmlNode* node, const std::string& inherit_dir) {
   assert(node);
   std::string dir(inherit_dir);
@@ -77,7 +63,7 @@ std::string GetNodeDir(xmlNode* node, const std::string& inherit_dir) {
   xmlAttr* prop = nullptr;
   for (prop = node->properties; prop; prop = prop->next) {
     if (xmlStrEqual(prop->name, kDirAttributeKey)) {
-      char* prop_value = ToCharPointer(xmlNodeListGetString(
+      char* prop_value = reinterpret_cast<char *>(xmlNodeListGetString(
           node->doc, prop->children, 1));
       dir = prop_value;
       xmlFree(prop_value);
@@ -87,24 +73,26 @@ std::string GetNodeDir(xmlNode* node, const std::string& inherit_dir) {
   return dir;
 }
 
-std::u16string GetNodeText(xmlNode* root, const std::string& inherit_dir) {
+std::string GetNodeText(xmlNode* root, const std::string& inherit_dir) {
   assert(root);
   if (root->type != XML_ELEMENT_NODE)
-    return std::u16string();
+    return std::string();
 
   std::string current_dir(GetNodeDir(root, inherit_dir));
-  std::u16string text;
+  std::string text;
   for (xmlNode* node = root->children; node; node = node->next) {
 // TODO(jizydorczyk):
 // i18n support is needed
     if (node->type == XML_TEXT_NODE || node->type == XML_CDATA_SECTION_NODE) {
-      text = text + common_installer::utils::StripWrappingBidiControlCharacters(
-                        ToSting16(node->content));
+      text = text
+          + common_installer::utils::StripWrappingBidiControlCharactersUTF8(
+          std::string(reinterpret_cast<char*>(node->content),
+          xmlStrlen(node->content)));
     } else {
       text = text + GetNodeText(node, current_dir);
     }
   }
-  return common_installer::utils::GetDirText(text, current_dir);
+  return common_installer::utils::GetDirTextUTF8(text, current_dir);
 }
 
 // According to widget specification, this two prop need to support dir.
@@ -226,8 +214,8 @@ namespace {
 // }
 
 // converting dictionaryvalue to std::map<
-// std::u16string*, std::map<std::u16string*,std::u16string*>> or
-// std::map<std::u16string*, std::map<std::u16string*,std::u16string>>
+// std::string*, std::map<std::string*,std::string*>> or
+// std::map<std::string*, std::map<std::string*,std::string>>
 
 std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
     xmlNode* root, const std::string& inherit_dir = "") {
@@ -240,25 +228,27 @@ std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
   xmlAttr* prop = nullptr;
   for (prop = root->properties; prop; prop = prop->next) {
     xmlChar* value_ptr = xmlNodeListGetString(root->doc, prop->children, 1);
-    std::u16string prop_value(ToSting16(value_ptr));
+    std::string prop_value(reinterpret_cast<char*>(value_ptr));
     xmlFree(value_ptr);
 
     if (IsPropSupportDir(root, prop))
-      prop_value = utils::GetDirText(prop_value, current_dir);
+      prop_value = utils::GetDirTextUTF8(prop_value, current_dir);
 
     if (IsTrimRequiredForProp(root, prop))
-      prop_value = utils::CollapseWhitespace(prop_value, false);
+      prop_value = utils::CollapseWhitespaceUTF8(prop_value, false);
 
     value->SetString(
-        std::string(kAttributePrefix) + ToConstCharPointer(prop->name),
+        std::string(kAttributePrefix)
+        + reinterpret_cast<const char*>(prop->name),
         prop_value);
   }
 
   if (root->ns)
-    value->SetString(kNamespaceKey, ToConstCharPointer(root->ns->href));
+    value->SetString(kNamespaceKey,
+        reinterpret_cast<const char*>(root->ns->href));
 
   for (xmlNode* node = root->children; node; node = node->next) {
-    std::string sub_node_name(ToConstCharPointer(node->name));
+    std::string sub_node_name(reinterpret_cast<const char*>(node->name));
     std::unique_ptr<utils::DictionaryValue> sub_value =
         LoadXMLNode(node, current_dir);
     if (!sub_value)
@@ -303,19 +293,19 @@ std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
     }
   }
 
-  std::u16string text;
+  std::string text;
   if (IsElementSupportSpanAndDir(root)) {
     text = GetNodeText(root, current_dir);
   } else {
     xmlChar* text_ptr = xmlNodeListGetString(root->doc, root->children, 1);
     if (text_ptr) {
-      text = ToSting16(text_ptr);
+      text = reinterpret_cast<char*>(text_ptr);
       xmlFree(text_ptr);
     }
   }
 
   if (IsTrimRequiredForElement(root))
-    text = utils::CollapseWhitespace(text, false);
+    text = utils::CollapseWhitespaceUTF8(text, false);
 
   if (!text.empty())
     value->SetString(kTextKey, text);
@@ -338,7 +328,7 @@ std::unique_ptr<Manifest> LoadManifest(const std::string& manifest_path,
   std::unique_ptr<utils::DictionaryValue> dv = LoadXMLNode(root_node);
   std::unique_ptr<utils::DictionaryValue> result(new utils::DictionaryValue);
   if (dv)
-    result->Set(ToConstCharPointer(root_node->name), dv.release());
+    result->Set(reinterpret_cast<const char*>(root_node->name), dv.release());
 
   return std::unique_ptr<Manifest>(
       new Manifest(std::move(result), Manifest::TYPE_WIDGET));

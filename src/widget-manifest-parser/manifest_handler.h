@@ -23,7 +23,7 @@ class ManifestHandler {
   // Returns false in case of failure and sets writes error message
   // in |error| if present.
   virtual bool Parse(std::shared_ptr<ApplicationData> application,
-                     std::u16string* error) = 0;
+                     std::string* error) = 0;
 
   // Returns false in case of failure and sets writes error message
   // in |error| if present.
@@ -56,7 +56,7 @@ class ManifestHandlerRegistry final {
   static ManifestHandlerRegistry* GetInstance(Manifest::Type type);
 
   bool ParseAppManifest(
-      std::shared_ptr<ApplicationData> application, std::u16string* error);
+      std::shared_ptr<ApplicationData> application, std::string* error);
   bool ValidateAppManifest(std::shared_ptr<const ApplicationData> application,
       std::string* error);
 

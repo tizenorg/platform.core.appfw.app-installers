@@ -121,7 +121,7 @@ void ManifestHandlerRegistry::Register(ManifestHandler* handler) {
 }
 
 bool ManifestHandlerRegistry::ParseAppManifest(
-    std::shared_ptr<ApplicationData> application, std::u16string* error) {
+    std::shared_ptr<ApplicationData> application, std::string* error) {
   std::map<int, ManifestHandler*> handlers_by_order;
   for (ManifestHandlerMap::iterator iter = handlers_.begin();
        iter != handlers_.end(); ++iter) {

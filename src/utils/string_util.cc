@@ -7,64 +7,97 @@
 
 #include <string>
 
-namespace common_installer {
-namespace utils {
+namespace {
 
-#define WHITESPACE_UNICODE \
-  0x0009, /* CHARACTER TABULATION */      \
-  0x000A, /* LINE FEED (LF) */            \
-  0x000B, /* LINE TABULATION */           \
-  0x000C, /* FORM FEED (FF) */            \
-  0x000D, /* CARRIAGE RETURN (CR) */      \
-  0x0020, /* SPACE */                     \
-  0x0085, /* NEXT LINE (NEL) */           \
-  0x00A0, /* NO-BREAK SPACE */            \
-  0x1680, /* OGHAM SPACE MARK */          \
-  0x2000, /* EN QUAD */                   \
-  0x2001, /* EM QUAD */                   \
-  0x2002, /* EN SPACE */                  \
-  0x2003, /* EM SPACE */                  \
-  0x2004, /* THREE-PER-EM SPACE */        \
-  0x2005, /* FOUR-PER-EM SPACE */         \
-  0x2006, /* SIX-PER-EM SPACE */          \
-  0x2007, /* FIGURE SPACE */              \
-  0x2008, /* PUNCTUATION SPACE */         \
-  0x2009, /* THIN SPACE */                \
-  0x200A, /* HAIR SPACE */                \
-  0x2028, /* LINE SEPARATOR */            \
-  0x2029, /* PARAGRAPH SEPARATOR */       \
-  0x202F, /* NARROW NO-BREAK SPACE */     \
-  0x205F, /* MEDIUM MATHEMATICAL SPACE */ \
-  0x3000, /* IDEOGRAPHIC SPACE */         \
-  0
-
-const char16_t kRightToLeftMark = 0x200F;
-const char16_t kLeftToRightMark = 0x200E;
-const char16_t kLeftToRightEmbeddingMark = 0x202A;
-const char16_t kRightToLeftEmbeddingMark = 0x202B;
-const char16_t kPopDirectionalFormatting = 0x202C;
-const char16_t kLeftToRightOverride = 0x202D;
-const char16_t kRightToLeftOverride = 0x202E;
+const char kRightToLeftMark[] = u8"\xE2\x80\x8F";
+const char kLeftToRightMark[] = u8"\xE2\x80\x8E";
+const char kLeftToRightEmbeddingMark[] = u8"\xE2\x80\xAA";
+const char kRightToLeftEmbeddingMark[] = u8"\xE2\x80\xAB";
+const char kPopDirectionalFormatting[] = u8"\xE2\x80\xAC";
+const char kLeftToRightOverride[] = u8"\xE2\x80\xAD";
+const char kRightToLeftOverride[] = u8"\xE2\x80\xAE";
 
 const char kDirLTRKey[] = "ltr";
 const char kDirRTLKey[] = "rtl";
 const char kDirLROKey[] = "lro";
 const char kDirRLOKey[] = "rlo";
 
-namespace {
-const wchar_t kWhitespaceWide[] = {
-  WHITESPACE_UNICODE
+const char* kWhitespaceSequences[] = {
+  u8"\x09",          /* CHARACTER TABULATION */
+  u8"\x0A",          /* LINE FEED (LF) */
+  u8"\x0B",          /* LINE TABULATION */
+  u8"\x0C",          /* FORM FEED (FF) */
+  u8"\x0D",          /* CARRIAGE RETURN (CR) */
+  u8"\x20",          /* SPACE */
+  u8"\xc2\x85",      /* NEXT LINE (NEL) */
+  u8"\xc2\xa0",      /* NO-BREAK SPACE */
+  u8"\xe1\x9a\x80",  /* OGHAM SPACE MARK */
+  u8"\xe2\x80\x80",  /* EN QUAD */
+  u8"\xe2\x80\x81",  /* EM QUAD */
+  u8"\xe2\x80\x82",  /* EN SPACE */
+  u8"\xe2\x80\x83",  /* EM SPACE */
+  u8"\xe2\x80\x84",  /* THREE-PER-EM SPACE */
+  u8"\xe2\x80\x85",  /* FOUR-PER-EM SPACE */
+  u8"\xe2\x80\x86",  /* SIX-PER-EM SPACE */
+  u8"\xe2\x80\x87",  /* FIGURE SPACE */
+  u8"\xe2\x80\x88",  /* PUNCTUATION SPACE */
+  u8"\xe2\x80\x89",  /* THIN SPACE */
+  u8"\xe2\x80\x8A",  /* HAIR SPACE */
+  u8"\xe2\x80\xa8",  /* LINE SEPARATOR */
+  u8"\xe2\x80\xa9",  /* PARAGRAPH SEPARATOR */
+  u8"\xe2\x80\xaf",  /* NARROW NO-BREAK SPACE */
+  u8"\xe2\x81\x9f",  /* MEDIUM MATHEMATICAL SPACE */
+  u8"\xe3\x80\x80"   /* IDEOGRAPHIC SPACE */
 };
 
-// Returns true if it's a whitespace character.
-inline bool IsWhitespace(wchar_t c) {
-  return wcschr(kWhitespaceWide, c) != nullptr;
+// Calculates length of UTF-8 character by checking first byte only
+int UTF8CharLength(const char* character) {
+  if (character[0] < 0x80)
+      return 1;
+  int length = 0;
+  unsigned char mask = 0x80;
+  while (character[0] & mask) {
+    mask >>= 1;
+    ++length;
+  }
+  return length;
 }
 
-template<typename STR>
-STR CollapseWhitespaceT(const STR& text,
-                        bool trim_sequences_with_line_breaks) {
-  STR result;
+// Check string offset against occurance of given UTF-8 character
+bool EqualsUTF8Char(const char* str, const char* character) {
+  unsigned i = 0;
+  while (character[i]) {
+    if (!str[i]) {
+      return false;
+    }
+    if (character[i] != str[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Returns true if it's a whitespace character.
+inline bool IsWhitespaceUTF8(const char* c) {
+  for (unsigned i = 0;
+       i < sizeof(kWhitespaceSequences) / sizeof(kWhitespaceSequences[0]);
+       ++i) {
+    if (EqualsUTF8Char(c, kWhitespaceSequences[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
+namespace common_installer {
+namespace utils {
+
+std::string CollapseWhitespaceUTF8(
+    const std::string& text,
+    bool trim_sequences_with_line_breaks) {
+  std::string result;
   result.resize(text.size());
 
   // Set flags to pretend we're already in a trimmed whitespace sequence, so we
@@ -73,24 +106,30 @@ STR CollapseWhitespaceT(const STR& text,
   bool already_trimmed = true;
 
   int chars_written = 0;
-  for (typename STR::const_iterator i(text.begin()); i != text.end(); ++i) {
-    if (IsWhitespace(*i)) {
+  for (unsigned i = 0; i < text.length(); ++i) {
+    int length = UTF8CharLength(&text[i]);
+    if (IsWhitespaceUTF8(&text[i])) {
       if (!in_whitespace) {
         // Reduce all whitespace sequences to a single space.
         in_whitespace = true;
-        result[chars_written++] = L' ';
+        result[chars_written++] = ' ';
       }
       if (trim_sequences_with_line_breaks && !already_trimmed &&
-          ((*i == '\n') || (*i == '\r'))) {
+          ((text[i] == '\n') || (text[i] == '\r'))) {
         // Whitespace sequences containing CR or LF are eliminated entirely.
         already_trimmed = true;
         --chars_written;
       }
+      // roll through UTF8 character
+      i += length - 1;
     } else {
       // Non-whitespace chracters are copied straight across.
       in_whitespace = false;
       already_trimmed = false;
-      result[chars_written++] = *i;
+      while (length--) {
+        result[chars_written++] = text[i];
+        ++i;
+      }
     }
   }
 
@@ -102,52 +141,41 @@ STR CollapseWhitespaceT(const STR& text,
   result.resize(chars_written);
   return result;
 }
-}  // namespace
 
-std::string CollapseWhitespace(const std::string& text,
-                               bool trim_sequences_with_line_breaks) {
-  return CollapseWhitespaceT(text, trim_sequences_with_line_breaks);
-}
-
-std::u16string CollapseWhitespace(const std::u16string& text,
-                               bool trim_sequences_with_line_breaks) {
-  return CollapseWhitespaceT(text, trim_sequences_with_line_breaks);
-}
-
-std::u16string StripWrappingBidiControlCharacters(const std::u16string& text) {
+std::string StripWrappingBidiControlCharactersUTF8(const std::string& text) {
   if (text.empty())
     return text;
   size_t begin_index = 0;
-  char16_t begin = text[begin_index];
-  if (begin == kLeftToRightEmbeddingMark ||
-      begin == kRightToLeftEmbeddingMark ||
-      begin == kLeftToRightOverride ||
-      begin == kRightToLeftOverride)
-    ++begin_index;
-  size_t end_index = text.length() - 1;
-  if (text[end_index] == kPopDirectionalFormatting)
-    --end_index;
-  return text.substr(begin_index, end_index - begin_index + 1);
+  const char* begin = &text[begin_index];
+  if (EqualsUTF8Char(begin, kLeftToRightEmbeddingMark) ||
+      EqualsUTF8Char(begin, kRightToLeftEmbeddingMark) ||
+      EqualsUTF8Char(begin, kLeftToRightOverride) ||
+      EqualsUTF8Char(begin, kRightToLeftOverride))
+    begin_index += 3;
+  size_t end_index = text.length() - 3;
+  if (EqualsUTF8Char(&text[end_index], kPopDirectionalFormatting))
+    end_index -= 3;
+  return text.substr(begin_index, end_index - begin_index + 3);
 }
 
-std::u16string GetDirText(const std::u16string& text, const std::string& dir) {
+std::string GetDirTextUTF8(const std::string& text, const std::string& dir) {
   if (dir == kDirLTRKey)
-    return kLeftToRightEmbeddingMark
+    return std::string(kLeftToRightEmbeddingMark)
            + text
            + kPopDirectionalFormatting;
 
   if (dir == kDirRTLKey)
-    return kRightToLeftEmbeddingMark
+    return std::string(kRightToLeftEmbeddingMark)
            + text
            + kPopDirectionalFormatting;
 
   if (dir == kDirLROKey)
-    return kLeftToRightOverride
+    return std::string(kLeftToRightOverride)
            + text
            + kPopDirectionalFormatting;
 
   if (dir == kDirRLOKey)
-    return kRightToLeftOverride
+    return std::string(kRightToLeftOverride)
            + text
            + kPopDirectionalFormatting;
 

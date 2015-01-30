@@ -34,7 +34,7 @@ TizenApplicationHandler::TizenApplicationHandler() {}
 TizenApplicationHandler::~TizenApplicationHandler() {}
 
 bool TizenApplicationHandler::Parse(
-    std::shared_ptr<ApplicationData> application, std::u16string* error) {
+    std::shared_ptr<ApplicationData> application, std::string* error) {
   std::shared_ptr<TizenApplicationInfo> app_info(new TizenApplicationInfo);
   const Manifest* manifest = application->GetManifest();
   assert(manifest);
@@ -63,8 +63,8 @@ bool TizenApplicationHandler::Parse(
   }
 
   if (!find) {
-    *error = u"Cannot find application element with tizen namespace "
-             u"or the tizen namespace prefix is incorrect.\n";
+    *error = "Cannot find application element with tizen namespace "
+             "or the tizen namespace prefix is incorrect.\n";
     return false;
   }
   if (app_dict->GetString(keys::kTizenApplicationIdKey, &value))
