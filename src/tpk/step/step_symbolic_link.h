@@ -1,0 +1,21 @@
+/* Copyright 2015 Samsung Electronics, license APACHE-2.0, see LICENSE file */
+#ifndef TPK_STEP_STEP_SYMBOLIC_LINK_H_
+#define TPK_STEP_STEP_SYMBOLIC_LINK_H_
+
+#include "common/app_installer.h"
+
+namespace tpk {
+namespace step {
+
+class StepSymbolicLink : public common_installer::Step {
+ public:
+  using Step::Step;
+  Status process() override;
+  Status clean() override;
+  Status undo() override;
+};
+
+}  // namespace step
+}  // namespace tpk
+
+#endif  // TPK_STEP_STEP_SYMBOLIC_LINK_H_
