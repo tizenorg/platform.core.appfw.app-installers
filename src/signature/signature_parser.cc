@@ -23,6 +23,7 @@
 
 #include "utils/logging.h"
 #include "utils/macros.h"
+#include "utils/string_util.h"
 
 namespace {
 const char kExpectedXmlns[] = "http://www.w3.org/2000/09/xmldsig#";
@@ -122,31 +123,6 @@ std::string XmlStringToStdString(const xmlChar* xmlstring) {
     return "";
 }
 
-std::string DecodeProcent(const std::string& path) {
-  std::vector<int> input(path.begin(), path.end());
-  std::vector<char> output;
-  int i = 0;
-  while (i < input.size()) {
-    if ('%' == input[i]) {
-      if (i + 2 >= input.size())
-        return std::string();
-      char str[3] = {"\0",};
-      str[0] = input[i + 1];
-      str[1] = input[i + 2];
-      int result = strtol(str, NULL, 16);
-      // RFC 1738 - octets 80 to FF are not allowed
-      if (result >= 128)
-        return std::string();
-      output.push_back(static_cast<char>(result));
-      i += 3;
-    } else {
-      output.push_back(static_cast<char>(input[i]));
-      ++i;
-    }
-  }
-  return std::string(output.begin(), output.end());
-}
-
 }  // namespace
 
 namespace common_installer {
@@ -201,7 +177,8 @@ bool ParseSignedInfoElement(
       LOG(ERROR) << "Missing URI attribute.";
       return false;
     }
-    std::string decoded_uri = DecodeProcent(uri);
+    std::string decoded_uri =
+        common_installer::utils::DecodePercentEscapedCharacter(uri);
     if (!decoded_uri.empty()) {
       uri = decoded_uri;
     } else {
