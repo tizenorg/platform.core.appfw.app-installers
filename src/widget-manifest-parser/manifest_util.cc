@@ -339,17 +339,11 @@ bf::path ApplicationURLToRelativeFilePath(const std::string& url) {
   if (url_path.empty() || url_path[0] != '/')
     return bf::path();
 
-  // TODO(jizydorczyk):
-  // We need to unescappe %-encoded UTF8 chars here
-  // for now its left undone
-  // Drop the leading slashes and convert %-encoded UTF8 to regular UTF8.
-//  std::string file_path = net::UnescapeURLComponent(url_path,
-//      net::UnescapeRule::SPACES | net::UnescapeRule::URL_SPECIAL_CHARS);
-//  size_t skip = file_path.find_first_not_of("/\\");
-//  if (skip != file_path.npos)
-//    file_path = file_path.substr(skip);
+  std::string file_path =
+      common_installer::utils::DecodePercentEscapedCharacter(url_path);
+  if (file_path.empty())
+    return bf::path();
 
-  std::string file_path = url_path;
   bf::path path(file_path);
 
   // It's still possible for someone to construct an annoying URL whose path
