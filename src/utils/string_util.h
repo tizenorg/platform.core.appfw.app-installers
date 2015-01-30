@@ -16,6 +16,8 @@ std::string CollapseWhitespaceUTF8(const std::string& text,
 std::string StripWrappingBidiControlCharactersUTF8(const std::string& text);
 std::string GetDirTextUTF8(const std::string& text, const std::string& dir);
 
+bool EscapeHexEncodedCharacter(const std::string& in, std::string* out);
+
 }  // namespace utils
 }  // namespace common_installer
 

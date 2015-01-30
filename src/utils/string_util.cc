@@ -91,6 +91,18 @@ inline bool IsWhitespaceUTF8(const char* c) {
   return false;
 }
 
+int HexCharToInt(char hex) {
+  if (isdigit(hex)) {
+    return hex - '0';
+  } else if ('A' <= hex && hex <= 'F') {
+    return hex - 'A' + 10;
+  } else if ('a' <= hex && hex <= 'f') {
+    return hex - 'a' + 10;
+  } else {
+    return -1;
+  }
+}
+
 }  // namespace
 
 namespace common_installer {
@@ -181,6 +193,36 @@ std::string GetDirTextUTF8(const std::string& text, const std::string& dir) {
            + kPopDirectionalFormatting;
 
   return text;
+}
+
+bool EscapeHexEncodedCharacter(const std::string& in, std::string* out) {
+  out->clear();
+  out->reserve(in.size());
+  for (unsigned i = 0; i < in.size(); ++i) {
+    if (in[i] == '%') {
+      if (i + 2 < in.size()) {
+        int digit1 = HexCharToInt(in[i + 1]);
+        if (digit1 < 0) {
+          return false;
+        }
+        int digit2 = HexCharToInt(in[i + 2]);
+        if (digit2 < 0) {
+          return false;
+        }
+        char result = static_cast<char>(16 * digit1 + digit2);
+        if (result >= 128) {
+          return false;
+        }
+        *out += result;
+      } else {
+        return false;
+      }
+      i += 2;
+    } else {
+      *out += in[i];
+    }
+  }
+  return true;
 }
 
 }  // namespace utils
