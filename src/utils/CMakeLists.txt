@@ -1,7 +1,6 @@
 # Target - sources
 SET(SRCS
   system_locale.cc
-  utf_converter.cc
   string_util.cc
   values.cc
 )

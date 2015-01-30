@@ -12,7 +12,6 @@
 #include <utility>
 #include <set>
 
-#include "utils/utf_converter.h"
 #include "utils/values.h"
 #include "widget-manifest-parser/application_manifest_constants.h"
 
@@ -120,7 +119,7 @@ WidgetHandler::WidgetHandler() {}
 WidgetHandler::~WidgetHandler() {}
 
 bool WidgetHandler::Parse(std::shared_ptr<ApplicationData> application,
-                          std::u16string* error) {
+                          std::string* error) {
   std::shared_ptr<WidgetInfo> widget_info(new WidgetInfo());
   const Manifest* manifest = application->GetManifest();
   assert(manifest);
