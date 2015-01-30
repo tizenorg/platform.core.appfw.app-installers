@@ -126,23 +126,6 @@ bool Manifest::GetString(
   return data_->GetString(path, out_value);
 }
 
-bool Manifest::GetString(
-    const std::string& path, std::u16string* out_value) const {
-  if (!CanAccessPath(path))
-    return false;
-
-  if (i18n_data_->Get(path, NULL)) {
-    List::const_iterator it = user_agent_locales_->begin();
-    for (; it != user_agent_locales_->end(); ++it) {
-      if (i18n_data_->GetString(GetLocalizedKey(path, *it), out_value))
-        return true;
-    }
-    return false;
-  }
-
-  return data_->GetString(path, out_value);
-}
-
 bool Manifest::GetDictionary(
     const std::string& path, const utils::DictionaryValue** out_value) const {
   return CanAccessPath(path) && data_->GetDictionary(path, out_value);
