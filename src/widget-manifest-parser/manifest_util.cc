@@ -169,6 +169,49 @@ inline bool IsTrimRequiredForProp(xmlNode* root, xmlAttr* prop) {
   return false;
 }
 
+// TODO(t.iwanek): move to utils?
+int HexCharToInt(char hex) {
+  if (isdigit(hex)) {
+    return hex - '0';
+  } else if ('A' <= hex && hex <= 'F') {
+    return hex - 'A' + 10;
+  } else if ('a' <= hex && hex <= 'f') {
+    return hex - 'a' + 10;
+  } else {
+    return -1;
+  }
+}
+
+bool EscapeHexEncoded(const std::string& in, std::string* out) {
+  out->clear();
+  out->reserve(in.size());
+  for (unsigned i = 0; i < in.size(); ++i) {
+    if (in[i] == '%') {
+      if (i + 2 < in.size()) {
+        int digit1 = HexCharToInt(in[i + 1]);
+        if (digit1 < 0) {
+          return false;
+        }
+        int digit2 = HexCharToInt(in[i + 2]);
+        if (digit2 < 0) {
+          return false;
+        }
+        char result = static_cast<char>(16 * digit1 + digit2);
+        if (result >= 128) {
+          return false;
+        }
+        *out += result;
+      } else {
+        return false;
+      }
+      i += 2;
+    } else {
+      *out += in[i];
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 namespace common_installer {
@@ -341,17 +384,10 @@ bf::path ApplicationURLToRelativeFilePath(const std::string& url) {
   if (url_path.empty() || url_path[0] != '/')
     return bf::path();
 
-  // TODO(jizydorczyk):
-  // We need to unescappe %-encoded UTF8 chars here
-  // for now its left undone
-  // Drop the leading slashes and convert %-encoded UTF8 to regular UTF8.
-//  std::string file_path = net::UnescapeURLComponent(url_path,
-//      net::UnescapeRule::SPACES | net::UnescapeRule::URL_SPECIAL_CHARS);
-//  size_t skip = file_path.find_first_not_of("/\\");
-//  if (skip != file_path.npos)
-//    file_path = file_path.substr(skip);
+  std::string file_path;
+  if (!EscapeHexEncoded(url_path, &file_path))
+    return bf::path();
 
-  std::string file_path = url_path;
   bf::path path(file_path);
 
   // It's still possible for someone to construct an annoying URL whose path
