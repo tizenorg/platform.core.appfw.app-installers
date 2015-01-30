@@ -28,6 +28,7 @@ SET(TARGET_LIBNAME_WIDGET_MANIFEST_PARSER "common-installer-widget-manifest-pars
 SET(TARGET_WGT_BACKEND "wgt-backend")
 SET(TARGET_XPK_BACKEND "xpk-backend")
 SET(TARGET_NATIVE_BACKEND "native-backend")
+SET(TARGET_TPK_BACKEND "tpk-backend")
 
 ADD_DEFINITIONS("-Wall")
 ADD_DEFINITIONS("-Wextra")
