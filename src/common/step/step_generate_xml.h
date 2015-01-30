@@ -12,8 +12,6 @@
 namespace common_installer {
 namespace generate_xml {
 
-namespace fs = boost::filesystem;
-
 class StepGenerateXml : public Step {
  public:
   using Step::Step;
@@ -23,7 +21,7 @@ class StepGenerateXml : public Step {
   Status undo() override;
 
  private:
-  fs::path icon_path_;
+  boost::filesystem::path icon_path_;
 };
 
 }  // namespace generate_xml

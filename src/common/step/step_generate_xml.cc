@@ -20,6 +20,7 @@
 #define DBG(msg) std::cout << "[GenerateXML] " << msg << std::endl;
 #define ERR(msg) std::cout << "[ERROR: GenerateXML] " << msg << std::endl;
 
+namespace fs = boost::filesystem;
 
 namespace common_installer {
 namespace generate_xml {
@@ -33,21 +34,12 @@ Step::Status StepGenerateXml::process() {
 
   context_->set_xml_path(xml_path.string());
   boost::system::error_code error;
-  uiapplication_x* ui = context_->manifest_data()->uiapplication;
-  serviceapplication_x* svc = context_->manifest_data()->serviceapplication;
-  if ((!ui) && (!svc)) {
+  if ((!context_->manifest_data()->uiapplication) &&
+     (!context_->manifest_data()->serviceapplication)) {
     ERR("There is neither UI applications nor"
         << "Services applications described!\n");
     return Step::Status::ERROR;
   }
-  appcontrol_x* appc_ui = nullptr;
-  appcontrol_x* appc_svc = nullptr;
-  if (ui)
-    appc_ui = ui->appcontrol;
-  if (svc)
-    appc_svc = svc->appcontrol;
-
-  privileges_x* pvlg =  context_->manifest_data()->privileges;
 
   fs::path default_icon(
       tzplatform_mkpath(TZ_SYS_RW_ICONS, "app-installers.png"));
@@ -86,7 +78,8 @@ Step::Status StepGenerateXml::process() {
         "%s", BAD_CAST "");
 
   // add ui-application element per ui application
-  for (; ui != nullptr; ui = ui->next) {
+  for (uiapplication_x* ui = context_->manifest_data()->uiapplication;
+      ui != nullptr; ui = ui->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
 
     xmlTextWriterWriteAttribute(writer, BAD_CAST "appid",
@@ -129,19 +122,18 @@ Step::Status StepGenerateXml::process() {
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
                                          "%s", BAD_CAST icon.c_str());
 
-    for (; appc_ui != nullptr; appc_ui = appc_ui->next) {
+    for (appcontrol_x* appc_ui = ui->appcontrol; appc_ui != nullptr;
+        appc_ui = appc_ui->next) {
       xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
       xmlTextWriterStartElement(writer, BAD_CAST "operation");
       xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
           BAD_CAST appc_ui->operation->name);
-
       xmlTextWriterEndElement(writer);
 
       xmlTextWriterStartElement(writer, BAD_CAST "uri");
       xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
                                       BAD_CAST appc_ui->uri->name);
-
       xmlTextWriterEndElement(writer);
 
       xmlTextWriterStartElement(writer, BAD_CAST "mime");
@@ -149,20 +141,14 @@ Step::Status StepGenerateXml::process() {
           BAD_CAST appc_ui->mime->name);
 
       xmlTextWriterEndElement(writer);
-
-      if (!appc_ui->next)
-        break;
-
-      xmlTextWriterEndElement(writer);
     }
-
-    if (!ui->next)
-      break;
     xmlTextWriterEndElement(writer);
   }
 
   // add service-application element per service application
-  for (; svc != nullptr; svc = svc->next) {
+  for (serviceapplication_x* svc =
+      context_->manifest_data()->serviceapplication;
+      svc != nullptr; svc = svc->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "service-application");
 
     xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST svc->appid);
@@ -184,10 +170,10 @@ Step::Status StepGenerateXml::process() {
     // if the icon isn't exist print the default icon app-installers.png
     icon_path_ = fs::path(getIconPath(context_->uid()));
     utils::CreateDir(icon_path_);
-    fs::path icon = fs::path(ui->appid) += fs::path(".png");
+    fs::path icon = fs::path(svc->appid) += fs::path(".png");
 
-    fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(ui->appid)
-        / fs::path(ui->icon->name);
+    fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(svc->appid)
+        / fs::path(svc->icon->name);
     if (fs::exists(app_icon)) {
       fs::rename(app_icon, icon_path_ /= icon);
     } else {
@@ -195,63 +181,45 @@ Step::Status StepGenerateXml::process() {
       DBG("Icon is not found in package, the default icon is setting");
     }
 
-    for (; appc_svc != nullptr; appc_svc = appc_svc->next) {
+    for (appcontrol_x* appc_svc = svc->appcontrol; appc_svc != nullptr;
+        appc_svc = appc_svc->next) {
       xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
       xmlTextWriterStartElement(writer, BAD_CAST "operation");
       xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
           BAD_CAST appc_svc->operation->name);
-
       xmlTextWriterEndElement(writer);
 
       xmlTextWriterStartElement(writer, BAD_CAST "uri");
       xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-                                      BAD_CAST appc_svc->uri->name);
-
+          BAD_CAST appc_svc->uri->name);
       xmlTextWriterEndElement(writer);
 
       xmlTextWriterStartElement(writer, BAD_CAST "mime");
       xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
           BAD_CAST appc_svc->mime->name);
-
       xmlTextWriterEndElement(writer);
-
-      if (!appc_svc->next)
-        break;
 
       xmlTextWriterEndElement(writer);
     }
-
-    if (!svc->next)
-      break;
     xmlTextWriterEndElement(writer);
   }
 
   // add privilege element
-  for (; pvlg != nullptr; pvlg = pvlg->next) {
-    privilege_x* pv = pvlg->privilege;
-
-    for (; pv != nullptr; pv = pv->next) {
-    xmlTextWriterStartElement(writer, BAD_CAST "privilege");
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-                                      BAD_CAST pv->text);
-      if (!pv->next)
-        break;
-
+  for (privileges_x* pvlg =  context_->manifest_data()->privileges;
+      pvlg != nullptr; pvlg = pvlg->next) {
+    xmlTextWriterStartElement(writer, BAD_CAST "privileges");
+    for (privilege_x* pv = pvlg->privilege; pv != nullptr; pv = pv->next) {
+      xmlTextWriterStartElement(writer, BAD_CAST "privilege");
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "name", BAD_CAST pv->text);
       xmlTextWriterEndElement(writer);
-      }
-    if (!pvlg->next)
-      break;
+    }
+    xmlTextWriterEndElement(writer);
   }
-
 
   xmlTextWriterEndElement(writer);
 
   xmlTextWriterEndDocument(writer);
-
-  if (!writer)
-    return Step::Status::ERROR;
-
   xmlFreeTextWriter(writer);
 
   if (pkgmgr_parser_check_manifest_validation(
