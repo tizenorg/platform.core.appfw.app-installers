@@ -101,7 +101,7 @@ class ApplicationData : public std::enable_shared_from_this<ApplicationData> {
   // App-related.
   bool IsHostedApp() const;
 
-  bool SetApplicationLocale(const std::string& locale, std::u16string* error);
+  bool SetApplicationLocale(const std::string& locale, std::string* error);
 
   virtual ~ApplicationData();
 
@@ -110,15 +110,15 @@ class ApplicationData : public std::enable_shared_from_this<ApplicationData> {
       SourceType source_type, std::unique_ptr<Manifest> manifest);
 
   // Initialize the application from a parsed manifest.
-  bool Init(const std::string& explicit_id, std::u16string* error);
+  bool Init(const std::string& explicit_id, std::string* error);
 
   // Chooses the application ID for an application based on a variety of
   // criteria. The chosen ID will be set in |manifest|.
-  bool LoadID(const std::string& explicit_id, std::u16string* error);
+  bool LoadID(const std::string& explicit_id, std::string* error);
   // The following are helpers for InitFromValue to load various features of the
   // application from the manifest.
-  bool LoadName(std::u16string* error);
-  bool LoadVersion(std::u16string* error);
+  bool LoadName(std::string* error);
+  bool LoadVersion(std::string* error);
 
   // The application's human-readable name. Name is used for display purpose. It
   // might be wrapped with unicode bidi control characters so that it is
