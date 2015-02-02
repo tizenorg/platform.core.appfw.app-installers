@@ -13,13 +13,13 @@
 #include "widget-manifest-parser/application_manifest_constants.h"
 
 #include "widget-manifest-parser/manifest_handlers/permissions_handler.h"
+#include "widget-manifest-parser/manifest_handlers/category_handler.h"
+#include "widget-manifest-parser/manifest_handlers/ime_handler.h"
 #include "widget-manifest-parser/manifest_handlers/tizen_application_handler.h"
 #include "widget-manifest-parser/manifest_handlers/widget_handler.h"
 
 // TODO(t.iwanek): add following handlers
 // #include "widget-manifest-parser/manifest_handlers/tizen_appwidget_handler.h"
-// #include "widget-manifest-parser/manifest_handlers/tizen_category_handler.h"
-// #include "widget-manifest-parser/manifest_handlers/tizen_ime_handler.h"
 // #include "widget-manifest-parser/manifest_handlers/tizen_metadata_handler.h"
 // #include "widget-manifest-parser/manifest_handlers/tizen_navigation_handler.h"
 // #include "widget-manifest-parser/manifest_handlers/tizen_setting_handler.h"
@@ -36,25 +36,22 @@ bool ValidateImeCategory(
     std::string* error) {
   namespace keys = common_installer::application_widget_keys;
   // if config contains tizen:ime tag, proper category should be specified
+  if (application.GetManifestData(keys::kTizenImeKey)) {
+    const common_installer::widget_manifest_parser::CategoryInfoList*
+        categories_list =
+            static_cast<const CategoryInfoList*>(
+                application.GetManifestData(keys::kTizenCategoryKey));
 
-   // TODO(t.iwanek): fix me - add IME handler and uncomment
-
-//  if (application.GetManifestData(keys::kTizenImeKey)) {
-//    const common_installer::widget_manifest_parser::CategoryInfoList*
-//        categories_list =
-//            static_cast<const CategoryInfoList*>(
-//                application.GetManifestData(keys::kTizenCategoryKey));
-
-//    if (categories_list) {
-//      const char imeCategory[] = "http://tizen.org/category/ime";
-//      for (const std::string& category : categories_list->categories) {
-//        if (category == imeCategory)
-//          return true;
-//      }
-//    }
-//    *error = "tizen:ime is specified but not proper category added";
-//    return false;
-//  }
+    if (categories_list) {
+      const char imeCategory[] = "http://tizen.org/category/ime";
+      for (const std::string& category : categories_list->categories) {
+        if (category == imeCategory)
+          return true;
+      }
+    }
+    *error = "tizen:ime is specified but not proper category added";
+    return false;
+  }
   return true;
 }
 
@@ -111,6 +108,8 @@ ManifestHandlerRegistry::GetInstanceForWGT() {
   handlers.push_back(new WidgetHandler);
   handlers.push_back(new TizenApplicationHandler);
   handlers.push_back(new PermissionsHandler);
+  handlers.push_back(new CategoryHandler);
+  handlers.push_back(new ImeHandler);
 
   widget_registry_ = new ManifestHandlerRegistry(handlers);
   return widget_registry_;
