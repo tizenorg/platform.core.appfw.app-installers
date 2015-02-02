@@ -13,15 +13,15 @@
 #include "widget-manifest-parser/manifest_handlers/permissions_handler.h"
 #include "widget-manifest-parser/manifest_handlers/category_handler.h"
 #include "widget-manifest-parser/manifest_handlers/ime_handler.h"
+#include "widget-manifest-parser/manifest_handlers/metadata_handler.h"
+#include "widget-manifest-parser/manifest_handlers/navigation_handler.h"
 #include "widget-manifest-parser/manifest_handlers/setting_handler.h"
+#include "widget-manifest-parser/manifest_handlers/splash_screen_handler.h"
 #include "widget-manifest-parser/manifest_handlers/tizen_application_handler.h"
 #include "widget-manifest-parser/manifest_handlers/widget_handler.h"
 
 // TODO(t.iwanek): add following handlers
 // #include "widget-manifest-parser/manifest_handlers/tizen_appwidget_handler.h"
-// #include "widget-manifest-parser/manifest_handlers/tizen_metadata_handler.h"
-// #include "widget-manifest-parser/manifest_handlers/tizen_navigation_handler.h"
-// #include "widget-manifest-parser/manifest_handlers/tizen_splash_screen_handler.h"
 
 namespace common_installer {
 namespace widget_manifest_parser {
@@ -109,6 +109,10 @@ ManifestHandlerRegistry::GetInstanceForWGT() {
   handlers.push_back(new CategoryHandler);
   handlers.push_back(new ImeHandler);
   handlers.push_back(new SettingHandler);
+  handlers.push_back(new MetaDataHandler);
+  handlers.push_back(new NavigationHandler);
+  handlers.push_back(new SplashScreenHandler);
+
 
   widget_registry_ = new ManifestHandlerRegistry(handlers);
   return widget_registry_;
