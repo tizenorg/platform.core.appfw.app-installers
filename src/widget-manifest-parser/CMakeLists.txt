@@ -4,6 +4,8 @@ SET(SRCS
   application_manifest_constants.cc
   manifest.cc
   manifest_handler.cc
+  manifest_handlers/category_handler.cc
+  manifest_handlers/ime_handler.cc
   manifest_handlers/permissions_handler.cc
   manifest_handlers/tizen_application_handler.cc
   manifest_handlers/widget_handler.cc
