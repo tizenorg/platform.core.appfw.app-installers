@@ -14,7 +14,7 @@ namespace common_installer {
 
 class AppInstaller {
  public:
-  explicit AppInstaller(pkgmgr_installer *pi);
+  explicit AppInstaller(pkgmgr_installer *pi, const char* package_type);
   virtual ~AppInstaller();
 
   // Adds new step to installer by specified type
@@ -34,6 +34,7 @@ class AppInstaller {
  private:
   AppInstaller(const AppInstaller& /*other*/) = delete;
   AppInstaller& operator=(const AppInstaller& /*other*/) = delete;
+
 
   std::list<std::unique_ptr<Step>> steps_;
 };
