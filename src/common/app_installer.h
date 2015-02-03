@@ -30,7 +30,6 @@ class AppInstaller {
  private:
   AppInstaller(const AppInstaller& /*other*/) = delete;
   AppInstaller& operator=(const AppInstaller& /*other*/) = delete;
-
   void EnsureSignalSend();
 
   std::list<std::unique_ptr<Step>> steps_;
