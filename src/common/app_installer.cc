@@ -20,7 +20,7 @@ AppInstaller::AppInstaller(pkgmgr_installer *pi, const char* package_type)
   switch (request_type) {
     case PKGMGR_REQ_INSTALL:
      context_->set_file_path(pkgmgr_installer_get_request_info(pi));
-     context_->set_pkgid(STR_EMPTY);
+     context_->set_new_temporary_pkgid();
     break;
     case PKGMGR_REQ_UNINSTALL:
      context_->set_pkgid(pkgmgr_installer_get_request_info(pi));
@@ -28,6 +28,7 @@ AppInstaller::AppInstaller(pkgmgr_installer *pi, const char* package_type)
     break;
   }
 }
+
 
 AppInstaller::~AppInstaller() {
 }
@@ -45,6 +46,9 @@ int AppInstaller::Run() {
   std::list<std::unique_ptr<Step>>::iterator it(steps_.begin());
   std::list<std::unique_ptr<Step>>::iterator itStart(steps_.begin());
   std::list<std::unique_ptr<Step>>::iterator itEnd(steps_.end());
+
+  PkgmgrSignal *pi = context_->pi();
+  pi->sendStarted();
 
   int ret = 0;
   for (; it != itEnd; ++it) {
@@ -70,6 +74,11 @@ int AppInstaller::Run() {
         break;
       }
     }
+  }
+  if (0 != ret) {
+    pi->sendFinished(PkgmgrSignal::Result::FAILED);
+  } else {
+    pi->sendFinished(PkgmgrSignal::Result::SUCCESS);
   }
 
   EnsureSignalSend();
