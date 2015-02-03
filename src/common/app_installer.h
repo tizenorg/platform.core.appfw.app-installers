@@ -13,7 +13,7 @@ namespace common_installer {
 
 class AppInstaller {
  public:
-  explicit AppInstaller(pkgmgr_installer *pi);
+  explicit AppInstaller(pkgmgr_installer *pi, const char* package_type);
   virtual ~AppInstaller();
 
   // Adds new step to installer by specified type
