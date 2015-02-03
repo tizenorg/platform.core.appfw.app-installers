@@ -4,6 +4,7 @@ SET(SRCS
   application_manifest_constants.cc
   manifest.cc
   manifest_handler.cc
+  manifest_handlers/appwidget_handler.cc
   manifest_handlers/category_handler.cc
   manifest_handlers/ime_handler.cc
   manifest_handlers/metadata_handler.cc
