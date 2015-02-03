@@ -19,7 +19,7 @@ AppInstaller::AppInstaller(pkgmgr_installer *pi, const char* package_type) {
   switch (request_type) {
     case PKGMGR_REQ_INSTALL:
      context_->set_file_path(pkgmgr_installer_get_request_info(pi));
-     context_->set_pkgid(STR_EMPTY);
+	 context_->set_new_temporary_pkgid();
     break;
     case PKGMGR_REQ_UNINSTALL:
      context_->set_pkgid(pkgmgr_installer_get_request_info(pi));
@@ -36,6 +36,8 @@ int AppInstaller::Run() {
   std::list<std::unique_ptr<Step>>::iterator it(steps_.begin());
   std::list<std::unique_ptr<Step>>::iterator itStart(steps_.begin());
   std::list<std::unique_ptr<Step>>::iterator itEnd(steps_.end());
+
+  sendSignal(PKGMGR_INSTALLER_START_KEY_STR, getEventStr(context_->request_type()));
 
   int ret = 0;
   for (; it != itEnd; ++it) {
@@ -62,8 +64,26 @@ int AppInstaller::Run() {
       }
     }
   }
+  if(0 != ret) sendSignal(PKGMGR_INSTALLER_END_KEY_STR, PKGMGR_INSTALLER_FAIL_EVENT_STR);
+  else sendSignal(PKGMGR_INSTALLER_END_KEY_STR, PKGMGR_INSTALLER_OK_EVENT_STR);
 
   return ret;
 }
 
+
+const char *
+AppInstaller::getEventStr(const int request) {
+	static const char *signal_type[PKGMGR_REQ_SMACK] = {0,};	// TODO: need to add a max sentinel value for PKGMGR_REQ_*
+	signal_type[PKGMGR_REQ_INSTALL] = PKGMGR_INSTALLER_INSTALL_EVENT_STR;
+	signal_type[PKGMGR_REQ_UNINSTALL] = PKGMGR_INSTALLER_UNINSTALL_EVENT_STR;
+	signal_type[PKGMGR_REQ_MOVE] = PKGMGR_INSTALLER_MOVE_EVENT_STR;
+	signal_type[PKGMGR_REQ_UPGRADE] = PKGMGR_INSTALLER_UPGRADE_EVENT_STR;
+
+	return signal_type[request];
+}
+
+void
+AppInstaller::sendSignal(const char* signal_key, const char* val) {
+	pkgmgr_installer_send_signal(context_->pi(), context_->pkg_type().c_str(), context_->pkgid().c_str(), signal_key, val);
+}
 }  // namespace common_installer
