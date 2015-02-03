@@ -41,10 +41,8 @@ int main(int argc, char** argv) {
     pkgmgr_installer_free(pi);
     return -result;
   }
-
-  ci::AppInstaller installer(pi);
-
-  // set steps
+  common_installer::AppInstaller installer(pi, "wgt");
+  /* treat the request */
   switch (pkgmgr_installer_get_request_type(pi)) {
     case PKGMGR_REQ_INSTALL: {
       installer.AddStep<ci::unzip::StepUnzip>();
