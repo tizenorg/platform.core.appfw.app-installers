@@ -52,6 +52,11 @@ class ContextInstaller {
     req_ = req;
   }
 
+  std::string pkg_type() const { return pkg_type_; }
+  void set_pkg_type(const std::string& pkg_type) {
+    pkg_type_ = pkg_type;
+  }
+
   manifest_x* manifest_data() const { return manifest_; }
   void set_manifest(manifest_x* manifest) {
     manifest_ = manifest;
@@ -66,6 +71,7 @@ class ContextInstaller {
   void set_pkgid(const std::string& pkgid) {
     pkgid_ = pkgid;
   }
+  void set_new_temporary_pkgid(void);
 
   std::string pkg_path() const { return pkg_path_; }
   void set_pkg_path(const std::string& package_path) {
@@ -107,6 +113,9 @@ class ContextInstaller {
 
   // pkgid used for update or uninstallation processing
   std::string pkgid_;
+
+  // package_type
+  std::string pkg_type_;
 
   // uid of the user that request the operation
   uid_t uid_;

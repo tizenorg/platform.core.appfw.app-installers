@@ -7,21 +7,24 @@
 #include "common/pkgmgr_signal.h"
 #include "utils/logging.h"
 
+#define STR_EMPTY ""
+
 namespace common_installer {
 
-AppInstaller::AppInstaller(pkgmgr_installer *pi)
-    : context_(new ContextInstaller()) {
+AppInstaller::AppInstaller(pkgmgr_installer *pi, const char* package_type)
+  : context_(new ContextInstaller()) {
   int request_type = pkgmgr_installer_get_request_type(pi);
   context_->set_pi(std::unique_ptr<PkgmgrSignal>(new PkgmgrSignal(pi)));
   context_->set_request_type(request_type);
+  context_->set_pkg_type(package_type);
   switch (request_type) {
     case PKGMGR_REQ_INSTALL:
      context_->set_file_path(pkgmgr_installer_get_request_info(pi));
-     context_->set_pkgid("");
+     context_->set_pkgid(STR_EMPTY);
     break;
     case PKGMGR_REQ_UNINSTALL:
      context_->set_pkgid(pkgmgr_installer_get_request_info(pi));
-     context_->set_file_path("");
+     context_->set_file_path(STR_EMPTY);
     break;
   }
 }
