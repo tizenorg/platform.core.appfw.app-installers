@@ -30,6 +30,8 @@ class AppInstaller {
  private:
   AppInstaller(const AppInstaller& /*other*/) = delete;
   AppInstaller& operator=(const AppInstaller& /*other*/) = delete;
+  void sendSignal(const char* signal_key, const char* val);
+  const char *getEventStr(const int request);
 
   void EnsureSignalSend();
 
