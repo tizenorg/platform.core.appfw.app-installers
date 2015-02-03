@@ -35,4 +35,21 @@ const char* ContextInstaller::GetApplicationPath() const {
   return (fs::path(GetRootApplicationPath()) / fs::path(pkgid())).c_str();
 }
 
+
+void ContextInstaller::set_new_temporary_pkgid() {
+	static const char lookup[] =
+		"abcdefghijklmnopqrstuvwxyz"
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		"0123456789";
+	static const int len = 12;
+	const size_t max_lookup = (sizeof(lookup)-1);
+
+	std::string pkgid(len, 0);
+
+	for(int i=0; i<len-1; i++) {
+		pkgid.append(1, lookup[ rand() % max_lookup ]);
+	}
+	set_pkgid(pkgid);
+}
+
 }  // namespace common_installer

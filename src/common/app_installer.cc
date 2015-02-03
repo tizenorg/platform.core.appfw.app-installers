@@ -6,21 +6,24 @@
 #include "common/app_installer.h"
 #include "common/context_installer.h"
 
+#define STR_EMPTY ""
+
 namespace common_installer {
 
-AppInstaller::AppInstaller(pkgmgr_installer *pi) {
+AppInstaller::AppInstaller(pkgmgr_installer *pi, const char* package_type) {
   context_.reset(new ContextInstaller());
   int request_type = pkgmgr_installer_get_request_type(pi);
   context_->set_pi(pi);
   context_->set_request_type(request_type);
+  context_->set_pkg_type(package_type);
   switch (request_type) {
     case PKGMGR_REQ_INSTALL:
      context_->set_file_path(pkgmgr_installer_get_request_info(pi));
-     context_->set_pkgid("");
+     context_->set_pkgid(STR_EMPTY);
     break;
     case PKGMGR_REQ_UNINSTALL:
      context_->set_pkgid(pkgmgr_installer_get_request_info(pi));
-     context_->set_file_path("");
+     context_->set_file_path(STR_EMPTY);
     break;
   }
 }
@@ -59,6 +62,7 @@ int AppInstaller::Run() {
       }
     }
   }
+
   return ret;
 }
 
