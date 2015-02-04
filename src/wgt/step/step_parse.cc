@@ -26,7 +26,7 @@ common_installer::Step::Status StepParse::process() {
   const ManifestData* data = nullptr;
   const char* error = nullptr;
   if (!ParseManifest(config_.c_str(), &data, &error)) {
-     LOG(ERROR) << "Parse failed. " <<  error;
+    LOG(ERROR) << "Parse failed. " <<  error;
     if (!ReleaseData(data, error))
       LOG(ERROR) << " Release data failed.";
     return common_installer::Step::Status::ERROR;

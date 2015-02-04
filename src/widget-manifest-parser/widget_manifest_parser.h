@@ -6,21 +6,23 @@
 #ifndef WIDGET_MANIFEST_PARSER_WIDGET_MANIFEST_PARSER_H_
 #define WIDGET_MANIFEST_PARSER_WIDGET_MANIFEST_PARSER_H_
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // Represents a manifest data
 struct ManifestData {
-  const char* package;
-  const char* id;
-  const char* name;
-  const char* short_name;
-  const char* version;
-  const char* icon;
-  const char* api_version;
+  char* package;
+  char* id;
+  char* name;
+  char* short_name;
+  char* version;
+  char* icon;
+  char* api_version;
   unsigned int privilege_count;
-  const char** privilege_list;
+  char** privilege_list;
 };
 
 // Reads manifest from specified file and filles specified data argument
@@ -30,8 +32,7 @@ bool ParseManifest(const char* path,
     const ManifestData** data, const char** error);
 
 // Releses the data and the error returned by ParseManifest.
-// Returns true on success or false otherwise.
-bool ReleaseData(const ManifestData* data, const char* error);
+void ReleaseData(const ManifestData* data, const char* error);
 
 #ifdef __cplusplus
 }  // extern "C"
