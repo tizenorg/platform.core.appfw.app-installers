@@ -5,13 +5,14 @@
 
 #include "common/app_installer.h"
 #include "common/context_installer.h"
+#include "common/pkgmgr_signal.h"
 
 namespace common_installer {
 
-AppInstaller::AppInstaller(pkgmgr_installer *pi) {
-  context_.reset(new ContextInstaller());
+AppInstaller::AppInstaller(pkgmgr_installer *pi)
+    : context_(new ContextInstaller()) {
   int request_type = pkgmgr_installer_get_request_type(pi);
-  context_->set_pi(pi);
+  context_->set_pi(std::unique_ptr<PkgmgrSignal>(new PkgmgrSignal(pi)));
   context_->set_request_type(request_type);
   switch (request_type) {
     case PKGMGR_REQ_INSTALL:
@@ -28,6 +29,14 @@ AppInstaller::AppInstaller(pkgmgr_installer *pi) {
 AppInstaller::~AppInstaller() {
 }
 
+void AppInstaller::EnsureSignalSend() {
+  if (!context_->pi()->IsFinished()) {
+    // if signal was not sent during normal step execution
+    // then this will sent any signal about failure
+    (void) context_->pi()->sendStarted();
+    (void) context_->pi()->sendFinished(PkgmgrSignal::Result::FAILED);
+  }
+}
 
 int AppInstaller::Run() {
   std::list<std::unique_ptr<Step>>::iterator it(steps_.begin());
@@ -59,6 +68,9 @@ int AppInstaller::Run() {
       }
     }
   }
+
+  EnsureSignalSend();
+
   return ret;
 }
 
