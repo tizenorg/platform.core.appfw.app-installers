@@ -31,8 +31,8 @@
 namespace ci = common_installer;
 
 int main(int argc, char** argv) {
-  /* get request data */
-  pkgmgr_installer *pi = pkgmgr_installer_new();
+  // get request data
+  pkgmgr_installer* pi = pkgmgr_installer_new();
   if (!pi)
     return ENOMEM;
 
@@ -41,13 +41,12 @@ int main(int argc, char** argv) {
     pkgmgr_installer_free(pi);
     return -result;
   }
-  common_installer::AppInstaller* installer =
-      new common_installer::AppInstaller(pi);
-  /* treat the request */
+
+  ci::AppInstaller installer(pi);
+
+  // set steps
   switch (pkgmgr_installer_get_request_type(pi)) {
     case PKGMGR_REQ_INSTALL: {
-      ci::AppInstaller installer(pi);
-
       installer.AddStep<ci::unzip::StepUnzip>();
       installer.AddStep<ci::signature::StepSignature>();
       installer.AddStep<wgt::parse::StepParse>();
@@ -57,29 +56,26 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::security::StepSecurity>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
       installer.AddStep<ci::record::StepRecord>();
-
-      installer.Run();
       break;
     }
     case PKGMGR_REQ_UNINSTALL: {
-      ci::AppInstaller installer(pi);
-
       installer.AddStep<ci::parse::StepParse>();
       installer.AddStep<ci::signal::StepSignal>();
       installer.AddStep<ci::revoke_security::StepRevokeSecurity>();
       installer.AddStep<ci::unregister::StepUnregister>();
       installer.AddStep<ci::remove::StepRemove>();
-
-      installer.Run();
       break;
     }
     default: {
-      /* unsupported operation */
-      result = EINVAL;
-      break;
+      // unsupported operation
+      pkgmgr_installer_free(pi);
+      return EINVAL;
     }
   }
-  delete installer;
+
+  // run request
+  result = installer.Run();
+
   pkgmgr_installer_free(pi);
   return result;
 }
