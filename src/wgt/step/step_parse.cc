@@ -18,7 +18,7 @@ namespace wgt {
 namespace parse {
 
 common_installer::Step::Status StepParse::process() {
-  if (!StepParse::Check(context_->unpack_directory())) {
+  if (!StepParse::Check(context_->unpacked_dir_path())) {
     LOG(ERROR) << "No config.xml";
     return common_installer::Step::Status::ERROR;
   }
