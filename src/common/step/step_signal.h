@@ -19,10 +19,6 @@ class StepSignal : public Step {
   Status process() override;
   Status clean() override;
   Status undo() override;
-
- private:
-  bool sendSignal(ContextInstaller* data, const std::string& key,
-      const std::string& value);
 };
 
 }  // namespace signal

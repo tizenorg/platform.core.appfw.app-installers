@@ -9,7 +9,6 @@
 
 #include "common/step/step.h"
 
-
 namespace common_installer {
 
 class AppInstaller {
@@ -28,14 +27,14 @@ class AppInstaller {
 
   int Run();
 
- protected:
-  std::unique_ptr<ContextInstaller> context_;
-
  private:
   AppInstaller(const AppInstaller& /*other*/) = delete;
   AppInstaller& operator=(const AppInstaller& /*other*/) = delete;
 
+  void EnsureSignalSend();
+
   std::list<std::unique_ptr<Step>> steps_;
+  std::unique_ptr<ContextInstaller> context_;
 };
 
 }  // namespace common_installer
