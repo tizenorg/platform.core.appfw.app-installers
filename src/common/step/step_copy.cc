@@ -29,20 +29,20 @@ Step::Status StepCopy::process() {
       !context_->manifest_data()->uiapplication->next)
     install_path /= fs::path(context_->manifest_data()->mainapp_id);
 
-  if (!utils::CopyDir(fs::path(context_->unpack_directory()), install_path)) {
-    LOG(ERROR) << "Fail to copy tmp dir: " << context_->unpack_directory()
-               << " to dst dir: " << install_path.string();
+  if (!utils::CopyDir(fs::path(context_->unpacked_dir_path()), install_path)) {
+    LOG(ERROR) << "Fail to copy tmp dir: " << context_->unpacked_dir_path()
+        << " to dst dir: " << install_path.string();
     return Step::Status::ERROR;
   }
 
-  LOG(INFO) << "Successfully copy: " << context_->unpack_directory()
-            << " to: " << install_path.string() << " directory";
+  LOG(INFO) << "Successfully copy: " << context_->unpacked_dir_path()
+      << " to: " << install_path.string() << " directory";
   return Status::OK;
 }
 
 Step::Status StepCopy::clean() {
-  LOG(DEBUG) << "Remove tmp dir: " << context_->unpack_directory();
-  fs::remove_all(context_->unpack_directory());
+  LOG(DEBUG) << "Remove tmp dir: " << context_->unpacked_dir_path();
+  fs::remove_all(context_->unpacked_dir_path());
   return Status::OK;
 }
 
