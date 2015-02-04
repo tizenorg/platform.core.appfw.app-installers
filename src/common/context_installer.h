@@ -88,9 +88,9 @@ class ContextInstaller {
 
   uid_t uid() const { return uid_; }
 
-  std::string unpack_directory() const { return unpack_directory_; }
-  void set_unpack_directory(const std::string& unpack_dir) {
-    unpack_directory_ = unpack_dir;
+  std::string unpacked_dir_path() const { return unpacked_dir_path_; }
+  void set_unpacked_dir_path(const std::string& dir_path) {
+    unpacked_dir_path_ = dir_path;
   }
 
   ConfigData* config_data() const { return config_data_.get(); }
@@ -126,7 +126,7 @@ class ContextInstaller {
   std::string file_path_;
 
   // directory path where app data are temporarily extracted
-  std::string unpack_directory_;
+  std::string unpacked_dir_path_;
 
   // data from config.xml
   ConfigDataPtr config_data_;

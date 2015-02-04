@@ -16,7 +16,7 @@ namespace common_installer {
 namespace signature {
 
 Step::Status StepSignature::process() {
-  return (SignatureValidator::Check(bf::path(context_->unpack_directory()))
+  return (SignatureValidator::Check(bf::path(context_->unpacked_dir_path()))
       == SignatureValidator::INVALID) ? Status::ERROR : Status::OK;
 }
 
