@@ -28,8 +28,7 @@ common_installer::Step::Status StepParse::process() {
   const char* error = nullptr;
   if (!ParseManifest(config_.c_str(), &data, &error)) {
     std::cout << "[Parse] Parse failed. " <<  error << std::endl;
-    if (!ReleaseData(data, error))
-      std::cout << "[Parse] Release data failed." << std::endl;
+    ReleaseData(data, error);
     return common_installer::Step::Status::ERROR;
   }
 
@@ -58,11 +57,7 @@ common_installer::Step::Status StepParse::process() {
   std::cout << "]-" << std::endl;
   //--- End Test ---
 
-  if (!ReleaseData(data, error)) {
-    std::cout << "[Parse] Release data failed." << std::endl;
-    return common_installer::Step::Status::ERROR;
-  }
-
+  ReleaseData(data, error);
   return common_installer::Step::Status::OK;
 }
 
