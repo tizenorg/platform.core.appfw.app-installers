@@ -155,17 +155,17 @@ Step::Status StepUnzip::process() {
     ERR("Failed to process unpack step");
     return Step::Status::ERROR;
   }
-  context_->set_unpack_directory(tmp_dir.string());
+  context_->set_unpacked_dir_path(tmp_dir.string());
 
   DBG(context_->file_path() << " was successfully unzipped into "
-      << context_->unpack_directory());
+      << context_->unpacked_dir_path());
   return Status::OK;
 }
 
 Step::Status StepUnzip::undo() {
-  if (access(context_->unpack_directory().c_str(), F_OK) == 0) {
-    boost::filesystem::remove_all(context_->unpack_directory());
-    DBG("remove temp dir: " << context_->unpack_directory());
+  if (access(context_->unpacked_dir_path().c_str(), F_OK) == 0) {
+    boost::filesystem::remove_all(context_->unpacked_dir_path());
+    DBG("remove temp dir: " << context_->unpacked_dir_path());
   }
   return Status::OK;
 }
