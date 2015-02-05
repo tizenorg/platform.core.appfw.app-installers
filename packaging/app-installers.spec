@@ -10,6 +10,7 @@ Source1001:     wgt-backend.manifest
 BuildRequires:  boost-devel
 BuildRequires:  cmake
 BuildRequires:  libcap-devel
+BuildRequires:  gtest-devel
 BuildRequires:  pkgconfig(pkgmgr)
 BuildRequires:  pkgconfig(pkgmgr-parser)
 BuildRequires:  pkgconfig(pkgmgr-info)
@@ -42,6 +43,13 @@ Summary: Backend of XPK files
 
 %description -n xpk-backend
 Backend for standard widget files XPK
+
+%package tests
+Summary: Unit tests for app-installers
+Requires: %{name} = %{version}
+
+%description tests
+Unit tests for al modules of app-installers
 
 %prep
 %setup -q
@@ -79,3 +87,7 @@ ln -s %{_bindir}/xpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 
 %files -n xpk-backend
 %{_sysconfdir}/package-manager/backend/xpk
+
+%files tests
+%{_bindir}/app-installers-ut/*
+%{_datadir}/app-installers-ut/*
