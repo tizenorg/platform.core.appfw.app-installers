@@ -6,6 +6,7 @@
 #define COMMON_STEP_STEP_REVOKE_SECURITY_H_
 
 #include "common/step/step.h"
+#include "utils/logging.h"
 
 namespace common_installer {
 namespace revoke_security {
@@ -18,6 +19,8 @@ class StepRevokeSecurity : public Step {
   Status process() override;
   Status undo() override;
   Status clean() override { return Status::OK; }
+
+  SCOPE_LOG_TAG(RevokeSecurity)
 };
 
 }  // namespace revoke_security

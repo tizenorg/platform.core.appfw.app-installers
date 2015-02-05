@@ -8,9 +8,7 @@
 
 #include <iostream>
 
-// TODO(t.iwanek): logging mechanism...
-#define DBG(msg) std::cout << "[DEBUG:SecurityContext] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR:SecurityContext] " << msg << std::endl;
+#include "utils/logging.h"
 
 namespace bf = boost::filesystem;
 
@@ -20,7 +18,7 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     const boost::filesystem::path& path, manifest_x* manifest,
     app_inst_req* req) {
   if (app_id.empty() || pkg_id.empty()) {
-    ERR("Appid or pkgid is empty. Both values must be set");
+    LOG(ERROR) << "Appid or pkgid is empty. Both values must be set";
     return false;
   }
 
@@ -63,21 +61,22 @@ bool RegisterSecurityContext(const std::string& app_id,
 
   int error = security_manager_app_inst_req_new(&req);
   if (error != SECURITY_MANAGER_SUCCESS) {
-    ERR("Failed while calling security_manager_app_inst_req_new failed "
-        << "(error code: " << error << ")");
+    LOG(ERROR)
+        << "Failed while calling security_manager_app_inst_req_new failed "
+        << "(error code: " << error << ")";
     return false;
   }
 
   if (!PrepareRequest(app_id, pkg_id, path, manifest, req)) {
-      ERR("Failed while preparing security_manager_app_inst_req");
+      LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
       security_manager_app_inst_req_free(req);
       return false;
   }
 
   error = security_manager_app_install(req);
   if (error != SECURITY_MANAGER_SUCCESS) {
-    ERR("Failed while calling security_manager_app_install failed "
-        << "(error code: " << error << ")");
+    LOG(ERROR) << "Failed while calling security_manager_app_install failed "
+               << "(error code: " << error << ")";
     security_manager_app_inst_req_free(req);
     return false;
   }
@@ -93,21 +92,21 @@ bool UnregisterSecurityContext(const std::string& app_id,
 
   int error = security_manager_app_inst_req_new(&req);
   if (error != SECURITY_MANAGER_SUCCESS) {
-    ERR("Failed while calling security_manager_app_inst_req_new  "
-        << "(error code: " << error << ")");
+    LOG(ERROR) << "Failed while calling security_manager_app_inst_req_new  "
+               << "(error code: " << error << ")";
     return false;
   }
 
   if (!PrepareRequest(app_id, pkg_id, bf::path(), nullptr, req)) {
-    ERR("Failed while preparing security_manager_app_inst_req");
+    LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
   }
 
   error = security_manager_app_uninstall(req);
   if (error != SECURITY_MANAGER_SUCCESS) {
-    ERR("Failed while calling  security_manager_app_uninstall failed "
-        << "(error code: " << error << ")");
+    LOG(ERROR) << "Failed while calling  security_manager_app_uninstall failed "
+               << "(error code: " << error << ")";
     security_manager_app_inst_req_free(req);
     return false;
   }

@@ -12,13 +12,9 @@
 
 #include <cassert>
 #include <cstring>
-#include <iostream>
 #include <string>
 
 #include "common/utils.h"
-
-#define DBG(msg) std::cout << "[GenerateXML] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR: GenerateXML] " << msg << std::endl;
 
 namespace fs = boost::filesystem;
 
@@ -36,8 +32,8 @@ Step::Status StepGenerateXml::process() {
   boost::system::error_code error;
   if ((!context_->manifest_data()->uiapplication) &&
      (!context_->manifest_data()->serviceapplication)) {
-    ERR("There is neither UI applications nor"
-        << "Services applications described!\n");
+    LOG(ERROR) << "There is neither UI applications nor"
+               << "Services applications described!";
     return Step::Status::ERROR;
   }
 
@@ -48,7 +44,7 @@ Step::Status StepGenerateXml::process() {
 
   writer = xmlNewTextWriterFilename(context_->xml_path().c_str(), 0);
   if (!writer) {
-    ERR("Failed to create new file\n");
+    LOG(ERROR) << "Failed to create new file";
     return Step::Status::ERROR;
   }
 
@@ -116,7 +112,7 @@ Step::Status StepGenerateXml::process() {
       fs::rename(app_icon, icon_path_ /= icon);
     } else {
       fs::create_symlink(default_icon, icon_path_ /= icon, error);
-      DBG("Icon is not found in package, the default icon is setting");
+      LOG(DEBUG) << "Icon is not found in package, the default icon is setting";
     }
 
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
@@ -178,7 +174,7 @@ Step::Status StepGenerateXml::process() {
       fs::rename(app_icon, icon_path_ /= icon);
     } else {
       fs::rename(default_icon, icon_path_ /= icon);
-      DBG("Icon is not found in package, the default icon is setting");
+      LOG(DEBUG) << "Icon is not found in package, the default icon is setting";
     }
 
     for (appcontrol_x* appc_svc = svc->appcontrol; appc_svc != nullptr;
@@ -224,11 +220,11 @@ Step::Status StepGenerateXml::process() {
 
   if (pkgmgr_parser_check_manifest_validation(
       context_->xml_path().c_str()) != 0) {
-    DBG("Manifest is not valid");
+    LOG(ERROR) << "Manifest is not valid";
     return Step::Status::ERROR;
   }
 
-  DBG("Successfully create manifest xml " << context_->xml_path());
+  LOG(DEBUG) << "Successfully create manifest xml " << context_->xml_path();
   return Status::OK;
 }
 

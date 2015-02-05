@@ -15,13 +15,9 @@
 #include <cstdlib>
 #include <climits>
 #include <cstring>
-#include <iostream>
 #include <string>
 
 #include "common/utils.h"
-
-#define DBG(msg) std::cout << "[Unzip] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR: Unzip] " << msg << std::endl;
 
 #define ZIPBUFSIZE 8192
 #define ZIPMAXPATH 256
@@ -52,7 +48,7 @@ boost::filesystem::path StepUnzip::GenerateTmpDir(const char* app_path) {
 Step::Status StepUnzip::ExtractToTmpDir(const char* src,
     const boost::filesystem::path& tmp_dir) {
   if (is_extracted_) {
-    ERR(src << " is already extracted");
+    LOG(ERROR) << src << " is already extracted";
     return Status::OK;
   }
 
@@ -65,12 +61,12 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
 
   unzFile* zip_file = static_cast<unzFile*>(unzOpen(src));
   if (zip_file == NULL) {
-    ERR("Failed to open the source dir: " << src);
+    LOG(ERROR) << "Failed to open the source dir: " << src;
     return Step::Status::ERROR;
   }
 
   if (unzGetGlobalInfo(zip_file, &info) != UNZ_OK) {
-    ERR("Failed to read global info");
+    LOG(ERROR) << "Failed to read global info";
     unzClose(zip_file);
     return Step::Status::ERROR;
   }
@@ -78,7 +74,7 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
   for (uLong i = 0; i < info.number_entry; i++) {
     if (unzGetCurrentFileInfo(zip_file, &raw_file_info, raw_file_name_in_zip,
         sizeof(raw_file_name_in_zip), NULL, 0, NULL, 0) != UNZ_OK) {
-      ERR("Failed to read file info");
+      LOG(ERROR) << "Failed to read file info";
       unzClose(zip_file);
       return Step::Status::ERROR;
     }
@@ -89,14 +85,14 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
     boost::filesystem::path filename_in_zip_path(raw_file_name_in_zip);
     if (!filename_in_zip_path.parent_path().empty()) {
       if (!utils::CreateDir(filename_in_zip_path.parent_path())) {
-        ERR("Failed to create directory: "
-            << filename_in_zip_path.parent_path());
+        LOG(ERROR) << "Failed to create directory: "
+            << filename_in_zip_path.parent_path();
         return Step::Status::ERROR;
       }
     }
 
     if (unzOpenCurrentFile(zip_file) != UNZ_OK) {
-      ERR("Failed to open file");
+      LOG(ERROR) << "Failed to open file";
       unzClose(zip_file);
       return Step::Status::ERROR;
     }
@@ -104,7 +100,7 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
     if (!is_directory(filename_in_zip_path)) {
       FILE *out = fopen(raw_file_name_in_zip, "wb");
       if (!out) {
-        ERR("Failed to open destination ");
+        LOG(ERROR) << "Failed to open destination ";
         unzCloseCurrentFile(zip_file);
         return Step::Status::ERROR;
       }
@@ -113,7 +109,7 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
       do {
         ret = unzReadCurrentFile(zip_file, read_buffer, ZIPBUFSIZE);
         if (ret < 0) {
-          ERR("Failed to read data: " << ret);
+          LOG(ERROR) << "Failed to read data: " << ret;
           unzCloseCurrentFile(zip_file);
           return Step::Status::ERROR;
         } else {
@@ -126,7 +122,7 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
 
     if ((i+1) < info.number_entry) {
       if (unzGoToNextFile(zip_file) != UNZ_OK) {
-        ERR("Failed to read next file");
+        LOG(ERROR) << "Failed to read next file";
         unzCloseCurrentFile(zip_file);
         return Step::Status::ERROR;
       }
@@ -146,26 +142,26 @@ Step::Status StepUnzip::process() {
       GenerateTmpDir(context_->GetRootApplicationPath());
 
   if (!utils::CreateDir(tmp_dir)) {
-    ERR("Failed to create temp directory: " << tmp_dir);
+    LOG(ERROR) << "Failed to create temp directory: " << tmp_dir;
     return Step::Status::ERROR;
   }
 
   if (ExtractToTmpDir(context_->file_path().c_str(), tmp_dir)
       != Step::Status::OK) {
-    ERR("Failed to process unpack step");
+    LOG(ERROR) << "Failed to process unpack step";
     return Step::Status::ERROR;
   }
   context_->set_unpack_directory(tmp_dir.string());
 
-  DBG(context_->file_path() << " was successfully unzipped into "
-      << context_->unpack_directory());
+  LOG(INFO) << context_->file_path() << " was successfully unzipped into "
+            << context_->unpack_directory();
   return Status::OK;
 }
 
 Step::Status StepUnzip::undo() {
   if (access(context_->unpack_directory().c_str(), F_OK) == 0) {
     boost::filesystem::remove_all(context_->unpack_directory());
-    DBG("remove temp dir: " << context_->unpack_directory());
+    LOG(DEBUG) << "remove temp dir: " << context_->unpack_directory();
   }
   return Status::OK;
 }

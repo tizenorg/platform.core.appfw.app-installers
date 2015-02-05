@@ -7,6 +7,7 @@
 
 #include "common/context_installer.h"
 #include "common/step/step.h"
+#include "utils/logging.h"
 
 namespace common_installer {
 namespace unzip {
@@ -25,6 +26,8 @@ class StepUnzip : public Step {
       const boost::filesystem::path& tmp_dir);
 
   bool is_extracted_;
+
+  SCOPE_LOG_TAG(Unzip)
 };
 
 }  // namespace unzip

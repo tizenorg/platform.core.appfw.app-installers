@@ -8,6 +8,7 @@
 #include "common/app_installer.h"
 #include "common/context_installer.h"
 #include "common/step/step.h"
+#include "utils/logging.h"
 
 namespace wgt {
 namespace symbolic_link {
@@ -19,6 +20,8 @@ class StepSymbolicLink : public common_installer::Step {
   Status process() override;
   Status clean() override;
   Status undo() override;
+
+  SCOPE_LOG_TAG(SymbolicLink)
 };
 
 }  // namespace symbolic_link

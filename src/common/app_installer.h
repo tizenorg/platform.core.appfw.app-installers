@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "common/step/step.h"
-
+#include "utils/logging.h"
 
 namespace common_installer {
 
@@ -36,6 +36,8 @@ class AppInstaller {
   AppInstaller& operator=(const AppInstaller& /*other*/) = delete;
 
   std::list<std::unique_ptr<Step>> steps_;
+
+  SCOPE_LOG_TAG(AppInstaller)
 };
 
 }  // namespace common_installer

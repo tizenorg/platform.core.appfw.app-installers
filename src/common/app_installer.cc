@@ -1,10 +1,10 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#include <iostream>
 #include <cstdio>
 
 #include "common/app_installer.h"
 #include "common/context_installer.h"
+#include "utils/logging.h"
 
 namespace common_installer {
 
@@ -37,23 +37,23 @@ int AppInstaller::Run() {
   int ret = 0;
   for (; it != itEnd; ++it) {
     if ((*it)->process() != Step::Status::OK) {
-      std::cout << "Error during processing" << std::endl;
+      LOG(ERROR) << "Error during processing";
       ret = -1;
       break;
     }
   }
   if (it != itEnd) {
-    std::cout << "Failure occurs" << std::endl;
+    LOG(ERROR) << "Failure occurs";
     do {
       if ((*it)->undo() != Step::Status::OK) {
-        std::cout << "Error during undo operation" << std::endl;
+        LOG(ERROR) << "Error during undo operation";
         ret = -2;
       }
     } while (it-- != itStart);
   } else {
     while (it-- != itStart) {
       if ((*it)->clean() != Step::Status::OK) {
-        std::cout << "Error during clean operation" << std::endl;
+        LOG(ERROR) << "Error during clean operation";
         ret = -3;
         break;
       }

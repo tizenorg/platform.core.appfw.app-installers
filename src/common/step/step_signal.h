@@ -8,6 +8,7 @@
 #include "common/context_installer.h"
 
 #include "common/step/step.h"
+#include "utils/logging.h"
 
 namespace common_installer {
 namespace signal {
@@ -23,6 +24,8 @@ class StepSignal : public Step {
  private:
   bool sendSignal(ContextInstaller* data, const std::string& key,
       const std::string& value);
+
+  SCOPE_LOG_TAG(Signal)
 };
 
 }  // namespace signal

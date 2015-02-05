@@ -7,12 +7,9 @@
 #include <boost/filesystem.hpp>
 #include <cassert>
 #include <cstring>
-#include <iostream>
 
 #include "common/step/step_unregister.h"
 #include "common/utils.h"
-#define DBG(msg) std::cout << "[Unregister] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR: Unregister] " << msg << std::endl;
 
 namespace common_installer {
 namespace unregister {
@@ -31,21 +28,21 @@ Step::Status StepUnregister::process() {
           context_->xml_path().c_str(), appinst_tags);
 
   if (ret != 0) {
-    DBG("Failed to unregister package into database");
+    LOG(ERROR) << "Failed to unregister package into database";
     return Status::ERROR;
   }
-  DBG("Successfully unregister the application");
+  LOG(DEBUG) << "Successfully unregister the application";
 
   return Status::OK;
 }
 
 Step::Status StepUnregister::clean() {
-  DBG("Empty 'clean' method");
+  LOG(DEBUG) << "Empty 'clean' method";
   return Status::OK;
 }
 
 Step::Status StepUnregister::undo() {
-  DBG("Empty 'undo' method");
+  LOG(DEBUG) << "Empty 'undo' method";
   return Status::OK;
 }
 
