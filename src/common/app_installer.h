@@ -9,6 +9,7 @@
 
 #include "common/step/step.h"
 #include "utils/logging.h"
+#include "utils/macros.h"
 
 namespace common_installer {
 
@@ -32,12 +33,11 @@ class AppInstaller {
   std::unique_ptr<ContextInstaller> context_;
 
  private:
-  AppInstaller(const AppInstaller& /*other*/) = delete;
-  AppInstaller& operator=(const AppInstaller& /*other*/) = delete;
-
   std::list<std::unique_ptr<Step>> steps_;
 
   SCOPE_LOG_TAG(AppInstaller)
+
+  DISALLOW_COPY_AND_ASSIGN(AppInstaller);
 };
 
 }  // namespace common_installer
