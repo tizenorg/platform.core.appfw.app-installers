@@ -8,6 +8,7 @@
 
 #include "common/context_installer.h"
 #include "common/step/step.h"
+#include "utils/logging.h"
 
 namespace common_installer {
 namespace generate_xml {
@@ -22,6 +23,8 @@ class StepGenerateXml : public Step {
 
  private:
   boost::filesystem::path icon_path_;
+
+  SCOPE_LOG_TAG(GenerateXML)
 };
 
 }  // namespace generate_xml

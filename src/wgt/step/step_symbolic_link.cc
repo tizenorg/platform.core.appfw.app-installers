@@ -8,14 +8,10 @@
 #include <boost/filesystem.hpp>
 #include <cassert>
 #include <cstring>
-#include <iostream>
 #include <cstdio>
 #include <string>
 
 #include "common/utils.h"
-
-#define DBG(msg) std::cout << "[Symoblic Link] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR: Symoblic Link] " << msg << std::endl;
 
 namespace wgt {
 namespace symbolic_link {
@@ -28,8 +24,8 @@ common_installer::Step::Status StepSymbolicLink::process() {
   uiapplication_x* ui = context_->manifest_data()->uiapplication;
   serviceapplication_x* svc = context_->manifest_data()->serviceapplication;
   if ((!ui) && (!svc)) {
-    ERR("There is neither UI applications nor"
-        << "Services applications described!\n");
+     LOG(ERROR) << "There is neither UI applications nor"
+        << "Services applications described!";
     return Step::Status::ERROR;
   }
   // add ui-application element per ui application
@@ -43,8 +39,8 @@ common_installer::Step::Status StepSymbolicLink::process() {
 
     fs::create_symlink(fs::path(WRT_LAUNCHER), exec_path, error);
     if (error) {
-      ERR("Failed to set symbolic link "
-        << boost::system::system_error(error).what());
+      LOG(ERROR) << "Failed to set symbolic link "
+        << boost::system::system_error(error).what();
       return Step::Status::ERROR;
     }
   }
@@ -58,12 +54,12 @@ common_installer::Step::Status StepSymbolicLink::process() {
 
     fs::create_symlink(fs::path(WRT_LAUNCHER), exec_path, error);
     if (error) {
-      ERR("Failed to set symbolic link "
-        << boost::system::system_error(error).what());
+      LOG(ERROR) << "Failed to set symbolic link "
+        << boost::system::system_error(error).what();
       return Step::Status::ERROR;
     }
   }
-  DBG("Successfully parse tizen manifest xml");
+  LOG(DEBUG) << "Successfully parse tizen manifest xml";
 
   return Status::OK;
 }

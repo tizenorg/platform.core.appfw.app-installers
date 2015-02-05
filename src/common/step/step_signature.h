@@ -7,6 +7,7 @@
 
 #include "common/context_installer.h"
 #include "common/step/step.h"
+#include "utils/logging.h"
 
 namespace common_installer {
 namespace signature {
@@ -18,6 +19,8 @@ class StepSignature : public Step {
   Status process() override;
   Status undo() override { return Status::OK; }
   Status clean() override { return Status::OK; }
+
+  SCOPE_LOG_TAG(Signature)
 };
 
 }  // namespace signature

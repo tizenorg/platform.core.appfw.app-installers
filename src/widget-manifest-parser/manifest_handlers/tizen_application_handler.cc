@@ -10,6 +10,7 @@
 #include <regex>
 #include <utility>
 
+#include "utils/logging.h"
 #include "utils/values.h"
 #include "widget-manifest-parser/application_manifest_constants.h"
 
@@ -104,8 +105,8 @@ bool TizenApplicationHandler::Validate(
   if (app_info->id().find(app_info->package()) != 0) {
     *error = "The application element property id "
              "does not start with package.\n";
-    fprintf(stderr, "app_info->id() = %s\n", app_info->id().c_str());
-    fprintf(stderr, "app_info->package() = %s\n", app_info->package().c_str());
+    LOG(ERROR) << "app_info->id() = " << app_info->id();
+    LOG(ERROR) << "app_info->package() = " << app_info->package();
     return false;
   }
   if (app_info->required_version().empty()) {

@@ -12,6 +12,7 @@
 
 #include <string>
 
+#include "utils/logging.h"
 #include "utils/macros.h"
 
 namespace common_installer {
@@ -28,6 +29,8 @@ class SignatureValidator {
   static Status Check(const boost::filesystem::path& widget_path);
 
  private:
+  SCOPE_LOG_TAG(SignatureValidator)
+
   DISALLOW_COPY_AND_ASSIGN(SignatureValidator);
 };
 

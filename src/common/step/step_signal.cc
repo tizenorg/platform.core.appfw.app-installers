@@ -2,12 +2,10 @@
 
 #include "common/step/step_signal.h"
 
-#include <iostream>
+#include <pkgmgr-info.h>
+#include <unistd.h>
 
 #include "common/utils.h"
-
-#define DBG(msg) std::cout << "[Signal] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR: Signal] " << msg << std::endl;
 
 namespace common_installer {
 namespace signal {
@@ -17,7 +15,7 @@ Step::Status StepSignal::process() {
       context_->manifest_data()->type, context_->pkgid())) {
     return Status::ERROR;
   }
-  DBG("Send Start");
+  LOG(DEBUG) << "Send Start";
   return Status::OK;
 }
 
@@ -27,7 +25,7 @@ Step::Status StepSignal::clean() {
         context_->manifest_data()->type, context_->pkgid())) {
     return Status::ERROR;
   }
-  DBG("Send Success");
+  LOG(DEBUG) << "Send Success";
   return Status::OK;
 }
 
@@ -37,7 +35,7 @@ Step::Status StepSignal::undo() {
         context_->manifest_data()->type, context_->pkgid())) {
     return Status::ERROR;
   }
-  DBG("Send Error");
+  LOG(ERROR) << "Send Error";
   return Status::OK;
 }
 

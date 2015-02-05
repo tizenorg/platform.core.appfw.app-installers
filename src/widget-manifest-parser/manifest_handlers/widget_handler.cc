@@ -107,7 +107,6 @@ void WidgetInfo::SetName(const std::string& name) {
 }
 
 void WidgetInfo::SetShortName(const std::string& short_name) {
-  fprintf(stderr, "setting short name: %s\n", short_name.c_str());
   value_->SetString(kShortName, short_name);
 }
 

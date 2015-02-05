@@ -8,6 +8,7 @@
 #include "common/context_installer.h"
 
 #include "common/step/step.h"
+#include "utils/logging.h"
 
 namespace common_installer {
 namespace remove {
@@ -19,6 +20,8 @@ class StepRemove : public Step {
   Status process() override;
   Status clean() override;
   Status undo() override;
+
+  SCOPE_LOG_TAG(Remove)
 };
 
 }  // namespace remove

@@ -4,13 +4,7 @@
 
 #include "common/step/step_revoke_security.h"
 
-#include <iostream>
-
 #include "common/security_registration.h"
-
-// TODO(t.iwanek): logging mechanism...
-#define DBG(msg) std::cout << "[RevokeSecurity] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR:RevokeSecurity] " << msg << std::endl;
 
 namespace common_installer {
 namespace revoke_security {
@@ -20,7 +14,7 @@ Step::Status StepRevokeSecurity::process() {
       context_->pkgid(), context_->manifest_data())) {
     return Status::ERROR;
   }
-  DBG("Security context uninstalled");
+  LOG(DEBUG) << "Security context uninstalled";
   return Status::OK;
 }
 
@@ -30,7 +24,7 @@ Step::Status StepRevokeSecurity::undo() {
       context_->manifest_data())) {
     return Status::ERROR;
   }
-  DBG("Security context installed");
+  LOG(DEBUG) << "Security context installed";
   return Status::OK;
 }
 

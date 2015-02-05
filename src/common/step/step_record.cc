@@ -8,13 +8,10 @@
 #include <boost/filesystem.hpp>
 #include <cassert>
 #include <cstring>
-#include <iostream>
 #include <cstdio>
 #include <string>
-#include "common/utils.h"
 
-#define DBG(msg) std::cout << "[Record] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR: Record] " << msg << std::endl;
+#include "common/utils.h"
 
 namespace {
 
@@ -48,10 +45,10 @@ Step::Status StepRecord::process() {
           context_->xml_path().c_str(), appinst_tags);
 
   if (ret != 0) {
-    ERR("Failed to record package into database");
+    LOG(ERROR) << "Failed to record package into database";
     return Step::Status::ERROR;
   }
-  DBG("Successfully install the application");
+  LOG(INFO) << "Successfully install the application";
   return Status::OK;
 }
 
@@ -69,11 +66,11 @@ Step::Status StepRecord::undo() {
       cmd = std::string(kAilInit) + ";" + kPkgInit;
 
   if (execv(cmd.c_str(), nullptr) == -1) {
-      ERR("Error during execvp %s");
+      LOG(ERROR) << "Error during execvp %s";
       return Step::Status::ERROR;
   }
 
-  DBG("Successfuly clean database");
+  LOG(INFO) << "Successfuly clean database";
   return Status::OK;
 }
 
