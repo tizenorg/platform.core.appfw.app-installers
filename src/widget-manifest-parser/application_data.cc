@@ -52,22 +52,24 @@ std::shared_ptr<ApplicationData> ApplicationData::Create(
     SourceType source_type, std::unique_ptr<Manifest> manifest,
     std::string* error_message) {
   assert(error_message);
-  std::string error;
   if (!manifest->ValidateManifest(error_message))
     return nullptr;
 
   std::shared_ptr<ApplicationData> app_data(
       new ApplicationData(path, source_type, std::move(manifest)));
-  if (!app_data->Init(explicit_id, &error)) {
-    *error_message = error;
+  if (!app_data->Init(explicit_id, error_message))
     return nullptr;
-  }
 
   ManifestHandlerRegistry* registry =
       ManifestHandlerRegistry::GetInstance(app_data->manifest_type());
 
   if (!registry->ValidateAppManifest(app_data, error_message))
     return nullptr;
+
+  app_data->LoadID(explicit_id, error_message);
+  app_data->LoadName(error_message);
+  app_data->LoadVersion(error_message);
+
   return app_data;
 }
 
@@ -135,13 +137,6 @@ bool ApplicationData::Init(const std::string& explicit_id,
   if (!registry->ParseAppManifest(shared_from_this(), error))
     return false;
 
-  if (!LoadID(explicit_id, error))
-    return false;
-  if (!LoadName(error))
-    return false;
-  if (!LoadVersion(error))
-    return false;
-
   application_url_ = ApplicationData::GetBaseURLFromApplicationId(ID());
   finished_parsing_manifest_ = true;
   return true;
@@ -151,12 +146,13 @@ bool ApplicationData::LoadID(const std::string& explicit_id,
                              std::string* error) {
   std::string application_id;
   auto iter = manifest_data_.find(widget_keys::kTizenApplicationKey);
+  const TizenApplicationInfo* tizen_app_info;
   if (iter == manifest_data_.end())
-    return false;
-  const TizenApplicationInfo* tizen_app_info =
-      static_cast<TizenApplicationInfo*>(iter->second.get());
-  assert(tizen_app_info);
-  application_id = tizen_app_info->id();
+    tizen_app_info = nullptr;
+  else {
+    tizen_app_info = static_cast<TizenApplicationInfo*>(iter->second.get());
+    application_id = tizen_app_info->id();
+  }
   if (!application_id.empty()) {
     application_id_ = application_id;
     return true;

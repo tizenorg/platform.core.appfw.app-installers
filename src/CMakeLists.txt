@@ -6,3 +6,5 @@ ADD_SUBDIRECTORY(widget-manifest-parser)
 ADD_SUBDIRECTORY(tpk)
 #ADD_SUBDIRECTORY(xpk)
 #ADD_SUBDIRECTORY(native)
+
+ADD_SUBDIRECTORY(unit_tests)
