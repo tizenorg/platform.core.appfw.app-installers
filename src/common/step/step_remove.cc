@@ -8,12 +8,8 @@
 #include <pkgmgr-info.h>
 
 #include <cstring>
-#include <iostream>
 
 #include "common/utils.h"
-
-#define DBG(msg) std::cout << "[Remove] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR: Remove] " << msg << std::endl;
 
 namespace common_installer {
 namespace remove {
@@ -24,7 +20,7 @@ Step::Status StepRemove::process() {
   uiapplication_x* ui = context_->manifest_data()->uiapplication;
 
   if (!fs::exists(context_->pkg_path()))
-    DBG("dir: " << context_->pkg_path() << "not exist");
+    LOG(DEBUG) << "dir: " << context_->pkg_path() << "not exist";
 
   fs::remove_all(context_->pkg_path());
   for (; ui != nullptr; ui = ui->next) {
@@ -36,7 +32,7 @@ Step::Status StepRemove::process() {
   }
   fs::remove_all(context_->xml_path());
 
-  DBG("Removing dir: " << context_->pkg_path());
+  LOG(DEBUG) << "Removing dir: " << context_->pkg_path();
 
   return Status::OK;
 }

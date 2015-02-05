@@ -7,6 +7,7 @@
 
 #include "common/context_installer.h"
 #include "common/step/step.h"
+#include "utils/logging.h"
 
 namespace common_installer {
 namespace unregister {
@@ -18,6 +19,8 @@ class StepUnregister : public Step {
   Step::Status process() override;
   Step::Status clean() override;
   Step::Status undo() override;
+
+  SCOPE_LOG_TAG(Unregister)
 };
 
 }  // namespace unregister

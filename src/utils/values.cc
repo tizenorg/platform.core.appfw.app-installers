@@ -11,8 +11,8 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <iostream>
-#include <ostream>
+
+#include "utils/logging.h"
 
 namespace common_installer {
 namespace utils {
@@ -167,8 +167,8 @@ FundamentalValue::FundamentalValue(int in_value)
 FundamentalValue::FundamentalValue(double in_value)
     : Value(TYPE_DOUBLE), double_value_(in_value) {
   if (!std::isfinite(double_value_)) {
-    std::cerr << "Non-finite (i.e. NaN or positive/negative infinity) "
-              << "values cannot be represented in JSON";
+    LOG(ERROR) << "Non-finite (i.e. NaN or positive/negative infinity) "
+               << "values cannot be represented in JSON";
     double_value_ = 0.0;
   }
 }
@@ -208,7 +208,7 @@ FundamentalValue* FundamentalValue::DeepCopy() const {
       return new FundamentalValue(double_value_);
 
     default:
-      std::cerr << "Not reached.\n";
+      LOG(ERROR) << "Not reached";
       return nullptr;
   }
 }
@@ -231,7 +231,7 @@ bool FundamentalValue::Equals(const Value* other) const {
       return GetAsDouble(&lhs) && other->GetAsDouble(&rhs) && lhs == rhs;
     }
     default:
-      std::cerr << "Not reached.\n";
+      LOG(ERROR) << "Not reached";
       return false;
   }
 }

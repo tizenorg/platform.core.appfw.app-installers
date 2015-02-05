@@ -5,8 +5,6 @@
 
 #include "widget-manifest-parser/manifest_handlers/permissions_handler.h"
 
-#include <iostream>
-
 #include "utils/logging.h"
 #include "utils/values.h"
 #include "widget-manifest-parser/application_manifest_constants.h"

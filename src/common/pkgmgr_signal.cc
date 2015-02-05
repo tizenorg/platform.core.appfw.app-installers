@@ -5,10 +5,8 @@
 #include "common/pkgmgr_signal.h"
 
 #include <cassert>
-#include <iostream>
 
-#define DBG(msg) std::cout << "[PkgmgrSignal] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR: PkgmgrSignal] " << msg << std::endl;
+#include "utils/logging.h"
 
 namespace common_installer {
 
@@ -63,13 +61,14 @@ bool PkgmgrSignal::SendSignal(
         !pkgid.empty() ? pkgid.c_str() : "",
         key,
         value)) {
-    ERR("Fail to send pkgmgr signal");
+    LOG(ERROR) << "Fail to send pkgmgr signal";
     return false;
   }
 
-  DBG("Success to send pkgmgr signal PKGID=" << pkgid
-                                << " KEY=" << key
-                                << " VALUE=" << value);
+  LOG(DEBUG) << "Success to send pkgmgr signal"
+             << " PKGID=" << pkgid
+             << " KEY=" << key
+             << " VALUE=" << value;
   return true;
 }
 

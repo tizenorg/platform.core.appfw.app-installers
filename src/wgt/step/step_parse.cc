@@ -8,7 +8,6 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <iostream>
 #include <string>
 
 #include "common/app_installer.h"
@@ -20,16 +19,16 @@ namespace parse {
 
 common_installer::Step::Status StepParse::process() {
   if (!StepParse::Check(context_->unpack_directory())) {
-    std::cout << "[Parse] No config.xml" << std::endl;
+    LOG(ERROR) << "No config.xml";
     return common_installer::Step::Status::ERROR;
   }
 
   const ManifestData* data = nullptr;
   const char* error = nullptr;
   if (!ParseManifest(config_.c_str(), &data, &error)) {
-    std::cout << "[Parse] Parse failed. " <<  error << std::endl;
+     LOG(ERROR) << "Parse failed. " <<  error;
     if (!ReleaseData(data, error))
-      std::cout << "[Parse] Release data failed." << std::endl;
+      LOG(ERROR) << " Release data failed.";
     return common_installer::Step::Status::ERROR;
   }
 
@@ -42,24 +41,22 @@ common_installer::Step::Status StepParse::process() {
       std::string(data->package));
   fillManifest(data, context_->manifest_data());
 
-  //--- Test ---
-  std::cout << "[Parse] Read data -[ " << std::endl;
-  std::cout << "  package     = " <<  data->package << std::endl;
-  std::cout << "  id          = " <<  data->id << std::endl;
-  std::cout << "  name        = " <<  data->name << std::endl;
-  std::cout << "  short_name  = " <<  data->short_name << std::endl;
-  std::cout << "  version     = " <<  data->version << std::endl;
-  std::cout << "  icon        = " <<  data->icon << std::endl;
-  std::cout << "  api_version = " <<  data->api_version << std::endl;
-  std::cout << "  privileges -[" << std::endl;
+  LOG(DEBUG) << " Read data -[ ";
+  LOG(DEBUG) << "  package     = " <<  data->package;
+  LOG(DEBUG) << "  id          = " <<  data->id;
+  LOG(DEBUG) << "  name        = " <<  data->name;
+  LOG(DEBUG) << "  short_name  = " <<  data->short_name;
+  LOG(DEBUG) << "  version     = " <<  data->version;
+  LOG(DEBUG) << "  icon        = " <<  data->icon;
+  LOG(DEBUG) << "  api_version = " <<  data->api_version;
+  LOG(DEBUG) << "  privileges -[";
   for (unsigned int i = 0; i < data->privilege_count; ++i)
-    std::cout << "    " << data->privilege_list[i] << std::endl;
-  std::cout << "  ]-" << std::endl;
-  std::cout << "]-" << std::endl;
-  //--- End Test ---
+    LOG(DEBUG) << "    " << data->privilege_list[i];
+  LOG(DEBUG) << "  ]-";
+  LOG(DEBUG) << "]-";
 
   if (!ReleaseData(data, error)) {
-    std::cout << "[Parse] Release data failed." << std::endl;
+    LOG(ERROR) << "Release data failed.";
     return common_installer::Step::Status::ERROR;
   }
 
@@ -70,7 +67,7 @@ bool StepParse::Check(const boost::filesystem::path& widget_path) {
   boost::filesystem::path config = widget_path;
   config /= "config.xml";
 
-  std::cout << "[Parse] config.xml path: " << config << std::endl;
+  LOG(DEBUG) << "config.xml path: " << config;
 
   if (!boost::filesystem::exists(config))
     return false;

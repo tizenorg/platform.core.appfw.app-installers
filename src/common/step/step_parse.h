@@ -6,6 +6,7 @@
 #include "common/context_installer.h"
 
 #include "common/step/step.h"
+#include "utils/logging.h"
 
 namespace common_installer {
 namespace parse {
@@ -17,6 +18,8 @@ class StepParse : public Step {
   Status process() override;
   Status clean() override;
   Status undo() override;
+
+  SCOPE_LOG_TAG(Parse)
 };
 
 }  // namespace parse

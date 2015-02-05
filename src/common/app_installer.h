@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "common/step/step.h"
+#include "utils/logging.h"
 
 namespace common_installer {
 
@@ -35,6 +36,8 @@ class AppInstaller {
 
   std::list<std::unique_ptr<Step>> steps_;
   std::unique_ptr<ContextInstaller> context_;
+
+  SCOPE_LOG_TAG(AppInstaller)
 };
 
 }  // namespace common_installer

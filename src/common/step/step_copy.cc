@@ -4,13 +4,9 @@
 
 #include <cassert>
 #include <cstring>
-#include <iostream>
 #include <string>
 
 #include "common/utils.h"
-
-#define DBG(msg) std::cout << "[Copy] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR: Copy] " << msg << std::endl;
 
 namespace common_installer {
 namespace copy {
@@ -34,18 +30,18 @@ Step::Status StepCopy::process() {
     install_path /= fs::path(context_->manifest_data()->mainapp_id);
 
   if (!utils::CopyDir(fs::path(context_->unpack_directory()), install_path)) {
-    ERR("Fail to copy tmp dir: " << context_->unpack_directory()
-        << " to dst dir: " << install_path.string());
+    LOG(ERROR) << "Fail to copy tmp dir: " << context_->unpack_directory()
+               << " to dst dir: " << install_path.string();
     return Step::Status::ERROR;
   }
 
-  DBG("Successfully copy: " << context_->unpack_directory()
-      << " to: " << install_path.string() << " directory");
+  LOG(INFO) << "Successfully copy: " << context_->unpack_directory()
+            << " to: " << install_path.string() << " directory";
   return Status::OK;
 }
 
 Step::Status StepCopy::clean() {
-  DBG("Remove tmp dir: " << context_->unpack_directory());
+  LOG(DEBUG) << "Remove tmp dir: " << context_->unpack_directory();
   fs::remove_all(context_->unpack_directory());
   return Status::OK;
 }

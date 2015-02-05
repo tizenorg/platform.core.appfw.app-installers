@@ -8,14 +8,10 @@
 #include <boost/filesystem.hpp>
 #include <cassert>
 #include <cstring>
-#include <iostream>
 #include <cstdio>
 #include <string>
 
 #include "common/utils.h"
-
-#define DBG(msg) std::cout << "[Parse] " << msg << std::endl;
-#define ERR(msg) std::cout << "[ERROR: Parse] " << msg << std::endl;
 
 namespace common_installer {
 namespace parse {
@@ -32,14 +28,14 @@ Step::Status StepParse::process() {
   manifest_x* mfx = pkgmgr_parser_usr_process_manifest_xml(
     context_->xml_path().c_str(), context_->uid());
   if (!mfx) {
-    DBG("Failed to parse tizen manifest xml " << context_->xml_path().c_str());
+    LOG(ERROR) << "Failed to parse tizen manifest xml " << context_->xml_path();
     return Step::Status::ERROR;
   }
 
   context_->set_manifest(mfx);
   context_->set_pkg_path(context_->GetApplicationPath());
 
-  DBG("Successfully parse tizen manifest xml");
+  LOG(DEBUG) << "Successfully parse tizen manifest xml";
 
   return Status::OK;
 }

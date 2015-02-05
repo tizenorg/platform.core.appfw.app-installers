@@ -6,7 +6,6 @@
 #include "widget-manifest-parser/application_data.h"
 
 #include <cassert>
-#include <iostream>
 #include <regex>
 
 #include "utils/logging.h"
