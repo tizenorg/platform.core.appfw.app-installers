@@ -67,6 +67,7 @@ ln -s %{_bindir}/xpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %defattr(-,root,root)
 %{_libdir}/libcommon-installer.so*
 %{_libdir}/libcommon-installer-signature.so*
+%{_libdir}/libcommon-installer-utils.so*
 %{_datarootdir}/app-installers/signature_schema.xsd
 %license LICENSE LICENSE-xwalk
 
