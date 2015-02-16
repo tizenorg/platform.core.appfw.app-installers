@@ -41,6 +41,7 @@ Step::Status StepRecord::process() {
   // Having a specific step to implement a installer commandline tool
   // for image build could be usefull also.
 
+
   int ret = context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       pkgmgr_parser_parse_usr_manifest_for_installation(
           context_->xml_path().c_str(), context_->uid(), appinst_tags) :
@@ -61,8 +62,9 @@ Step::Status StepRecord::clean() {
 
 Step::Status StepRecord::undo() {
   std::string cmd;
-  if (fs::exists(context_->xml_path()))
-    fs::remove_all(context_->xml_path());
+
+  //if (fs::exists(context_->xml_path()))
+  //  fs::remove_all(context_->xml_path());
 
   context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       cmd = std::string(kAilInitUser) + ";" + kPkgInitUser :

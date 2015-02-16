@@ -45,10 +45,12 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
   }
 
   if (manifest) {
-    for (privileges_x* privileges = manifest->privileges;
-        privileges != nullptr; privileges = privileges->next) {
-      for (privilege_x* priv = privileges->privilege;
-          priv != nullptr; priv = priv->next) {
+    privileges_x *privileges;
+    LISTHEAD(manifest->privileges, privileges);
+    for (;privileges != nullptr; privileges = privileges->next) {
+      privilege_x* priv;
+      LISTHEAD(privileges->privilege, priv);
+      for (;priv != nullptr; priv = priv->next) {
         security_manager_app_inst_req_add_privilege(req, priv->text);
       }
     }
