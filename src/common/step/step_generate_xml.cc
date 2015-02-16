@@ -206,13 +206,15 @@ Step::Status StepGenerateXml::process() {
   }
 
   // add privilege element
-  for (privileges_x* pvlg =  context_->manifest_data()->privileges;
-      pvlg != nullptr; pvlg = pvlg->next) {
+  privileges_x *pvlg;
+  LISTHEAD(context_->manifest_data()->privileges, pvlg);
+  for (;pvlg != nullptr; pvlg = pvlg->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "privileges");
-    for (privilege_x* pv = pvlg->privilege; pv != nullptr; pv = pv->next) {
-      xmlTextWriterStartElement(writer, BAD_CAST "privilege");
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "name", BAD_CAST pv->text);
-      xmlTextWriterEndElement(writer);
+    privilege_x *pv;
+    LISTHEAD(pvlg->privilege, pv);
+    for (; pv != nullptr; pv = pv->next) {
+      xmlTextWriterWriteFormatElement(writer, BAD_CAST "privilege",
+        "%s", BAD_CAST pv->text);
     }
     xmlTextWriterEndElement(writer);
   }
@@ -237,8 +239,10 @@ Step::Status StepGenerateXml::clean() {
 }
 
 Step::Status  StepGenerateXml::undo() {
+  /*
   if (fs::exists(context_->xml_path()))
     fs::remove_all(context_->xml_path());
+  */
 
   if (fs::exists(icon_path_))
     fs::remove_all(icon_path_);
