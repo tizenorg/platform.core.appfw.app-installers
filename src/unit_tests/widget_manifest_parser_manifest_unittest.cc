@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE-xwalk file.
 
-#include "widget-manifest-parser/manifest.h"
-
 #include <gtest/gtest.h>
 
 #include <algorithm>
@@ -14,6 +12,7 @@
 
 #include "utils/values.h"
 #include "widget-manifest-parser/application_manifest_constants.h"
+#include "widget-manifest-parser/manifest.h"
 
 namespace errors = common_installer::application_manifest_errors;
 namespace keys = common_installer::application_widget_keys;
@@ -46,7 +45,8 @@ class ManifestTest : public testing::Test {
 
 // Verifies that application can access the correct keys.
 TEST_F(ManifestTest, ApplicationData) {
-  std::unique_ptr<utils::DictionaryValue> manifest_value(new utils::DictionaryValue());
+  std::unique_ptr<utils::DictionaryValue> manifest_value(
+      new utils::DictionaryValue());
   manifest_value->SetString(keys::kNameKey, "extension");
   manifest_value->SetString(keys::kVersionKey, "1");
   manifest_value->SetString("unknown_key", "foo");

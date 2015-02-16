@@ -23,8 +23,9 @@ class StepParse : public common_installer::Step {
   Status undo() override { return Status::OK; }
 
  private:
-  std::unique_ptr<common_installer::widget_manifest_parser::WidgetManifestParser>
-      parser_;
+  std::unique_ptr<
+      common_installer::widget_manifest_parser::WidgetManifestParser>
+          parser_;
   boost::filesystem::path config_;
   bool Check(const boost::filesystem::path& widget_path);
 

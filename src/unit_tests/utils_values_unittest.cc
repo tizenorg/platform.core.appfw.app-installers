@@ -631,7 +631,8 @@ TEST(ValuesTest, DeepCopyCovariantReturnTypes) {
   std::unique_ptr<Value> copy_int_value(original_int_value->DeepCopy());
   std::unique_ptr<Value> copy_double_value(original_double_value->DeepCopy());
   std::unique_ptr<Value> copy_string_value(original_string_value->DeepCopy());
-  std::unique_ptr<Value> copy_string16_value(original_string16_value->DeepCopy());
+  std::unique_ptr<Value> copy_string16_value(
+      original_string16_value->DeepCopy());
   std::unique_ptr<Value> copy_binary_value(original_binary_value->DeepCopy());
   std::unique_ptr<Value> copy_list_value(original_list_value->DeepCopy());
 
@@ -742,27 +743,27 @@ TEST(ValuesTest, MergeDictionary) {
   EXPECT_EQ(4U, base->size());
   std::string base_key_value;
   EXPECT_TRUE(base->GetString("base_key", &base_key_value));
-  EXPECT_EQ("base_key_value_base", base_key_value); // Base value preserved.
+  EXPECT_EQ("base_key_value_base", base_key_value);  // Base value preserved.
   std::string collide_key_value;
   EXPECT_TRUE(base->GetString("collide_key", &collide_key_value));
-  EXPECT_EQ("collide_key_value_merge", collide_key_value); // Replaced.
+  EXPECT_EQ("collide_key_value_merge", collide_key_value);  // Replaced.
   std::string merge_key_value;
   EXPECT_TRUE(base->GetString("merge_key", &merge_key_value));
-  EXPECT_EQ("merge_key_value_merge", merge_key_value); // Merged in.
+  EXPECT_EQ("merge_key_value_merge", merge_key_value);  // Merged in.
 
   DictionaryValue* res_sub_dict;
   EXPECT_TRUE(base->GetDictionary("sub_dict_key", &res_sub_dict));
   EXPECT_EQ(3U, res_sub_dict->size());
   std::string sub_base_key_value;
   EXPECT_TRUE(res_sub_dict->GetString("sub_base_key", &sub_base_key_value));
-  EXPECT_EQ("sub_base_key_value_base", sub_base_key_value); // Preserved.
+  EXPECT_EQ("sub_base_key_value_base", sub_base_key_value);  // Preserved.
   std::string sub_collide_key_value;
   EXPECT_TRUE(res_sub_dict->GetString("sub_collide_key",
                                       &sub_collide_key_value));
-  EXPECT_EQ("sub_collide_key_value_merge", sub_collide_key_value); // Replaced.
+  EXPECT_EQ("sub_collide_key_value_merge", sub_collide_key_value);  // Replaced.
   std::string sub_merge_key_value;
   EXPECT_TRUE(res_sub_dict->GetString("sub_merge_key", &sub_merge_key_value));
-  EXPECT_EQ("sub_merge_key_value_merge", sub_merge_key_value); // Merged in.
+  EXPECT_EQ("sub_merge_key_value_merge", sub_merge_key_value);  // Merged in.
 }
 
 TEST(ValuesTest, MergeDictionaryDeepCopy) {
@@ -833,7 +834,8 @@ TEST(ValuesTest, DictionaryIterator) {
   EXPECT_TRUE(seen2);
 }
 
-// DictionaryValue/ListValue's Get*() methods should accept nullptr as an out-value
+// DictionaryValue/ListValue's Get*() methods should
+// accept nullptr as an out-value
 // and still return true/false based on success.
 TEST(ValuesTest, GetWithnullptrOutValue) {
   DictionaryValue main_dict;
@@ -900,23 +902,39 @@ TEST(ValuesTest, GetWithnullptrOutValue) {
   EXPECT_FALSE(main_dict.GetDouble("list", nullptr));
   EXPECT_FALSE(main_dict.GetDouble("DNE", nullptr));
 
-  EXPECT_FALSE(main_dict.GetString("bool", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("int", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("double", static_cast<std::string*>(nullptr)));
-  EXPECT_TRUE(main_dict.GetString("string", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("binary", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("dict", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("list", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("DNE", static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("bool",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("int",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("double",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_TRUE(main_dict.GetString("string",
+                                  static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("binary",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("dict",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("list",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("DNE",
+                                   static_cast<std::string*>(nullptr)));
 
-  EXPECT_FALSE(main_dict.GetString("bool", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("int", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("double", static_cast<std::string*>(nullptr)));
-  EXPECT_TRUE(main_dict.GetString("string", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("binary", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("dict", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("list", static_cast<std::string*>(nullptr)));
-  EXPECT_FALSE(main_dict.GetString("DNE", static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("bool",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("int",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("double",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_TRUE(main_dict.GetString("string",
+                                  static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("binary",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("dict",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("list",
+                                   static_cast<std::string*>(nullptr)));
+  EXPECT_FALSE(main_dict.GetString("DNE",
+                                   static_cast<std::string*>(nullptr)));
 
   EXPECT_FALSE(main_dict.GetBinary("bool", nullptr));
   EXPECT_FALSE(main_dict.GetBinary("int", nullptr));

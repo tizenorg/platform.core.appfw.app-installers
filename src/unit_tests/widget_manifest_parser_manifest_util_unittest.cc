@@ -3,8 +3,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE-xwalk file.
 
-#include "widget-manifest-parser/manifest_util.h"
-
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -13,6 +11,7 @@
 #include "widget-manifest-parser/application_data.h"
 #include "widget-manifest-parser/application_manifest_constants.h"
 #include "widget-manifest-parser/manifest.h"
+#include "widget-manifest-parser/manifest_util.h"
 
 using common_installer::widget_manifest_parser::ApplicationData;
 using common_installer::widget_manifest_parser::Manifest;
@@ -62,5 +61,5 @@ TEST_F(ManifestUtilTest,
   ASSERT_STREQ("Manifest file is missing or unreadable.", error.c_str());
 }
 
-}  // namespace widget_manifest_parser
+}  // namespace widget_mnanifest_parser
 }  // namespace common_installer

@@ -176,7 +176,8 @@ parser::TizenApplicationInfo* WidgetManifestParser::ExtractApplicationInfo(
   return info;
 }
 
-parser::WidgetInfo* WidgetManifestParser::ExtractWidgetInfo(const ApplicationData& app_data) {
+parser::WidgetInfo* WidgetManifestParser::ExtractWidgetInfo(
+    const ApplicationData& app_data) {
   parser::WidgetInfo* info = static_cast<parser::WidgetInfo*>(
       app_data.GetManifestData(keys::kWidgetKey));
   return info;

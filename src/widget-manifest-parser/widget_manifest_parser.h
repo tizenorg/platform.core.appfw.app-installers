@@ -23,7 +23,7 @@ namespace widget_manifest_parser {
 
 class WidgetManifestParser {
  public:
-  explicit WidgetManifestParser();
+  WidgetManifestParser();
   ~WidgetManifestParser();
 
   const std::string& GetErrorMessage();

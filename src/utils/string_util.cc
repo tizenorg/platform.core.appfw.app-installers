@@ -158,7 +158,8 @@ std::string StripWrappingBidiControlCharactersUTF8(const std::string& text) {
   size_t end_index = text.length() - kBidiControlCharacterLength;
   if (EqualsUTF8Char(&text[end_index], kPopDirectionalFormatting))
     end_index -= 3;
-  return text.substr(begin_index, end_index - begin_index + kBidiControlCharacterLength);
+  return text.substr(begin_index,
+      end_index - begin_index + kBidiControlCharacterLength);
 }
 
 std::string GetDirTextUTF8(const std::string& text, const std::string& dir) {
@@ -193,7 +194,7 @@ std::string DecodePercentEscapedCharacter(const std::string& path) {
     if ('%' == input[i]) {
       if (i + 2 >= input.size())
         return std::string();
-      char str[3] = {"\0",};
+      char str[3] = {"\0", };
       str[0] = input[i + 1];
       str[1] = input[i + 2];
       int result = strtol(str, NULL, 16);

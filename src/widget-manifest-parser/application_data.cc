@@ -147,9 +147,9 @@ bool ApplicationData::LoadID(const std::string& explicit_id,
   std::string application_id;
   auto iter = manifest_data_.find(widget_keys::kTizenApplicationKey);
   const TizenApplicationInfo* tizen_app_info;
-  if (iter == manifest_data_.end())
+  if (iter == manifest_data_.end()) {
     tizen_app_info = nullptr;
-  else {
+  } else {
     tizen_app_info = static_cast<TizenApplicationInfo*>(iter->second.get());
     application_id = tizen_app_info->id();
   }
