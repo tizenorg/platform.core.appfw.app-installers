@@ -58,8 +58,6 @@ Step::Status StepRecord::clean() {
 
 Step::Status StepRecord::undo() {
   std::string cmd;
-  if (fs::exists(context_->xml_path()))
-    fs::remove_all(context_->xml_path());
 
   context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       cmd = std::string(kAilInitUser) + ";" + kPkgInitUser :

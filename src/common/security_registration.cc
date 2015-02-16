@@ -8,6 +8,12 @@
 
 #include "utils/logging.h"
 
+/* NOTE: For *_x list types in pkgmgr-info, like privileges_x or privilege_x,
+ * this macro moves the current node to the head of the list.
+ * This LISTHEAD() macro is defined in pkgmgr_parser.h in pkgmgr-info package.
+ */
+#define PKGMGR_LIST_MOVE_NODE_TO_HEAD(list, node) LISTHEAD(list, node)
+
 namespace bf = boost::filesystem;
 
 namespace {
@@ -41,10 +47,12 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
   }
 
   if (manifest) {
-    for (privileges_x* privileges = manifest->privileges;
-        privileges != nullptr; privileges = privileges->next) {
-      for (privilege_x* priv = privileges->privilege;
-          priv != nullptr; priv = priv->next) {
+    privileges_x *privileges;
+    PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->privileges, privileges);
+    for (;privileges != nullptr; privileges = privileges->next) {
+      privilege_x* priv;
+      PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges->privilege, priv);
+      for (;priv != nullptr; priv = priv->next) {
         security_manager_app_inst_req_add_privilege(req, priv->text);
       }
     }
