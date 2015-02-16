@@ -12,7 +12,8 @@ namespace revoke_security {
 Step::Status StepRevokeSecurity::process() {
   if (!UnregisterSecurityContextForApps(
       context_->pkgid(), context_->manifest_data())) {
-    LOG(ERROR) << "Failure on unregistering security context for app " << context_->pkgid();
+    LOG(ERROR) << "Failure on unregistering security context for app "
+               << context_->pkgid();
     return Status::ERROR;
   }
   LOG(DEBUG) << "Security context uninstalled";
@@ -23,7 +24,8 @@ Step::Status StepRevokeSecurity::undo() {
   if (!RegisterSecurityContextForApps(
       context_->pkgid(), context_->GetRootApplicationPath(),
       context_->manifest_data())) {
-    LOG(ERROR) << "Failure on re-installing security context for app " << context_->pkgid();
+    LOG(ERROR) << "Failure on re-installing security context for app "
+               << context_->pkgid();
     return Status::ERROR;
   }
   LOG(DEBUG) << "Security context installed";
