@@ -5,6 +5,7 @@ SET(TESTS
   manifest_unittest
   manifest_handler_unittest
   manifest_util_unittest
+  signature_unittest
   string_util_unittest
   parser_unittest
   xml_parser_unittest
@@ -29,6 +30,8 @@ ADD_EXECUTABLE(xml_parser_unittest
                xml_parser_unittest.cc ../xml_parser/xml_parser.cc)
 ADD_EXECUTABLE(service_handler_unittest
                service_handler_unittest.cc)
+ADD_EXECUTABLE(signature_unittest
+               signature_unittest.cc)
 
 INSTALL(DIRECTORY test_samples/ DESTINATION ${SHAREDIR}/app-installers-ut/test_samples)
 
@@ -54,6 +57,7 @@ target_link_libraries(string_util_unittest PUBLIC ${TARGET_LIBNAME_PARSER} ${GTE
 target_link_libraries(parser_unittest PUBLIC ${TARGET_LIBNAME_PARSER} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(xml_parser_unittest PUBLIC ${TARGET_LIBNAME_PARSER} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(service_handler_unittest PUBLIC ${TARGET_LIBNAME_PARSER} ${TARGET_LIBNAME_MANIFEST_HANDLERS} ${GTEST_MAIN_LIBRARIES})
+target_link_libraries(signature_unittest PUBLIC ${TARGET_LIBNAME_SIGNATURE} ${GTEST_MAIN_LIBRARIES})
 
 FOREACH(test ${TESTS})
 INSTALL(TARGETS ${test} DESTINATION ${BINDIR}/app-installers-ut)
