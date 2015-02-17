@@ -30,7 +30,8 @@ Step::Status StepGenerateXml::process() {
 
   fs::path xml_path = fs::path(getUserManifestPath(context_->uid()))
       / fs::path(context_->pkgid());
-  xml_path.replace_extension(".xml");
+  //xml_path.replace_extension(".xml");
+  xml_path += ".xml";
 
   context_->set_xml_path(xml_path.string());
   boost::system::error_code error;
