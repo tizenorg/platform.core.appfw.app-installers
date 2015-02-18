@@ -41,8 +41,8 @@ int main(int argc, char** argv) {
     pkgmgr_installer_free(pi);
     return -result;
   }
-  common_installer::AppInstaller* installer =
-      new common_installer::AppInstaller(pi);
+//  common_installer::AppInstaller* installer =
+//      new common_installer::AppInstaller(pi);
   /* treat the request */
   switch (pkgmgr_installer_get_request_type(pi)) {
     case PKGMGR_REQ_INSTALL: {
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
       break;
     }
   }
-  delete installer;
+//  delete installer;
   pkgmgr_installer_free(pi);
   return result;
 }
