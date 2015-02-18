@@ -317,8 +317,8 @@ bool XmlSecContext::VerifyFile(xmlSecKeysMngrPtr mngr,
 
   if (dsig_ctx->status != xmlSecDSigStatusSucceeded)
     LOG(ERROR) << "Signature " << data.signature_file_name() <<" is INVALID";
-
-  LOG(INFO) << "Signature  "<< data.signature_file_name() << " is OK.";
+  else
+    LOG(INFO) << "Signature  "<< data.signature_file_name() << " is OK.";
 
   xmlFreeDoc(doc);
   xmlSecDSigCtxDestroy(dsig_ctx);
