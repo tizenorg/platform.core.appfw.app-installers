@@ -14,6 +14,8 @@
 #include "common/context_installer.h"
 #include "common/step/step.h"
 
+namespace parser = common_installer::widget_manifest_parser;
+
 namespace wgt {
 namespace parse {
 
@@ -23,42 +25,44 @@ common_installer::Step::Status StepParse::process() {
     return common_installer::Step::Status::ERROR;
   }
 
-  const ManifestData* data = nullptr;
-  const char* error = nullptr;
-  if (!ParseManifest(config_.c_str(), &data, &error)) {
-    LOG(ERROR) << "Parse failed. " <<  error;
-    if (!ReleaseData(data, error))
-      LOG(ERROR) << " Release data failed.";
+  parser_.reset(new parser::WidgetManifestParser(config_));
+  if (!parser_->ParseManifest()) {
+    LOG(ERROR) << "[Parse] Parse failed. " <<  parser_->GetErrorMessage();
+    return common_installer::Step::Status::ERROR;
+  }
+  const manifest_x* manifest = context_->manifest_data();
+  if (!parser_->SetManifestX(const_cast<manifest_x*>(manifest))) {
+    LOG(ERROR) << "[Parse] Storing manifest_x failed. "
+               <<  parser_->GetErrorMessage();
     return common_installer::Step::Status::ERROR;
   }
 
   // Copy data from ManifestData to ContextInstaller
   context_->config_data()->set_application_name(
-      std::string(data->name));
+      std::string(manifest->uiapplication->label->name));
   context_->config_data()->set_required_version(
-      std::string(data->api_version));
+      std::string(parser_->GetRequiredAPIVersion()));
   context_->set_pkgid(
-      std::string(data->package));
-  fillManifest(data, context_->manifest_data());
+      std::string(manifest->package));
 
   LOG(DEBUG) << " Read data -[ ";
-  LOG(DEBUG) << "  package     = " <<  data->package;
-  LOG(DEBUG) << "  id          = " <<  data->id;
-  LOG(DEBUG) << "  name        = " <<  data->name;
-  LOG(DEBUG) << "  short_name  = " <<  data->short_name;
-  LOG(DEBUG) << "  version     = " <<  data->version;
-  LOG(DEBUG) << "  icon        = " <<  data->icon;
-  LOG(DEBUG) << "  api_version = " <<  data->api_version;
+  LOG(DEBUG) << "  package     = " <<  manifest->package;
+  LOG(DEBUG) << "  id          = " <<  manifest->mainapp_id;
+  LOG(DEBUG) << "  name        = " <<  manifest->description->name;
+  LOG(DEBUG) << "  short_name  = " <<  parser_->GetShortName();
+  LOG(DEBUG) << "  version     = " <<  manifest->version;
+  LOG(DEBUG) << "  icon        = " <<  manifest->uiapplication->icon->name;
+  LOG(DEBUG) << "  api_version = " <<  parser_->GetRequiredAPIVersion();
   LOG(DEBUG) << "  privileges -[";
-  for (unsigned int i = 0; i < data->privilege_count; ++i)
-    LOG(DEBUG) << "    " << data->privilege_list[i];
+  privilege_x* first = manifest->privileges->privilege;
+    if (first) {
+      privilege_x* it = first;
+      do {
+        LOG(DEBUG) << "    " << it->text;
+      } while (((it = it->next) != first) && it != nullptr);
+    }
   LOG(DEBUG) << "  ]-";
   LOG(DEBUG) << "]-";
-
-  if (!ReleaseData(data, error)) {
-    LOG(ERROR) << "Release data failed.";
-    return common_installer::Step::Status::ERROR;
-  }
 
   return common_installer::Step::Status::OK;
 }
@@ -75,58 +79,6 @@ bool StepParse::Check(const boost::filesystem::path& widget_path) {
   config_ = config;
   return true;
 }
-
-void StepParse::fillManifest(const ManifestData* data, manifest_x* manifest) {
-  // package data
-  manifest->label =  reinterpret_cast<label_x*>
-    (calloc(1, sizeof(label_x)));
-  manifest->description =  reinterpret_cast<description_x*>
-    (calloc(1, sizeof(description_x)));
-  manifest->privileges =  reinterpret_cast<privileges_x*>
-    (calloc(1, sizeof(privileges_x)));
-  manifest->privileges->next = nullptr;
-  manifest->privileges->privilege = nullptr;
-
-  manifest->package = strdup(data->package);
-  manifest->type = strdup("wgt");
-  manifest->version = strdup(data->version);
-  manifest->label->name = strdup(data->name);
-  manifest->description->name = nullptr;
-  manifest->mainapp_id = strdup(data->id);
-
-  for (unsigned int i = 0; i < data->privilege_count; i++) {
-     privilege_x *privilege = reinterpret_cast<privilege_x*>(
-             malloc(sizeof(privilege_x)));
-     privilege->text = strdup(data->privilege_list[i]);
-     LISTADD(manifest->privileges->privilege, privilege);
-  }
-  // application data
-  manifest->serviceapplication = nullptr;
-  manifest->uiapplication = reinterpret_cast<uiapplication_x*>
-    (calloc (1, sizeof(uiapplication_x)));
-  manifest->uiapplication->icon = reinterpret_cast<icon_x*>
-    (calloc(1, sizeof(icon_x)));
-  manifest->uiapplication->label = reinterpret_cast<label_x*>
-    (calloc(1, sizeof(label_x)));
-  manifest->description = reinterpret_cast<description_x*>
-    (calloc(1, sizeof(description_x)));
-  manifest->uiapplication->appcontrol = nullptr;
-
-  manifest->uiapplication->appid = strdup(data->id);
-  manifest->uiapplication->type = strdup("webapp");
-
-  // For wgt package use the long name if the short name is emty
-  if ( ( data->short_name ) && ( strlen(data->short_name) ) )
-    manifest->uiapplication->label->name = strdup(data->short_name);
-  else
-    manifest->uiapplication->label->name = strdup(data->name);
-
-  manifest->uiapplication->icon->name = strdup(data->icon);
-  manifest->uiapplication->next = nullptr;
-
-  // context->manifest_data()->?? = strdup (data->api_version);
-}
-
 
 }  // namespace parse
 }  // namespace wgt
