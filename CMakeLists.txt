@@ -33,6 +33,11 @@ ADD_DEFINITIONS("-Wall")
 ADD_DEFINITIONS("-Wextra")
 ADD_DEFINITIONS("-fPIE")
 ADD_DEFINITIONS("-fPIC")
+# This flag is needed, because otherwise _xmlSecDSigCtx structure
+# will use size_t in app-installers and unsigned int in xmlsec1 for sizes
+# As a result structure size in function from xmlsec1 will differ from
+# size in app-installers
+ADD_DEFINITIONS("-DXMLSEC_NO_SIZE_T")
 
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 INCLUDE(FindPkgConfig)
