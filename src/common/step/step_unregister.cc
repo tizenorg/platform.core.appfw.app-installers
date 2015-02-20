@@ -19,13 +19,14 @@ namespace fs = boost::filesystem;
 Step::Status StepUnregister::process() {
   assert(!context_->pkgid().empty());
 
-  char* const appinst_tags[] = {"removable=true", nullptr, };
+  const char* const appinst_tags[] = {"removable=true", nullptr, };
 
   int ret = context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       pkgmgr_parser_parse_usr_manifest_for_uninstallation(
-          context_->xml_path().c_str(), context_->uid(), appinst_tags) :
+          context_->xml_path().c_str(), context_->uid(),
+          const_cast<char* const*>(appinst_tags)) :
       pkgmgr_parser_parse_manifest_for_uninstallation(
-          context_->xml_path().c_str(), appinst_tags);
+          context_->xml_path().c_str(), const_cast<char* const*>(appinst_tags));
 
   if (ret != 0) {
     LOG(ERROR) << "Failed to unregister package into database";

@@ -88,39 +88,39 @@ Value* Value::CreateNullValue() {
   return new Value(TYPE_NULL);
 }
 
-bool Value::GetAsBoolean(bool* out_value) const {
+bool Value::GetAsBoolean(bool* /*out_value*/) const {
   return false;
 }
 
-bool Value::GetAsInteger(int* out_value) const {
+bool Value::GetAsInteger(int* /*out_value*/) const {
   return false;
 }
 
-bool Value::GetAsDouble(double* out_value) const {
+bool Value::GetAsDouble(double* /*out_value*/) const {
   return false;
 }
 
-bool Value::GetAsString(std::string* out_value) const {
+bool Value::GetAsString(std::string* /*out_value*/) const {
   return false;
 }
 
-bool Value::GetAsString(const StringValue** out_value) const {
+bool Value::GetAsString(const StringValue** /*out_value*/) const {
   return false;
 }
 
-bool Value::GetAsList(ListValue** out_value) {
+bool Value::GetAsList(ListValue** /*out_value*/) {
   return false;
 }
 
-bool Value::GetAsList(const ListValue** out_value) const {
+bool Value::GetAsList(const ListValue** /*out_value*/) const {
   return false;
 }
 
-bool Value::GetAsDictionary(DictionaryValue** out_value) {
+bool Value::GetAsDictionary(DictionaryValue** /*out_value*/) {
   return false;
 }
 
-bool Value::GetAsDictionary(const DictionaryValue** out_value) const {
+bool Value::GetAsDictionary(const DictionaryValue** /*out_value*/) const {
   return false;
 }
 

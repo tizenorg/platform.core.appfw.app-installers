@@ -29,7 +29,7 @@ SplashScreenHandler::SplashScreenHandler() {}
 SplashScreenHandler::~SplashScreenHandler() {}
 
 bool SplashScreenHandler::Parse(std::shared_ptr<ApplicationData> application,
-                                     std::string* error) {
+                                     std::string* /*error*/) {
   std::shared_ptr<SplashScreenInfo> ss_info(new SplashScreenInfo);
   const Manifest* manifest = application->GetManifest();
   assert(manifest);

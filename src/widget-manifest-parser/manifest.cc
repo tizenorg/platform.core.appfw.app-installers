@@ -73,7 +73,7 @@ Manifest::~Manifest() {
 }
 
 bool Manifest::ValidateManifest(
-    std::string* error) const {
+    std::string* /*error*/) const {
   // TODO(xiang): support features validation
   return true;
 }
@@ -147,11 +147,11 @@ bool Manifest::Equals(const Manifest* other) const {
   return other && data_->Equals(other->value());
 }
 
-bool Manifest::CanAccessPath(const std::string& path) const {
+bool Manifest::CanAccessPath(const std::string& /*path*/) const {
   return true;
 }
 
-bool Manifest::CanAccessKey(const std::string& key) const {
+bool Manifest::CanAccessKey(const std::string& /*key*/) const {
   return true;
 }
 

@@ -129,7 +129,8 @@ std::vector<std::string> TizenApplicationHandler::Keys() const {
   return std::vector<std::string>(1, keys::kTizenApplicationKey);
 }
 
-bool TizenApplicationHandler::AlwaysParseForType(Manifest::Type type) const {
+bool TizenApplicationHandler::AlwaysParseForType(
+    Manifest::Type /*type*/) const {
   return true;
 }
 

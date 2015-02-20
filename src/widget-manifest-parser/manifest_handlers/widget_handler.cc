@@ -118,7 +118,7 @@ WidgetHandler::WidgetHandler() {}
 WidgetHandler::~WidgetHandler() {}
 
 bool WidgetHandler::Parse(std::shared_ptr<ApplicationData> application,
-                          std::string* error) {
+                          std::string* /*error*/) {
   std::shared_ptr<WidgetInfo> widget_info(new WidgetInfo());
   const Manifest* manifest = application->GetManifest();
   assert(manifest);
@@ -181,7 +181,7 @@ bool WidgetHandler::Validate(
   return true;
 }
 
-bool WidgetHandler::AlwaysParseForType(Manifest::Type type) const {
+bool WidgetHandler::AlwaysParseForType(Manifest::Type /*type*/) const {
   return true;
 }
 

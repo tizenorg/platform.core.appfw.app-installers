@@ -231,7 +231,7 @@ std::vector<std::string> WidgetManifestParser::ExtractIcons(
 }
 
 std::set<std::string> WidgetManifestParser::ExtractPrivileges(
-    const parser::ApplicationData& app_data, std::string* error) {
+    const parser::ApplicationData& app_data, std::string* /*error*/) {
   const parser::PermissionsInfo* perm_info =
        static_cast<parser::PermissionsInfo*>(
             app_data.GetManifestData(keys::kTizenPermissionsKey));

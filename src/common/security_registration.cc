@@ -49,9 +49,9 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
   }
 
   if (manifest) {
-    privileges_x *privileges;
+    privileges_x *privileges = nullptr;
     PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->privileges, privileges);
-    for (;privileges != nullptr; privileges = privileges->next) {
+    for (; privileges != nullptr; privileges = privileges->next) {
       privilege_x* priv;
       PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges->privilege, priv);
       for (;priv != nullptr; priv = priv->next) {

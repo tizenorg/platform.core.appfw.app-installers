@@ -167,23 +167,23 @@ const char kManifestUnreadable[] =
 
 namespace widget_manifest_parser {
 
-const char* GetNameKey(Manifest::Type manifest_type) {
+const char* GetNameKey(Manifest::Type /*manifest_type*/) {
   return application_widget_keys::kNameKey;
 }
 
-const char* GetVersionKey(Manifest::Type manifest_type) {
+const char* GetVersionKey(Manifest::Type /*manifest_type*/) {
   return application_widget_keys::kVersionKey;
 }
 
-const char* GetCSPKey(Manifest::Type manifest_type) {
+const char* GetCSPKey(Manifest::Type /*manifest_type*/) {
   return application_widget_keys::kCSPKey;
 }
 
-const char* GetTizenAppIdKey(Manifest::Type manifest_type) {
+const char* GetTizenAppIdKey(Manifest::Type /*manifest_type*/) {
   return application_widget_keys::kTizenAppIdKey;
 }
 
-const char* GetIcon128Key(Manifest::Type manifest_type) {
+const char* GetIcon128Key(Manifest::Type /*manifest_type*/) {
   return application_widget_keys::kIcon128Key;
 }
 
