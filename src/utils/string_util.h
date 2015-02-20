@@ -11,8 +11,7 @@
 namespace common_installer {
 namespace utils {
 
-std::string CollapseWhitespaceUTF8(const std::string& text,
-                               bool trim_sequences_with_line_breaks);
+std::string CollapseWhitespaceUTF8(const std::string& text);
 std::string StripWrappingBidiControlCharactersUTF8(const std::string& text);
 std::string GetDirTextUTF8(const std::string& text, const std::string& dir);
 

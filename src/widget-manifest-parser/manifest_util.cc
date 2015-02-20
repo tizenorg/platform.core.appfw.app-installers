@@ -235,7 +235,7 @@ std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
       prop_value = utils::GetDirTextUTF8(prop_value, current_dir);
 
     if (IsTrimRequiredForProp(root, prop))
-      prop_value = utils::CollapseWhitespaceUTF8(prop_value, false);
+      prop_value = utils::CollapseWhitespaceUTF8(prop_value);
 
     value->SetString(
         std::string(kAttributePrefix)
@@ -305,7 +305,7 @@ std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
   }
 
   if (IsTrimRequiredForElement(root))
-    text = utils::CollapseWhitespaceUTF8(text, false);
+    text = utils::CollapseWhitespaceUTF8(text);
 
   if (!text.empty())
     value->SetString(kTextKey, text);
