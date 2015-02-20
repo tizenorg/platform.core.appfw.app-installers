@@ -77,6 +77,7 @@ bool EqualsUTF8Char(const char* str, const char* character) {
     if (character[i] != str[i]) {
       return false;
     }
+    ++i;
   }
   return true;
 }
@@ -98,18 +99,15 @@ inline bool IsWhitespaceUTF8(const char* c) {
 namespace common_installer {
 namespace utils {
 
-std::string CollapseWhitespaceUTF8(
-    const std::string& text,
-    bool trim_sequences_with_line_breaks) {
+std::string CollapseWhitespaceUTF8(const std::string& text) {
   std::string result;
   result.resize(text.size());
 
   // Set flags to pretend we're already in a trimmed whitespace sequence, so we
   // will trim any leading whitespace.
   bool in_whitespace = true;
-  bool already_trimmed = true;
-
   int chars_written = 0;
+
   for (unsigned i = 0; i < text.length();) {
     int length = UTF8CharLength(&text[i]);
     if (IsWhitespaceUTF8(&text[i])) {
@@ -118,25 +116,18 @@ std::string CollapseWhitespaceUTF8(
         in_whitespace = true;
         result[chars_written++] = ' ';
       }
-      if (trim_sequences_with_line_breaks && !already_trimmed &&
-          ((text[i] == '\n') || (text[i] == '\r'))) {
-        // Whitespace sequences containing CR or LF are eliminated entirely.
-        already_trimmed = true;
-        --chars_written;
-      }
       // roll through UTF8 character
       i += length;
     } else {
       // Non-whitespace chracters are copied straight across.
       in_whitespace = false;
-      already_trimmed = false;
       while (length--) {
         result[chars_written++] = text[i++];
       }
     }
   }
 
-  if (in_whitespace && !already_trimmed) {
+  if (in_whitespace) {
     // Any trailing whitespace is eliminated.
     --chars_written;
   }
