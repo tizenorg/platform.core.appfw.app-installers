@@ -8,8 +8,8 @@
 #include "common/app_installer.h"
 #include "common/context_installer.h"
 #include "common/step/step.h"
+#include "parser/widget_manifest_parser.h"
 #include "utils/logging.h"
-#include "widget-manifest-parser/widget_manifest_parser.h"
 
 namespace wgt {
 namespace parse {
@@ -24,7 +24,7 @@ class StepParse : public common_installer::Step {
 
  private:
   std::unique_ptr<
-      common_installer::widget_manifest_parser::WidgetManifestParser>
+      common_installer::parser::WidgetManifestParser>
           parser_;
   boost::filesystem::path config_;
   bool Check(const boost::filesystem::path& widget_path);
