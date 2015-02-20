@@ -2,7 +2,7 @@
 // Use of this source code is governed by an apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "widget-manifest-parser/widget_manifest_parser.h"
+#include "parser/widget_manifest_parser.h"
 
 #include <boost/filesystem/path.hpp>
 #include <gtest/gtest.h>
@@ -11,7 +11,7 @@
 namespace bf = boost::filesystem;
 
 namespace common_installer {
-namespace widget_manifest_parser {
+namespace parser {
 
 class ParseManifestTest : public testing::Test {
  protected:
@@ -52,5 +52,5 @@ TEST_F(ParseManifestTest, HandlesBrokenManifestFile) {
                parser_->GetErrorMessage().c_str());
 }
 
-}  // namespace widget_manifest_parser
+}  // namespace parser
 }  // namespace common_installer
