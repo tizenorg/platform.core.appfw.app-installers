@@ -57,16 +57,16 @@ ManifestHandler::~ManifestHandler() {
 }
 
 bool ManifestHandler::Validate(
-    std::shared_ptr<const ApplicationData> application,
-    std::string* error) const {
+    std::shared_ptr<const ApplicationData> /*application*/,
+    std::string* /*error*/) const {
   return true;
 }
 
-bool ManifestHandler::AlwaysParseForType(Manifest::Type type) const {
+bool ManifestHandler::AlwaysParseForType(Manifest::Type /*type*/) const {
   return false;
 }
 
-bool ManifestHandler::AlwaysValidateForType(Manifest::Type type) const {
+bool ManifestHandler::AlwaysValidateForType(Manifest::Type /*type*/) const {
   return false;
 }
 
@@ -90,7 +90,7 @@ ManifestHandlerRegistry::~ManifestHandlerRegistry() {
 }
 
 ManifestHandlerRegistry*
-ManifestHandlerRegistry::GetInstance(Manifest::Type type) {
+ManifestHandlerRegistry::GetInstance(Manifest::Type /*type*/) {
   return GetInstanceForWGT();
 }
 
@@ -164,7 +164,7 @@ bool ManifestHandlerRegistry::ValidateAppManifest(
 
 // static
 void ManifestHandlerRegistry::SetInstanceForTesting(
-    ManifestHandlerRegistry* registry, Manifest::Type type) {
+    ManifestHandlerRegistry* registry, Manifest::Type /*type*/) {
   widget_registry_ = registry;
   return;
 }

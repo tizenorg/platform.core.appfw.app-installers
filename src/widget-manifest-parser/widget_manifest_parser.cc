@@ -170,7 +170,7 @@ bool ExtractApiVersion(const parser::ApplicationData& app_data,
 }
 
 bool ExtractPrivileges(const parser::ApplicationData& app_data,
-                       std::set<std::string>* value, const char** error) {
+                       std::set<std::string>* value, const char** /*error*/) {
   const parser::PermissionsInfo* perm_info =
        static_cast<parser::PermissionsInfo*>(
             app_data.GetManifestData(keys::kTizenPermissionsKey));
@@ -288,7 +288,7 @@ API_EXPORT void ReleaseData(const ManifestData* data, const char* error) {
   free(data->version);
   free(data->icon);
   free(data->api_version);
-  for (int i = 0; i < data->privilege_count; ++i)
+  for (unsigned i = 0; i < data->privilege_count; ++i)
     free(data->privilege_list[i]);
   delete[] data->privilege_list;
   delete data;

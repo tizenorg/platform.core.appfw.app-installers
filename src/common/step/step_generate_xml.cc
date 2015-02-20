@@ -204,9 +204,9 @@ Step::Status StepGenerateXml::process() {
   }
 
   // add privilege element
-  privileges_x *pvlg;
+  privileges_x *pvlg = nullptr;
   PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data()->privileges, pvlg);
-  for (;pvlg != nullptr; pvlg = pvlg->next) {
+  for (; pvlg != nullptr; pvlg = pvlg->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "privileges");
     privilege_x *pv;
     PKGMGR_LIST_MOVE_NODE_TO_HEAD(pvlg->privilege, pv);
