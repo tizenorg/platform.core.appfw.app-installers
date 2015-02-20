@@ -5,6 +5,7 @@ SET(TESTS
   manifest_unittest
   manifest_handler_unittest
   manifest_util_unittest
+  string_util_unittest
   widget_manifest_parser_unittest
 )
 
@@ -17,6 +18,7 @@ ADD_EXECUTABLE(manifest_handler_unittest
                widget_manifest_parser_manifest_handler_unittest.cc)
 ADD_EXECUTABLE(manifest_util_unittest
                widget_manifest_parser_manifest_util_unittest.cc)
+ADD_EXECUTABLE(string_util_unittest string_util_unittest.cc)
 ADD_EXECUTABLE(widget_manifest_parser_unittest
                widget_manifest_parser_unittest.cc)
 
@@ -40,6 +42,7 @@ target_link_libraries(values_unittest PUBLIC ${TARGET_LIBNAME_UTILS} ${GTEST_MAI
 target_link_libraries(manifest_unittest PUBLIC ${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(manifest_handler_unittest PUBLIC ${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(manifest_util_unittest PUBLIC ${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} ${GTEST_MAIN_LIBRARIES})
+target_link_libraries(string_util_unittest PUBLIC ${TARGET_LIBNAME_UTILS} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(widget_manifest_parser_unittest PUBLIC ${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} ${GTEST_MAIN_LIBRARIES})
 
 FOREACH(test ${TESTS})

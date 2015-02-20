@@ -11,6 +11,15 @@
 namespace common_installer {
 namespace utils {
 
+// utf8 representation of unicode BIDI characters
+extern const char kRightToLeftMark[];
+extern const char kLeftToRightMark[];
+extern const char kLeftToRightEmbeddingMark[];
+extern const char kRightToLeftEmbeddingMark[];
+extern const char kPopDirectionalFormatting[];
+extern const char kLeftToRightOverride[];
+extern const char kRightToLeftOverride[];
+
 std::string CollapseWhitespaceUTF8(const std::string& text);
 std::string StripWrappingBidiControlCharactersUTF8(const std::string& text);
 std::string GetDirTextUTF8(const std::string& text, const std::string& dir);
