@@ -14,7 +14,7 @@
 #include "common/context_installer.h"
 #include "common/step/step.h"
 
-namespace parser = common_installer::widget_manifest_parser;
+namespace parser = common_installer::parser;
 
 namespace wgt {
 namespace parse {

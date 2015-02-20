@@ -96,7 +96,6 @@ inline bool IsWhitespaceUTF8(const char* c) {
 
 }  // namespace
 
-namespace common_installer {
 namespace utils {
 
 std::string CollapseWhitespaceUTF8(const std::string& text) {
@@ -203,4 +202,3 @@ std::string DecodePercentEscapedCharacter(const std::string& path) {
 }
 
 }  // namespace utils
-}  // namespace common_installer

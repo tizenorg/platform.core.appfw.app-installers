@@ -8,12 +8,10 @@
 
 #include <string>
 
-namespace common_installer {
 namespace utils {
 
 std::string GetSystemLocale();
 
 }  // namespace utils
-}  // namespace common_installer
 
 #endif  // UTILS_SYSTEM_LOCALE_H_

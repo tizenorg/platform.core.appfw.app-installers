@@ -33,7 +33,7 @@ common_installer::Step::Status StepSymbolicLink::process() {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
     fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(ui->appid)
         / fs::path("bin");
-    common_installer::utils::CreateDir(exec_path);
+    utils::CreateDir(exec_path);
 
     exec_path /= fs::path(ui->appid);
 
@@ -48,7 +48,7 @@ common_installer::Step::Status StepSymbolicLink::process() {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
     fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(svc->appid)
         / fs::path("bin");
-    common_installer::utils::CreateDir(exec_path);
+    utils::CreateDir(exec_path);
 
     exec_path /= fs::path(svc->appid);
 

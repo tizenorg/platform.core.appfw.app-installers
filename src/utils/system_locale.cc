@@ -11,7 +11,6 @@
 
 #include "utils/logging.h"
 
-namespace common_installer {
 namespace utils {
 
 namespace {
@@ -50,4 +49,3 @@ std::string GetSystemLocale() {
 }
 
 }  // namespace utils
-}  // namespace common_installer

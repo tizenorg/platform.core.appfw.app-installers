@@ -6,8 +6,7 @@
 #include <string>
 
 #include "utils/logging.h"
-
-namespace common_installer {
+\
 namespace utils {
 
 namespace fs = boost::filesystem;
@@ -80,4 +79,3 @@ bool CopyDir(const fs::path& src, const fs::path& dst) {
 }
 
 }  // namespace utils
-}  // namespace common_installer

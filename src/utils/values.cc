@@ -14,7 +14,6 @@
 
 #include "utils/logging.h"
 
-namespace common_installer {
 namespace utils {
 
 namespace {
@@ -1039,4 +1038,3 @@ ValueSerializer::~ValueSerializer() {
 }
 
 }  // namespace utils
-}  // namespace common_installer

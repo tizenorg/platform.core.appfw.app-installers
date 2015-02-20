@@ -9,7 +9,6 @@
 
 #include "utils/values.h"
 
-namespace common_installer {
 namespace utils {
 
 TEST(ValuesTest, Basic) {
@@ -1137,4 +1136,3 @@ TEST(ValuesTest, GetWithnullptrOutValue) {
 }
 
 }  // namespace utils
-}  // namespace common_installer

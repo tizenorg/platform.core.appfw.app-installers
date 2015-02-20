@@ -8,7 +8,6 @@
 
 #include <string>
 
-namespace common_installer {
 namespace utils {
 
 std::string CollapseWhitespaceUTF8(const std::string& text);
@@ -18,6 +17,5 @@ std::string GetDirTextUTF8(const std::string& text, const std::string& dir);
 std::string DecodePercentEscapedCharacter(const std::string& path);
 
 }  // namespace utils
-}  // namespace common_installer
 
 #endif  // UTILS_STRING_UTIL_H_

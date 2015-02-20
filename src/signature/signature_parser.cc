@@ -178,7 +178,7 @@ bool ParseSignedInfoElement(
       return false;
     }
     std::string decoded_uri =
-        common_installer::utils::DecodePercentEscapedCharacter(uri);
+        utils::DecodePercentEscapedCharacter(uri);
     if (!decoded_uri.empty()) {
       uri = decoded_uri;
     } else {

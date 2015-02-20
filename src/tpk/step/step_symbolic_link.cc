@@ -28,7 +28,7 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
     fs::path bindir = fs::path(context->pkg_path()) / fs::path(app->appid) /
         fs::path("bin");
     LOG(INFO) << "Creating dir: " << bindir;
-    if (!common_installer::utils::CreateDir(bindir)) {
+    if (!utils::CreateDir(bindir)) {
       LOG(ERROR) << "Directory creation failure";
       return false;
     }

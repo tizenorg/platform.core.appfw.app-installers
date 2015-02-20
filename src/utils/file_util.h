@@ -5,7 +5,6 @@
 
 #include <boost/filesystem.hpp>
 
-namespace common_installer {
 namespace utils {
 
 bool CreateDir(const boost::filesystem::path& path);
@@ -14,6 +13,5 @@ bool CopyDir(const boost::filesystem::path& src,
              const boost::filesystem::path& dst);
 
 }  // namespace utils
-}  // namespace common_installer
 
 #endif  // UTILS_FILE_UTIL_H_

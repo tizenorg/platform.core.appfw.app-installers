@@ -27,7 +27,6 @@
 #include <utility>
 #include <vector>
 
-namespace common_installer {
 namespace utils {
 
 class DictionaryValue;
@@ -481,6 +480,5 @@ class ValueSerializer {
 };
 
 }  // namespace utils
-}  // namespace common_installer
 
 #endif  // UTILS_VALUES_H_

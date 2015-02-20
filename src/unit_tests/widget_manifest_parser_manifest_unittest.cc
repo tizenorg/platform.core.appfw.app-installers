@@ -11,14 +11,14 @@
 #include <vector>
 
 #include "utils/values.h"
-#include "widget-manifest-parser/application_manifest_constants.h"
-#include "widget-manifest-parser/manifest.h"
+#include "parser/application_manifest_constants.h"
+#include "parser/manifest.h"
 
 namespace errors = common_installer::application_manifest_errors;
 namespace keys = common_installer::application_widget_keys;
 
 namespace common_installer {
-namespace widget_manifest_parser {
+namespace parser {
 
 class ManifestTest : public testing::Test {
  public:
@@ -84,7 +84,7 @@ TEST_F(ManifestTest, ApplicationTypes) {
   EXPECT_TRUE(error.empty());
 }
 
-}  // namespace widget_manifest_parser
+}  // namespace parser
 }  // namespace common_installer
 
 

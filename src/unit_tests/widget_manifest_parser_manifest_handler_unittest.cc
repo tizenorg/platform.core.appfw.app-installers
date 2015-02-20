@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "utils/values.h"
-#include "widget-manifest-parser/application_data.h"
-#include "widget-manifest-parser/manifest_handler.h"
+#include "parser/application_data.h"
+#include "parser/manifest_handler.h"
 
 namespace bf = boost::filesystem;
 
 namespace common_installer {
-namespace widget_manifest_parser {
+namespace parser {
 
 namespace {
 
@@ -320,5 +320,5 @@ TEST_F(ManifestHandlerTest, Validate) {
       registry->registry_->ValidateAppManifest(application, &error));
 }
 
-}  // namespace widget_manifest_parser
+}  // namespace parser
 }  // namespace common_installer
