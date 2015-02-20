@@ -30,7 +30,7 @@ namespace fs = boost::filesystem;
 Step::Status StepRecord::process() {
   assert(!context_->xml_path().empty());
 
-  char* const appinst_tags[] = {"removable=true", nullptr, };
+  const char* const appinst_tags[] = {"removable=true", nullptr, };
   // TODO(sdi2): Check if data->removable is correctly setting
   // during parsing step.
   // Same check should be done for preload field.
@@ -40,9 +40,10 @@ Step::Status StepRecord::process() {
 
   int ret = context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       pkgmgr_parser_parse_usr_manifest_for_installation(
-          context_->xml_path().c_str(), context_->uid(), appinst_tags) :
+          context_->xml_path().c_str(), context_->uid(),
+          const_cast<char* const*>(appinst_tags)) :
       pkgmgr_parser_parse_manifest_for_installation(
-          context_->xml_path().c_str(), appinst_tags);
+          context_->xml_path().c_str(), const_cast<char* const*>(appinst_tags));
 
   if (ret != 0) {
     LOG(ERROR) << "Failed to record package into database";
@@ -57,15 +58,30 @@ Step::Status StepRecord::clean() {
 }
 
 Step::Status StepRecord::undo() {
-  std::string cmd;
+  if (context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
+    const char* ail_cmd[] = {kAilInitUser, nullptr};
+    const char* pkgmgr_cmd[] = {kPkgInitUser, nullptr};
 
-  context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
-      cmd = std::string(kAilInitUser) + ";" + kPkgInitUser :
-      cmd = std::string(kAilInit) + ";" + kPkgInit;
-
-  if (execv(cmd.c_str(), nullptr) == -1) {
-      LOG(ERROR) << "Error during execvp %s";
+    if (execv(ail_cmd[0], const_cast<char* const*>(ail_cmd)) == -1) {
+      LOG(ERROR) << "Error during execv: " << ail_cmd[0];
       return Step::Status::ERROR;
+    }
+    if (execv(pkgmgr_cmd[0], const_cast<char* const*>(pkgmgr_cmd)) == -1) {
+      LOG(ERROR) << "Error during execv: " << pkgmgr_cmd[0];
+      return Step::Status::ERROR;
+    }
+  } else {
+    const char* ail_cmd[] = {kAilInit, nullptr};
+    const char* pkgmgr_cmd[] = {kPkgInit, nullptr};
+
+    if (execv(ail_cmd[0], const_cast<char* const*>(ail_cmd)) == -1) {
+      LOG(ERROR) << "Error during execv: " << ail_cmd[0];
+      return Step::Status::ERROR;
+    }
+    if (execv(pkgmgr_cmd[0], const_cast<char* const*>(pkgmgr_cmd)) == -1) {
+      LOG(ERROR) << "Error during execv: " << pkgmgr_cmd[0];
+      return Step::Status::ERROR;
+    }
   }
 
   LOG(INFO) << "Successfuly clean database";

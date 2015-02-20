@@ -26,8 +26,11 @@ class XmlNode {
   xmlChar* name;    // The name of node
   xmlChar* data;    // Internal text of the node
 
-  XmlNode() : name(NULL), data(NULL), depth(-1),
-      node_type(XML_READER_TYPE_NONE) {
+  XmlNode()
+      : depth(-1),
+        node_type(XML_READER_TYPE_NONE),
+        name(NULL),
+        data(NULL) {
   }
 
   virtual ~XmlNode() {
@@ -112,8 +115,13 @@ class XmlNodeUiApplication : public XmlNode {
   XmlNodeIcon icon;
   XmlNodeLabel label;
 
-  XmlNodeUiApplication() : appid(NULL), exec(NULL), type(NULL),
-      multiple(NULL), taskmanage(NULL), nodisplay(NULL) {
+  XmlNodeUiApplication()
+      : appid(NULL),
+        exec(NULL),
+        type(NULL),
+        multiple(NULL),
+        taskmanage(NULL),
+        nodisplay(NULL) {
     XmlNode::SetExpectedNodeName("ui-application");
   }
 
@@ -194,8 +202,11 @@ class XmlNodeManifest : public XmlNode {
   XmlNodeUiApplication ui_application;
   XmlNodePrivileges privileges;
 
-  XmlNodeManifest() : xmlns(NULL), api_version(NULL), package(NULL),
-      version(NULL) {
+  XmlNodeManifest()
+      : xmlns(NULL),
+        api_version(NULL),
+        package(NULL),
+        version(NULL) {
     XmlNode::SetExpectedNodeName("manifest");
   }
 

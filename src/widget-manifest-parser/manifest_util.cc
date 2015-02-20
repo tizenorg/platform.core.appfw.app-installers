@@ -316,7 +316,7 @@ std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
 }  // namespace
 
 std::unique_ptr<Manifest> LoadManifest(const std::string& manifest_path,
-    Manifest::Type type, std::string* error) {
+    Manifest::Type /*type*/, std::string* error) {
   xmlDoc * doc = nullptr;
   xmlNode* root_node = nullptr;
   doc = xmlReadFile(manifest_path.c_str(), nullptr, 0);

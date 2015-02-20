@@ -148,7 +148,7 @@ bool ApplicationData::Init(const std::string& explicit_id,
 }
 
 bool ApplicationData::LoadID(const std::string& explicit_id,
-                             std::string* error) {
+                             std::string* /*error*/) {
   std::string application_id;
   auto iter = manifest_data_.find(widget_keys::kTizenApplicationKey);
   if (iter == manifest_data_.end())

@@ -521,13 +521,13 @@ bool ValidateEachId(const AppWidgetVector& app_widgets,
 }
 
 // Tests if specified string represents valid remote url
-bool IsValidUrl(const std::string& value) {
+bool IsValidUrl(const std::string& /*value*/) {
   // TODO(tweglarski): implement me (it's not crucial atm)
   return true;
 }
 
 // Tests if specified string represents valid path
-bool IsValidPath(const std::string& value) {
+bool IsValidPath(const std::string& /*value*/) {
   // TODO(tweglarski): implement me (it's not crucial atm)
   return true;
 }
