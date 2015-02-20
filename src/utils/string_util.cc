@@ -11,14 +11,6 @@
 
 namespace {
 
-const char kRightToLeftMark[] = u8"\xE2\x80\x8F";
-const char kLeftToRightMark[] = u8"\xE2\x80\x8E";
-const char kLeftToRightEmbeddingMark[] = u8"\xE2\x80\xAA";
-const char kRightToLeftEmbeddingMark[] = u8"\xE2\x80\xAB";
-const char kPopDirectionalFormatting[] = u8"\xE2\x80\xAC";
-const char kLeftToRightOverride[] = u8"\xE2\x80\xAD";
-const char kRightToLeftOverride[] = u8"\xE2\x80\xAE";
-
 const unsigned kBidiControlCharacterLength = 3;
 
 const char kDirLTRKey[] = "ltr";
@@ -98,6 +90,14 @@ inline bool IsWhitespaceUTF8(const char* c) {
 
 namespace common_installer {
 namespace utils {
+
+const char kRightToLeftMark[] = u8"\xE2\x80\x8F";
+const char kLeftToRightMark[] = u8"\xE2\x80\x8E";
+const char kLeftToRightEmbeddingMark[] = u8"\xE2\x80\xAA";
+const char kRightToLeftEmbeddingMark[] = u8"\xE2\x80\xAB";
+const char kPopDirectionalFormatting[] = u8"\xE2\x80\xAC";
+const char kLeftToRightOverride[] = u8"\xE2\x80\xAD";
+const char kRightToLeftOverride[] = u8"\xE2\x80\xAE";
 
 std::string CollapseWhitespaceUTF8(const std::string& text) {
   std::string result;
