@@ -8,13 +8,13 @@
 #include <boost/filesystem/operations.hpp>
 #include <gtest/gtest.h>
 
-#include "widget-manifest-parser/application_data.h"
-#include "widget-manifest-parser/application_manifest_constants.h"
-#include "widget-manifest-parser/manifest.h"
-#include "widget-manifest-parser/manifest_util.h"
+#include "parser/application_data.h"
+#include "parser/application_manifest_constants.h"
+#include "parser/manifest.h"
+#include "parser/manifest_util.h"
 
-using common_installer::widget_manifest_parser::ApplicationData;
-using common_installer::widget_manifest_parser::Manifest;
+using common_installer::parser::ApplicationData;
+using common_installer::parser::Manifest;
 
 namespace keys = common_installer::application_manifest_keys;
 namespace bf = boost::filesystem;
@@ -36,11 +36,11 @@ TEST_F(ManifestUtilTest, LoadApplicationWithValidPath) {
                                                   Manifest::Type::TYPE_WIDGET,
                                                   &error));
   ASSERT_TRUE(error.empty());
-  std::shared_ptr<common_installer::widget_manifest_parser::ApplicationData>
+  std::shared_ptr<common_installer::parser::ApplicationData>
       app_data =
-      common_installer::widget_manifest_parser::ApplicationData::Create(
+      common_installer::parser::ApplicationData::Create(
           bf::path(), std::string(),
-          common_installer::widget_manifest_parser::ApplicationData::INTERNAL,
+          common_installer::parser::ApplicationData::INTERNAL,
           std::move(manifest), &error);
   ASSERT_TRUE(error.empty());
   EXPECT_EQ("nNBDOItqjN.WebSettingSample", app_data->ID());
