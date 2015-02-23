@@ -11,7 +11,7 @@
 #include <cstdio>
 #include <string>
 
-#include "common/utils.h"
+#include "utils/file_util.h"
 
 namespace common_installer {
 namespace parse {
