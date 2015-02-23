@@ -15,7 +15,6 @@ SET(SRCS
   step/step_security.cc
   step/step_signal.cc
   step/step_unregister.cc
-  utils.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})

@@ -11,7 +11,7 @@
 #include <cstdio>
 #include <string>
 
-#include "common/utils.h"
+#include "utils/file_util.h"
 
 namespace wgt {
 namespace symbolic_link {
@@ -33,7 +33,7 @@ common_installer::Step::Status StepSymbolicLink::process() {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
     fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(ui->appid)
         / fs::path("bin");
-    utils::CreateDir(exec_path);
+    common_installer::utils::CreateDir(exec_path);
 
     exec_path /= fs::path(ui->appid);
 
@@ -48,7 +48,7 @@ common_installer::Step::Status StepSymbolicLink::process() {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
     fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(svc->appid)
         / fs::path("bin");
-    utils::CreateDir(exec_path);
+    common_installer::utils::CreateDir(exec_path);
 
     exec_path /= fs::path(svc->appid);
 

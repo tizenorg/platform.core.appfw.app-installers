@@ -1,5 +1,6 @@
 # Target - sources
 SET(SRCS
+  file_util.cc
   system_locale.cc
   string_util.cc
   values.cc

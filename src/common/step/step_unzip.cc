@@ -17,7 +17,7 @@
 #include <cstring>
 #include <string>
 
-#include "common/utils.h"
+#include "utils/file_util.h"
 
 #define ZIPBUFSIZE 8192
 #define ZIPMAXPATH 256
