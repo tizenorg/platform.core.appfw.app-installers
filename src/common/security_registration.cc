@@ -12,7 +12,9 @@
  * this macro moves the current node to the head of the list.
  * This LISTHEAD() macro is defined in pkgmgr_parser.h in pkgmgr-info package.
  */
-#define PKGMGR_LIST_MOVE_NODE_TO_HEAD(list, node) LISTHEAD(list, node)
+#define PKGMGR_LIST_MOVE_NODE_TO_HEAD(list, node) do {                        \
+    if (list) { LISTHEAD(list, node); }                                       \
+  } while (0)
 
 namespace bf = boost::filesystem;
 
