@@ -16,6 +16,10 @@
 
 #include "common/utils.h"
 
+#define PKGMGR_LIST_MOVE_NODE_TO_HEAD(list, node) do {                        \
+    if (list) { LISTHEAD(list, node); }                                       \
+  } while (0)
+
 namespace fs = boost::filesystem;
 
 namespace common_installer {
@@ -201,11 +205,11 @@ Step::Status StepGenerateXml::process() {
 
   // add privilege element
   privileges_x *pvlg;
-  LISTHEAD(context_->manifest_data()->privileges, pvlg);
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data()->privileges, pvlg);
   for (;pvlg != nullptr; pvlg = pvlg->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "privileges");
     privilege_x *pv;
-    LISTHEAD(pvlg->privilege, pv);
+    PKGMGR_LIST_MOVE_NODE_TO_HEAD(pvlg->privilege, pv);
     for (; pv != nullptr; pv = pv->next) {
       xmlTextWriterWriteFormatElement(writer, BAD_CAST "privilege",
         "%s", BAD_CAST pv->text);
