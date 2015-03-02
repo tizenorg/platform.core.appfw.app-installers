@@ -13,8 +13,9 @@
 #include <string>
 #include <vector>
 
-#include "widget-manifest-parser/manifest.h"
+#include "widget-manifest-parser/app_control_info.h"
 #include "widget-manifest-parser/application_data.h"
+#include "widget-manifest-parser/manifest.h"
 #include "widget-manifest-parser/manifest_handlers/tizen_application_handler.h"
 #include "widget-manifest-parser/manifest_handlers/widget_handler.h"
 
@@ -44,6 +45,8 @@ class WidgetManifestParser {
   std::vector<std::string> ExtractIcons(const Manifest& manifest,
                                         std::string* error);
   std::set<std::string> ExtractPrivileges(const ApplicationData& app_data,
+                                          std::string* error);
+  AppControlInfoList ExtractAppControls(const ApplicationData& app_data,
                                           std::string* error);
 
   std::unique_ptr<Manifest> manifest_;

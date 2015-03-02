@@ -100,7 +100,12 @@ bool WidgetManifestParser::FillManifestX(manifest_x* manifest) {
                                                 &error_);
   if (!error_.empty())
     return false;
+
   std::set<std::string> privileges = ExtractPrivileges(*app_data, &error_);
+  if (!error_.empty())
+    return false;
+
+  AppControlInfoList app_info_list = ExtractAppControls(*app_data, &error_);
   if (!error_.empty())
     return false;
   // application data
@@ -149,6 +154,22 @@ bool WidgetManifestParser::FillManifestX(manifest_x* manifest) {
         reinterpret_cast<privilege_x*> (calloc(1, sizeof(privilege_x)));
     privilege_x_node->text = strdup(p.c_str());
     LISTADD(manifest->privileges->privilege, privilege_x_node);
+  }
+
+  // appcontrol
+  for (const auto& control : app_info_list.controls) {
+    appcontrol_x* app_control =
+        static_cast<appcontrol_x*>(calloc(sizeof(appcontrol_x), 1));
+    app_control->operation =
+        static_cast<operation_x*>(calloc(sizeof(operation_x), 1));
+    app_control->operation->name = strdup(control.operation().c_str());
+    app_control->mime =
+        static_cast<mime_x*>(calloc(sizeof(mime_x), 1));
+    app_control->mime->name = strdup(control.mime().c_str());
+    app_control->uri =
+        static_cast<uri_x*>(calloc(sizeof(uri_x), 1));
+    app_control->uri->name = strdup(control.uri().c_str());
+    LISTADD(manifest->uiapplication->appcontrol, app_control);
   }
 
   // For wgt package use the long name if the short name is empty
@@ -239,6 +260,18 @@ std::set<std::string> WidgetManifestParser::ExtractPrivileges(
             app_data.GetManifestData(keys::kTizenPermissionsKey));
   parser::PermissionSet permissions = perm_info->GetAPIPermissions();
   return permissions;
+}
+
+AppControlInfoList WidgetManifestParser::ExtractAppControls(
+    const ApplicationData& app_data, std::string* /*error*/) {
+  const AppControlInfoList* app_controls =
+      static_cast<const AppControlInfoList*>(
+          app_data.GetManifestData(keys::kTizenApplicationAppControlsKey));
+
+  if (!app_controls)
+    return {};
+
+  return *app_controls;
 }
 
 bool WidgetManifestParser::ParseManifest(const bf::path& manifest_path) {

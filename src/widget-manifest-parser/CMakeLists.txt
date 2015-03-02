@@ -1,9 +1,11 @@
 # Target - sources
 SET(SRCS
+  app_control_info.cc
   application_data.cc
   application_manifest_constants.cc
   manifest.cc
   manifest_handler.cc
+  manifest_handlers/app_control_handler.cc
   manifest_handlers/appwidget_handler.cc
   manifest_handlers/category_handler.cc
   manifest_handlers/ime_handler.cc
@@ -23,6 +25,7 @@ ADD_LIBRARY(${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} SHARED ${SRCS})
 TARGET_INCLUDE_DIRECTORIES(${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../")
 # Target - deps
 APPLY_PKG_CONFIG(${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} PUBLIC
+  LIBIRI_DEPS
   LIBXML_DEPS
   PKGMGR_INFO_DEPS
   Boost

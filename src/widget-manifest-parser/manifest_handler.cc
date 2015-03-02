@@ -10,6 +10,7 @@
 
 #include "widget-manifest-parser/application_manifest_constants.h"
 
+#include "widget-manifest-parser/manifest_handlers/app_control_handler.h"
 #include "widget-manifest-parser/manifest_handlers/appwidget_handler.h"
 #include "widget-manifest-parser/manifest_handlers/category_handler.h"
 #include "widget-manifest-parser/manifest_handlers/ime_handler.h"
@@ -111,6 +112,7 @@ ManifestHandlerRegistry::GetInstanceForWGT() {
   handlers.push_back(new NavigationHandler);
   handlers.push_back(new SplashScreenHandler);
   handlers.push_back(new AppWidgetHandler);
+  handlers.push_back(new AppControlHandler);
 
   widget_registry_ = new ManifestHandlerRegistry(handlers);
   return widget_registry_;

@@ -127,8 +127,9 @@ Step::Status StepGenerateXml::process() {
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
                                          "%s", BAD_CAST icon.c_str());
 
-    for (appcontrol_x* appc_ui = ui->appcontrol; appc_ui != nullptr;
-        appc_ui = appc_ui->next) {
+    appcontrol_x* appc_ui = nullptr;
+    PKGMGR_LIST_MOVE_NODE_TO_HEAD(ui->appcontrol, appc_ui);
+    for (; appc_ui != nullptr; appc_ui = appc_ui->next) {
       xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
       xmlTextWriterStartElement(writer, BAD_CAST "operation");
@@ -188,8 +189,9 @@ Step::Status StepGenerateXml::process() {
       LOG(DEBUG) << "Icon is not found in package, the default icon is setting";
     }
 
-    for (appcontrol_x* appc_svc = svc->appcontrol; appc_svc != nullptr;
-        appc_svc = appc_svc->next) {
+    appcontrol_x* appc_svc = nullptr;
+    PKGMGR_LIST_MOVE_NODE_TO_HEAD(svc->appcontrol, appc_svc);
+    for (; appc_svc != nullptr; appc_svc = appc_svc->next) {
       xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
       xmlTextWriterStartElement(writer, BAD_CAST "operation");
