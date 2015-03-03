@@ -33,7 +33,10 @@ typedef std::list<std::string> List;
 std::string GetLocalizedKey(const std::string& key,
                             const std::string& local) {
   std::string lower_local;
-  std::transform(local.begin(), local.end(), lower_local.begin(), ::tolower);
+  std::transform(local.begin(), local.end(),
+                 std::insert_iterator<std::string>(lower_local,
+                                                   lower_local.begin()),
+                 ::tolower);
   if (lower_local.empty())
     lower_local = kLocaleUnlocalized;
   return key + kPathConnectSymbol + lower_local;
