@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<manifest xmlns="http://tizen.org/ns/packages" api-version="2.3" package="org.tizen.testapp" version="1.0.0">
+    <author email="tester@samsung.com" href="www.tizen.org">tester</author>
+    <description>This is default description</description>
+    <description xml:lang="en-us">This is test description</description>
+    <ui-application appid="org.tizen.testapp" exec="testapp" multiple="false" nodisplay="false" taskmanage="true" type="capp">
+        <label>testapp</label>
+        <label xml:lang="en-us">Test</label>
+        <icon>testapp.png</icon>
+        <app-control>
+            <mime name="EditMime"/>
+            <operation name="http://tizen.org/appcontrol/operation/edit"/>
+            <uri name="EditUri"/>
+        </app-control>
+        <app-control>
+            <operation name="http://tizen.org/appcontrol/operation/view"/>
+            <uri name="ViewUri"/>
+            <mime name="ViewMime"/>
+        </app-control>
+        <metadata key="metakey1" value="metaval1"/>
+        <metadata key="metakey2" value="metaval2"/>
+        <datacontrol access="ReadOnly" providerid="http://testapp.com/datacontrol/provider/testapp" type="Sql"/>
+        <datacontrol access="ReadOnly" providerid="http://testapp.com/datacontrol/provider/testapp" type="Map"/>
+    </ui-application>
+    <account>
+        <account-provider appid="org.tizen.testapp" multiple-accounts-support="false" providerid="com.samsung">
+            <icon section="account">testapp.png</icon>
+            <icon section="account-small">testapp.png</icon>
+            <label xml:lang="en-gb">account icon</label>
+            <label>Samsung</label>
+            <capability>http://tizen.org/account/capability/calendar</capability>
+            <capability>http://tizen.org/account/capability/photo</capability>
+        </account-provider>
+    </account>
+    <privileges>
+        <privilege>http://tizen.org/privilege/appmanager.launch</privilege>
+        <privilege>http://tizen.org/privilege/packagemanager.info</privilege>
+    </privileges>
+    <feature name="http://tizen.org/feature/camera.front.flash">true</feature>
+    <feature name="http://tizen.org/feature/camera">true</feature>
+    <feature name="http://tizen.org/feature/camera.back.flash">true</feature>
+    <feature name="http://tizen.org/feature/camera.front">true</feature>
+</manifest>
