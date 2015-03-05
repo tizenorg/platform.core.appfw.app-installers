@@ -160,7 +160,8 @@ bool WidgetManifestParser::FillManifestX(manifest_x* manifest) {
 
   manifest->uiapplication->icon =
       reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
-  manifest->uiapplication->icon->name = strdup(manifest->icon->name);
+  if (manifest->icon)
+    manifest->uiapplication->icon->name = strdup(manifest->icon->name);
   manifest->uiapplication->next = nullptr;
   return true;
 }

@@ -41,8 +41,13 @@ Step::Status StepGenerateXml::process() {
     return Step::Status::ERROR;
   }
 
-  fs::path default_icon(
-      tzplatform_mkpath(TZ_SYS_RW_ICONS, "app-installers.png"));
+  const char* path = nullptr;
+  if (!(path = tzplatform_mkpath(TZ_SYS_RW_ICONS, "app-installers.png"))) {
+    LOG(ERROR) << "Internal error of tzplatform config."
+                  "Failed to concatenate path.";
+    return Step::Status::ERROR;
+  }
+  fs::path default_icon(path);
 
   xmlTextWriterPtr writer;
 
@@ -106,12 +111,14 @@ Step::Status StepGenerateXml::process() {
     // if the icon isn't exist print the default icon app-installers.png
     icon_path_ = fs::path(getIconPath(context_->uid()));
     utils::CreateDir(icon_path_);
+
     fs::path icon = fs::path(ui->appid) += fs::path(".png");
 
-    fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(ui->appid)
+    if (ui->icon->name) {
+      fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(ui->appid)
         / fs::path(ui->icon->name);
-    if (fs::exists(app_icon)) {
-      fs::rename(app_icon, icon_path_ /= icon);
+      if (fs::exists(app_icon))
+        fs::rename(app_icon, icon_path_ /= icon);
     } else {
       fs::create_symlink(default_icon, icon_path_ /= icon, error);
       LOG(DEBUG) << "Icon is not found in package, the default icon is setting";
@@ -170,10 +177,11 @@ Step::Status StepGenerateXml::process() {
     utils::CreateDir(icon_path_);
     fs::path icon = fs::path(svc->appid) += fs::path(".png");
 
-    fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(svc->appid)
-        / fs::path(svc->icon->name);
-    if (fs::exists(app_icon)) {
-      fs::rename(app_icon, icon_path_ /= icon);
+    if (svc->icon->name) {
+      fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(svc->appid)
+          / fs::path(svc->icon->name);
+      if (fs::exists(app_icon))
+        fs::rename(app_icon, icon_path_ /= icon);
     } else {
       fs::rename(default_icon, icon_path_ /= icon);
       LOG(DEBUG) << "Icon is not found in package, the default icon is setting";
