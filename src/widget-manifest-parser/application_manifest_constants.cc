@@ -156,9 +156,6 @@ const char kInvalidKey[] =
     "Value 'key' is missing or invalid.";
 const char kInvalidName[] =
     "Required value 'name' is missing or invalid.";
-const char kInvalidVersion[] =
-    "Required value 'version' is missing or invalid. It must be between 1-4 "
-    "dot-separated integers each between 0 and 65536.";
 const char kManifestParseError[] =
     "Manifest is not valid JSON.";
 const char kManifestUnreadable[] =
