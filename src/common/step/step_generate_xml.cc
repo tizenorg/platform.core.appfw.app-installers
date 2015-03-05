@@ -4,7 +4,6 @@
 
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
-#include <libxml/xmlwriter.h>
 #include <pkgmgr-info.h>
 #include <pkgmgr_parser.h>
 #include <tzplatform_config.h>
@@ -25,6 +24,74 @@ namespace fs = boost::filesystem;
 namespace common_installer {
 namespace generate_xml {
 
+template <typename T>
+Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
+    xmlTextWriterPtr writer) {
+  fs::path default_icon(
+      tzplatform_mkpath(TZ_SYS_RW_ICONS, "app-installers.png"));
+  xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST app->appid);
+
+  // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
+  fs::path exec_path = fs::path(context_->pkg_path.get()) / fs::path(app->appid)
+      / fs::path("bin") / fs::path(app->appid);
+  xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
+                              BAD_CAST exec_path.string().c_str());
+  if (app->type)
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "type", BAD_CAST app->type);
+  else
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "type", BAD_CAST "capp");
+
+  if (std::is_same<T, uiapplication_x>::value)
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
+        BAD_CAST "true");
+
+  xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
+      "%s", BAD_CAST app->label->name);
+  // the icon is renamed to <appid.png>
+  // and located in TZ_USER_ICON/TZ_SYS_ICON
+  // if the icon isn't exist print the default icon app-installers.png
+  icon_path_ = fs::path(getIconPath(context_->uid.get()));
+  utils::CreateDir(icon_path_);
+  fs::path icon = fs::path(app->appid) += fs::path(".png");
+
+  if (app->icon->name) {
+    fs::path app_icon = fs::path(context_->pkg_path.get())
+      / fs::path(app->appid)
+      / fs::path(app->icon->name);
+    if (fs::exists(app_icon))
+      fs::rename(app_icon, icon_path_ /= icon);
+  } else {
+    boost::system::error_code error;
+    fs::create_symlink(default_icon, icon_path_ /= icon, error);
+    LOG(DEBUG) << "Icon was not found in package, the default icon will be set";
+  }
+
+  xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
+                                       "%s", BAD_CAST icon.c_str());
+
+  for (appcontrol_x* appc = app->appcontrol; appc != nullptr;
+      appc = appc->next) {
+    xmlTextWriterStartElement(writer, BAD_CAST "app-control");
+
+    xmlTextWriterStartElement(writer, BAD_CAST "operation");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+        BAD_CAST appc->operation->name);
+    xmlTextWriterEndElement(writer);
+
+    xmlTextWriterStartElement(writer, BAD_CAST "uri");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+        BAD_CAST appc->uri->name);
+    xmlTextWriterEndElement(writer);
+
+    xmlTextWriterStartElement(writer, BAD_CAST "mime");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+        BAD_CAST appc->mime->name);
+
+    xmlTextWriterEndElement(writer);
+  }
+  return Step::Status::OK;
+}
+
 Step::Status StepGenerateXml::process() {
   assert(context_->manifest_data.get());
 
@@ -40,14 +107,6 @@ Step::Status StepGenerateXml::process() {
                << "Services applications described!";
     return Step::Status::ERROR;
   }
-
-  const char* path = nullptr;
-  if (!(path = tzplatform_mkpath(TZ_SYS_RW_ICONS, "app-installers.png"))) {
-    LOG(ERROR) << "Internal error of tzplatform config."
-                  "Failed to concatenate path.";
-    return Step::Status::ERROR;
-  }
-  fs::path default_icon(path);
 
   xmlTextWriterPtr writer;
 
@@ -85,145 +144,15 @@ Step::Status StepGenerateXml::process() {
   for (uiapplication_x* ui = context_->manifest_data.get()->uiapplication;
       ui != nullptr; ui = ui->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
-
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "appid",
-                                      BAD_CAST ui->appid);
-
-    // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path =
-        fs::path(context_->pkg_path.get()) / fs::path(ui->appid)
-            / fs::path("bin") / fs::path(ui->appid);
-
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
-        BAD_CAST exec_path.string().c_str());
-    if ( ui->type )
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
-          BAD_CAST ui->type);
-    else
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
-          BAD_CAST "capp");
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
-        BAD_CAST "true");
-
-    xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
-        "%s", BAD_CAST ui->label->name);
-
-    // the icon is renamed to <appid.png>
-    // and located in TZ_USER_ICON/TZ_SYS_ICON
-    // if the icon isn't exist print the default icon app-installers.png
-    icon_path_ = fs::path(getIconPath(context_->uid.get()));
-    utils::CreateDir(icon_path_);
-
-    fs::path icon = fs::path(ui->appid) += fs::path(".png");
-
-    if (ui->icon && ui->icon->name) {
-      fs::path app_icon = fs::path(context_->pkg_path.get())
-          / fs::path(ui->appid) / fs::path(ui->icon->name);
-      if (fs::exists(app_icon))
-        fs::rename(app_icon, icon_path_ /= icon);
-    } else {
-      fs::create_symlink(default_icon, icon_path_ /= icon, error);
-      LOG(DEBUG) << "Icon is not found in package, the default icon is setting";
-    }
-
-    xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
-                                         "%s", BAD_CAST icon.c_str());
-
-    appcontrol_x* appc_ui = nullptr;
-    PKGMGR_LIST_MOVE_NODE_TO_HEAD(ui->appcontrol, appc_ui);
-    for (; appc_ui != nullptr; appc_ui = appc_ui->next) {
-      xmlTextWriterStartElement(writer, BAD_CAST "app-control");
-
-      if (appc_ui->operation) {
-        xmlTextWriterStartElement(writer, BAD_CAST "operation");
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-            BAD_CAST appc_ui->operation->name);
-        xmlTextWriterEndElement(writer);
-      }
-      if (appc_ui->uri) {
-        xmlTextWriterStartElement(writer, BAD_CAST "uri");
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-            BAD_CAST appc_ui->uri->name);
-        xmlTextWriterEndElement(writer);
-      }
-      if (appc_ui->mime) {
-        xmlTextWriterStartElement(writer, BAD_CAST "mime");
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-            BAD_CAST appc_ui->mime->name);
-        xmlTextWriterEndElement(writer);
-      }
-
-      xmlTextWriterEndElement(writer);
-    }
+    GenerateApplicationCommonXml(ui, writer);
     xmlTextWriterEndElement(writer);
   }
-
   // add service-application element per service application
   for (serviceapplication_x* svc =
-      context_->manifest_data.get()->serviceapplication;
-      svc != nullptr; svc = svc->next) {
+       context_->manifest_data.get()->serviceapplication;
+       svc != nullptr; svc = svc->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "service-application");
-
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST svc->appid);
-
-    // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path =
-        fs::path(context_->pkg_path.get()) / fs::path(svc->appid)
-            / fs::path("bin") / fs::path(svc->appid);
-
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
-        BAD_CAST exec_path.string().c_str());
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
-        BAD_CAST svc->type);
-    if (svc->label) {
-      xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
-          "%s", BAD_CAST svc->label->name);
-    }
-
-    // the icon is renamed to <appid.png>
-    // and located in TZ_USER_ICON/TZ_SYS_ICON
-    // if the icon isn't exist print the default icon app-installers.png
-    icon_path_ = fs::path(getIconPath(context_->uid.get()));
-    utils::CreateDir(icon_path_);
-    fs::path icon = fs::path(svc->appid) += fs::path(".png");
-
-    if (svc->icon && svc->icon->name) {
-      fs::path app_icon =
-          fs::path(context_->pkg_path.get()) / fs::path(svc->appid)
-              / fs::path(svc->icon->name);
-      if (fs::exists(app_icon))
-        fs::rename(app_icon, icon_path_ /= icon);
-    } else {
-      fs::rename(default_icon, icon_path_ /= icon);
-      LOG(DEBUG) << "Icon is not found in package, the default icon is setting";
-    }
-
-    appcontrol_x* appc_svc = nullptr;
-    PKGMGR_LIST_MOVE_NODE_TO_HEAD(svc->appcontrol, appc_svc);
-    for (; appc_svc != nullptr; appc_svc = appc_svc->next) {
-      xmlTextWriterStartElement(writer, BAD_CAST "app-control");
-
-      if (appc_svc->operation) {
-        xmlTextWriterStartElement(writer, BAD_CAST "operation");
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-            BAD_CAST appc_svc->operation->name);
-        xmlTextWriterEndElement(writer);
-      }
-      if (appc_svc->uri) {
-        xmlTextWriterStartElement(writer, BAD_CAST "uri");
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-            BAD_CAST appc_svc->uri->name);
-        xmlTextWriterEndElement(writer);
-      }
-      if (appc_svc->mime) {
-        xmlTextWriterStartElement(writer, BAD_CAST "mime");
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-            BAD_CAST appc_svc->mime->name);
-        xmlTextWriterEndElement(writer);
-      }
-
-      xmlTextWriterEndElement(writer);
-    }
+    GenerateApplicationCommonXml(svc, writer);
     xmlTextWriterEndElement(writer);
   }
 
