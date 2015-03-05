@@ -4,7 +4,7 @@
 
 #include <boost/filesystem.hpp>
 #include "common/step/step.h"
-#include "tpk/manifest_parser.h"
+#include "xml_parser/xml_parser.h"
 
 namespace tpk {
 namespace step {
@@ -19,10 +19,12 @@ class StepParse : public common_installer::Step {
 
 
  private:
-  boost::filesystem::path
-    GetManifestFilePath(const boost::filesystem::path& dir);
-  void SetContextByManifestParser(const ManifestParser &m);
-  void SetPkgInfoManifest(manifest_x* m, const XmlNodeManifest &manifest);
+  boost::filesystem::path* GetManifestFilePath(
+      const boost::filesystem::path& dir);
+  bool SetContextByManifestParser(xml_parser::XmlTree* tree);
+  bool SetPkgInfoManifest(manifest_x* m,
+      xml_parser::XmlTree* tree,
+      xml_parser::XmlElement* manifest);
 };
 
 }  // namespace step

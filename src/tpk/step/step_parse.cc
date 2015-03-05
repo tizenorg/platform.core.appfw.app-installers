@@ -1,21 +1,39 @@
 /* Copyright 2015 Samsung Electronics, license APACHE-2.0, see LICENSE file */
 #include "tpk/step/step_parse.h"
 #include <boost/filesystem.hpp>
+#include <memory>
 #include <string>
 #include <vector>
 #include "common/context_installer.h"
 #include "common/step/step.h"
-#include "tpk/manifest_parser.h"
-#include "tpk/xml_nodes.h"
 #include "utils/logging.h"
+#include "xml_parser/xml_parser.h"
 
 using std::vector;
+using std::string;
+using xml_parser::XmlParser;
+using xml_parser::XmlTree;
+using xml_parser::XmlElement;
+
 
 namespace tpk {
 namespace step {
 
 namespace {
   const char kManifestFileName[] = "tizen-manifest.xml";
+
+  XmlElement* Get1stChild(XmlTree *tree,
+      XmlElement* parent, const string element_name) {
+    vector<XmlElement*> v = tree->Children(parent, element_name);
+    if (!v.size() < 1) {
+      LOG(ERROR) << element_name << " is not found as a child of " <<
+          parent->name();
+      return nullptr;
+    }
+    return v[0];  // Always return only the 1st child
+  }
+
+
 }  // namespace
 
 SCOPE_LOG_TAG(StepParse)
@@ -24,24 +42,24 @@ SCOPE_LOG_TAG(StepParse)
 typedef common_installer::Step::Status Status;
 using boost::filesystem::path;
 
-
-/* Internal exceptions */
-class FileNotFoundException : public std::exception {};
-
-
 /* process()
  * Parse tizen-manifest.xml and get the data from it
  * Store the data into the context_
  */
 Status StepParse::process() {
-  try {
-    boost::filesystem::path mPath  = GetManifestFilePath(
-        context_->unpacked_dir_path());
-    ManifestParser m(mPath.c_str());
-    SetContextByManifestParser(m);
-  } catch (FileNotFoundException &e) {
+  std::unique_ptr<boost::filesystem::path> mPath(
+      GetManifestFilePath(context_->unpacked_dir_path()));
+  if (!mPath) {
     return Status::ERROR;
-  } catch (FileOpenFailureException &e) {
+  }
+
+  XmlParser parser;
+  std::unique_ptr<XmlTree> tree(parser.ParseAndGetNewTree(mPath->c_str()));
+  if (tree == nullptr) {
+    LOG(ERROR) << "Failure on parsing xml";
+    return Status::ERROR;
+  }
+  if (!SetContextByManifestParser(tree.get())) {
     return Status::ERROR;
   }
   return Status::OK;
@@ -50,15 +68,15 @@ Status StepParse::process() {
 
 /* in parse() : Get manifest file path from the package unzipped directory
  */
-boost::filesystem::path StepParse::GetManifestFilePath(
+boost::filesystem::path* StepParse::GetManifestFilePath(
     const boost::filesystem::path& dir) {
-  path mPath(dir);
-  mPath /= kManifestFileName;
+  path* mPath = new path(dir);
+  *mPath /= kManifestFileName;
 
   LOG(INFO) << "manifest file path: " << mPath;
-  if (!boost::filesystem::exists(mPath)) {
+  if (!boost::filesystem::exists(*mPath)) {
     LOG(ERROR) << kManifestFileName << " not found from the package";
-    throw FileNotFoundException();
+    return nullptr;
   }
   return mPath;  // object copy
 }
@@ -66,27 +84,49 @@ boost::filesystem::path StepParse::GetManifestFilePath(
 
 /* Read manifest xml, and set up context_ object
  */
-void StepParse::SetContextByManifestParser(const ManifestParser &m) {
-  const XmlNodeManifest& manifest = m.manifest;
-  LOG(DEBUG) << "Parse manifest xml values:";
-  LOG(DEBUG) << "xmlns(" << manifest.xmlns << ") api_version(" <<
-      manifest.api_version << ") package(" << manifest.package <<
-      ") version(" << manifest.version << ")";
+bool StepParse::SetContextByManifestParser(XmlTree* tree) {
+  // Get required elements
+  XmlElement* manifest,
+      * ui_application, * label;
+
+  // manifest
+  if (nullptr == (manifest = tree->GetRootElement())) return false;
+
+  LOG(DEBUG) << "Getting manifest xml data";
+  LOG(DEBUG) << "manifest: xmlns='" << manifest->attr("xmlns") <<
+                "' api_version='" << manifest->attr("api_version") <<
+                "' package='" << manifest->attr("package") <<
+                "' versionr='" << manifest->attr("version") << "'";
+
+  // ui_application
+  if (nullptr == (ui_application = Get1stChild(tree,
+          manifest, "ui-application"))) return false;
+  if (nullptr == (label = Get1stChild(tree, ui_application, "label")))
+    return false;
 
   // set context_
-  context_->config_data()->set_application_name(
-      std::string(reinterpret_cast<char*>(manifest.ui_application.label.data)));
-  context_->config_data()->set_required_version(
-      std::string(reinterpret_cast<char*>(manifest.api_version)));
-
-  context_->set_pkgid(std::string(reinterpret_cast<char*>(manifest.package)));
+  context_->config_data()->set_application_name(label->content());
+  context_->config_data()->set_required_version(manifest->attr("api_version"));
+  context_->set_pkgid(manifest->attr("package"));
 
   // set context_->manifest_data()
-  SetPkgInfoManifest(context_->manifest_data(), manifest);
+  return SetPkgInfoManifest(context_->manifest_data(), tree, manifest);
 }
 
-void StepParse::SetPkgInfoManifest(manifest_x* m,
-    const XmlNodeManifest &manifest) {
+bool StepParse::SetPkgInfoManifest(manifest_x* m,
+    XmlTree* tree,
+    XmlElement* manifest) {
+  // Get required elements
+  XmlElement* ui_application, * label, * icon, * description;
+  if (nullptr == (ui_application = Get1stChild(tree,
+          manifest, "ui-application"))) return false;
+  if (nullptr == (label = Get1stChild(tree, ui_application, "label")))
+    return false;
+  if (nullptr == (icon = Get1stChild(tree, ui_application, "icon")))
+    return false;
+  if (nullptr == (description = Get1stChild(tree,
+          ui_application, "description"))) return false;
+
   // Common values
   m->label =  static_cast<label_x*>
     (calloc(1, sizeof(label_x)));
@@ -98,31 +138,30 @@ void StepParse::SetPkgInfoManifest(manifest_x* m,
   m->privileges->privilege = nullptr;
 
   // Basic values
-  m->package = strdup(reinterpret_cast<char*>(manifest.package));
+  m->package = strdup(manifest->attr("package").c_str());
   m->type = strdup("tpk");
-  m->version = strdup(reinterpret_cast<char*>(manifest.version));
-  m->label->name = strdup(
-      reinterpret_cast<char*>(manifest.ui_application.label.name));
-  // TODO(youmin.ha@samsung.com): get name from XML if exists
-  m->description->name = nullptr;
-  m->mainapp_id = strdup(
-      reinterpret_cast<char*>(manifest.ui_application.appid));
+  m->version = strdup(manifest->attr("version").c_str());
+  m->label->name = strdup(label->content().c_str());
+  m->description->name = strdup(description->content().c_str());
+  m->mainapp_id = strdup(ui_application->attr("appid").c_str());
 
   // Privileges
-  vector<XmlNodePrivilege *> vp =
-      const_cast<XmlNodeManifest &>(manifest).privileges.getPrivilegeVector();
-  vector<XmlNodePrivilege *>::iterator it;
-  for (it = vp.begin(); it != vp.end(); it++) {
+  XmlElement* privileges;
+  if (nullptr == (privileges = Get1stChild(tree, manifest, "privileges"))) {
+    return false;
+  }
+  vector<XmlElement*> v_priv = tree->Children(privileges, "privilege");
+  for (auto& privilege : v_priv) {
     privilege_x *p =
         static_cast<privilege_x *>(calloc(1, sizeof(privilege_x)));
     // privilege data text
-    p->text = strdup(reinterpret_cast<char*>((*it)->data));
+    p->text = strdup(privilege->content().c_str());
     LISTADD(m->privileges->privilege, p);
-    LOG(INFO) << "add privilege: " << p->text;
+    LOG(INFO) << "Add a privilege: " << p->text;
   }
 
   // Other app data (null initialization)
-  m->serviceapplication = nullptr;  // ignore service application
+  m->serviceapplication = nullptr;  // NOTE: ignore service application
   m->uiapplication = static_cast<uiapplication_x*>
     (calloc (1, sizeof(uiapplication_x)));
   m->uiapplication->icon = static_cast<icon_x*>
@@ -133,18 +172,15 @@ void StepParse::SetPkgInfoManifest(manifest_x* m,
     (calloc(1, sizeof(description_x)));
   m->uiapplication->appcontrol = nullptr;
 
-  m->uiapplication->appid = strdup(
-      reinterpret_cast<char*>(manifest.ui_application.appid));
-  m->uiapplication->exec = strdup(
-      reinterpret_cast<char*>(manifest.ui_application.exec));
-  m->uiapplication->type = strdup(
-      reinterpret_cast<char*>(manifest.ui_application.type));
+  m->uiapplication->appid = strdup(ui_application->attr("appid").c_str());
+  m->uiapplication->exec = strdup(ui_application->attr("exec").c_str());
+  m->uiapplication->type = strdup(ui_application->attr("type").c_str());
 
-  m->uiapplication->label->name = strdup(
-      reinterpret_cast<char*>(manifest.ui_application.label.data));
-  m->uiapplication->icon->name = strdup(
-      reinterpret_cast<char*>(manifest.ui_application.icon.data));
+  m->uiapplication->label->name = strdup(label->content().c_str());
+  m->uiapplication->icon->name = strdup(icon->content().c_str());
   m->uiapplication->next = nullptr;
+
+  return true;
 }
 
 }  // namespace step
