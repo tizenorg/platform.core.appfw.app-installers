@@ -12,15 +12,16 @@ namespace tpk {
 
 class Task {
  public:
-  Task(int argc, char** argv);
+  Task();
   ~Task();
-  void Run();
+  bool Init(int argc, char** argv);
+  bool Run();
 
 
  private:
-  void Install();
-  void Uninstall();
-  void Reinstall();
+  bool Install();
+  bool Uninstall();
+  bool Reinstall();
 
   pkgmgr_installer* pi_;
   int request_;

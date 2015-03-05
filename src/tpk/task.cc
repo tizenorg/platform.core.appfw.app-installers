@@ -18,7 +18,7 @@
 #include "common/step/step_unzip.h"
 #include "tpk/step/step_parse.h"
 #include "tpk/step/step_symbolic_link.h"
-#include "tpk/exception.h"
+#include "utils/logging.h"
 #endif
 
 
@@ -28,20 +28,15 @@ namespace {
   const char kPkgType[] = "tpk";
 }  // namespace
 
-
 namespace tpk {
+
+SCOPE_LOG_TAG(TpkTask)
 
 /* Constructor
  */
-Task::Task(const int argc, char** argv) {
-  pi_ = pkgmgr_installer_new();
-  if (!pi_) {
-    throw Exception("Not enough memory");
-  }
-  if (!!pkgmgr_installer_receive_request(pi_, argc, argv)) {
-    throw Exception("Invalid Argument");
-  }
-  request_ = pkgmgr_installer_get_request_type(pi_);
+Task::Task() :
+  pi_(nullptr),
+  request_(PKGMGR_REQ_INVALID) {
 }
 
 
@@ -50,28 +45,46 @@ Task::Task(const int argc, char** argv) {
 ::tpk::Task::~Task() {
   if (pi_) {
     pkgmgr_installer_free(pi_);
-    pi_ = NULL;
+    pi_ = nullptr;
   }
 }
 
 
-void Task::Run(void) {
+bool Task::Init(int argc, char** argv) {
+  pi_ = pkgmgr_installer_new();
+  if (!pi_) {
+    LOG(ERROR) << "Failed to run pkgmgr_installer_new()";
+    return false;
+  }
+  if (!!pkgmgr_installer_receive_request(pi_, argc, argv)) {
+    LOG(ERROR) << "Invalid argument";
+    pkgmgr_installer_free(pi_);
+    pi_ = nullptr;
+    return false;
+  }
+  request_ = pkgmgr_installer_get_request_type(pi_);
+
+  return true;
+}
+
+
+bool Task::Run() {
+  bool ret = false;
   switch (request_) {
     case PKGMGR_REQ_INSTALL:
-      Install();
+      ret = Install();
       break;
     case PKGMGR_REQ_UNINSTALL:
-      Uninstall();
+      ret = Uninstall();
       break;
     case PKGMGR_REQ_REINSTALL:
-      Reinstall();
+      ret = Reinstall();
       break;
-    default:
-      throw Exception("Unsupported request");
   }
+  return ret;
 }
 
-void Task::Install(void) {
+bool Task::Install() {
   ci::AppInstaller ai(pi_, kPkgType);
 
   ai.AddStep<ci::unzip::StepUnzip>();
@@ -84,10 +97,10 @@ void Task::Install(void) {
   ai.AddStep<ci::generate_xml::StepGenerateXml>();
   ai.AddStep<ci::record::StepRecord>();
 
-  ai.Run();
+  return ai.Run();
 }
 
-void Task::Uninstall(void) {
+bool Task::Uninstall() {
   ci::AppInstaller ai(pi_, kPkgType);
 
   ai.AddStep<ci::parse::StepParse>();
@@ -96,10 +109,11 @@ void Task::Uninstall(void) {
   ai.AddStep<ci::unregister::StepUnregister>();
   ai.AddStep<ci::remove::StepRemove>();
 
-  ai.Run();
+  return ai.Run();
 }
 
-void Task::Reinstall(void) {
+bool Task::Reinstall() {
+  return false;
 }
 
 }  // namespace tpk
