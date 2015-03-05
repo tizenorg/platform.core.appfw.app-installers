@@ -184,17 +184,8 @@ bool ApplicationData::LoadName(std::string* error) {
 
 bool ApplicationData::LoadVersion(std::string* error) {
   assert(error);
-  std::string version_str;
-
-  version_ = "";
-
-  bool ok = manifest_->GetString(widget_keys::kVersionKey, &version_str);
-  if (!ok) {
-    *error = errors::kInvalidVersion;
-    return true;
-  }
-
-  version_ = std::string(version_str);
+  if (!manifest_->GetString(widget_keys::kVersionKey, &version_))
+    LOG(INFO) << "Version is not defined.";
   return true;
 }
 
