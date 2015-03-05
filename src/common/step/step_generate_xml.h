@@ -8,6 +8,7 @@
 
 #include "common/context_installer.h"
 #include "common/step/step.h"
+#include <libxml/xmlwriter.h>
 #include "utils/logging.h"
 
 namespace common_installer {
@@ -22,6 +23,12 @@ class StepGenerateXml : public Step {
   Status undo() override;
 
  private:
+  // This function is used to generate common xml data
+  // for uiapplication_x and applicationservice_x, as these
+  // structures contain common elements
+  template <typename T>
+  Step::Status GenerateApplicationCommonXml(T* app, xmlTextWriterPtr writer);
+
   boost::filesystem::path icon_path_;
 
   SCOPE_LOG_TAG(GenerateXML)
