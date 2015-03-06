@@ -143,10 +143,10 @@ extern const char kManifestUnreadable[];
 }  // namespace application_manifest_errors
 
 namespace widget_manifest_parser {
-const char* GetNameKey(Manifest::Type type);
-const char* GetCSPKey(Manifest::Type type);
-const char* GetTizenAppIdKey(Manifest::Type type);
-const char* GetIcon128Key(Manifest::Type type);
+const char* GetNameKey();
+const char* GetCSPKey();
+const char* GetTizenAppIdKey();
+const char* GetIcon128Key();
 }  // namespace widget_manifest_parser
 }  // namespace common_installer
 

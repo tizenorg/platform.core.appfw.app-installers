@@ -46,7 +46,6 @@ class WidgetHandler : public ManifestHandler {
 
   bool Parse(std::shared_ptr<ApplicationData> application,
              std::string* error) override;
-  bool AlwaysParseForType(Manifest::Type type) const override;
   std::vector<std::string> Keys() const override;
 
   bool Validate(std::shared_ptr<const ApplicationData> application,

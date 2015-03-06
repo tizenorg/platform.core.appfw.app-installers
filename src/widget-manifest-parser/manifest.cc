@@ -59,10 +59,9 @@ std::unique_ptr<List> ExpandUserAgentLocalesList(
 
 }  // namespace
 
-Manifest::Manifest(std::unique_ptr<utils::DictionaryValue> value, Type type)
+Manifest::Manifest(std::unique_ptr<utils::DictionaryValue> value)
     : data_(std::move(value)),
-      i18n_data_(new utils::DictionaryValue),
-      type_(type) {
+      i18n_data_(new utils::DictionaryValue) {
 
   if (data_->HasKey(widget_keys::kWidgetKey) &&
       data_->Get(widget_keys::kWidgetKey, nullptr))
@@ -141,8 +140,7 @@ bool Manifest::GetList(
 
 Manifest* Manifest::DeepCopy() const {
   Manifest* manifest = new Manifest(
-      std::unique_ptr<utils::DictionaryValue>(data_->DeepCopy()),
-      type());
+      std::unique_ptr<utils::DictionaryValue>(data_->DeepCopy()));
   return manifest;
 }
 

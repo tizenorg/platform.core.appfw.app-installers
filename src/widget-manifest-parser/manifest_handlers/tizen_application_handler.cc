@@ -129,10 +129,5 @@ std::vector<std::string> TizenApplicationHandler::Keys() const {
   return std::vector<std::string>(1, keys::kTizenApplicationKey);
 }
 
-bool TizenApplicationHandler::AlwaysParseForType(
-    Manifest::Type /*type*/) const {
-  return true;
-}
-
 }  // namespace widget_manifest_parser
 }  // namespace common_installer

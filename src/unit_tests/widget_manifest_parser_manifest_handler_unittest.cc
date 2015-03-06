@@ -30,17 +30,13 @@ class ScopedTestingManifestHandlerRegistry {
  public:
   ScopedTestingManifestHandlerRegistry(
       const std::vector<ManifestHandler*>& handlers)
-      : registry_(
-          new ManifestHandlerRegistry(handlers)),
-        prev_registry_(
-          ManifestHandlerRegistry::GetInstance(Manifest::TYPE_MANIFEST)) {
-    ManifestHandlerRegistry::SetInstanceForTesting(
-        registry_, Manifest::TYPE_MANIFEST);
+      : registry_(new ManifestHandlerRegistry(handlers)),
+        prev_registry_(ManifestHandlerRegistry::GetInstance()) {
+    ManifestHandlerRegistry::SetInstanceForTesting(registry_);
   }
 
   ~ScopedTestingManifestHandlerRegistry() {
-    ManifestHandlerRegistry::SetInstanceForTesting(
-        prev_registry_, Manifest::TYPE_MANIFEST);
+    ManifestHandlerRegistry::SetInstanceForTesting(prev_registry_);
   }
 
   ManifestHandlerRegistry* registry_;
@@ -140,10 +136,6 @@ class ManifestHandlerTest : public testing::Test {
                                    ParsingWatcher* watcher)
         : TestManifestHandler(name, keys, prereqs, watcher) {
     }
-
-    bool AlwaysParseForType(Manifest::Type type) const override {
-      return true;
-    }
   };
 
   class TestManifestValidator : public ManifestHandler {
@@ -168,7 +160,7 @@ class ManifestHandlerTest : public testing::Test {
       return return_value_;
     }
 
-    bool AlwaysValidateForType(Manifest::Type type) const override {
+    bool AlwaysValidateForType() const override {
       return always_validate_;
     }
 

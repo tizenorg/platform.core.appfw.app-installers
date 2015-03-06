@@ -23,22 +23,14 @@ namespace widget_manifest_parser {
 // properties of the manifest using ManifestFeatureProvider.
 class Manifest {
  public:
-  enum Type {
-    TYPE_MANIFEST,  // Corresponds to w3c.github.io/manifest
-    TYPE_WIDGET     // Corresponds to http://www.w3.org/TR/widgets
-  };
-
   explicit Manifest(
-      std::unique_ptr<utils::DictionaryValue> value, Type type = TYPE_MANIFEST);
+      std::unique_ptr<utils::DictionaryValue> value);
   ~Manifest();
 
   // Returns false and |error| will be non-empty if the manifest is malformed.
   // |warnings| will be populated if there are keys in the manifest that cannot
   // be specified by the application type.
   bool ValidateManifest(std::string* error) const;
-
-  // Returns the manifest type.
-  Type type() const { return type_; }
 
   // These access the wrapped manifest value, returning false when the property
   // does not exist or if the manifest type can't access it.
@@ -101,8 +93,6 @@ class Manifest {
 
   std::string default_locale_;
   std::unique_ptr<std::list<std::string> > user_agent_locales_;
-
-  Type type_;
 
   DISALLOW_COPY_AND_ASSIGN(Manifest);
 };

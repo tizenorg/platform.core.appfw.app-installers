@@ -9,6 +9,7 @@
 #include <memory>
 #include <regex>
 
+#include "utils/logging.h"
 #include "utils/values.h"
 #include "widget-manifest-parser/application_manifest_constants.h"
 
@@ -134,9 +135,12 @@ bool ImeHandler::Parse(std::shared_ptr<ApplicationData> application,
     const utils::DictionaryValue* dict;
     value->GetAsDictionary(&dict);
     result = ParseImeEntryAndStore(*dict, ime_info.get(), error);
-  } else {
+  } else if (value->GetType() == utils::Value::TYPE_LIST) {
     *error = kErrMsgParsingIme;
     return false;
+  } else {
+    LOG(INFO) << "IME element is not defined.";
+    return true;
   }
 
   application->SetManifestData(keys::kTizenImeKey, ime_info);

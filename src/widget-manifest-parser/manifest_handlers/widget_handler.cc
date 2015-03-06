@@ -181,10 +181,6 @@ bool WidgetHandler::Validate(
   return true;
 }
 
-bool WidgetHandler::AlwaysParseForType(Manifest::Type /*type*/) const {
-  return true;
-}
-
 std::vector<std::string> WidgetHandler::Keys() const {
   return std::vector<std::string>(1, keys::kWidgetKey);
 }

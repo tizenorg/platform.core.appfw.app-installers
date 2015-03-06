@@ -5,6 +5,7 @@
 
 #include "widget-manifest-parser/manifest_handlers/category_handler.h"
 
+#include "utils/logging.h"
 #include "utils/values.h"
 #include "widget-manifest-parser/application_manifest_constants.h"
 
@@ -63,8 +64,8 @@ bool CategoryHandler::Parse(std::shared_ptr<ApplicationData> application,
     if (!ParseCategoryEntryAndStore(*dict, aplist.get()))
       return false;
   } else {
-    *error = kErrMsgCategory;
-    return false;
+    LOG(INFO) << "Category element is not defined.";
+    return true;
   }
 
   application->SetManifestData(keys::kTizenCategoryKey, aplist);

@@ -316,7 +316,7 @@ std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
 }  // namespace
 
 std::unique_ptr<Manifest> LoadManifest(const std::string& manifest_path,
-    Manifest::Type /*type*/, std::string* error) {
+                                       std::string* error) {
   xmlDoc * doc = nullptr;
   xmlNode* root_node = nullptr;
   doc = xmlReadFile(manifest_path.c_str(), nullptr, 0);
@@ -330,8 +330,7 @@ std::unique_ptr<Manifest> LoadManifest(const std::string& manifest_path,
   if (dv)
     result->Set(reinterpret_cast<const char*>(root_node->name), dv.release());
 
-  return std::unique_ptr<Manifest>(
-      new Manifest(std::move(result), Manifest::TYPE_WIDGET));
+  return std::unique_ptr<Manifest>(new Manifest(std::move(result)));
 }
 
 bf::path ApplicationURLToRelativeFilePath(const std::string& url) {

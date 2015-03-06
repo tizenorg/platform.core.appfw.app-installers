@@ -63,11 +63,7 @@ bool ManifestHandler::Validate(
   return true;
 }
 
-bool ManifestHandler::AlwaysParseForType(Manifest::Type /*type*/) const {
-  return false;
-}
-
-bool ManifestHandler::AlwaysValidateForType(Manifest::Type /*type*/) const {
+bool ManifestHandler::AlwaysValidateForType() const {
   return false;
 }
 
@@ -91,7 +87,7 @@ ManifestHandlerRegistry::~ManifestHandlerRegistry() {
 }
 
 ManifestHandlerRegistry*
-ManifestHandlerRegistry::GetInstance(Manifest::Type /*type*/) {
+ManifestHandlerRegistry::GetInstance() {
   return GetInstanceForWGT();
 }
 
@@ -131,10 +127,7 @@ bool ManifestHandlerRegistry::ParseAppManifest(
   for (ManifestHandlerMap::iterator iter = handlers_.begin();
        iter != handlers_.end(); ++iter) {
     ManifestHandler* handler = iter->second;
-    if (application->GetManifest()->HasPath(iter->first) ||
-        handler->AlwaysParseForType(application->manifest_type())) {
-      handlers_by_order[order_map_[handler]] = handler;
-    }
+    handlers_by_order[order_map_[handler]] = handler;
   }
   for (std::map<int, ManifestHandler*>::iterator iter =
            handlers_by_order.begin();
@@ -153,7 +146,7 @@ bool ManifestHandlerRegistry::ValidateAppManifest(
        iter != handlers_.end(); ++iter) {
     ManifestHandler* handler = iter->second;
     if ((application->GetManifest()->HasPath(iter->first) ||
-         handler->AlwaysValidateForType(application->manifest_type())) &&
+         handler->AlwaysValidateForType()) &&
         !handler->Validate(application, error))
       return false;
   }
@@ -166,7 +159,7 @@ bool ManifestHandlerRegistry::ValidateAppManifest(
 
 // static
 void ManifestHandlerRegistry::SetInstanceForTesting(
-    ManifestHandlerRegistry* registry, Manifest::Type /*type*/) {
+    ManifestHandlerRegistry* registry) {
   widget_registry_ = registry;
   return;
 }

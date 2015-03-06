@@ -18,10 +18,10 @@
 namespace common_installer {
 namespace widget_manifest_parser {
 
-// Loads an application manifest from the specified directory. Returns NULL
+// Loads an application manifest from the specified directory. Returns nullptr
 // on failure, with a description of the error in |error|.
 std::unique_ptr<Manifest> LoadManifest(
-    const std::string& file_path, Manifest::Type type, std::string* error);
+    const std::string& file_path, std::string* error);
 
 }  // namespace widget_manifest_parser
 }  // namespace common_installer

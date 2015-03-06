@@ -58,7 +58,6 @@ class TizenApplicationHandler : public ManifestHandler {
              std::string* error) override;
   bool Validate(std::shared_ptr<const ApplicationData> application,
                 std::string* error) const override;
-  bool AlwaysParseForType(Manifest::Type type) const override;
   std::vector<std::string> Keys() const override;
 
  private:
