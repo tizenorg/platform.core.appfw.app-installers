@@ -137,6 +137,7 @@ Step::Status StepGenerateXml::process() {
       xmlTextWriterStartElement(writer, BAD_CAST "mime");
       xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
           BAD_CAST appc_ui->mime->name);
+      xmlTextWriterEndElement(writer);
 
       xmlTextWriterEndElement(writer);
     }
