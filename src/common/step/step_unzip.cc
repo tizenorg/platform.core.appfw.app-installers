@@ -216,7 +216,11 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
 
 Step::Status StepUnzip::process() {
   assert(!context_->file_path.get().empty());
-  assert(!access(context_->file_path.get().c_str(), F_OK));
+  if (!boost::filesystem::exists(context_->file_path.get())) {
+    LOG(ERROR) << "Specified widget does not exist: "
+               << context_->file_path.get();
+    return Step::Status::ERROR;
+  }
 
   bf::path tmp_dir =
       GenerateTmpDir(context_->root_application_path.get());
