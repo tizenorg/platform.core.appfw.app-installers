@@ -32,9 +32,8 @@ TEST_F(ManifestUtilTest, LoadApplicationWithValidPath) {
   install_dir /= "good_manifest.xml";
 
   std::string error;
-  std::unique_ptr<Manifest> manifest(LoadManifest(install_dir.string(),
-                                                  Manifest::Type::TYPE_WIDGET,
-                                                  &error));
+  std::unique_ptr<Manifest> manifest(
+      widget_manifest_parser::LoadManifest(install_dir.string(), &error));
   ASSERT_TRUE(error.empty());
   std::shared_ptr<common_installer::widget_manifest_parser::ApplicationData>
       app_data =
@@ -53,9 +52,8 @@ TEST_F(ManifestUtilTest,
   install_dir /= "test_samples";
   install_dir /= "bad_manifest.xml";
   std::string error;
-  std::unique_ptr<Manifest> manifest(LoadManifest(install_dir.string(),
-                                                  Manifest::Type::TYPE_WIDGET,
-                                                  &error));
+  std::unique_ptr<Manifest> manifest(
+      widget_manifest_parser::LoadManifest(install_dir.string(), &error));
   ASSERT_TRUE(!error.empty());
   ASSERT_FALSE(error.empty());
   ASSERT_STREQ("Manifest file is missing or unreadable.", error.c_str());

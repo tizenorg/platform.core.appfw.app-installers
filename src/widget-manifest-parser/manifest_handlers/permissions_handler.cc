@@ -83,10 +83,6 @@ bool PermissionsHandler::Parse(
   return true;
 }
 
-bool PermissionsHandler::AlwaysParseForType(Manifest::Type type) const {
-  return type == Manifest::TYPE_WIDGET;
-}
-
 std::vector<std::string> PermissionsHandler::Keys() const {
   return std::vector<std::string>(1, keys::kTizenPermissionsKey);
 }

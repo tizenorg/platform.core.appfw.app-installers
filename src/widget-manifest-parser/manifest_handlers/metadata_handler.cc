@@ -9,6 +9,7 @@
 #include <map>
 #include <utility>
 
+#include "utils/logging.h"
 #include "utils/values.h"
 #include "widget-manifest-parser/application_manifest_constants.h"
 
@@ -69,7 +70,7 @@ bool MetaDataHandler::Parse(std::shared_ptr<ApplicationData> application,
 
   utils::Value* metadata_value = NULL;
   if (!manifest->Get(keys::kTizenMetaDataKey, &metadata_value)) {
-    *error = "Failed to get value of tizen metaData";
+    LOG(INFO) << "Failed to get value of tizen metaData";
   }
 
   MetaDataPair metadata_item;

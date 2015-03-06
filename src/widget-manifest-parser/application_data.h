@@ -85,7 +85,6 @@ class ApplicationData : public std::enable_shared_from_this<ApplicationData> {
   const bf::path& path() const { return path_; }
   const std::string& URL() const { return application_url_; }
   SourceType source_type() const { return source_type_; }
-  Manifest::Type manifest_type() const { return manifest_->type(); }
   const std::string& ID() const { return application_id_; }
   std::string GetPackageID() const;
   const std::string Version() const { return version_; }

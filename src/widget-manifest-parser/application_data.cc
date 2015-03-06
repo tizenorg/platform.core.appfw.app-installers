@@ -61,7 +61,7 @@ std::shared_ptr<ApplicationData> ApplicationData::Create(
     return nullptr;
 
   ManifestHandlerRegistry* registry =
-      ManifestHandlerRegistry::GetInstance(app_data->manifest_type());
+      ManifestHandlerRegistry::GetInstance();
 
   if (!registry->ValidateAppManifest(app_data, error_message))
     return nullptr;
@@ -133,7 +133,7 @@ bool ApplicationData::Init(const std::string& explicit_id,
                            std::string* error) {
   assert(error);
   ManifestHandlerRegistry* registry =
-      ManifestHandlerRegistry::GetInstance(manifest_type());
+      ManifestHandlerRegistry::GetInstance();
   if (!registry->ParseAppManifest(shared_from_this(), error))
     return false;
 
@@ -167,10 +167,9 @@ bool ApplicationData::LoadID(const std::string& explicit_id,
 bool ApplicationData::LoadName(std::string* error) {
   assert(error);
   std::string localized_name;
-  std::string name_key(GetNameKey(manifest_type()));
+  std::string name_key(GetNameKey());
 
-  if (!manifest_->GetString(name_key, &localized_name) &&
-      manifest_type() == Manifest::TYPE_MANIFEST) {
+  if (!manifest_->GetString(name_key, &localized_name)) {
     *error = errors::kInvalidName;
     return false;
   }

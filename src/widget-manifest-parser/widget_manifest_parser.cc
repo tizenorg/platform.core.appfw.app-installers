@@ -253,7 +253,7 @@ bool WidgetManifestParser::ParseManifest(const bf::path& manifest_path) {
   }
 
   manifest_ = parser::LoadManifest(
-      manifest_path.string(), parser::Manifest::TYPE_WIDGET, &error_);
+      manifest_path.string(), &error_);
   if (!manifest_)
     return false;
   valid_ = error_.empty();

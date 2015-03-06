@@ -31,15 +31,8 @@ class ManifestHandler {
   virtual bool Validate(std::shared_ptr<const ApplicationData> application,
                         std::string* error) const;
 
-  // If false (the default), only parse the manifest if a registered
-  // key is present in the manifest. If true, always attempt to parse
-  // the manifest for this application type, even if no registered keys
-  // are present. This allows specifying a default parsed value for
-  // application that don't declare our key in the manifest.
-  virtual bool AlwaysParseForType(Manifest::Type type) const;
-
   // Same as AlwaysParseForType, but for Validate instead of Parse.
-  virtual bool AlwaysValidateForType(Manifest::Type type) const;
+  virtual bool AlwaysValidateForType() const;
 
   // The list of keys that, if present, should be parsed before calling our
   // Parse (typically, because our Parse needs to read those keys).
@@ -54,7 +47,7 @@ class ManifestHandlerRegistry final {
  public:
   ~ManifestHandlerRegistry();
 
-  static ManifestHandlerRegistry* GetInstance(Manifest::Type type);
+  static ManifestHandlerRegistry* GetInstance();
 
   bool ParseAppManifest(
       std::shared_ptr<ApplicationData> application, std::string* error);
@@ -73,11 +66,9 @@ class ManifestHandlerRegistry final {
   void ReorderHandlersGivenDependencies();
 
   // Sets a new global registry, for testing purposes.
-  static void SetInstanceForTesting(ManifestHandlerRegistry* registry,
-                                    Manifest::Type type);
+  static void SetInstanceForTesting(ManifestHandlerRegistry* registry);
 
   static ManifestHandlerRegistry* GetInstanceForWGT();
-  static ManifestHandlerRegistry* GetInstanceForXPK();
 
   typedef std::map<std::string, ManifestHandler*> ManifestHandlerMap;
   typedef std::map<ManifestHandler*, int> ManifestHandlerOrderMap;
@@ -87,7 +78,6 @@ class ManifestHandlerRegistry final {
   // Handlers are executed in order; lowest order first.
   ManifestHandlerOrderMap order_map_;
 
-  static ManifestHandlerRegistry* xpk_registry_;
   static ManifestHandlerRegistry* widget_registry_;
 };
 
