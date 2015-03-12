@@ -11,13 +11,13 @@
 namespace common_installer {
 namespace copy {
 
-namespace fs = boost::filesystem;
+namespace bf = boost::filesystem;
+namespace bs = boost::system;
 
 Step::Status StepCopy::process() {
   assert(!context_->pkgid().empty());
 
-  fs::path install_path = fs::path(context_->GetApplicationPath());
-
+  bf::path install_path = bf::path(context_->GetApplicationPath());
 
   context_->set_pkg_path(install_path.string());
 
@@ -27,28 +27,43 @@ Step::Status StepCopy::process() {
   // considering that multiple apps data are already separated in folders.
   if (context_->manifest_data()->uiapplication &&
       !context_->manifest_data()->uiapplication->next)
-    install_path /= fs::path(context_->manifest_data()->mainapp_id);
+    install_path /= bf::path(context_->manifest_data()->mainapp_id);
 
-  if (!utils::CopyDir(fs::path(context_->unpacked_dir_path()), install_path)) {
-    LOG(ERROR) << "Fail to copy tmp dir: " << context_->unpacked_dir_path()
-        << " to dst dir: " << install_path.string();
+  bs::error_code error;
+  bf::create_directories(install_path.parent_path(), error);
+  if (error) {
+    LOG(ERROR) << "Cannot create directory: "
+               << install_path.parent_path().string();
     return Step::Status::ERROR;
   }
-
-  LOG(INFO) << "Successfully copy: " << context_->unpacked_dir_path()
-      << " to: " << install_path.string() << " directory";
+  bf::rename(context_->unpacked_dir_path(), install_path, error);
+  if (error) {
+    LOG(DEBUG) << "Cannot move directory. Will try to copy...";
+    if (!utils::CopyDir(bf::path(context_->unpacked_dir_path()),
+        install_path)) {
+      LOG(ERROR) << "Fail to copy tmp dir: " << context_->unpacked_dir_path()
+                 << " to dst dir: " << install_path.string();
+      return Step::Status::ERROR;
+    }
+    bs::error_code error;
+    bf::remove_all(context_->unpacked_dir_path(), error);
+    if (error) {
+      LOG(WARNING) << "Cannot remove temporary directory: "
+                   << context_->unpacked_dir_path();
+    }
+  }
+  LOG(INFO) << "Successfully move/copy: " << context_->unpacked_dir_path()
+            << " to: " << install_path.string() << " directory";
   return Status::OK;
 }
 
 Step::Status StepCopy::clean() {
-  LOG(DEBUG) << "Remove tmp dir: " << context_->unpacked_dir_path();
-  fs::remove_all(context_->unpacked_dir_path());
   return Status::OK;
 }
 
 Step::Status StepCopy::undo() {
-  if (fs::exists(context_->pkg_path()))
-    fs::remove_all(context_->pkg_path());
+  if (bf::exists(context_->pkg_path()))
+    bf::remove_all(context_->pkg_path());
   return Status::OK;
 }
 
