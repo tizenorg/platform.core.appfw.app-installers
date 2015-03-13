@@ -135,7 +135,7 @@ bool RegisterSecurityContextForApps(
     if (!ui->appid) {
       return false;
     }
-    if (!RegisterSecurityContext(ui->appid, pkg_id, path, manifest)) {
+    if (!RegisterSecurityContext(ui->appid, pkg_id, path/ui->appid, manifest)) {
       return false;
     }
   }
