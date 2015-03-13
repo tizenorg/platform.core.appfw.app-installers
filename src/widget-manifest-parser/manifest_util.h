@@ -7,6 +7,7 @@
 #define WIDGET_MANIFEST_PARSER_MANIFEST_UTIL_H_
 
 #include <boost/filesystem/path.hpp>
+#include <libxml2/libxml/tree.h>
 
 #include <string>
 #include <map>
@@ -22,6 +23,15 @@ namespace widget_manifest_parser {
 // on failure, with a description of the error in |error|.
 std::unique_ptr<Manifest> LoadManifest(
     const std::string& file_path, std::string* error);
+std::string GetNodeDir(xmlNode* node, const std::string& inherit_dir);
+std::string GetNodeText(xmlNode* root, const std::string& inherit_dir);
+bool IsPropSupportDir(xmlNode* root, xmlAttr* prop);
+bool IsElementSupportSpanAndDir(xmlNode* root);
+bool IsSingletonElement(const std::string& name);
+bool IsTrimRequiredForElement(xmlNode* root);
+bool IsTrimRequiredForProp(xmlNode* root, xmlAttr* prop);
+std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
+    xmlNode* root, const std::string& inherit_dir = "");
 
 }  // namespace widget_manifest_parser
 }  // namespace common_installer

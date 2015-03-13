@@ -6,7 +6,6 @@
 #include "widget-manifest-parser/manifest_util.h"
 
 #include <boost/filesystem/operations.hpp>
-#include <libxml2/libxml/tree.h>
 
 #include <algorithm>
 #include <cassert>
@@ -57,6 +56,11 @@ const char* kSingletonElements[] = {
   "content"
 };
 
+}  // namespace
+
+namespace common_installer {
+namespace widget_manifest_parser {
+
 std::string GetNodeDir(xmlNode* node, const std::string& inherit_dir) {
   assert(node);
   std::string dir(inherit_dir);
@@ -82,8 +86,6 @@ std::string GetNodeText(xmlNode* root, const std::string& inherit_dir) {
   std::string current_dir(GetNodeDir(root, inherit_dir));
   std::string text;
   for (xmlNode* node = root->children; node; node = node->next) {
-// TODO(jizydorczyk):
-// i18n support is needed
     if (node->type == XML_TEXT_NODE || node->type == XML_CDATA_SECTION_NODE) {
       text = text
           + common_installer::utils::StripWrappingBidiControlCharactersUTF8(
@@ -97,7 +99,7 @@ std::string GetNodeText(xmlNode* root, const std::string& inherit_dir) {
 
 // According to widget specification, this two prop need to support dir.
 // see detail on http://www.w3.org/TR/widgets/#the-dir-attribute
-inline bool IsPropSupportDir(xmlNode* root, xmlAttr* prop) {
+bool IsPropSupportDir(xmlNode* root, xmlAttr* prop) {
   if (xmlStrEqual(root->name, kWidgetNodeKey)
      && xmlStrEqual(prop->name, kVersionAttributeKey))
     return true;
@@ -110,7 +112,7 @@ inline bool IsPropSupportDir(xmlNode* root, xmlAttr* prop) {
 // Only this four items need to support span and ignore other element.
 // Besides xmlNodeListGetString can not support dir prop of span.
 // See http://www.w3.org/TR/widgets/#the-span-element-and-its-attributes
-inline bool IsElementSupportSpanAndDir(xmlNode* root) {
+bool IsElementSupportSpanAndDir(xmlNode* root) {
   if (xmlStrEqual(root->name, kNameNodeKey)
      || xmlStrEqual(root->name, kDescriptionNodeKey)
      || xmlStrEqual(root->name, kAuthorNodeKey)
@@ -129,7 +131,7 @@ bool IsSingletonElement(const std::string& name) {
 // According to spec 'name' and 'author' should be result of applying the rule
 // for getting text content with normalized white space to this element.
 // http://www.w3.org/TR/widgets/#rule-for-getting-text-content-with-normalized-white-space-0
-inline bool IsTrimRequiredForElement(xmlNode* root) {
+bool IsTrimRequiredForElement(xmlNode* root) {
   if (xmlStrEqual(root->name, kNameNodeKey) ||
       xmlStrEqual(root->name, kAuthorNodeKey)) {
     return true;
@@ -140,7 +142,7 @@ inline bool IsTrimRequiredForElement(xmlNode* root) {
 // According to spec some attributes requaire applying the rule for getting
 // a single attribute value.
 // http://www.w3.org/TR/widgets/#rule-for-getting-a-single-attribute-value-0
-inline bool IsTrimRequiredForProp(xmlNode* root, xmlAttr* prop) {
+bool IsTrimRequiredForProp(xmlNode* root, xmlAttr* prop) {
   if (xmlStrEqual(root->name, kWidgetNodeKey) &&
       (xmlStrEqual(prop->name, kIdAttributeKey) ||
       xmlStrEqual(prop->name, kVersionAttributeKey) ||
@@ -166,13 +168,6 @@ inline bool IsTrimRequiredForProp(xmlNode* root, xmlAttr* prop) {
   }
   return false;
 }
-
-}  // namespace
-
-namespace common_installer {
-namespace widget_manifest_parser {
-
-namespace {
 
 // Load XML node into Dictionary structure.
 // The keys for the XML node to Dictionary mapping are described below:
@@ -218,7 +213,7 @@ namespace {
 // std::map<std::string*, std::map<std::string*,std::string>>
 
 std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
-    xmlNode* root, const std::string& inherit_dir = "") {
+    xmlNode* root, const std::string& inherit_dir) {
   std::unique_ptr<utils::DictionaryValue> value(new utils::DictionaryValue());
   if (root->type != XML_ELEMENT_NODE)
     return nullptr;
@@ -312,8 +307,6 @@ std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
 
   return value;
 }
-
-}  // namespace
 
 std::unique_ptr<Manifest> LoadManifest(const std::string& manifest_path,
                                        std::string* error) {
