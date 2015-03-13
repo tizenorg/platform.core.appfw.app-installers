@@ -87,14 +87,15 @@ std::string GetNodeText(xmlNode* root, const std::string& inherit_dir) {
   std::string text;
   for (xmlNode* node = root->children; node; node = node->next) {
     if (node->type == XML_TEXT_NODE || node->type == XML_CDATA_SECTION_NODE) {
-      text = text
-          + common_installer::utils::StripWrappingBidiControlCharactersUTF8(
+      text += common_installer::utils::StripWrappingBidiControlCharactersUTF8(
           std::string(reinterpret_cast<char*>(node->content)));
+      // This is supposed to be done once for each text element
+      text = common_installer::utils::GetDirTextUTF8(text, current_dir);
     } else {
       text = text + GetNodeText(node, current_dir);
     }
   }
-  return common_installer::utils::GetDirTextUTF8(text, current_dir);
+  return text;
 }
 
 // According to widget specification, this two prop need to support dir.
