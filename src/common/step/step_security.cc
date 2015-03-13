@@ -11,7 +11,7 @@ namespace security {
 
 Step::Status StepSecurity::process() {
   if (!RegisterSecurityContextForApps(
-      context_->pkgid(), context_->GetRootApplicationPath(),
+      context_->pkgid(), context_->GetApplicationPath(),
       context_->manifest_data())) {
     return Status::ERROR;
   }
