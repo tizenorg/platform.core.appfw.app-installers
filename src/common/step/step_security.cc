@@ -22,9 +22,9 @@ Step::Status StepSecurity::process() {
 Step::Status StepSecurity::undo() {
   if (!UnregisterSecurityContextForApps(
       context_->pkgid(), context_->manifest_data())) {
-    return Status::ERROR;
+    LOG(DEBUG) << "Error while reverting security changes";
   }
-  LOG(DEBUG) << "Security context uninstalled";
+  // always return positive result to let other steps do the undo() operation
   return Status::OK;
 }
 
