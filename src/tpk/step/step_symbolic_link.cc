@@ -5,7 +5,7 @@
 #include "common/step/step.h"
 #include "common/app_installer.h"
 #include "common/context_installer.h"
-#include "common/utils.h"
+#include "utils/file_util.h"
 #include "utils/logging.h"
 
 
@@ -28,7 +28,7 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
     fs::path bindir = fs::path(context->pkg_path()) / fs::path(app->appid) /
         fs::path("bin");
     LOG(INFO) << "Creating dir: " << bindir;
-    if (!utils::CreateDir(bindir)) {
+    if (!common_installer::utils::CreateDir(bindir)) {
       LOG(ERROR) << "Directory creation failure";
       return false;
     }
