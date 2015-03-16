@@ -13,6 +13,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <cstdint>
 #include <climits>
 #include <cstring>
 #include <string>
@@ -21,6 +22,85 @@
 
 #define ZIPBUFSIZE 8192
 #define ZIPMAXPATH 256
+
+namespace bf = boost::filesystem;
+namespace bs = boost::system;
+
+namespace {
+
+int64_t GetBlockSizeForPath(const bf::path& path_in_partition) {
+  struct stat stats;
+  if (stat(path_in_partition.string().c_str(), &stats)) {
+    LOG(ERROR) << "stat(" << path_in_partition.string()
+               << ") failed - error code: " << errno;
+    return -1;
+  }
+  return stats.st_blksize;
+}
+
+int64_t RoundUpToBlockSizeOf(int64_t size, int64_t block_size) {
+  return ((size + block_size - 1) / block_size) * block_size;
+}
+
+int64_t GetUnpackedPackageSize(const bf::path& path) {
+  int64_t size = 0;
+  int64_t block_size = GetBlockSizeForPath(path);
+
+  // if failed to stat path
+  if (block_size == -1)
+    return -1;
+
+  unz_global_info info;
+  unz_file_info64 raw_file_info;
+  char raw_file_name_in_zip[ZIPMAXPATH];
+
+  unzFile* zip_file = static_cast<unzFile*>(unzOpen(path.string().c_str()));
+  if (zip_file == nullptr) {
+    LOG(ERROR) << "Failed to open the source dir: " << path.string();
+    return -1;
+  }
+
+  if (unzGetGlobalInfo(zip_file, &info) != UNZ_OK) {
+    LOG(ERROR) << "Failed to read global info";
+    unzClose(zip_file);
+    return -1;
+  }
+
+  for (uLong i = 0; i < info.number_entry; i++) {
+    if (unzGetCurrentFileInfo64(zip_file, &raw_file_info, raw_file_name_in_zip,
+        sizeof(raw_file_name_in_zip), NULL, 0, NULL, 0) != UNZ_OK) {
+      LOG(ERROR) << "Failed to read file info";
+      return -1;
+    }
+    size += RoundUpToBlockSizeOf(raw_file_info.uncompressed_size, block_size);
+  }
+
+  // FIXME: calculate space needed for directories
+  unzClose(zip_file);
+  return size;
+}
+
+bool CheckFreeSpaceAtPath(int64_t required_size,
+    const boost::filesystem::path& target_location) {
+  bs::error_code error;
+  boost::filesystem::path root = target_location;
+  while (!bf::exists(root) && root != root.root_path()) {
+    root = root.parent_path();
+  }
+  if (!bf::exists(root)) {
+    LOG(ERROR) << "No mount point for path: " << target_location;
+    return false;
+  }
+  bf::space_info space_info = bf::space(root, error);
+  if (error) {
+    LOG(ERROR) << "Failed to get space_info: " << error.message();
+    return false;
+  }
+
+  return (space_info.free >= required_size);
+}
+
+}  // namespace
 
 namespace common_installer {
 namespace unzip {
@@ -46,7 +126,7 @@ boost::filesystem::path StepUnzip::GenerateTmpDir(const char* app_path) {
 }
 
 Step::Status StepUnzip::ExtractToTmpDir(const char* src,
-    const boost::filesystem::path& tmp_dir) {
+    const bf::path& tmp_dir) {
   if (is_extracted_) {
     LOG(ERROR) << src << " is already extracted";
     return Status::OK;
@@ -82,7 +162,7 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
     if (raw_file_name_in_zip[0] == '\0')
       return Step::Status::ERROR;
 
-    boost::filesystem::path filename_in_zip_path(raw_file_name_in_zip);
+    bf::path filename_in_zip_path(raw_file_name_in_zip);
     if (!filename_in_zip_path.parent_path().empty()) {
       if (!utils::CreateDir(filename_in_zip_path.parent_path())) {
         LOG(ERROR) << "Failed to create directory: "
@@ -138,12 +218,34 @@ Step::Status StepUnzip::process() {
   assert(!context_->file_path().empty());
   assert(!access(context_->file_path().c_str(), F_OK));
 
-  boost::filesystem::path tmp_dir =
+  bf::path tmp_dir =
       GenerateTmpDir(context_->GetRootApplicationPath());
 
   if (!utils::CreateDir(tmp_dir)) {
     LOG(ERROR) << "Failed to create temp directory: " << tmp_dir;
     return Step::Status::ERROR;
+  }
+
+  int64_t required_size =
+      GetUnpackedPackageSize(bf::path(context_->file_path()));
+
+  if (required_size == -1) {
+    LOG(ERROR) << "Couldn't get uncompressed size for package: "
+               << context_->file_path();
+    return Step::Status::ERROR;
+  }
+
+  LOG(DEBUG) << "Required size for application: " << required_size << "B";
+
+  if (!CheckFreeSpaceAtPath(required_size, tmp_dir)) {
+    LOG(ERROR) << "There is not enough space to unpack application files";
+    return Step::Status::OUT_OF_SPACE;
+  }
+
+  if (!CheckFreeSpaceAtPath(required_size,
+      bf::path(context_->GetRootApplicationPath()))) {
+    LOG(ERROR) << "There is not enough space to install application files";
+    return Step::Status::OUT_OF_SPACE;
   }
 
   if (ExtractToTmpDir(context_->file_path().c_str(), tmp_dir)
@@ -160,7 +262,7 @@ Step::Status StepUnzip::process() {
 
 Step::Status StepUnzip::undo() {
   if (access(context_->unpacked_dir_path().c_str(), F_OK) == 0) {
-    boost::filesystem::remove_all(context_->unpacked_dir_path());
+    bf::remove_all(context_->unpacked_dir_path());
     LOG(DEBUG) << "remove temp dir: " << context_->unpacked_dir_path();
   }
   return Status::OK;

@@ -27,6 +27,7 @@ namespace common_installer {
 class Step {
  public:
   enum class Status {
+    OUT_OF_SPACE = -3,      /**< Out of disc space */
     INVALID_VALUE = -2,     /**< Invalid argument */
     ERROR = -1,             /**< General error */
     OK = 0                  /**< General success */
