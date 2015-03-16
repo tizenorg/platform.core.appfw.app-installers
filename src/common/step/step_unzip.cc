@@ -87,14 +87,14 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
       if (!utils::CreateDir(filename_in_zip_path.parent_path())) {
         LOG(ERROR) << "Failed to create directory: "
             << filename_in_zip_path.parent_path();
-        return Step::Status::ERROR;
+        return Step::Status::OUT_OF_SPACE;
       }
     }
 
     if (unzOpenCurrentFile(zip_file) != UNZ_OK) {
       LOG(ERROR) << "Failed to open file";
       unzClose(zip_file);
-      return Step::Status::ERROR;
+      return Step::Status::OUT_OF_SPACE;
     }
 
     if (!is_directory(filename_in_zip_path)) {
@@ -146,10 +146,11 @@ Step::Status StepUnzip::process() {
     return Step::Status::ERROR;
   }
 
-  if (ExtractToTmpDir(context_->file_path().c_str(), tmp_dir)
-      != Step::Status::OK) {
+  Step::Status extract_status =
+      ExtractToTmpDir(context_->file_path().c_str(), tmp_dir);
+  if (extract_status != Step::Status::OK) {
     LOG(ERROR) << "Failed to process unpack step";
-    return Step::Status::ERROR;
+    return extract_status;
   }
   context_->set_unpacked_dir_path(tmp_dir.string());
 
