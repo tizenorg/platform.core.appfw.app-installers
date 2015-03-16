@@ -25,7 +25,7 @@ namespace {
   XmlElement* Get1stChild(XmlTree *tree,
       XmlElement* parent, const string element_name) {
     vector<XmlElement*> v = tree->Children(parent, element_name);
-    if (!v.size() < 1) {
+    if (v.size() < 1) {
       LOG(ERROR) << element_name << " is not found as a child of " <<
           parent->name();
       return nullptr;
