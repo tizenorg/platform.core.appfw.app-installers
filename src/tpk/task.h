@@ -19,9 +19,9 @@ class Task {
 
 
  private:
-  bool Install();
-  bool Uninstall();
-  bool Reinstall();
+  int Install();
+  int Uninstall();
+  int Reinstall();
 
   pkgmgr_installer* pi_;
   int request_;

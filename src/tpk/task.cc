@@ -69,7 +69,7 @@ bool Task::Init(int argc, char** argv) {
 
 
 bool Task::Run() {
-  bool ret = false;
+  int ret = 0;
   switch (request_) {
     case PKGMGR_REQ_INSTALL:
       ret = Install();
@@ -81,10 +81,14 @@ bool Task::Run() {
       ret = Reinstall();
       break;
   }
-  return ret;
+  if (ret != 0) {
+    LOG(ERROR) << "Got error from AppInstaler: error code " << ret;
+    return false;
+  }
+  return true;
 }
 
-bool Task::Install() {
+int Task::Install() {
   ci::AppInstaller ai(pi_, kPkgType);
 
   ai.AddStep<ci::unzip::StepUnzip>();
@@ -100,7 +104,7 @@ bool Task::Install() {
   return ai.Run();
 }
 
-bool Task::Uninstall() {
+int Task::Uninstall() {
   ci::AppInstaller ai(pi_, kPkgType);
 
   ai.AddStep<ci::parse::StepParse>();
@@ -112,8 +116,8 @@ bool Task::Uninstall() {
   return ai.Run();
 }
 
-bool Task::Reinstall() {
-  return false;
+int Task::Reinstall() {
+  return 0;
 }
 
 }  // namespace tpk
