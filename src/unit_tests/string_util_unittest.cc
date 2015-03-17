@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "utils/string_util.h"
+#include "parser/string_util.h"
 
 #define TEST_FOR_COLLAPSE_CHARCTER(Name, Sequence)                             \
   TEST(StringUtilTest, CollapseWhitespaceUTF8_ ## Name) {                      \
@@ -31,7 +31,7 @@
             std::string(kPopDirectionalFormatting)));                          \
   }                                                                            \
 
-namespace common_installer {
+namespace parser {
 namespace utils {
 
 class StringUtilTest : public testing::Test { };
@@ -107,4 +107,4 @@ TEST_FOR_COLLAPSE_CHARCTER(MediumMathematicalSpace, u8"\xe2\x81\x9f")
 TEST_FOR_COLLAPSE_CHARCTER(IdeographicSpace, u8"\xe3\x80\x80")
 
 }  // namespace utils
-}  // namespace common_installer
+}  // namespace parser
