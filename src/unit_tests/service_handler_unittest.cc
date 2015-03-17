@@ -7,11 +7,11 @@
 
 #include <vector>
 
-#include "parser/application_manifest_constants.h"
 #include "parser/manifest.h"
 #include "parser/manifest_handler.h"
-#include "parser/manifest_handlers/service_handler.h"
-#include "unit_tests/common/scoped_testing_manifest_handler_registry.h"
+#include "parser/manifest_parser.h"
+#include "manifest_handlers/application_manifest_constants.h"
+#include "manifest_handlers/service_handler.h"
 
 namespace bf = boost::filesystem;
 
@@ -19,46 +19,54 @@ namespace {
 
 const char kServiceKey[] = "service";
 
-}  // namespace
+std::unique_ptr<parser::ManifestHandlerRegistry> GetRegistryForTest() {
+  std::unique_ptr<parser::ManifestHandlerRegistry> registry;
+  registry.reset(new parser::ManifestHandlerRegistry());
+  registry->RegisterManifestHandler(new wgt::parse::ServiceHandler());
+  return registry;
+}
 
-namespace common_installer {
+}  // namespace
 
 namespace parser {
 
-std::shared_ptr<ApplicationData> CreateApplicationDataForTest(
-    std::unique_ptr<Manifest> manifest) {
-  return std::shared_ptr<ApplicationData>(
-      new ApplicationData(bf::path(), ApplicationData::INTERNAL,
-          std::move(manifest)));
-}
-
-namespace keys = application_widget_keys;
+namespace keys = wgt::application_widget_keys;
 
 class ServiceHandlerTest : public testing::Test {
  public:
   void SetUp() override {
-    std::vector<ManifestHandler*> handlers;
-    handlers.push_back(new ServiceHandler());
-    test_registry_.reset(new ScopedTestingManifestHandlerRegistry(handlers));
+    parser_.reset(new ManifestParser((GetRegistryForTest())));
   }
- protected:
-  std::unique_ptr<ScopedTestingManifestHandlerRegistry> test_registry_;
+  void TearDown() override {
+    parser_.reset();
+  }
+  void SetManifest(std::shared_ptr<Manifest> manifest) {
+    parser_->manifest_ = manifest;
+  }
+  bool ParseAppManifest() {
+    std::string error;
+    return parser_->ParseAppManifest(&error);
+  }
+  bool ValidateAppManifest() {
+    std::string error;
+    return parser_->ValidateAppManifest(&error);
+  }
+  std::shared_ptr<const ManifestData> GetManifestData(const std::string& key) {
+    return parser_->GetManifestData(key);
+  }
+
+ private:
+  std::unique_ptr<ManifestParser> parser_;
 };
 
 TEST_F(ServiceHandlerTest, NoServiceEntry) {
   // Set test values
   std::unique_ptr<utils::DictionaryValue> value(new utils::DictionaryValue());
-  std::unique_ptr<Manifest> manifest(new Manifest(std::move(value)));
-  // Create application data
-  std::string error;
-  std::shared_ptr<ApplicationData> app_data =
-      CreateApplicationDataForTest(std::move(manifest));
-  ManifestHandlerRegistry* registry = ManifestHandlerRegistry::GetInstance();
+  std::shared_ptr<Manifest> manifest(new Manifest(std::move(value)));
+  SetManifest(manifest);
   // Check correctness
-  ASSERT_TRUE(!!app_data);
-  ASSERT_TRUE(registry);
-  ASSERT_TRUE(registry->ParseAppManifest(app_data, &error));
-  ASSERT_TRUE(registry->ValidateAppManifest(app_data, &error));
+  ASSERT_TRUE(ParseAppManifest());
+  ASSERT_TRUE(ValidateAppManifest());
 }
 
 TEST_F(ServiceHandlerTest, SingleServiceEntryDefault) {
@@ -69,22 +77,16 @@ TEST_F(ServiceHandlerTest, SingleServiceEntryDefault) {
   service->SetString(keys::kTizenServiceIdKey, "correct001.appId");
   widget->Set(kServiceKey, service.release());
   value->Set(keys::kWidgetKey, widget.release());
-  std::unique_ptr<Manifest> manifest(new Manifest(std::move(value)));
-  // Create application data
-  std::string error;
-  std::shared_ptr<ApplicationData> app_data =
-      CreateApplicationDataForTest(std::move(manifest));
-  ManifestHandlerRegistry* registry = ManifestHandlerRegistry::GetInstance();
+  std::shared_ptr<Manifest> manifest(new Manifest(std::move(value)));
+  SetManifest(manifest);
   // Check correctness
-  ASSERT_TRUE(!!app_data);
-  ASSERT_TRUE(registry);
-  ASSERT_TRUE(registry->ParseAppManifest(app_data, &error));
-  ASSERT_TRUE(registry->ValidateAppManifest(app_data, &error));
-  ASSERT_TRUE(app_data->GetManifestData(keys::kTizenServiceKey));
-  ServiceList* service_list =
-      dynamic_cast<ServiceList*>(
-          app_data->GetManifestData(keys::kTizenServiceKey));
-  ASSERT_TRUE(service_list);
+  ASSERT_TRUE(ParseAppManifest());
+  ASSERT_TRUE(ValidateAppManifest());
+  ASSERT_TRUE(!!GetManifestData(keys::kTizenServiceKey));
+  std::shared_ptr<const wgt::parse::ServiceList> service_list =
+      std::dynamic_pointer_cast<const wgt::parse::ServiceList>(
+          GetManifestData(keys::kTizenServiceKey));
+  ASSERT_TRUE(!!service_list);
   ASSERT_EQ(service_list->services.size(), 1);
   ASSERT_EQ(service_list->services[0].id(), "correct001.appId");
   ASSERT_EQ(service_list->services[0].auto_restart(), false);
@@ -100,22 +102,16 @@ TEST_F(ServiceHandlerTest, SingleServiceEntryOnBootOn) {
   service->SetString(keys::kTizenServiceOnBootKey, "true");
   widget->Set(kServiceKey, service.release());
   value->Set(keys::kWidgetKey, widget.release());
-  std::unique_ptr<Manifest> manifest(new Manifest(std::move(value)));
-  // Create application data
-  std::string error;
-  std::shared_ptr<ApplicationData> app_data =
-      CreateApplicationDataForTest(std::move(manifest));
-  ManifestHandlerRegistry* registry = ManifestHandlerRegistry::GetInstance();
+  std::shared_ptr<Manifest> manifest(new Manifest(std::move(value)));
+  SetManifest(manifest);
   // Check correctness
-  ASSERT_TRUE(!!app_data);
-  ASSERT_TRUE(registry);
-  ASSERT_TRUE(registry->ParseAppManifest(app_data, &error));
-  ASSERT_TRUE(registry->ValidateAppManifest(app_data, &error));
-  ASSERT_TRUE(app_data->GetManifestData(keys::kTizenServiceKey));
-  ServiceList* service_list =
-      dynamic_cast<ServiceList*>(
-          app_data->GetManifestData(keys::kTizenServiceKey));
-  ASSERT_TRUE(service_list);
+  ASSERT_TRUE(ParseAppManifest());
+  ASSERT_TRUE(ValidateAppManifest());
+  ASSERT_TRUE(!!GetManifestData(keys::kTizenServiceKey));
+  std::shared_ptr<const wgt::parse::ServiceList> service_list =
+      std::dynamic_pointer_cast<const wgt::parse::ServiceList>(
+          GetManifestData(keys::kTizenServiceKey));
+  ASSERT_TRUE(!!service_list);
   ASSERT_EQ(service_list->services.size(), 1);
   ASSERT_EQ(service_list->services[0].id(), "correct002.appId");
   ASSERT_EQ(service_list->services[0].auto_restart(), false);
@@ -132,22 +128,16 @@ TEST_F(ServiceHandlerTest, SingleServiceEntryAutoRestartOn) {
   service->SetString(keys::kTizenServiceAutoRestartKey, "true");
   widget->Set(kServiceKey, service.release());
   value->Set(keys::kWidgetKey, widget.release());
-  std::unique_ptr<Manifest> manifest(new Manifest(std::move(value)));
-  // Create application data
-  std::string error;
-  std::shared_ptr<ApplicationData> app_data =
-      CreateApplicationDataForTest(std::move(manifest));
-  ManifestHandlerRegistry* registry = ManifestHandlerRegistry::GetInstance();
+  std::shared_ptr<Manifest> manifest(new Manifest(std::move(value)));
+  SetManifest(manifest);
   // Check correctness
-  ASSERT_TRUE(!!app_data);
-  ASSERT_TRUE(registry);
-  ASSERT_TRUE(registry->ParseAppManifest(app_data, &error));
-  ASSERT_TRUE(registry->ValidateAppManifest(app_data, &error));
-  ASSERT_TRUE(app_data->GetManifestData(keys::kTizenServiceKey));
-  ServiceList* service_list =
-      dynamic_cast<ServiceList*>(
-          app_data->GetManifestData(keys::kTizenServiceKey));
-  ASSERT_TRUE(service_list);
+  ASSERT_TRUE(ParseAppManifest());
+  ASSERT_TRUE(ValidateAppManifest());
+  ASSERT_TRUE(!!GetManifestData(keys::kTizenServiceKey));
+  std::shared_ptr<const wgt::parse::ServiceList> service_list =
+      std::dynamic_pointer_cast<const wgt::parse::ServiceList>(
+          GetManifestData(keys::kTizenServiceKey));
+  ASSERT_TRUE(!!service_list);
   ASSERT_EQ(service_list->services.size(), 1);
   ASSERT_EQ(service_list->services[0].id(), "correct003.appId");
   ASSERT_EQ(service_list->services[0].auto_restart(), true);
@@ -162,17 +152,11 @@ TEST_F(ServiceHandlerTest, SingleServiceEntryWrongId) {
   service->SetString(keys::kTizenServiceIdKey, "wrongid.appId");
   widget->Set(kServiceKey, service.release());
   value->Set(keys::kWidgetKey, widget.release());
-  std::unique_ptr<Manifest> manifest(new Manifest(std::move(value)));
-  // Create application data
-  std::string error;
-  std::shared_ptr<ApplicationData> app_data =
-      CreateApplicationDataForTest(std::move(manifest));
-  ManifestHandlerRegistry* registry = ManifestHandlerRegistry::GetInstance();
+  std::shared_ptr<Manifest> manifest(new Manifest(std::move(value)));
+  SetManifest(manifest);
   // Check correctness
-  ASSERT_TRUE(!!app_data);
-  ASSERT_TRUE(registry);
-  ASSERT_TRUE(registry->ParseAppManifest(app_data, &error));
-  ASSERT_FALSE(registry->ValidateAppManifest(app_data, &error));
+  ASSERT_TRUE(ParseAppManifest());
+  ASSERT_FALSE(ValidateAppManifest());
 }
 
 TEST_F(ServiceHandlerTest, SingleServiceEntryIdTypeMismatch) {
@@ -183,16 +167,10 @@ TEST_F(ServiceHandlerTest, SingleServiceEntryIdTypeMismatch) {
   service->SetInteger(keys::kTizenServiceIdKey, 1410);
   widget->Set(kServiceKey, service.release());
   value->Set(keys::kWidgetKey, widget.release());
-  std::unique_ptr<Manifest> manifest(new Manifest(std::move(value)));
-  // Create application data
-  std::string error;
-  std::shared_ptr<ApplicationData> app_data =
-      CreateApplicationDataForTest(std::move(manifest));
-  ManifestHandlerRegistry* registry = ManifestHandlerRegistry::GetInstance();
+  std::shared_ptr<Manifest> manifest(new Manifest(std::move(value)));
+  SetManifest(manifest);
   // Check correctness
-  ASSERT_TRUE(!!app_data);
-  ASSERT_TRUE(registry);
-  ASSERT_FALSE(registry->ParseAppManifest(app_data, &error));
+  ASSERT_FALSE(ParseAppManifest());
 }
 
 TEST_F(ServiceHandlerTest, MultipleServiceEntry) {
@@ -210,27 +188,20 @@ TEST_F(ServiceHandlerTest, MultipleServiceEntry) {
   list->Append(service2.release());
   widget->Set(kServiceKey, list.release());
   value->Set(keys::kWidgetKey, widget.release());
-  std::unique_ptr<Manifest> manifest(new Manifest(std::move(value)));
-  // Create application data
-  std::string error;
-  std::shared_ptr<ApplicationData> app_data =
-      CreateApplicationDataForTest(std::move(manifest));
-  ManifestHandlerRegistry* registry = ManifestHandlerRegistry::GetInstance();
+  std::shared_ptr<Manifest> manifest(new Manifest(std::move(value)));
+  SetManifest(manifest);
   // Check correctness
-  ASSERT_TRUE(!!app_data);
-  ASSERT_TRUE(registry);
-  ASSERT_TRUE(registry->ParseAppManifest(app_data, &error));
-  ASSERT_TRUE(registry->ValidateAppManifest(app_data, &error));
-  ASSERT_TRUE(app_data->GetManifestData(keys::kTizenServiceKey));
-  ServiceList* service_list =
-      dynamic_cast<ServiceList*>(
-          app_data->GetManifestData(keys::kTizenServiceKey));
-  ASSERT_TRUE(service_list);
+  ASSERT_TRUE(ParseAppManifest());
+  ASSERT_TRUE(ValidateAppManifest());
+  ASSERT_TRUE(!!GetManifestData(keys::kTizenServiceKey));
+  std::shared_ptr<const wgt::parse::ServiceList> service_list =
+      std::dynamic_pointer_cast<const wgt::parse::ServiceList>(
+          GetManifestData(keys::kTizenServiceKey));
+  ASSERT_TRUE(!!service_list);
   ASSERT_EQ(service_list->services.size(), 2);
   ASSERT_EQ(service_list->services[0].id(), "correct004.appId");
   ASSERT_EQ(service_list->services[1].id(), "correct005.appId");
 }
 
 }  // namespace parser
-}  // namespace common_installer
 

@@ -13,15 +13,14 @@
 #include <map>
 #include <memory>
 
-#include "parser/application_data.h"
+#include "parser/manifest.h"
 
 // Utilities for manipulating the on-disk storage of applications.
-namespace common_installer {
 namespace parser {
 
 // Loads an application manifest from the specified directory. Returns nullptr
 // on failure, with a description of the error in |error|.
-std::unique_ptr<Manifest> LoadManifest(
+std::shared_ptr<Manifest> LoadManifest(
     const std::string& file_path, std::string* error);
 std::string GetNodeDir(xmlNode* node, const std::string& inherit_dir);
 std::string GetNodeText(xmlNode* root, const std::string& inherit_dir);
@@ -37,6 +36,5 @@ bool ValidateTizenApplicationId(const std::string& id);
 bool ValidateTizenPackageId(const std::string& id);
 
 }  // namespace parser
-}  // namespace common_installer
 
 #endif  // PARSER_MANIFEST_UTIL_H_

@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-namespace common_installer {
 namespace parser {
 
 enum PermissionType {
@@ -39,6 +38,5 @@ typedef std::map<std::string, StoredPermission> StoredPermissionMap;
 typedef std::set<std::string> PermissionSet;
 
 }  // namespace parser
-}  // namespace common_installer
 
 #endif  // PARSER_PERMISSION_TYPES_H_
