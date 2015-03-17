@@ -73,7 +73,8 @@ Step::Status StepGenerateXml::process() {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "version",
       BAD_CAST context_->manifest_data()->version);
 
-  if ( context_->manifest_data()->description->name )
+  if ( context_->manifest_data()->description &&
+      context_->manifest_data()->description->name )
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
         "%s", BAD_CAST context_->manifest_data()->description->name);
   else

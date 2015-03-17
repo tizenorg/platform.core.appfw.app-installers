@@ -35,7 +35,7 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
 
     // Make a symlink with the name of appid, pointing exec file
     fs::path symlink_path = bindir / fs::path(app->appid);
-    LOG(INFO) << "Creating symlink pointing " << symlink_path  << " to " <<
+    LOG(INFO) << "Creating symlink " << symlink_path << " pointing " <<
         app->exec;
     fs::create_symlink(fs::path(app->exec), symlink_path, error);
     if (error) {
@@ -90,9 +90,9 @@ Status StepSymbolicLink::process() {
     LOG(ERROR) << "Neither ui-application nor service-application exists";
     return Status::ERROR;
   }
+
   if (!CreateSymLink(uiapp, context_)) return Status::ERROR;
   if (!CreateSymLink(svcapp, context_)) return Status::ERROR;
-
   return Status::OK;
 }
 
