@@ -73,7 +73,8 @@ Step::Status StepGenerateXml::process() {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "version",
       BAD_CAST context_->manifest_data()->version);
 
-  if ( context_->manifest_data()->description->name )
+  if ( context_->manifest_data()->description &&
+      context_->manifest_data()->description->name )
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
         "%s", BAD_CAST context_->manifest_data()->description->name);
   else
@@ -114,7 +115,7 @@ Step::Status StepGenerateXml::process() {
 
     fs::path icon = fs::path(ui->appid) += fs::path(".png");
 
-    if (ui->icon->name) {
+    if (ui->icon && ui->icon->name) {
       fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(ui->appid)
         / fs::path(ui->icon->name);
       if (fs::exists(app_icon))
@@ -132,20 +133,24 @@ Step::Status StepGenerateXml::process() {
     for (; appc_ui != nullptr; appc_ui = appc_ui->next) {
       xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
-      xmlTextWriterStartElement(writer, BAD_CAST "operation");
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-          BAD_CAST appc_ui->operation->name);
-      xmlTextWriterEndElement(writer);
-
-      xmlTextWriterStartElement(writer, BAD_CAST "uri");
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-          BAD_CAST appc_ui->uri->name);
-      xmlTextWriterEndElement(writer);
-
-      xmlTextWriterStartElement(writer, BAD_CAST "mime");
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-          BAD_CAST appc_ui->mime->name);
-      xmlTextWriterEndElement(writer);
+      if (appc_ui->operation) {
+        xmlTextWriterStartElement(writer, BAD_CAST "operation");
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+            BAD_CAST appc_ui->operation->name);
+        xmlTextWriterEndElement(writer);
+      }
+      if (appc_ui->uri) {
+        xmlTextWriterStartElement(writer, BAD_CAST "uri");
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+            BAD_CAST appc_ui->uri->name);
+        xmlTextWriterEndElement(writer);
+      }
+      if (appc_ui->mime) {
+        xmlTextWriterStartElement(writer, BAD_CAST "mime");
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+            BAD_CAST appc_ui->mime->name);
+        xmlTextWriterEndElement(writer);
+      }
 
       xmlTextWriterEndElement(writer);
     }
@@ -168,9 +173,10 @@ Step::Status StepGenerateXml::process() {
         BAD_CAST exec_path.string().c_str());
     xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
         BAD_CAST svc->type);
-
-    xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
-        "%s", BAD_CAST svc->label->name);
+    if (svc->label) {
+      xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
+          "%s", BAD_CAST svc->label->name);
+    }
 
     // the icon is renamed to <appid.png>
     // and located in TZ_USER_ICON/TZ_SYS_ICON
@@ -179,7 +185,7 @@ Step::Status StepGenerateXml::process() {
     utils::CreateDir(icon_path_);
     fs::path icon = fs::path(svc->appid) += fs::path(".png");
 
-    if (svc->icon->name) {
+    if (svc->icon && svc->icon->name) {
       fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(svc->appid)
           / fs::path(svc->icon->name);
       if (fs::exists(app_icon))
@@ -194,20 +200,24 @@ Step::Status StepGenerateXml::process() {
     for (; appc_svc != nullptr; appc_svc = appc_svc->next) {
       xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
-      xmlTextWriterStartElement(writer, BAD_CAST "operation");
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-          BAD_CAST appc_svc->operation->name);
-      xmlTextWriterEndElement(writer);
-
-      xmlTextWriterStartElement(writer, BAD_CAST "uri");
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-          BAD_CAST appc_svc->uri->name);
-      xmlTextWriterEndElement(writer);
-
-      xmlTextWriterStartElement(writer, BAD_CAST "mime");
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-          BAD_CAST appc_svc->mime->name);
-      xmlTextWriterEndElement(writer);
+      if (appc_svc->operation) {
+        xmlTextWriterStartElement(writer, BAD_CAST "operation");
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+            BAD_CAST appc_svc->operation->name);
+        xmlTextWriterEndElement(writer);
+      }
+      if (appc_svc->uri) {
+        xmlTextWriterStartElement(writer, BAD_CAST "uri");
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+            BAD_CAST appc_svc->uri->name);
+        xmlTextWriterEndElement(writer);
+      }
+      if (appc_svc->mime) {
+        xmlTextWriterStartElement(writer, BAD_CAST "mime");
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+            BAD_CAST appc_svc->mime->name);
+        xmlTextWriterEndElement(writer);
+      }
 
       xmlTextWriterEndElement(writer);
     }
