@@ -26,11 +26,20 @@ namespace {
       XmlElement* parent, const string element_name) {
     vector<XmlElement*> v = tree->Children(parent, element_name);
     if (v.size() < 1) {
-      LOG(ERROR) << element_name << " is not found as a child of " <<
+      LOG(INFO) << element_name << " is not found as a child of " <<
           parent->name();
       return nullptr;
     }
     return v[0];  // Always return only the 1st child
+  }
+
+  const char* string_strdup(const string &s) {
+    static const string nullstr = XmlElement::null_string();
+    if (s == XmlElement::null_string()) {
+      LOG(DEBUG) << "it is null_string";
+      return nullptr;
+    }
+    return strdup(s.c_str());
   }
 
 
@@ -52,6 +61,7 @@ Status StepParse::process() {
   if (!mPath) {
     return Status::ERROR;
   }
+  LOG(INFO) << "Parse " << mPath->c_str();
 
   XmlParser parser;
   std::unique_ptr<XmlTree> tree(parser.ParseAndGetNewTree(mPath->c_str()));
@@ -108,77 +118,86 @@ bool StepParse::SetContextByManifestParser(XmlTree* tree) {
   context_->config_data()->set_application_name(label->content());
   context_->config_data()->set_required_version(manifest->attr("api_version"));
   context_->set_pkgid(manifest->attr("package"));
+  context_->set_manifest(static_cast<manifest_x*>(
+      calloc(1, sizeof(manifest_x))));
 
   // set context_->manifest_data()
   return SetPkgInfoManifest(context_->manifest_data(), tree, manifest);
 }
+
 
 bool StepParse::SetPkgInfoManifest(manifest_x* m,
     XmlTree* tree,
     XmlElement* manifest) {
   // Get required elements
   XmlElement* ui_application, * label, * icon, * description;
-  if (nullptr == (ui_application = Get1stChild(tree,
-          manifest, "ui-application"))) return false;
-  if (nullptr == (label = Get1stChild(tree, ui_application, "label")))
-    return false;
-  if (nullptr == (icon = Get1stChild(tree, ui_application, "icon")))
-    return false;
-  if (nullptr == (description = Get1stChild(tree,
-          ui_application, "description"))) return false;
+  ui_application = Get1stChild(tree, manifest, "ui-application");
+  label = Get1stChild(tree, ui_application, "label");
+  icon = Get1stChild(tree, ui_application, "icon");
+  description = Get1stChild(tree, ui_application, "description");
 
-  // Common values
-  m->label =  static_cast<label_x*>
-    (calloc(1, sizeof(label_x)));
-  m->description =  static_cast<description_x*>
-    (calloc(1, sizeof(description_x)));
-  m->privileges =  static_cast<privileges_x*>
-    (calloc(1, sizeof(privileges_x)));
-  m->privileges->next = nullptr;
-  m->privileges->privilege = nullptr;
-
-  // Basic values
-  m->package = strdup(manifest->attr("package").c_str());
+  // manifest's attribute
+  m->package = string_strdup(manifest->attr("package"));
   m->type = strdup("tpk");
-  m->version = strdup(manifest->attr("version").c_str());
-  m->label->name = strdup(label->content().c_str());
-  m->description->name = strdup(description->content().c_str());
-  m->mainapp_id = strdup(ui_application->attr("appid").c_str());
+  m->version = string_strdup(manifest->attr("version"));
+  if (ui_application) {
+    m->mainapp_id = string_strdup(ui_application->attr("appid"));
+  }
+
+  // manifest' attribute from children's values
+  if (label) {
+    m->label =  static_cast<label_x*>(calloc(1, sizeof(label_x)));
+    m->label->name = string_strdup(label->content());
+  }
+  if (description) {
+    m->description =  static_cast<description_x*>
+      (calloc(1, sizeof(description_x)));
+    m->description->name = string_strdup(description->content());
+  }
 
   // Privileges
   XmlElement* privileges;
-  if (nullptr == (privileges = Get1stChild(tree, manifest, "privileges"))) {
-    return false;
-  }
-  vector<XmlElement*> v_priv = tree->Children(privileges, "privilege");
-  for (auto& privilege : v_priv) {
-    privilege_x *p =
-        static_cast<privilege_x *>(calloc(1, sizeof(privilege_x)));
-    // privilege data text
-    p->text = strdup(privilege->content().c_str());
-    LISTADD(m->privileges->privilege, p);
-    LOG(INFO) << "Add a privilege: " << p->text;
+  privileges = Get1stChild(tree, manifest, "privileges");
+  if (privileges) {
+    m->privileges = static_cast<privileges_x*>
+        (calloc(1, sizeof(privileges_x)));
+
+    vector<XmlElement*> v_priv = tree->Children(privileges, "privilege");
+    for (auto& privilege : v_priv) {
+      privilege_x *p =
+          static_cast<privilege_x *>(calloc(1, sizeof(privilege_x)));
+      // privilege data text
+      p->text = string_strdup(privilege->content());
+      LISTADD(m->privileges->privilege, p);
+      LOG(INFO) << "Add a privilege: " << p->text;
+    }
   }
 
-  // Other app data (null initialization)
+  // service-application
   m->serviceapplication = nullptr;  // NOTE: ignore service application
+
+  // ui-application
   m->uiapplication = static_cast<uiapplication_x*>
     (calloc (1, sizeof(uiapplication_x)));
-  m->uiapplication->icon = static_cast<icon_x*>
-    (calloc(1, sizeof(icon_x)));
-  m->uiapplication->label = static_cast<label_x*>
-    (calloc(1, sizeof(label_x)));
-  m->description = static_cast<description_x*>
-    (calloc(1, sizeof(description_x)));
-  m->uiapplication->appcontrol = nullptr;
 
-  m->uiapplication->appid = strdup(ui_application->attr("appid").c_str());
-  m->uiapplication->exec = strdup(ui_application->attr("exec").c_str());
-  m->uiapplication->type = strdup(ui_application->attr("type").c_str());
+  m->uiapplication->appid = string_strdup(ui_application->attr("appid"));
+  m->uiapplication->exec = string_strdup(ui_application->attr("exec"));
+  m->uiapplication->type = string_strdup(ui_application->attr("type"));
 
-  m->uiapplication->label->name = strdup(label->content().c_str());
-  m->uiapplication->icon->name = strdup(icon->content().c_str());
-  m->uiapplication->next = nullptr;
+  LOG(DEBUG) << "appid=" << m->uiapplication->appid <<
+      ", exec=" << m->uiapplication->exec <<
+      ", type=" << m->uiapplication->type;
+  if (label) {
+    m->uiapplication->label = static_cast<label_x*>
+        (calloc(1, sizeof(label_x)));
+    m->uiapplication->label->name = string_strdup(label->content());
+  }
+  if (icon) {
+    m->uiapplication->icon = static_cast<icon_x*>
+        (calloc(1, sizeof(icon_x)));
+    m->uiapplication->icon->name = string_strdup(icon->content());
+  }
+  // NOTE: No description field or sub-element in the uiapplication_x struct.
 
   return true;
 }
