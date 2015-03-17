@@ -22,7 +22,7 @@ Step::Status StepRevokeSecurity::process() {
 
 Step::Status StepRevokeSecurity::undo() {
   if (!RegisterSecurityContextForApps(
-      context_->pkgid(), context_->GetRootApplicationPath(),
+      context_->pkgid(), context_->GetApplicationPath(),
       context_->manifest_data())) {
     LOG(ERROR) << "Failure on re-installing security context for app "
                << context_->pkgid();
