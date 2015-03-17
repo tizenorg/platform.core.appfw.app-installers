@@ -13,16 +13,11 @@
 #include <regex>
 #include <vector>
 
-#include "utils/string_util.h"
-#include "utils/values.h"
-#include "parser/application_data.h"
-#include "parser/application_manifest_constants.h"
+#include "parser/string_util.h"
+#include "parser/manifest_constants.h"
 #include "parser/manifest.h"
 #include "parser/manifest_handler.h"
-
-namespace errors = common_installer::application_manifest_errors;
-namespace keys = common_installer::application_manifest_keys;
-namespace widget_keys = common_installer::application_widget_keys;
+#include "parser/values.h"
 
 namespace bf = boost::filesystem;
 
@@ -62,7 +57,6 @@ const char kPackagePattern[] = "^[0-9a-zA-Z]{10}$";
 
 }  // namespace
 
-namespace common_installer {
 namespace parser {
 
 std::string GetNodeDir(xmlNode* node, const std::string& inherit_dir) {
@@ -91,10 +85,11 @@ std::string GetNodeText(xmlNode* root, const std::string& inherit_dir) {
   std::string text;
   for (xmlNode* node = root->children; node; node = node->next) {
     if (node->type == XML_TEXT_NODE || node->type == XML_CDATA_SECTION_NODE) {
-      text += common_installer::utils::StripWrappingBidiControlCharactersUTF8(
+      text = text
+          + parser::utils::StripWrappingBidiControlCharactersUTF8(
           std::string(reinterpret_cast<char*>(node->content)));
       // This is supposed to be done once for each text element
-      text = common_installer::utils::GetDirTextUTF8(text, current_dir);
+      text = utils::GetDirTextUTF8(text, current_dir);
     } else {
       text = text + GetNodeText(node, current_dir);
     }
@@ -267,7 +262,7 @@ std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
       current_value->GetString(kNamespaceKey, &current_namespace);
       sub_value->GetString(kNamespaceKey, &new_namespace);
       if (current_namespace != new_namespace &&
-          new_namespace == widget_keys::kTizenNamespacePrefix)
+          new_namespace == kTizenNamespacePrefix)
         value->Set(sub_node_name, sub_value.release());
       continue;
     }
@@ -313,13 +308,13 @@ std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
   return value;
 }
 
-std::unique_ptr<Manifest> LoadManifest(const std::string& manifest_path,
+std::shared_ptr<Manifest> LoadManifest(const std::string& manifest_path,
                                        std::string* error) {
   xmlDoc * doc = nullptr;
   xmlNode* root_node = nullptr;
   doc = xmlReadFile(manifest_path.c_str(), nullptr, 0);
   if (!doc) {
-    *error = errors::kManifestUnreadable;
+    *error = application_manifest_errors::kManifestUnreadable;
     return nullptr;
   }
   root_node = xmlDocGetRootElement(doc);
@@ -327,8 +322,7 @@ std::unique_ptr<Manifest> LoadManifest(const std::string& manifest_path,
   std::unique_ptr<utils::DictionaryValue> result(new utils::DictionaryValue);
   if (dv)
     result->Set(reinterpret_cast<const char*>(root_node->name), dv.release());
-
-  return std::unique_ptr<Manifest>(new Manifest(std::move(result)));
+  return std::make_shared<parser::Manifest>(std::move(result));
 }
 
 bf::path ApplicationURLToRelativeFilePath(const std::string& url) {
@@ -336,8 +330,7 @@ bf::path ApplicationURLToRelativeFilePath(const std::string& url) {
   if (url_path.empty() || url_path[0] != '/')
     return bf::path();
 
-  std::string file_path =
-      common_installer::utils::DecodePercentEscapedCharacter(url_path);
+  std::string file_path = utils::DecodePercentEscapedCharacter(url_path);
   if (file_path.empty())
     return bf::path();
 
@@ -363,4 +356,3 @@ bool ValidateTizenPackageId(const std::string& id) {
 }
 
 }  // namespace parser
-}  // namespace common_installer

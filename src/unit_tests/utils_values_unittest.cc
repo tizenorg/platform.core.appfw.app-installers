@@ -7,9 +7,9 @@
 #include <limits>
 #include <memory>
 
-#include "utils/values.h"
+#include "parser/values.h"
 
-namespace common_installer {
+namespace parser {
 namespace utils {
 
 TEST(ValuesTest, Basic) {
@@ -1137,4 +1137,4 @@ TEST(ValuesTest, GetWithnullptrOutValue) {
 }
 
 }  // namespace utils
-}  // namespace common_installer
+}  // namespace parser

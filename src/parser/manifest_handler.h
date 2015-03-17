@@ -12,24 +12,60 @@
 #include <vector>
 
 #include "parser/manifest.h"
-#include "parser/application_data.h"
 
-namespace common_installer {
 namespace parser {
+
+// A base class for parsed manifest data that APIs want to store on
+// the application.
+class ManifestData {
+ public:
+  ManifestData() : exists_(true) {}
+  virtual ~ManifestData() {}
+  bool exists() const { return exists_; }
+  void set_exists(bool exists) { exists_ = exists; }
+ private:
+  // This member should be set to false in case of there are no
+  // elements for specific handler to be parsed in manifest
+  // example:
+  // <widget><application>app</application></widget>
+  // in case of handling 'widget.application' exists_ should stay true
+  // in case if handling 'widget.privilege' exists_ should be set to false
+  bool exists_;
+};
+
+typedef std::map<const std::string, std::shared_ptr<ManifestData> >
+    ManifestDataMap;
 
 class ManifestHandler {
  public:
   virtual ~ManifestHandler();
 
-  // Returns false in case of failure and sets writes error message
-  // in |error| if present.
-  virtual bool Parse(std::shared_ptr<ApplicationData> application,
-                     std::string* error) = 0;
+  // This function should parse values in manifest which are identified by
+  // the key returned from Key() method.
+  // If parsing is successfull then true should be returned and output pointer
+  // set to valud ManifestDate derived class.
+  // Otherwise (in case of error) function should return false value and
+  // set error function argument to problem description.
+  virtual bool Parse(
+      const Manifest& manifest,
+      std::shared_ptr<ManifestData>* output,
+      std::string* error) = 0;
 
   // Returns false in case of failure and sets writes error message
   // in |error| if present.
-  virtual bool Validate(std::shared_ptr<const ApplicationData> application,
-                        std::string* error) const;
+  // This function is called if Parse() function will set non-empty output.
+  // By default validation will just return true.
+  virtual bool Validate(
+      const ManifestData& data,
+      const ManifestDataMap& handlers_output,
+      std::string* error) const;
+
+  // If false (the default), only parse the manifest if a registered
+  // key is present in the manifest. If true, always attempt to parse
+  // the manifest for this application type, even if no registered keys
+  // are present. This allows specifying a default parsed value for
+  // application that don't declare our key in the manifest.
+  virtual bool AlwaysParseForType() const;
 
   // Same as AlwaysParseForType, but for Validate instead of Parse.
   virtual bool AlwaysValidateForType() const;
@@ -40,48 +76,37 @@ class ManifestHandler {
   virtual std::vector<std::string> PrerequisiteKeys() const;
 
   // The keys to register handler for (in Register).
-  virtual std::vector<std::string> Keys() const = 0;
+  virtual std::string Key() const = 0;
 };
 
-class ManifestHandlerRegistry final {
+typedef std::map<std::string, ManifestHandler*> ManifestHandlerMap;
+typedef std::map<ManifestHandler*, int> ManifestHandlerOrderMap;
+
+class ManifestHandlerRegistry {
  public:
-  ~ManifestHandlerRegistry();
-
-  static ManifestHandlerRegistry* GetInstance();
-
-  bool ParseAppManifest(
-      std::shared_ptr<ApplicationData> application, std::string* error);
-  bool ValidateAppManifest(std::shared_ptr<const ApplicationData> application,
-      std::string* error);
-
- private:
-  friend class ScopedTestingManifestHandlerRegistry;
+  ManifestHandlerRegistry();
   explicit ManifestHandlerRegistry(
       const std::vector<ManifestHandler*>& handlers);
+  ~ManifestHandlerRegistry();
 
-  // Register a manifest handler for keys, which are provided by Keys() method
+  // Register a manifest handler for key, which is provided by Key() method
   // in ManifestHandler implementer.
-  void Register(ManifestHandler* handler);
+  void RegisterManifestHandler(ManifestHandler* handler);
 
+  ManifestHandlerMap handlers();
+  ManifestHandlerOrderMap get_manifest_handlers_order_map();
+
+ private:
+  // This function is sorting handlers as some of them might need to
+  // be parsed before others are parsed - maybe it should be removed
   void ReorderHandlersGivenDependencies();
-
-  // Sets a new global registry, for testing purposes.
-  static void SetInstanceForTesting(ManifestHandlerRegistry* registry);
-
-  static ManifestHandlerRegistry* GetInstanceForWGT();
-
-  typedef std::map<std::string, ManifestHandler*> ManifestHandlerMap;
-  typedef std::map<ManifestHandler*, int> ManifestHandlerOrderMap;
 
   ManifestHandlerMap handlers_;
 
   // Handlers are executed in order; lowest order first.
   ManifestHandlerOrderMap order_map_;
-
-  static ManifestHandlerRegistry* widget_registry_;
 };
 
 }  // namespace parser
-}  // namespace common_installer
 
 #endif  // PARSER_MANIFEST_HANDLER_H_

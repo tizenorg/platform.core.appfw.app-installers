@@ -14,9 +14,8 @@
 #include <vector>
 
 #include "utils/macros.h"
-#include "utils/values.h"
+#include "parser/values.h"
 
-namespace common_installer {
 namespace parser {
 
 // Wraps the DictionaryValue form of application's manifest. Enforces access to
@@ -98,6 +97,5 @@ class Manifest {
 };
 
 }  // namespace parser
-}  // namespace common_installer
 
 #endif  // PARSER_MANIFEST_H_

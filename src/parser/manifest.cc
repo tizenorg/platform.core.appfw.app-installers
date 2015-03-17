@@ -8,23 +8,11 @@
 #include <algorithm>
 #include <list>
 
-#include "utils/system_locale.h"
-#include "parser/application_manifest_constants.h"
+#include "parser/manifest_constants.h"
+#include "parser/system_locale.h"
 
-namespace errors = common_installer::application_manifest_errors;
-namespace keys   = common_installer::application_manifest_keys;
-namespace widget_keys = common_installer::application_widget_keys;
-
-namespace common_installer {
 namespace parser {
 namespace {
-const char kLocaleUnlocalized[] = "@unlocalized";
-const char kLocaleAuto[] = "en-gb";
-const char kLocaleFirstOne[] = "*";
-
-const char kWidgetNamePath[] = "widget.name";
-const char kWidgetDecriptionPath[] = "widget.description";
-const char kWidgetLicensePath[] = "widget.license";
 
 const char kPathConnectSymbol = '.';
 
@@ -63,12 +51,12 @@ Manifest::Manifest(std::unique_ptr<utils::DictionaryValue> value)
     : data_(std::move(value)),
       i18n_data_(new utils::DictionaryValue) {
 
-  if (data_->HasKey(widget_keys::kWidgetKey) &&
-      data_->Get(widget_keys::kWidgetKey, nullptr))
+  if (data_->HasKey(kWidgetKey) &&
+      data_->Get(kWidgetKey, nullptr))
     ParseWGTI18n();
 
   // FIXME: Sounds like a setter calling a getter for the same value.
-  SetSystemLocale(utils::GetSystemLocale());
+  SetSystemLocale(parser::GetSystemLocale());
 }
 
 Manifest::~Manifest() {
@@ -167,7 +155,7 @@ void Manifest::SetSystemLocale(const std::string& locale) {
 }
 
 void Manifest::ParseWGTI18n() {
-  data_->GetString(application_widget_keys::kDefaultLocaleKey,
+  data_->GetString(kDefaultLocaleKey,
                    &default_locale_);
   std::transform(default_locale_.begin(), default_locale_.end(),
                  default_locale_.begin(), ::tolower);
@@ -223,7 +211,7 @@ bool Manifest::ParseWGTI18nEachElement(utils::Value* value,
 
   std::string xml_lang(locale);
   if (locale.empty())
-    dict->GetString(application_widget_keys::kXmlLangKey, &xml_lang);
+    dict->GetString(kXmlLangKey, &xml_lang);
 
   utils::DictionaryValue::Iterator iter(*dict);
   while (!iter.IsAtEnd()) {
@@ -239,4 +227,3 @@ bool Manifest::ParseWGTI18nEachElement(utils::Value* value,
 }
 
 }  // namespace parser
-}  // namespace common_installer

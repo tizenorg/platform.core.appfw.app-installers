@@ -1,9 +1,7 @@
 # Target - sources
 SET(SRCS
   file_util.cc
-  system_locale.cc
   string_util.cc
-  values.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_UTILS} SHARED ${SRCS})
@@ -12,7 +10,6 @@ TARGET_INCLUDE_DIRECTORIES(${TARGET_LIBNAME_UTILS} PUBLIC "${CMAKE_CURRENT_SOURC
 
 # Target - deps
 APPLY_PKG_CONFIG(${TARGET_LIBNAME_UTILS} PUBLIC
-  VCONF_DEPS
   Boost
 )
 
