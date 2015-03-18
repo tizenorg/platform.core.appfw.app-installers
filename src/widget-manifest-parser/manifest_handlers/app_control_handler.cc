@@ -71,7 +71,7 @@ bool AppControlHandler::Parse(std::shared_ptr<ApplicationData> application,
   utils::Value* value;
   manifest->Get(keys::kTizenApplicationAppControlsKey, &value);
 
-  if (value->GetType() == utils::Value::TYPE_LIST) {
+  if (value && value->GetType() == utils::Value::TYPE_LIST) {
     // multiple entries
     const utils::ListValue* list;
     value->GetAsList(&list);
