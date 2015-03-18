@@ -71,6 +71,7 @@ bool MetaDataHandler::Parse(std::shared_ptr<ApplicationData> application,
   utils::Value* metadata_value = NULL;
   if (!manifest->Get(keys::kTizenMetaDataKey, &metadata_value)) {
     LOG(INFO) << "Failed to get value of tizen metaData";
+    return true;
   }
 
   MetaDataPair metadata_item;

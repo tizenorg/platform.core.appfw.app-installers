@@ -42,8 +42,9 @@ bool CategoryHandler::Parse(std::shared_ptr<ApplicationData> application,
     std::string* error) {
   const Manifest* manifest = application->GetManifest();
   std::shared_ptr<CategoryInfoList> aplist(new CategoryInfoList());
-  utils::Value* value;
-  manifest->Get(keys::kTizenCategoryKey, &value);
+  utils::Value* value = nullptr;
+  if (!manifest->Get(keys::kTizenCategoryKey, &value))
+    return true;
 
   if (value->GetType() == utils::Value::TYPE_LIST) {
     // multiple entries
@@ -78,6 +79,9 @@ bool CategoryHandler::Validate(
   const CategoryInfoList* categories_list =
       static_cast<const CategoryInfoList*>(
           application->GetManifestData(keys::kTizenCategoryKey));
+
+  if (!categories_list)
+    return true;
 
   for (const auto& item : categories_list->categories) {
     if (item.empty()) {
