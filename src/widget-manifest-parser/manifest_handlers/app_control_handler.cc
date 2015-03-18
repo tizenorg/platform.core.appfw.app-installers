@@ -68,8 +68,9 @@ bool AppControlHandler::Parse(std::shared_ptr<ApplicationData> application,
     std::string* error) {
   const Manifest* manifest = application->GetManifest();
   std::shared_ptr<AppControlInfoList> aplist(new AppControlInfoList());
-  utils::Value* value;
-  manifest->Get(keys::kTizenApplicationAppControlsKey, &value);
+  utils::Value* value = nullptr;
+  if (!manifest->Get(keys::kTizenApplicationAppControlsKey, &value))
+    return true;
 
   if (value->GetType() == utils::Value::TYPE_LIST) {
     // multiple entries
@@ -106,6 +107,9 @@ bool AppControlHandler::Validate(
   const AppControlInfoList* app_controls =
       static_cast<const AppControlInfoList*>(
           application->GetManifestData(keys::kTizenApplicationAppControlsKey));
+
+  if (!app_controls)
+     return true;
 
   for (const auto& item : app_controls->controls) {
     if (item.src().empty()) {

@@ -125,8 +125,9 @@ bool ImeHandler::Parse(std::shared_ptr<ApplicationData> application,
   const Manifest* manifest = application->GetManifest();
   assert(manifest);
 
-  utils::Value* value;
-  manifest->Get(keys::kTizenImeKey, &value);
+  utils::Value* value = nullptr;
+  if (!manifest->Get(keys::kTizenImeKey, &value) )
+    return true;
 
   bool result = true;
 
@@ -154,6 +155,9 @@ bool ImeHandler::Validate(
   const ImeInfo* ime_info =
       static_cast<const ImeInfo*>(
           application->GetManifestData(keys::kTizenImeKey));
+
+  if (!ime_info)
+    return true;
 
   if (ime_info->uuid().empty()) {
     *error = kErrMsgValidatingUuidEmpty;
