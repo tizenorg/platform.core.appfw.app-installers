@@ -105,9 +105,9 @@ bool Task::Uninstall() {
 
   ai.AddStep<ci::parse::StepParse>();
   ai.AddStep<ci::signal::StepSignal>();
-  ai.AddStep<ci::revoke_security::StepRevokeSecurity>();
   ai.AddStep<ci::unregister::StepUnregister>();
   ai.AddStep<ci::remove::StepRemove>();
+  ai.AddStep<ci::revoke_security::StepRevokeSecurity>();
 
   return ai.Run();
 }

@@ -59,9 +59,9 @@ int main(int argc, char** argv) {
     case PKGMGR_REQ_UNINSTALL: {
       installer.AddStep<ci::parse::StepParse>();
       installer.AddStep<ci::signal::StepSignal>();
-      installer.AddStep<ci::revoke_security::StepRevokeSecurity>();
       installer.AddStep<ci::unregister::StepUnregister>();
       installer.AddStep<ci::remove::StepRemove>();
+      installer.AddStep<ci::revoke_security::StepRevokeSecurity>();
       break;
     }
     default: {
