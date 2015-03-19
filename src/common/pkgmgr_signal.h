@@ -10,6 +10,8 @@
 #include <memory>
 #include <string>
 
+#include "common/step/step.h"
+
 namespace common_installer {
 
 //
@@ -21,35 +23,32 @@ namespace common_installer {
 //
 class PkgmgrSignal {
  public:
-  enum class Result {
-    SUCCESS,
-    FAILED
-  };
-
-  explicit PkgmgrSignal(pkgmgr_installer* pi);
-
-  bool sendStarted(
-      const std::string& type = std::string(),
-      const std::string& pkgid = std::string());
-  bool sendFinished(
-      Result result,
-      const std::string& type = std::string(),
-      const std::string& pkgid = std::string());
-  bool IsFinished() const;
-
- private:
   enum class State {
     NOT_SENT,
     STARTED,
     FINISHED
   };
 
+  explicit PkgmgrSignal(pkgmgr_installer* pi);
+
+  bool SendStarted(
+      const std::string& type = std::string(),
+      const std::string& pkgid = std::string());
+  bool SendFinished(
+      Step::Status result,
+      const std::string& type = std::string(),
+      const std::string& pkgid = std::string());
+  bool IsFinished() const;
+
+  State state() const { return state_; }
+
+ private:
   bool SendSignal(
       const char* key,
       const char* value,
       const std::string& type = std::string(),
       const std::string& pkgid = std::string()) const;
-  const char* GetResultKey(Result result) const;
+  const char* GetResultKey(Step::Status result) const;
 
   pkgmgr_installer* pi_;
   State state_;

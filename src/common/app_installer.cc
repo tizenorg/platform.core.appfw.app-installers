@@ -14,7 +14,7 @@ namespace common_installer {
 AppInstaller::AppInstaller(pkgmgr_installer *pi, const char* package_type)
   : context_(new ContextInstaller()) {
   int request_type = pkgmgr_installer_get_request_type(pi);
-  context_->set_pi(std::unique_ptr<PkgmgrSignal>(new PkgmgrSignal(pi)));
+  pi_.reset(new PkgmgrSignal(pi));
   context_->request_type.set(request_type);
   context_->pkg_type.set(package_type);
   switch (request_type) {
@@ -32,23 +32,24 @@ AppInstaller::AppInstaller(pkgmgr_installer *pi, const char* package_type)
 AppInstaller::~AppInstaller() {
 }
 
-void AppInstaller::EnsureSignalSend() {
-  if (!context_->pi()->IsFinished()) {
-    // if signal was not sent during normal step execution
-    // then this will sent any signal about failure
-    (void) context_->pi()->sendStarted();
-    (void) context_->pi()->sendFinished(PkgmgrSignal::Result::FAILED);
-  }
-}
-
 int AppInstaller::Run() {
   std::list<std::unique_ptr<Step>>::iterator it(steps_.begin());
   std::list<std::unique_ptr<Step>>::iterator itStart(steps_.begin());
   std::list<std::unique_ptr<Step>>::iterator itEnd(steps_.end());
 
+  Step::Status process_status = Step::Status::OK;
   int ret = 0;
   for (; it != itEnd; ++it) {
-    if ((*it)->process() != Step::Status::OK) {
+    process_status = (*it)->process();
+
+    // send START signal as soon as possible
+    if (pi_->state() == PkgmgrSignal::State::NOT_SENT) {
+      if (!context_->pkgid.get().empty()) {
+        pi_->SendStarted(context_->pkg_type.get(), context_->pkgid.get());
+      }
+    }
+
+    if (process_status != Step::Status::OK) {
       LOG(ERROR) << "Error during processing";
       ret = -1;
       break;
@@ -72,8 +73,13 @@ int AppInstaller::Run() {
     }
   }
 
-  EnsureSignalSend();
-
+  // send START if pkgid was not parsed
+  if (pi_->state() == PkgmgrSignal::State::NOT_SENT) {
+    pi_->SendStarted(context_->pkg_type.get(), context_->pkgid.get());
+  }
+  pi_->SendFinished(process_status,
+                    context_->pkg_type.get(),
+                    context_->pkgid.get());
   return ret;
 }
 

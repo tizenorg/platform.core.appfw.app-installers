@@ -16,6 +16,9 @@
   The returned code of Step::Status::OK indicates a succeful execution.
   Otherwise, the returned code should be set to value different than
   Step::Status::OK.
+
+  Errornous result of processing is casted to interger value and sent to
+  client which sent request.
 */
 #ifndef COMMON_STEP_STEP_H_
 #define COMMON_STEP_STEP_H_
@@ -36,9 +39,9 @@ class Step {
   explicit Step(ContextInstaller* context) : context_(context) { }
   virtual ~Step() { }
 
-  virtual Step::Status process() = 0;
-  virtual Step::Status undo() = 0;
-  virtual Step::Status clean() = 0;
+  virtual Status process() = 0;
+  virtual Status undo() = 0;
+  virtual Status clean() = 0;
 
  protected:
   ContextInstaller* context_;

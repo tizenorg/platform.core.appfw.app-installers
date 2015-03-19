@@ -13,7 +13,6 @@ SET(SRCS
   step/step_remove_files.cc
   step/step_revoke_security.cc
   step/step_register_security.cc
-  step/step_signal.cc
   step/step_unregister_app.cc
 )
 # Target - definition

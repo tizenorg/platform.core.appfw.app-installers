@@ -11,8 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "common/pkgmgr_signal.h"
-
 namespace common_installer {
 
 /** Template class for defining smart attributes.
@@ -78,25 +76,14 @@ class ContextInstaller {
   // uid of the user that request the operation
   Property<uid_t> uid;
 
-
   // data from config.xml
   Property<ConfigData> config_data;
-
-  // TODO(p.sikorski@samsung.com) change "pi" to Property
-  PkgmgrSignal* pi() const { return pi_.get(); }
-  void set_pi(std::unique_ptr<PkgmgrSignal> pi) {
-    pi_ = std::move(pi);
-  }
 
   // path for the applications directory
   Property<std::string> application_path;
 
   // path for the applications root directory
   Property<std::string> root_application_path;
-
- private :
-  // data used to send signal
-  std::unique_ptr<PkgmgrSignal> pi_;
 };
 
 }  // namespace common_installer

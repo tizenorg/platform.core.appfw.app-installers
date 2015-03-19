@@ -12,7 +12,6 @@
 #include "common/step/step_remove_files.h"
 #include "common/step/step_revoke_security.h"
 #include "common/step/step_register_security.h"
-#include "common/step/step_signal.h"
 #include "common/step/step_check_signature.h"
 #include "common/step/step_unregister_app.h"
 #include "common/step/step_unzip.h"
@@ -94,7 +93,6 @@ int Task::Install() {
   ai.AddStep<ci::unzip::StepUnzip>();
   ai.AddStep<ci::signature::StepCheckSignature>();
   ai.AddStep<tpk::step::StepParse>();
-  ai.AddStep<ci::signal::StepSignal>();
   ai.AddStep<ci::copy::StepCopy>();
   ai.AddStep<tpk::step::StepCreateSymbolicLink>();
   ai.AddStep<ci::security::StepRegisterSecurity>();
@@ -108,7 +106,6 @@ int Task::Uninstall() {
   ci::AppInstaller ai(pi_, kPkgType);
 
   ai.AddStep<ci::parse::StepParse>();
-  ai.AddStep<ci::signal::StepSignal>();
   ai.AddStep<ci::unregister_app::StepUnregisterApplication>();
   ai.AddStep<ci::remove::StepRemoveFiles>();
   ai.AddStep<ci::revoke_security::StepRevokeSecurity>();

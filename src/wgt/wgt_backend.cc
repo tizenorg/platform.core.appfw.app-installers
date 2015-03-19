@@ -20,7 +20,6 @@
 #include "common/step/step_remove_files.h"
 #include "common/step/step_revoke_security.h"
 #include "common/step/step_register_security.h"
-#include "common/step/step_signal.h"
 #include "common/step/step_check_signature.h"
 #include "common/step/step_unregister_app.h"
 #include "common/step/step_unzip.h"
@@ -48,7 +47,6 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::unzip::StepUnzip>();
       installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<wgt::parse::StepParse>();
-      installer.AddStep<ci::signal::StepSignal>();
       installer.AddStep<ci::copy::StepCopy>();
       installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
       installer.AddStep<ci::security::StepRegisterSecurity>();
@@ -58,7 +56,6 @@ int main(int argc, char** argv) {
     }
     case PKGMGR_REQ_UNINSTALL: {
       installer.AddStep<ci::parse::StepParse>();
-      installer.AddStep<ci::signal::StepSignal>();
       installer.AddStep<ci::unregister_app::StepUnregisterApplication>();
       installer.AddStep<ci::remove::StepRemoveFiles>();
       installer.AddStep<ci::revoke_security::StepRevokeSecurity>();
