@@ -8,6 +8,11 @@
 
 #include "utils/logging.h"
 
+// Redefine this value as it is not exported by pkgmgr
+// this should probably be in public interface because of
+// otherwise there is no way to return errorcode
+#define PKGMGR_INSTALLER_ERROR_KEY_STR "error"
+
 namespace common_installer {
 
 PkgmgrSignal::PkgmgrSignal(pkgmgr_installer* pi)
@@ -15,7 +20,7 @@ PkgmgrSignal::PkgmgrSignal(pkgmgr_installer* pi)
       state_(State::NOT_SENT) {
 }
 
-bool PkgmgrSignal::sendStarted(
+bool PkgmgrSignal::SendStarted(
     const std::string& type, const std::string& pkgid) {
   if (state_ != State::NOT_SENT) {
     return false;
@@ -32,13 +37,20 @@ bool PkgmgrSignal::sendStarted(
   return true;
 }
 
-bool PkgmgrSignal::sendFinished(
-    Result result, const std::string& type, const std::string& pkgid) {
+bool PkgmgrSignal::SendFinished(
+    Step::Status result, const std::string& type, const std::string& pkgid) {
   if (state_ != State::STARTED) {
     return false;
   }
+  if (result != Step::Status::OK) {
+    if (!SendSignal(
+        PKGMGR_INSTALLER_ERROR_KEY_STR,
+        std::to_string(static_cast<int>(result)).c_str(), type, pkgid)) {
+      return false;
+    }
+  }
   if (!SendSignal(
-        PKGMGR_INSTALLER_END_KEY_STR, GetResultKey(result), type, pkgid)) {
+      PKGMGR_INSTALLER_END_KEY_STR, GetResultKey(result), type, pkgid)) {
     return false;
   }
   state_ = State::FINISHED;
@@ -72,14 +84,12 @@ bool PkgmgrSignal::SendSignal(
   return true;
 }
 
-const char* PkgmgrSignal::GetResultKey(Result result) const {
+const char* PkgmgrSignal::GetResultKey(Step::Status result) const {
   switch (result) {
-    case Result::SUCCESS:
+    case Step::Status::OK:
       return PKGMGR_INSTALLER_OK_EVENT_STR;
-    case Result::FAILED:
-      return PKGMGR_INSTALLER_FAIL_EVENT_STR;
     default:
-      assert(false && "Not Reached");
+      return PKGMGR_INSTALLER_FAIL_EVENT_STR;
   }
 }
 

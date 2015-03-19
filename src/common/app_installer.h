@@ -7,6 +7,7 @@
 #include <list>
 #include <memory>
 
+#include "common/pkgmgr_signal.h"
 #include "common/step/step.h"
 #include "utils/logging.h"
 #include "utils/macros.h"
@@ -30,10 +31,11 @@ class AppInstaller {
   int Run();
 
  private:
-  void EnsureSignalSend();
-
   std::list<std::unique_ptr<Step>> steps_;
   std::unique_ptr<ContextInstaller> context_;
+
+  // data used to send signal
+  std::unique_ptr<PkgmgrSignal> pi_;
 
   SCOPE_LOG_TAG(AppInstaller)
 
