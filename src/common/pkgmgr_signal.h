@@ -34,6 +34,9 @@ class PkgmgrSignal {
   bool SendStarted(
       const std::string& type = std::string(),
       const std::string& pkgid = std::string());
+  bool SendProgress(int progress,
+      const std::string& type = std::string(),
+      const std::string& pkgid = std::string());
   bool SendFinished(
       Step::Status result,
       const std::string& type = std::string(),
