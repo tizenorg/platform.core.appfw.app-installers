@@ -9,6 +9,12 @@
 
 #define STR_EMPTY ""
 
+namespace {
+
+const unsigned kProgressRange = 100;
+
+}
+
 namespace common_installer {
 
 AppInstaller::AppInstaller(pkgmgr_installer *pi, const char* package_type)
@@ -39,7 +45,13 @@ int AppInstaller::Run() {
 
   Step::Status process_status = Step::Status::OK;
   int ret = 0;
-  for (; it != itEnd; ++it) {
+  unsigned total_steps = steps_.size();
+  pi_->SendProgress(0, context_->pkg_type.get(),
+      context_->pkgid.get());
+
+  unsigned current_step = 1;
+
+  for (; it != itEnd; ++it, ++current_step) {
     process_status = (*it)->process();
 
     // send START signal as soon as possible
@@ -54,7 +66,13 @@ int AppInstaller::Run() {
       ret = -1;
       break;
     }
+
+    // send installation progress
+    pi_->SendProgress(
+        current_step * kProgressRange / total_steps,
+        context_->pkg_type.get(), context_->pkgid.get());
   }
+
   if (it != itEnd) {
     LOG(ERROR) << "Failure occurs";
     do {

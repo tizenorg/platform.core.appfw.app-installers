@@ -37,6 +37,16 @@ bool PkgmgrSignal::SendStarted(
   return true;
 }
 
+bool PkgmgrSignal::SendProgress(int progress,
+    const std::string& type, const std::string& pkgid) {
+  if (state_ != State::STARTED) {
+    return false;
+  }
+
+  return SendSignal(PKGMGR_INSTALLER_INSTALL_PERCENT_KEY_STR,
+      std::to_string(progress).c_str(), type, pkgid);
+}
+
 bool PkgmgrSignal::SendFinished(
     Step::Status result, const std::string& type, const std::string& pkgid) {
   if (state_ != State::STARTED) {
