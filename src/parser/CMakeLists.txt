@@ -12,6 +12,7 @@ SET(SRCS
   manifest_handlers/metadata_handler.cc
   manifest_handlers/navigation_handler.cc
   manifest_handlers/permissions_handler.cc
+  manifest_handlers/service_handler.cc
   manifest_handlers/setting_handler.cc
   manifest_handlers/splash_screen_handler.cc
   manifest_handlers/tizen_application_handler.cc

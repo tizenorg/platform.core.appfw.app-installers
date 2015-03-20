@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cassert>
 #include <map>
+#include <regex>
 #include <vector>
 
 #include "utils/string_util.h"
@@ -55,6 +56,9 @@ const char* kSingletonElements[] = {
   "content-security-policy",
   "content"
 };
+
+const char kIdPattern[] = "\\A[0-9a-zA-Z]{10}[.][0-9a-zA-Z]{1,52}\\z";
+const char kPackagePattern[] = "\\A[0-9a-zA-Z]{10}\\z";
 
 }  // namespace
 
@@ -346,6 +350,16 @@ bf::path ApplicationURLToRelativeFilePath(const std::string& url) {
     return bf::path();
 
   return path;
+}
+
+bool ValidateTizenApplicationId(const std::string& id) {
+  std::regex id_regex(kIdPattern);
+  return std::regex_match(id, id_regex);
+}
+
+bool ValidateTizenPackageId(const std::string& id) {
+  std::regex package_regex(kPackagePattern);
+  return std::regex_match(id, package_regex);
 }
 
 }  // namespace parser

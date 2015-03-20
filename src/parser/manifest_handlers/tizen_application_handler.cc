@@ -7,12 +7,12 @@
 
 #include <cassert>
 #include <map>
-#include <regex>
 #include <utility>
 
 #include "utils/logging.h"
 #include "utils/values.h"
 #include "parser/application_manifest_constants.h"
+#include "parser/manifest_util.h"
 
 namespace {
 const char kTizenWebAPIVersion[] = "2.2";
@@ -88,20 +88,18 @@ bool TizenApplicationHandler::Validate(
       static_cast<const TizenApplicationInfo*>(
           application->GetManifestData(keys::kTizenApplicationKey));
 
-  const char kIdPattern[] = "\\A[0-9a-zA-Z]{10}[.][0-9a-zA-Z]{1,52}\\z";
-  const char kPackagePattern[] = "\\A[0-9a-zA-Z]{10}\\z";
-  std::regex package_regex(kPackagePattern);
-  std::regex id_regex(kIdPattern);
-  if (std::regex_search(app_info->id(), id_regex)) {
+  if (!ValidateTizenApplicationId(app_info->id())) {
     *error = "The id property of application element "
              "does not match the format\n";
     return false;
   }
-  if (std::regex_search(app_info->package(), package_regex)) {
+
+  if (!ValidateTizenPackageId(app_info->package())) {
     *error = "The package property of application element "
              "does not match the format\n";
     return false;
   }
+
   if (app_info->id().find(app_info->package()) != 0) {
     *error = "The application element property id "
              "does not start with package.\n";

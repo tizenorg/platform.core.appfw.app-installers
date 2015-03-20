@@ -17,6 +17,7 @@
 #include "parser/manifest_handlers/metadata_handler.h"
 #include "parser/manifest_handlers/navigation_handler.h"
 #include "parser/manifest_handlers/permissions_handler.h"
+#include "parser/manifest_handlers/service_handler.h"
 #include "parser/manifest_handlers/setting_handler.h"
 #include "parser/manifest_handlers/splash_screen_handler.h"
 #include "parser/manifest_handlers/tizen_application_handler.h"
@@ -109,6 +110,7 @@ ManifestHandlerRegistry::GetInstanceForWGT() {
   handlers.push_back(new SplashScreenHandler);
   handlers.push_back(new AppWidgetHandler);
   handlers.push_back(new AppControlHandler);
+  handlers.push_back(new ServiceHandler);
 
   widget_registry_ = new ManifestHandlerRegistry(handlers);
   return widget_registry_;

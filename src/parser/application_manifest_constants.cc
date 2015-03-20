@@ -146,6 +146,11 @@ const char kTizenImeLanguageTextKey[] = "#text";
 const char kTizenCategoryKey[] = "widget.category";
 const char kTizenCategoryNameKey[] = "@name";
 const char kTizenNamespacePrefix[] = "http://tizen.org/ns/widgets";
+// service
+const char kTizenServiceKey[] = "widget.service";
+const char kTizenServiceIdKey[] = "@id";
+const char kTizenServiceAutoRestartKey[] = "@auto-restart";
+const char kTizenServiceOnBootKey[] = "@on-boot";
 
 }  // namespace application_widget_keys
 

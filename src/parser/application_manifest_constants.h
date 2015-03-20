@@ -129,6 +129,10 @@ extern const char kTizenImeLanguageTextKey[];
 extern const char kTizenCategoryKey[];
 extern const char kTizenCategoryNameKey[];
 extern const char kTizenNamespacePrefix[];
+extern const char kTizenServiceKey[];
+extern const char kTizenServiceIdKey[];
+extern const char kTizenServiceAutoRestartKey[];
+extern const char kTizenServiceOnBootKey[];
 }  // namespace application_widget_keys
 
 

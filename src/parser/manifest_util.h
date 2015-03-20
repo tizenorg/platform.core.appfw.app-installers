@@ -33,6 +33,9 @@ bool IsTrimRequiredForProp(xmlNode* root, xmlAttr* prop);
 std::unique_ptr<utils::DictionaryValue> LoadXMLNode(
     xmlNode* root, const std::string& inherit_dir = "");
 
+bool ValidateTizenApplicationId(const std::string& id);
+bool ValidateTizenPackageId(const std::string& id);
+
 }  // namespace parser
 }  // namespace common_installer
 
