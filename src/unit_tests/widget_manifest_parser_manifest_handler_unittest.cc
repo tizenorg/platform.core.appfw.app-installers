@@ -12,6 +12,7 @@
 #include "utils/values.h"
 #include "parser/application_data.h"
 #include "parser/manifest_handler.h"
+#include "unit_tests/common/scoped_testing_manifest_handler_registry.h"
 
 namespace bf = boost::filesystem;
 
@@ -25,23 +26,6 @@ std::vector<std::string> SingleKey(const std::string& key) {
 }
 
 }  // namespace
-
-class ScopedTestingManifestHandlerRegistry {
- public:
-  ScopedTestingManifestHandlerRegistry(
-      const std::vector<ManifestHandler*>& handlers)
-      : registry_(new ManifestHandlerRegistry(handlers)),
-        prev_registry_(ManifestHandlerRegistry::GetInstance()) {
-    ManifestHandlerRegistry::SetInstanceForTesting(registry_);
-  }
-
-  ~ScopedTestingManifestHandlerRegistry() {
-    ManifestHandlerRegistry::SetInstanceForTesting(prev_registry_);
-  }
-
-  ManifestHandlerRegistry* registry_;
-  ManifestHandlerRegistry* prev_registry_;
-};
 
 class ManifestHandlerTest : public testing::Test {
  public:

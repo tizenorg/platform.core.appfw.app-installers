@@ -57,8 +57,8 @@ const char* kSingletonElements[] = {
   "content"
 };
 
-const char kIdPattern[] = "\\A[0-9a-zA-Z]{10}[.][0-9a-zA-Z]{1,52}\\z";
-const char kPackagePattern[] = "\\A[0-9a-zA-Z]{10}\\z";
+const char kIdPattern[] = "^[0-9a-zA-Z]{10}[.][0-9a-zA-Z]{1,52}$";
+const char kPackagePattern[] = "^[0-9a-zA-Z]{10}$";
 
 }  // namespace
 

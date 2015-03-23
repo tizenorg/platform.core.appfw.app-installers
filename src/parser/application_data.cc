@@ -82,7 +82,6 @@ std::string ApplicationData::GetBaseURLFromApplicationId(
 
 ApplicationData::ManifestData* ApplicationData::GetManifestData(
         const std::string& key) const {
-  assert(finished_parsing_manifest_);
   ManifestDataMap::const_iterator iter = manifest_data_.find(key);
   if (iter != manifest_data_.end())
     return iter->second.get();
@@ -91,7 +90,6 @@ ApplicationData::ManifestData* ApplicationData::GetManifestData(
 
 void ApplicationData::SetManifestData(const std::string& key,
     std::shared_ptr<ApplicationData::ManifestData> data) {
-  assert(!finished_parsing_manifest_);
   manifest_data_[key] = data;
 }
 
@@ -121,7 +119,6 @@ ApplicationData::ApplicationData(const bf::path& path,
     : manifest_version_(0),
       path_(path),
       manifest_(std::move(manifest)),
-      finished_parsing_manifest_(false),
       source_type_(source_type) {
   assert(path_.empty() || path_.is_absolute());
 }
@@ -138,7 +135,6 @@ bool ApplicationData::Init(const std::string& explicit_id,
     return false;
 
   application_url_ = ApplicationData::GetBaseURLFromApplicationId(ID());
-  finished_parsing_manifest_ = true;
   return true;
 }
 

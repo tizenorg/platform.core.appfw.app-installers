@@ -1,5 +1,7 @@
 SET(PRJ_PATH ..)
 
+ADD_SUBDIRECTORY("common")
+
 SET(TESTS
   values_unittest
   manifest_unittest
@@ -8,6 +10,7 @@ SET(TESTS
   string_util_unittest
   widget_manifest_parser_unittest
   xml_parser_unittest
+  service_handler_unittest
 )
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../)
@@ -26,6 +29,8 @@ ADD_EXECUTABLE(widget_manifest_parser_unittest
                widget_manifest_parser_unittest.cc)
 ADD_EXECUTABLE(xml_parser_unittest
                xml_parser_unittest.cc ../xml_parser/xml_parser.cc)
+ADD_EXECUTABLE(service_handler_unittest
+               service_handler_unittest.cc)
 
 INSTALL(DIRECTORY test_samples/ DESTINATION ${SHAREDIR}/app-installers-ut/test_samples)
 
@@ -45,11 +50,12 @@ ENDFOREACH(test)
 # GTEST_MAIN_LIBRARIES is needed.
 target_link_libraries(values_unittest PUBLIC ${TARGET_LIBNAME_UTILS} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(manifest_unittest PUBLIC ${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} ${GTEST_MAIN_LIBRARIES})
-target_link_libraries(manifest_handler_unittest PUBLIC ${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} ${GTEST_MAIN_LIBRARIES})
+target_link_libraries(manifest_handler_unittest PUBLIC ${GTEST_MAIN_LIBRARIES} ${TARGET_UNITTEST_COMMON})
 target_link_libraries(manifest_util_unittest PUBLIC ${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(string_util_unittest PUBLIC ${TARGET_LIBNAME_UTILS} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(widget_manifest_parser_unittest PUBLIC ${TARGET_LIBNAME_WIDGET_MANIFEST_PARSER} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(xml_parser_unittest PUBLIC ${TARGET_LIBNAME_XML_PARSER} ${GTEST_MAIN_LIBRARIES})
+target_link_libraries(service_handler_unittest PUBLIC ${GTEST_MAIN_LIBRARIES} ${TARGET_UNITTEST_COMMON})
 
 FOREACH(test ${TESTS})
 INSTALL(TARGETS ${test} DESTINATION ${BINDIR}/app-installers-ut)
