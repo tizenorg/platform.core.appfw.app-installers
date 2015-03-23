@@ -30,6 +30,7 @@ SET(TARGET_WGT_BACKEND "wgt-backend")
 SET(TARGET_XPK_BACKEND "xpk-backend")
 SET(TARGET_NATIVE_BACKEND "native-backend")
 SET(TARGET_TPK_BACKEND "tpk-backend")
+SET(TARGET_UNITTEST_COMMON "common-unittests")
 
 ADD_DEFINITIONS("-Wall")
 ADD_DEFINITIONS("-Wextra")

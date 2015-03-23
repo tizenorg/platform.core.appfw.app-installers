@@ -160,13 +160,13 @@ class ApplicationData : public std::enable_shared_from_this<ApplicationData> {
   // Stored parsed manifest data.
   ManifestDataMap manifest_data_;
 
-  // Set to true at the end of InitValue when initialization is finished.
-  bool finished_parsing_manifest_;
-
   // The source the application was loaded from.
   SourceType source_type_;
 
-//  DISALLOW_COPY_AND_ASSIGN(ApplicationData);
+  friend std::shared_ptr<ApplicationData> CreateApplicationDataForTest(
+      std::unique_ptr<Manifest> manifest);
+
+  DISALLOW_COPY_AND_ASSIGN(ApplicationData);
 };
 
 }  // namespace parser
