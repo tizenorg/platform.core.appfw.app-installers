@@ -202,7 +202,7 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
   // description
   SetChildren(&(p->description), tree, el, "description",
       [&](XmlElement *el, description_x* p){
-    // p->name = string_strdup(el->attr("name"));  // NOTE: not in spec
+    p->name = string_strdup(el->attr("name"));  // NOTE: not in spec
     p->text = string_strdup(el->content());
     p->lang = string_strdup(el->attr("xml:lang"));  // NOTE: not in spec
   });
@@ -266,22 +266,14 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
     SetChildren(&(p->icon), tree, el, "icon",
         [&](XmlElement *el, icon_x* p){
       p->text = string_strdup(el->content());
-      // NOTE: name is an attribute, but the xml writer uses it as text.
-      // This must be fixed in whole app-installer modules, including wgt.
-      // Current implementation is just for compatibility.
-      // p->name = string_strdup(el->attr("name"));
-      p->name = string_strdup(el->content());
+      p->name = string_strdup(el->attr("name"));
     });
 
     // label
     SetChildren(&(p->label), tree, el, "label",
         [&](XmlElement *el, label_x* p){
-      // NOTE: name is an attribute, but the xml writer uses it as text.
-      // This must be fixed in whole app-installer modules, including wgt.
-      // Current implementation is just for compatibility.
-      // p->name = string_strdup(el->attr("name"));
       p->text = string_strdup(el->content());
-      p->name = string_strdup(el->content());
+      p->name = string_strdup(el->attr("name"));
       p->lang = string_strdup(el->attr("xml:lang"));
     });
 
@@ -343,22 +335,14 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
     SetChildren(&(p->icon), tree, el, "icon",
         [&](XmlElement *el, icon_x* p){
       p->text = string_strdup(el->content());
-      // NOTE: name is an attribute, but the xml writer uses it as text.
-      // This must be fixed in whole app-installer modules, including wgt.
-      // Current implementation is just for compatibility.
-      // p->name = string_strdup(el->attr("name"));
-      p->name = string_strdup(el->content());
+      p->name = string_strdup(el->attr("name"));
     });
 
     // label
     SetChildren(&(p->label), tree, el, "label",
         [&](XmlElement *el, label_x* p){
-      // NOTE: name is an attribute, but the xml writer uses it as text.
-      // This must be fixed in whole app-installer modules, including wgt.
-      // Current implementation is just for compatibility.
-      // p->name = string_strdup(el->attr("name"));
       p->text = string_strdup(el->content());
-      p->name = string_strdup(el->content());
+      p->name = string_strdup(el->attr("name"));
       p->lang = string_strdup(el->attr("xml:lang"));
     });
 

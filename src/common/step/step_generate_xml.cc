@@ -74,9 +74,9 @@ Step::Status StepGenerateXml::process() {
       BAD_CAST context_->manifest_data()->version);
 
   if ( context_->manifest_data()->description &&
-      context_->manifest_data()->description->name )
+      context_->manifest_data()->description->text )
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
-        "%s", BAD_CAST context_->manifest_data()->description->name);
+        "%s", BAD_CAST context_->manifest_data()->description->text);
   else
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
         "%s", BAD_CAST "");
@@ -105,7 +105,7 @@ Step::Status StepGenerateXml::process() {
         BAD_CAST "true");
 
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
-        "%s", BAD_CAST ui->label->name);
+        "%s", BAD_CAST ui->label->text);
 
     // the icon is renamed to <appid.png>
     // and located in TZ_USER_ICON/TZ_SYS_ICON
@@ -115,9 +115,9 @@ Step::Status StepGenerateXml::process() {
 
     fs::path icon = fs::path(ui->appid) += fs::path(".png");
 
-    if (ui->icon && ui->icon->name) {
+    if (ui->icon && ui->icon->text) {
       fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(ui->appid)
-        / fs::path(ui->icon->name);
+        / fs::path(ui->icon->text);
       if (fs::exists(app_icon))
         fs::rename(app_icon, icon_path_ /= icon);
     } else {
@@ -175,7 +175,7 @@ Step::Status StepGenerateXml::process() {
         BAD_CAST svc->type);
     if (svc->label) {
       xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
-          "%s", BAD_CAST svc->label->name);
+          "%s", BAD_CAST svc->label->text);
     }
 
     // the icon is renamed to <appid.png>
@@ -185,9 +185,9 @@ Step::Status StepGenerateXml::process() {
     utils::CreateDir(icon_path_);
     fs::path icon = fs::path(svc->appid) += fs::path(".png");
 
-    if (svc->icon && svc->icon->name) {
+    if (svc->icon && svc->icon->text) {
       fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(svc->appid)
-          / fs::path(svc->icon->name);
+          / fs::path(svc->icon->text);
       if (fs::exists(app_icon))
         fs::rename(app_icon, icon_path_ /= icon);
     } else {

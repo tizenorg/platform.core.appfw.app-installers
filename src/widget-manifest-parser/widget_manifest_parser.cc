@@ -132,16 +132,16 @@ bool WidgetManifestParser::FillManifestX(manifest_x* manifest) {
       (calloc(1, sizeof(description_x)));
   std::string name;
   wgt_info->GetWidgetInfo()->GetString(kName, &name);
-  description->name = strdup(name.c_str());
+  description->text = strdup(name.c_str());
   manifest->description = description;
   manifest->label =
       reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
-  manifest->label->name = strdup(name.c_str());
+  manifest->label->text = strdup(name.c_str());
 
   // icons
   for (std::string icon_str : icons) {
     icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
-    icon->name = strdup(icon_str.c_str());
+    icon->text = strdup(icon_str.c_str());
     LISTADD(manifest->icon, icon);
   }
 
@@ -174,15 +174,15 @@ bool WidgetManifestParser::FillManifestX(manifest_x* manifest) {
 
   // For wgt package use the long name if the short name is empty
   if (!short_name_.empty())
-    manifest->uiapplication->label->name = strdup(short_name_.c_str());
+    manifest->uiapplication->label->text = strdup(short_name_.c_str());
   else
-    manifest->uiapplication->label->name =
-        strdup(manifest->description->name);
+    manifest->uiapplication->label->text =
+        strdup(manifest->description->text);
 
   manifest->uiapplication->icon =
       reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
   if (manifest->icon)
-    manifest->uiapplication->icon->name = strdup(manifest->icon->name);
+    manifest->uiapplication->icon->text = strdup(manifest->icon->text);
   manifest->uiapplication->next = nullptr;
   return true;
 }

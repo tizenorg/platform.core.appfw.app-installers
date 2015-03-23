@@ -39,7 +39,7 @@ common_installer::Step::Status StepParse::process() {
 
   // Copy data from ManifestData to ContextInstaller
   context_->config_data()->set_application_name(
-      std::string(manifest->uiapplication->label->name));
+      std::string(manifest->uiapplication->label->text));
   context_->config_data()->set_required_version(
       std::string(parser_->GetRequiredAPIVersion()));
   context_->set_pkgid(
@@ -48,10 +48,12 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << " Read data -[ ";
   LOG(DEBUG) << "  package     = " <<  manifest->package;
   LOG(DEBUG) << "  id          = " <<  manifest->mainapp_id;
-  LOG(DEBUG) << "  name        = " <<  manifest->description->name;
+  LOG(DEBUG) << "  name        = " <<  context_->config_data()->
+      application_name();
+  LOG(DEBUG) << "  description = " <<  manifest->description->text;
   LOG(DEBUG) << "  short_name  = " <<  parser_->GetShortName();
   LOG(DEBUG) << "  version     = " <<  manifest->version;
-  LOG(DEBUG) << "  icon        = " <<  manifest->uiapplication->icon->name;
+  LOG(DEBUG) << "  icon        = " <<  manifest->uiapplication->icon->text;
   LOG(DEBUG) << "  api_version = " <<  parser_->GetRequiredAPIVersion();
   LOG(DEBUG) << "  privileges -[";
   privilege_x* first = manifest->privileges->privilege;
