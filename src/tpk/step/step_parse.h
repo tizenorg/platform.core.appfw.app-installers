@@ -23,8 +23,9 @@ class StepParse : public common_installer::Step {
       const boost::filesystem::path& dir);
   bool SetContextByManifestParser(xml_parser::XmlTree* tree);
   bool SetPkgInfoManifest(manifest_x* m,
-      xml_parser::XmlTree* tree,
-      xml_parser::XmlElement* manifest);
+      xml_parser::XmlTree* tree, xml_parser::XmlElement* manifest);
+  bool SetPkgInfoChildren(manifest_x *m,
+      xml_parser::XmlTree *tree, xml_parser::XmlElement* manifest);
 };
 
 }  // namespace step
