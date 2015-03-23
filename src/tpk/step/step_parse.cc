@@ -26,7 +26,7 @@ namespace {
       XmlElement* parent, const string element_name) {
     vector<XmlElement*> v = tree->Children(parent, element_name);
     if (v.size() < 1) {
-      LOG(INFO) << element_name << " is not found as a child of " <<
+      LOG(DEBUG) << element_name << " is not found as a child of " <<
           parent->name();
       return nullptr;
     }
@@ -36,12 +36,31 @@ namespace {
   const char* string_strdup(const string &s) {
     static const string nullstr = XmlElement::null_string();
     if (s == XmlElement::null_string()) {
-      LOG(DEBUG) << "it is null_string";
       return nullptr;
     }
     return strdup(s.c_str());
   }
 
+  // Set child element's data structure, based on given parent and
+  // children name.
+  // setter's arguments
+  //     T*: Child data structure's pointer
+  //     L: setter function(XmlElement* element, T* child_struct)
+  //     tree: tree pointer
+  //     parent: parent XmlElement object
+  //     childName: child name
+  //     setter : child element setter (lambda function)
+  template <typename T, typename L>
+    bool SetChildren(T** listptr, XmlTree* tree, XmlElement* parent,
+        const char* childName, L setter) {
+      vector<XmlElement*> v = tree->Children(parent, childName);
+      for (auto& el : v) {
+        T* p = static_cast<T*>(calloc(1, sizeof(T)));
+        setter(el, p);
+        LISTADD(*listptr, p);
+      }
+      return true;
+    }
 
 }  // namespace
 
@@ -141,7 +160,7 @@ bool StepParse::SetPkgInfoManifest(manifest_x* m,
   // Get required elements
   XmlElement* ui_application = Get1stChild(tree, manifest, "ui-application");
   if (!ui_application) {
-    LOG(ERROR) << "No mandatory ui-application element in manifest xml";
+    LOG(ERROR) << "No <ui-application> element is found in manifest xml";
     return false;
   }
 
@@ -149,6 +168,8 @@ bool StepParse::SetPkgInfoManifest(manifest_x* m,
   m->package = string_strdup(manifest->attr("package"));
   m->type = strdup("tpk");
   m->version = string_strdup(manifest->attr("version"));
+  m->installlocation = string_strdup(manifest->attr("install-location"));
+
   m->mainapp_id = string_strdup(ui_application->attr("appid"));
 
   // manifest' attribute from children's values
@@ -157,66 +178,199 @@ bool StepParse::SetPkgInfoManifest(manifest_x* m,
     m->label =  static_cast<label_x*>(calloc(1, sizeof(label_x)));
     m->label->name = string_strdup(label->content());
   }
-  XmlElement* description = Get1stChild(tree, manifest, "description");
-  if (description) {
-    m->description =  static_cast<description_x*>
-      (calloc(1, sizeof(description_x)));
-    m->description->name = string_strdup(description->content());
-  }
 
   // Set children elements
   return SetPkgInfoChildren(m, tree, manifest);
 }
 
-bool StepParse::SetPkgInfoChildren(manifest_x *m,
-    XmlTree *tree, XmlElement* manifest) {
+// Read and feel struct hierarchy
+// The spec of tizen-manifest is referred from Tizen 2.2.1 header.
+bool StepParse::SetPkgInfoChildren(manifest_x* m,
+    XmlTree* tree, XmlElement* manifest) {
+  manifest_x* p = m;
+  XmlElement* el = manifest;
 
-  // Privileges
-  XmlElement* privileges = Get1stChild(tree, manifest, "privileges");
-  if (privileges) {
-    m->privileges = static_cast<privileges_x*>
-        (calloc(1, sizeof(privileges_x)));
+  // author
+  SetChildren(&(p->author), tree, el, "author",
+      [&](XmlElement *el, author_x* p){
+    p->email = string_strdup(el->attr("email"));
+    p->href = string_strdup(el->attr("href"));
+    p->text = string_strdup(el->content());
+    // p->lang = string_strdup(el->attr("xml:lang")); // NOTE: not in spec
+  });
 
-    vector<XmlElement*> v_priv = tree->Children(privileges, "privilege");
-    for (auto& privilege : v_priv) {
-      privilege_x *p =
-          static_cast<privilege_x *>(calloc(1, sizeof(privilege_x)));
-      // privilege data text
-      p->text = string_strdup(privilege->content());
-      LISTADD(m->privileges->privilege, p);
-      LOG(INFO) << "Add a privilege: " << p->text;
-    }
-  }
+  // description
+  SetChildren(&(p->description), tree, el, "description",
+      [&](XmlElement *el, description_x* p){
+    // p->name = string_strdup(el->attr("name"));  // NOTE: not in spec
+    p->text = string_strdup(el->content());
+    p->lang = string_strdup(el->attr("xml:lang"));  // NOTE: not in spec
+  });
+
+  // privileges
+  SetChildren(&(p->privileges), tree, el, "privileges",
+      [&](XmlElement *el, privileges_x* p){
+    // privilge
+    SetChildren(&(p->privilege), tree, el, "privilege",
+      [&](XmlElement *el, privilege_x* p){
+        p->text = string_strdup(el->content());
+        LOG(DEBUG) << "Add a privilege: " << p->text;
+    });
+  });
 
   // service-application
-  m->serviceapplication = nullptr;  // NOTE: ignore service application
+  SetChildren(&(p->serviceapplication), tree, el, "service-application",
+      [&](XmlElement *el, serviceapplication_x* p){
+    p->appid = string_strdup(el->attr("appid"));
+    p->autorestart = string_strdup(el->attr("auto-restart"));
+    p->exec = string_strdup(el->attr("exec"));
+    p->onboot = string_strdup(el->attr("on-boot"));
+    p->type = string_strdup(el->attr("type"));
+
+    // app-control
+    SetChildren(&(p->appcontrol), tree, el, "app-control",
+        [&](XmlElement *el, appcontrol_x* p){
+      p->text = string_strdup(el->content());
+
+      // mime
+      SetChildren(&(p->mime), tree, el, "mime",
+          [&](XmlElement *el, mime_x* p){
+        p->text = string_strdup(el->content());
+        p->name = string_strdup(el->attr("name"));
+      });
+
+      // operation
+      SetChildren(&(p->operation), tree, el, "operation",
+          [&](XmlElement *el, operation_x* p){
+        p->text = string_strdup(el->content());
+        p->name = string_strdup(el->attr("name"));
+      });
+
+      // uri
+      SetChildren(&(p->uri), tree, el, "uri",
+          [&](XmlElement *el, uri_x* p){
+        p->text = string_strdup(el->content());
+        p->name = string_strdup(el->attr("name"));
+      });
+    });
+
+    // datacontrol
+    SetChildren(&(p->datacontrol), tree, el, "datacontrol",
+        [&](XmlElement *el, datacontrol_x* p){
+      p->access = string_strdup(el->attr("access"));
+      p->providerid = string_strdup(el->attr("providerid"));
+      p->type = string_strdup(el->attr("type"));
+    });
+
+    // icon
+    SetChildren(&(p->icon), tree, el, "icon",
+        [&](XmlElement *el, icon_x* p){
+      p->text = string_strdup(el->content());
+      // NOTE: name is an attribute, but the xml writer uses it as text.
+      // This must be fixed in whole app-installer modules, including wgt.
+      // Current implementation is just for compatibility.
+      // p->name = string_strdup(el->attr("name"));
+      p->name = string_strdup(el->content());
+    });
+
+    // label
+    SetChildren(&(p->label), tree, el, "label",
+        [&](XmlElement *el, label_x* p){
+      // NOTE: name is an attribute, but the xml writer uses it as text.
+      // This must be fixed in whole app-installer modules, including wgt.
+      // Current implementation is just for compatibility.
+      // p->name = string_strdup(el->attr("name"));
+      p->text = string_strdup(el->content());
+      p->name = string_strdup(el->content());
+      p->lang = string_strdup(el->attr("xml:lang"));
+    });
+
+    // metadata
+    SetChildren(&(p->metadata), tree, el, "metadata",
+        [&](XmlElement *el, metadata_x* p){
+      p->key = string_strdup(el->attr("key"));
+      p->value = string_strdup(el->attr("value"));
+    });
+  });
 
   // ui-application
-  XmlElement* ui_application = Get1stChild(tree, manifest, "ui-application");
-  if (ui_application) {
-    m->uiapplication = static_cast<uiapplication_x*>
-      (calloc (1, sizeof(uiapplication_x)));
+  SetChildren(&(p->uiapplication), tree, el, "ui-application",
+      [&](XmlElement *el, uiapplication_x* p){
+    p->appid = string_strdup(el->attr("appid"));
+    p->exec = string_strdup(el->attr("exec"));
+    p->multiple = string_strdup(el->attr("multiple"));
+    p->nodisplay = string_strdup(el->attr("nodisplay"));
+    p->taskmanage = string_strdup(el->attr("taskmanage"));
+    p->type = string_strdup(el->attr("type"));
+    // NOTE: onboot and auto-restart are in spec, but not in uiapplication_x
 
-    m->uiapplication->appid = string_strdup(ui_application->attr("appid"));
-    m->uiapplication->exec = string_strdup(ui_application->attr("exec"));
-    m->uiapplication->type = string_strdup(ui_application->attr("type"));
+    // app-control
+    SetChildren(&(p->appcontrol), tree, el, "app-control",
+        [&](XmlElement *el, appcontrol_x* p){
+      p->text = string_strdup(el->content());
 
-    LOG(DEBUG) << "appid=" << m->uiapplication->appid <<
-        ", exec=" << m->uiapplication->exec <<
-        ", type=" << m->uiapplication->type;
-    XmlElement* label = Get1stChild(tree, ui_application, "label");
-    if (label) {
-      m->uiapplication->label = static_cast<label_x*>
-          (calloc(1, sizeof(label_x)));
-      m->uiapplication->label->name = string_strdup(label->content());
-    }
-    XmlElement* icon = Get1stChild(tree, ui_application, "icon");
-    if (icon) {
-      m->uiapplication->icon = static_cast<icon_x*>
-          (calloc(1, sizeof(icon_x)));
-      m->uiapplication->icon->name = string_strdup(icon->content());
-    }
-  }
+      // mime
+      SetChildren(&(p->mime), tree, el, "mime",
+          [&](XmlElement *el, mime_x* p){
+        p->text = string_strdup(el->content());
+        p->name = string_strdup(el->attr("name"));
+      });
+
+      // operation
+      SetChildren(&(p->operation), tree, el, "operation",
+          [&](XmlElement *el, operation_x* p){
+        p->text = string_strdup(el->content());
+        p->name = string_strdup(el->attr("name"));
+      });
+
+      // uri
+      SetChildren(&(p->uri), tree, el, "uri",
+          [&](XmlElement *el, uri_x* p){
+        p->text = string_strdup(el->content());
+        p->name = string_strdup(el->attr("name"));
+      });
+    });
+
+    // datacontrol
+    SetChildren(&(p->datacontrol), tree, el, "datacontrol",
+        [&](XmlElement *el, datacontrol_x* p){
+      p->access = string_strdup(el->attr("access"));
+      p->providerid = string_strdup(el->attr("providerid"));
+      p->type = string_strdup(el->attr("type"));
+    });
+
+    // icon
+    SetChildren(&(p->icon), tree, el, "icon",
+        [&](XmlElement *el, icon_x* p){
+      p->text = string_strdup(el->content());
+      // NOTE: name is an attribute, but the xml writer uses it as text.
+      // This must be fixed in whole app-installer modules, including wgt.
+      // Current implementation is just for compatibility.
+      // p->name = string_strdup(el->attr("name"));
+      p->name = string_strdup(el->content());
+    });
+
+    // label
+    SetChildren(&(p->label), tree, el, "label",
+        [&](XmlElement *el, label_x* p){
+      // NOTE: name is an attribute, but the xml writer uses it as text.
+      // This must be fixed in whole app-installer modules, including wgt.
+      // Current implementation is just for compatibility.
+      // p->name = string_strdup(el->attr("name"));
+      p->text = string_strdup(el->content());
+      p->name = string_strdup(el->content());
+      p->lang = string_strdup(el->attr("xml:lang"));
+    });
+
+    // metadata
+    SetChildren(&(p->metadata), tree, el, "metadata",
+        [&](XmlElement *el, metadata_x* p){
+      p->key = string_strdup(el->attr("key"));
+      p->value = string_strdup(el->attr("value"));
+    });
+  });
+
+
   return true;
 }
 
