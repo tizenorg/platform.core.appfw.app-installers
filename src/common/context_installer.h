@@ -60,6 +60,9 @@ class ContextInstaller {
   //  manifest information used to generate xml file
   Property<manifest_x*> manifest_data;
 
+  //  manifest information used to revert an update
+  Property<manifest_x*> old_manifest_data;
+
   // path to manifest xml file used to register data in databases
   Property<boost::filesystem::path> xml_path;
 
