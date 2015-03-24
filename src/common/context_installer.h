@@ -66,6 +66,9 @@ class ContextInstaller {
   // path to manifest xml file used to register data in databases
   Property<boost::filesystem::path> xml_path;
 
+  // path to old manifest xml while updating
+  Property<boost::filesystem::path> backup_xml_path;
+
   // pkgid used for update or uninstallation processing
   Property<std::string> pkgid;
 
