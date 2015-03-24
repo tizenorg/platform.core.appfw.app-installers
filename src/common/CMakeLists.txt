@@ -18,6 +18,7 @@ SET(SRCS
   step/step_revoke_security.cc
   step/step_register_security.cc
   step/step_unregister_app.cc
+  step/step_update_app.cc
   step/step_update_security.cc
 )
 # Target - definition
