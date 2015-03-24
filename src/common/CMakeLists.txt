@@ -11,6 +11,7 @@ SET(SRCS
   step/step_copy.cc
   step/step_generate_xml.cc
   step/step_register_app.cc
+  step/step_old_manifest.cc
   step/step_parse.cc
   step/step_remove_files.cc
   step/step_revoke_security.cc
