@@ -14,10 +14,7 @@
 
 namespace {
 
-const char kAilInit[] = "usr/bin/ail_initdb_user";
-const char kAilInitUser[] = "usr/bin/ail_initdb";
-const char kPkgInit[] = "/usr/bin/pkg_initdb";
-const char kPkgInitUser[] = "/usr/bin/pkg_initdb_user";
+const char* const kAppinstTags[] = {"removable=true", nullptr, };
 
 }  // anonymous namespace
 
@@ -43,7 +40,6 @@ Step::Status StepRegisterApplication::precheck() {
 }
 
 Step::Status StepRegisterApplication::process() {
-  const char* const appinst_tags[] = {"removable=true", nullptr, };
   // TODO(sdi2): Check if data->removable is correctly setting
   // during parsing step.
   // Same check should be done for preload field.
@@ -54,15 +50,17 @@ Step::Status StepRegisterApplication::process() {
   int ret = context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       pkgmgr_parser_parse_usr_manifest_for_installation(
           context_->xml_path.get().c_str(), context_->uid.get(),
-          const_cast<char* const*>(appinst_tags)) :
+          const_cast<char* const*>(kAppinstTags)) :
       pkgmgr_parser_parse_manifest_for_installation(
           context_->xml_path.get().c_str(),
-          const_cast<char* const*>(appinst_tags));
+          const_cast<char* const*>(kAppinstTags));
 
-  if (ret != 0) {
+  if (ret) {
     LOG(ERROR) << "Failed to record package into database";
     return Step::Status::ERROR;
   }
+  in_registry_ = true;
+
   LOG(INFO) << "Successfully install the application";
   return Status::OK;
 }
@@ -72,33 +70,21 @@ Step::Status StepRegisterApplication::clean() {
 }
 
 Step::Status StepRegisterApplication::undo() {
-  if (context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
-    const char* ail_cmd[] = {kAilInitUser, nullptr};
-    const char* pkgmgr_cmd[] = {kPkgInitUser, nullptr};
+  if (in_registry_) {
+    int ret = context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+        pkgmgr_parser_parse_usr_manifest_for_uninstallation(
+            context_->xml_path.get().c_str(), context_->uid.get(),
+            const_cast<char* const*>(kAppinstTags)) :
+        pkgmgr_parser_parse_manifest_for_uninstallation(
+            context_->xml_path.get().c_str(),
+            const_cast<char* const*>(kAppinstTags));
 
-    if (execv(ail_cmd[0], const_cast<char* const*>(ail_cmd)) == -1) {
-      LOG(ERROR) << "Error during execv: " << ail_cmd[0];
+    if (ret) {
+      LOG(ERROR) << "Failed to restore old content pkgmgr database";
       return Step::Status::ERROR;
     }
-    if (execv(pkgmgr_cmd[0], const_cast<char* const*>(pkgmgr_cmd)) == -1) {
-      LOG(ERROR) << "Error during execv: " << pkgmgr_cmd[0];
-      return Step::Status::ERROR;
-    }
-  } else {
-    const char* ail_cmd[] = {kAilInit, nullptr};
-    const char* pkgmgr_cmd[] = {kPkgInit, nullptr};
-
-    if (execv(ail_cmd[0], const_cast<char* const*>(ail_cmd)) == -1) {
-      LOG(ERROR) << "Error during execv: " << ail_cmd[0];
-      return Step::Status::ERROR;
-    }
-    if (execv(pkgmgr_cmd[0], const_cast<char* const*>(pkgmgr_cmd)) == -1) {
-      LOG(ERROR) << "Error during execv: " << pkgmgr_cmd[0];
-      return Step::Status::ERROR;
-    }
+    LOG(INFO) << "Successfuly clean database";
   }
-
-  LOG(INFO) << "Successfuly clean database";
   return Status::OK;
 }
 

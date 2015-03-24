@@ -12,12 +12,17 @@ namespace register_app {
 
 class StepRegisterApplication : public Step {
  public:
-  using Step::Step;
+  explicit StepRegisterApplication(ContextInstaller* context)
+      : Step(context),
+        in_registry_(false) { }
 
   Status process() override;
   Status clean() override;
   Status undo() override;
   Status precheck() override;
+
+ private:
+  bool in_registry_;
 
   SCOPE_LOG_TAG(Record)
 };
