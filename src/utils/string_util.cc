@@ -48,7 +48,7 @@ const char* kWhitespaceSequences[] = {
 
 // Calculates length of UTF-8 character by checking first byte only
 int UTF8CharLength(const char* character) {
-  if (character[0] < 0x80)
+  if (!(character[0] & 0x80))
       return 1;
   int length = 0;
   unsigned char mask = 0x80;
