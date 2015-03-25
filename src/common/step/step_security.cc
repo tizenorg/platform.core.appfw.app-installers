@@ -19,14 +19,5 @@ Step::Status StepSecurity::process() {
   return Status::OK;
 }
 
-Step::Status StepSecurity::undo() {
-  if (!UnregisterSecurityContextForApps(
-      context_->pkgid(), context_->manifest_data())) {
-    return Status::ERROR;
-  }
-  LOG(DEBUG) << "Security context uninstalled";
-  return Status::OK;
-}
-
 }  // namespace security
 }  // namespace common_installer

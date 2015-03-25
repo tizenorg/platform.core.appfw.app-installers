@@ -19,6 +19,7 @@
 #include "common/step/step_record.h"
 #include "common/step/step_remove.h"
 #include "common/step/step_revoke_security.h"
+#include "common/step/step_rollback_security.h"
 #include "common/step/step_security.h"
 #include "common/step/step_signal.h"
 #include "common/step/step_signature.h"
@@ -49,6 +50,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::signature::StepSignature>();
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::signal::StepSignal>();
+      installer.AddStep<ci::rollback_security::StepRollbackSecurity>();
       installer.AddStep<ci::copy::StepCopy>();
       installer.AddStep<wgt::symbolic_link::StepSymbolicLink>();
       installer.AddStep<ci::security::StepSecurity>();

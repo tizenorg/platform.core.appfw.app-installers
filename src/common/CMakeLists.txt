@@ -12,6 +12,7 @@ SET(SRCS
   step/step_parse.cc
   step/step_remove.cc
   step/step_revoke_security.cc
+  step/step_rollback_security.cc
   step/step_security.cc
   step/step_signal.cc
   step/step_unregister.cc

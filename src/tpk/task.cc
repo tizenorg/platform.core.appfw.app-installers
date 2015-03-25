@@ -11,6 +11,7 @@
 #include "common/step/step_record.h"
 #include "common/step/step_remove.h"
 #include "common/step/step_revoke_security.h"
+#include "common/step/step_rollback_security.h"
 #include "common/step/step_security.h"
 #include "common/step/step_signal.h"
 #include "common/step/step_signature.h"
@@ -95,6 +96,7 @@ int Task::Install() {
   ai.AddStep<ci::signature::StepSignature>();
   ai.AddStep<tpk::step::StepParse>();
   ai.AddStep<ci::signal::StepSignal>();
+  ai.AddStep<ci::rollback_security::StepRollbackSecurity>();
   ai.AddStep<ci::copy::StepCopy>();
   ai.AddStep<tpk::step::StepSymbolicLink>();
   ai.AddStep<ci::security::StepSecurity>();
