@@ -70,6 +70,9 @@ bool CopyDir(const fs::path& src, const fs::path& dst) {
         if (!CopyDir(current, dst / current.filename())) {
           return false;
         }
+      } else if (fs::is_symlink(current)) {
+        // Found symlink
+        fs::copy_symlink(current, dst / current.filename());
       } else {
         // Found file: Copy
         fs::copy_file(current, dst / current.filename());
