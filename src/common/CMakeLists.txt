@@ -5,6 +5,7 @@ SET(SRCS
   pkgmgr_interface.cc
   pkgmgr_signal.cc
   security_registration.cc
+  step/step_backup_icons.cc
   step/step_backup_manifest.cc
   step/step_unzip.cc
   step/step_check_signature.cc
