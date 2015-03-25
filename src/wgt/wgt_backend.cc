@@ -8,16 +8,22 @@
 #include "common/app_installer.h"
 #include "common/pkgmgr_interface.h"
 #include "common/step/step_configure.h"
+#include "common/step/step_backup_manifest.h"
+#include "common/step/step_backup_icons.h"
 #include "common/step/step_copy.h"
+#include "common/step/step_copy_backup.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_parse.h"
 #include "common/step/step_register_app.h"
 #include "common/step/step_remove_files.h"
 #include "common/step/step_revoke_security.h"
 #include "common/step/step_register_security.h"
+#include "common/step/step_old_manifest.h"
 #include "common/step/step_check_signature.h"
 #include "common/step/step_unregister_app.h"
 #include "common/step/step_unzip.h"
+#include "common/step/step_update_app.h"
+#include "common/step/step_update_security.h"
 #include "wgt/step/step_parse.h"
 #include "wgt/step/step_create_symbolic_link.h"
 
@@ -30,7 +36,6 @@ int main(int argc, char** argv) {
     LOG(ERROR) << "Cannot connect to PkgMgrInstaller";
     return -result;
   }
-
   ci::PkgMgrPtr pkgmgr = ci::PkgMgrInterface::Instance();
 
   ci::AppInstaller installer("wgt");
@@ -46,6 +51,21 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
       installer.AddStep<ci::register_app::StepRegisterApplication>();
       installer.AddStep<ci::security::StepRegisterSecurity>();
+      break;
+    }
+    case ci::PkgMgrInterface::Type::Update: {
+      installer.AddStep<ci::configure::StepConfigure>();
+      installer.AddStep<ci::unzip::StepUnzip>();
+      installer.AddStep<ci::signature::StepCheckSignature>();
+      installer.AddStep<wgt::parse::StepParse>();
+      installer.AddStep<ci::old_manifest::StepOldManifest>();
+      installer.AddStep<ci::backup_manifest::StepBackupManifest>();
+      installer.AddStep<ci::backup_icons::StepBackupIcons>();
+      installer.AddStep<ci::copy_backup::StepCopyBackup>();
+      installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
+      installer.AddStep<ci::update_security::StepUpdateSecurity>();
+      installer.AddStep<ci::generate_xml::StepGenerateXml>();
+      installer.AddStep<ci::update_app::StepUpdateApplication>();
       break;
     }
     case ci::PkgMgrInterface::Type::Uninstall: {

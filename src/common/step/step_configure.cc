@@ -26,14 +26,18 @@ Step::Status StepConfigure::process() {
       context_->file_path.set(pkgmgr->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       break;
+    case PkgMgrInterface::Type::Update:
+      context_->file_path.set(pkgmgr->GetRequestInfo());
+      context_->pkgid.set(kStrEmpty);
+      break;
     case PkgMgrInterface::Type::Uninstall:
       context_->pkgid.set(pkgmgr->GetRequestInfo());
       context_->file_path.set(kStrEmpty);
       break;
     default:
-      // currently, only installation and uninstallation handled
       // TODO(p.sikorski): should return unsupported, and display error
-      LOG(ERROR) << "Only installation and uninstallation is now supported";
+      LOG(ERROR) <<
+          "Only installation, update and uninstallation is now supported";
       return Status::ERROR;
       break;
   }

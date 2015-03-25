@@ -17,6 +17,7 @@ class Task {
 
  private:
   int Install();
+  int Update();
   int Uninstall();
   int Reinstall();
 };  //  class Task

@@ -6,8 +6,12 @@
 #include "common/pkgmgr_interface.h"
 #include "common/app_installer.h"
 #include "common/step/step_configure.h"
+#include "common/step/step_backup_icons.h"
+#include "common/step/step_backup_manifest.h"
 #include "common/step/step_copy.h"
+#include "common/step/step_copy_backup.h"
 #include "common/step/step_generate_xml.h"
+#include "common/step/step_old_manifest.h"
 #include "common/step/step_parse.h"
 #include "common/step/step_register_app.h"
 #include "common/step/step_remove_files.h"
@@ -16,6 +20,8 @@
 #include "common/step/step_check_signature.h"
 #include "common/step/step_unregister_app.h"
 #include "common/step/step_unzip.h"
+#include "common/step/step_update_app.h"
+#include "common/step/step_update_security.h"
 #include "tpk/step/step_parse.h"
 #include "tpk/step/step_create_symbolic_link.h"
 #include "utils/logging.h"
@@ -62,6 +68,9 @@ bool Task::Run() {
     case ci::PkgMgrInterface::Type::Install:
       ret = Install();
       break;
+    case ci::PkgMgrInterface::Type::Update:
+      ret = Update();
+      break;
     case ci::PkgMgrInterface::Type::Uninstall:
       ret = Uninstall();
       break;
@@ -90,6 +99,25 @@ int Task::Install() {
   ai.AddStep<ci::security::StepRegisterSecurity>();
   ai.AddStep<ci::generate_xml::StepGenerateXml>();
   ai.AddStep<ci::register_app::StepRegisterApplication>();
+
+  return ai.Run();
+}
+
+int Task::Update() {
+  ci::AppInstaller ai(kPkgType);
+
+  ai.AddStep<ci::configure::StepConfigure>();
+  ai.AddStep<ci::unzip::StepUnzip>();
+  ai.AddStep<ci::signature::StepCheckSignature>();
+  ai.AddStep<tpk::step::StepParse>();
+  ai.AddStep<ci::old_manifest::StepOldManifest>();
+  ai.AddStep<ci::backup_manifest::StepBackupManifest>();
+  ai.AddStep<ci::backup_icons::StepBackupIcons>();
+  ai.AddStep<ci::copy_backup::StepCopyBackup>();
+  ai.AddStep<tpk::step::StepCreateSymbolicLink>();
+  ai.AddStep<ci::update_security::StepUpdateSecurity>();
+  ai.AddStep<ci::generate_xml::StepGenerateXml>();
+  ai.AddStep<ci::update_app::StepUpdateApplication>();
 
   return ai.Run();
 }

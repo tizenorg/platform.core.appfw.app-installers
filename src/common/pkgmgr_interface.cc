@@ -51,6 +51,8 @@ PkgMgrInterface::Type PkgMgrInterface::GetRequestType() const {
   switch (pkgmgr_installer_get_request_type(pi_)) {
     case PKGMGR_REQ_INSTALL:
       return PkgMgrInterface::Type::Install;
+    case PKGMGR_REQ_UPGRADE:
+      return PkgMgrInterface::Type::Update;
     case PKGMGR_REQ_UNINSTALL:
       return PkgMgrInterface::Type::Uninstall;
     case PKGMGR_REQ_REINSTALL:

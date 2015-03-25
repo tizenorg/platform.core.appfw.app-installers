@@ -27,10 +27,11 @@ class PkgMgrInterface {
   /** Request type received from pkgmgr_installer
    */
   enum class Type {
-       Unknown,
-       Install,
-       Uninstall,
-       Reinstall
+    Unknown,
+    Install,
+    Update,
+    Uninstall,
+    Reinstall
   };
 
   /** Returns Request type passed from pkgmgr_installer
