@@ -3,6 +3,7 @@
 #include "utils/file_util.h"
 
 #include <boost/filesystem/path.hpp>
+#include <boost/system/error_code.hpp>
 #include <string>
 
 #include "utils/logging.h"
@@ -10,6 +11,7 @@
 namespace common_installer {
 namespace utils {
 
+namespace bs = boost::system;
 namespace fs = boost::filesystem;
 
 bool CreateDir(const fs::path& path) {
@@ -74,6 +76,45 @@ bool CopyDir(const fs::path& src, const fs::path& dst) {
       }
     } catch (const fs::filesystem_error& error) {
         LOG(ERROR) << error.what();
+    }
+  }
+  return true;
+}
+
+bool MoveDir(const fs::path& src, const fs::path& dst) {
+  if (fs::exists(dst))
+    return false;
+  bs::error_code error;
+  fs::rename(src, dst, error);
+  if (error) {
+    LOG(WARNING) << "Cannot move directory: " << src << ". Will copy/remove...";
+    if (!utils::CopyDir(src, dst)) {
+      LOG(ERROR) << "Cannot copy directory: " << src;
+      return false;
+    }
+    fs::remove_all(src, error);
+    if (error) {
+      LOG(ERROR) << "Cannot remove old directory when coping: " << src;
+      return false;
+    }
+  }
+  return true;
+}
+
+bool MoveFile(const fs::path& src, const fs::path& dst) {
+  if (fs::exists(dst))
+    return false;
+  bs::error_code error;
+  fs::rename(src, dst, error);
+  if (error) {
+    LOG(WARNING) << "Cannot move file: " << src << ". Will copy/remove...";
+    fs::copy_file(src, dst, fs::copy_option::overwrite_if_exists, error);
+    if (error) {
+      return false;
+    }
+    fs::remove_all(src, error);
+    if (error) {
+      LOG(ERROR) << "Cannot remove old file when coping: " << src;
     }
   }
   return true;

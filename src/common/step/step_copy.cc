@@ -40,25 +40,13 @@ Step::Status StepCopy::process() {
                << install_path.parent_path().string();
     return Step::Status::ERROR;
   }
-  bf::rename(context_->unpacked_dir_path.get(), install_path, error);
-  if (error) {
-    LOG(DEBUG) << "Cannot move directory. Will try to copy...";
-    if (!utils::CopyDir(bf::path(context_->unpacked_dir_path.get()),
-        install_path)) {
-      LOG(ERROR) << "Fail to copy tmp dir: "
-          << context_->unpacked_dir_path.get()
-          << " to dst dir: " << install_path.string();
-      return Step::Status::ERROR;
-    }
-    bs::error_code error;
-    bf::remove_all(context_->unpacked_dir_path.get(), error);
-    if (error) {
-      LOG(WARNING) << "Cannot remove temporary directory: "
-                   << context_->unpacked_dir_path.get();
-    }
+  if (!utils::MoveDir(context_->unpacked_dir_path.get(), install_path)) {
+    LOG(ERROR) << "Cannot move widget directory to install path";
+    return Status::ERROR;
   }
-  LOG(INFO) << "Successfully move/copy: " << context_->unpacked_dir_path.get()
-            << " to: " << install_path.string() << " directory";
+
+  LOG(INFO) << "Successfully move: " << context_->unpacked_dir_path.get()
+            << " to: " << install_path << " directory";
   return Status::OK;
 }
 

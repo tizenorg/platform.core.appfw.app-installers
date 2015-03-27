@@ -13,6 +13,12 @@ bool CreateDir(const boost::filesystem::path& path);
 bool CopyDir(const boost::filesystem::path& src,
              const boost::filesystem::path& dst);
 
+bool MoveDir(const boost::filesystem::path& src,
+             const boost::filesystem::path& dst);
+
+bool MoveFile(const boost::filesystem::path& src,
+              const boost::filesystem::path& dst);
+
 }  // namespace utils
 }  // namespace common_installer
 
