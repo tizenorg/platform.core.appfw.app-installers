@@ -16,16 +16,16 @@
 #include "common/step/step_copy.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_parse.h"
-#include "common/step/step_record.h"
-#include "common/step/step_remove.h"
+#include "common/step/step_register_app.h"
+#include "common/step/step_remove_files.h"
 #include "common/step/step_revoke_security.h"
-#include "common/step/step_security.h"
+#include "common/step/step_register_security.h"
 #include "common/step/step_signal.h"
-#include "common/step/step_signature.h"
-#include "common/step/step_unregister.h"
+#include "common/step/step_check_signature.h"
+#include "common/step/step_unregister_app.h"
 #include "common/step/step_unzip.h"
 #include "wgt/step/step_parse.h"
-#include "wgt/step/step_symbolic_link.h"
+#include "wgt/step/step_create_symbolic_link.h"
 
 
 namespace ci = common_installer;
@@ -46,21 +46,21 @@ int main(int argc, char** argv) {
   switch (pkgmgr_installer_get_request_type(pi)) {
     case PKGMGR_REQ_INSTALL: {
       installer.AddStep<ci::unzip::StepUnzip>();
-      installer.AddStep<ci::signature::StepSignature>();
+      installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::signal::StepSignal>();
       installer.AddStep<ci::copy::StepCopy>();
-      installer.AddStep<wgt::symbolic_link::StepSymbolicLink>();
-      installer.AddStep<ci::security::StepSecurity>();
+      installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
+      installer.AddStep<ci::security::StepRegisterSecurity>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
-      installer.AddStep<ci::record::StepRecord>();
+      installer.AddStep<ci::register_app::StepRegisterApplication>();
       break;
     }
     case PKGMGR_REQ_UNINSTALL: {
       installer.AddStep<ci::parse::StepParse>();
       installer.AddStep<ci::signal::StepSignal>();
-      installer.AddStep<ci::unregister::StepUnregister>();
-      installer.AddStep<ci::remove::StepRemove>();
+      installer.AddStep<ci::unregister_app::StepUnregisterApplication>();
+      installer.AddStep<ci::remove::StepRemoveFiles>();
       installer.AddStep<ci::revoke_security::StepRevokeSecurity>();
       break;
     }

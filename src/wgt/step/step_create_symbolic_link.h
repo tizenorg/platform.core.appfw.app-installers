@@ -1,7 +1,7 @@
 /* 2014, Copyright © Samsung, license APACHE-2.0, see LICENSE file */
 
-#ifndef WGT_STEP_STEP_SYMBOLIC_LINK_H_
-#define WGT_STEP_STEP_SYMBOLIC_LINK_H_
+#ifndef WGT_STEP_STEP_CREATE_SYMBOLIC_LINK_H_
+#define WGT_STEP_STEP_CREATE_SYMBOLIC_LINK_H_
 
 #include <boost/filesystem.hpp>
 
@@ -13,7 +13,7 @@
 namespace wgt {
 namespace symbolic_link {
 
-class StepSymbolicLink : public common_installer::Step {
+class StepCreateSymbolicLink : public common_installer::Step {
  public:
   using Step::Step;
 
@@ -27,4 +27,4 @@ class StepSymbolicLink : public common_installer::Step {
 }  // namespace symbolic_link
 }  // namespace wgt
 
-#endif  // WGT_STEP_STEP_SYMBOLIC_LINK_H_
+#endif  // WGT_STEP_STEP_CREATE_SYMBOLIC_LINK_H_

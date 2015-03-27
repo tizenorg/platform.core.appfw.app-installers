@@ -2,14 +2,14 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "common/step/step_security.h"
+#include "common/step/step_register_security.h"
 
 #include "common/security_registration.h"
 
 namespace common_installer {
 namespace security {
 
-Step::Status StepSecurity::process() {
+Step::Status StepRegisterSecurity::process() {
   if (!RegisterSecurityContextForApps(
       context_->pkgid(), context_->GetApplicationPath(),
       context_->manifest_data())) {
@@ -19,7 +19,7 @@ Step::Status StepSecurity::process() {
   return Status::OK;
 }
 
-Step::Status StepSecurity::undo() {
+Step::Status StepRegisterSecurity::undo() {
   if (!UnregisterSecurityContextForApps(
       context_->pkgid(), context_->manifest_data())) {
     return Status::ERROR;

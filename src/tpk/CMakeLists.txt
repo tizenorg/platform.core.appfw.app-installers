@@ -8,7 +8,7 @@ SET(SRCS
     main.cc
     task.cc
     step/step_parse.cc
-    step/step_symbolic_link.cc
+    step/step_create_symbolic_link.cc
     ../xml_parser/xml_parser.cc
 )
 ADD_EXECUTABLE(${TARGET_TPK} ${SRCS})

@@ -5,16 +5,16 @@ SET(SRCS
   pkgmgr_signal.cc
   security_registration.cc
   step/step_unzip.cc
-  step/step_signature.cc
+  step/step_check_signature.cc
   step/step_copy.cc
   step/step_generate_xml.cc
-  step/step_record.cc
+  step/step_register_app.cc
   step/step_parse.cc
-  step/step_remove.cc
+  step/step_remove_files.cc
   step/step_revoke_security.cc
-  step/step_security.cc
+  step/step_register_security.cc
   step/step_signal.cc
-  step/step_unregister.cc
+  step/step_unregister_app.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})

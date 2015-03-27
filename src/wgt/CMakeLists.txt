@@ -1,7 +1,7 @@
 # Target - sources
 SET(SRCS
   step/step_parse.cc
-  step/step_symbolic_link.cc
+  step/step_create_symbolic_link.cc
   wgt_backend.cc
 )
 

@@ -8,15 +8,15 @@
 #include <cassert>
 #include <cstring>
 
-#include "common/step/step_unregister.h"
+#include "common/step/step_unregister_app.h"
 #include "utils/file_util.h"
 
 namespace common_installer {
-namespace unregister {
+namespace unregister_app {
 
 namespace fs = boost::filesystem;
 
-Step::Status StepUnregister::process() {
+Step::Status StepUnregisterApplication::process() {
   assert(!context_->pkgid().empty());
 
   const char* const appinst_tags[] = {"removable=true", nullptr, };
@@ -37,15 +37,15 @@ Step::Status StepUnregister::process() {
   return Status::OK;
 }
 
-Step::Status StepUnregister::clean() {
+Step::Status StepUnregisterApplication::clean() {
   LOG(DEBUG) << "Empty 'clean' method";
   return Status::OK;
 }
 
-Step::Status StepUnregister::undo() {
+Step::Status StepUnregisterApplication::undo() {
   LOG(DEBUG) << "Empty 'undo' method";
   return Status::OK;
 }
 
-}  // namespace unregister
+}  // namespace unregister_app
 }  // namespace common_installer

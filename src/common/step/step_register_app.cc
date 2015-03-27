@@ -1,6 +1,6 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#include "common/step/step_record.h"
+#include "common/step/step_register_app.h"
 
 #include <pkgmgr-info.h>
 #include <unistd.h>
@@ -23,11 +23,11 @@ const char kPkgInitUser[] = "/usr/bin/pkg_initdb_user";
 }  // anonymous namespace
 
 namespace common_installer {
-namespace record {
+namespace register_app {
 
 namespace fs = boost::filesystem;
 
-Step::Status StepRecord::process() {
+Step::Status StepRegisterApplication::process() {
   assert(!context_->xml_path().empty());
 
   const char* const appinst_tags[] = {"removable=true", nullptr, };
@@ -53,11 +53,11 @@ Step::Status StepRecord::process() {
   return Status::OK;
 }
 
-Step::Status StepRecord::clean() {
+Step::Status StepRegisterApplication::clean() {
   return Status::OK;
 }
 
-Step::Status StepRecord::undo() {
+Step::Status StepRegisterApplication::undo() {
   if (context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
     const char* ail_cmd[] = {kAilInitUser, nullptr};
     const char* pkgmgr_cmd[] = {kPkgInitUser, nullptr};
@@ -88,5 +88,5 @@ Step::Status StepRecord::undo() {
   return Status::OK;
 }
 
-}  // namespace record
+}  // namespace register_app
 }  // namespace common_installer

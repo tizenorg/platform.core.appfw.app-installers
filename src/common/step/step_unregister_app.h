@@ -2,17 +2,17 @@
 // Use of this source code is governed by an apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef COMMON_STEP_STEP_UNREGISTER_H_
-#define COMMON_STEP_STEP_UNREGISTER_H_
+#ifndef COMMON_STEP_STEP_UNREGISTER_APP_H_
+#define COMMON_STEP_STEP_UNREGISTER_APP_H_
 
 #include "common/context_installer.h"
 #include "common/step/step.h"
 #include "utils/logging.h"
 
 namespace common_installer {
-namespace unregister {
+namespace unregister_app {
 
-class StepUnregister : public Step {
+class StepUnregisterApplication : public Step {
  public:
   using Step::Step;
 
@@ -23,8 +23,8 @@ class StepUnregister : public Step {
   SCOPE_LOG_TAG(Unregister)
 };
 
-}  // namespace unregister
+}  // namespace unregister_app
 }  // namespace common_installer
 
 
-#endif  // COMMON_STEP_STEP_UNREGISTER_H_
+#endif  // COMMON_STEP_STEP_UNREGISTER_APP_H_

@@ -1,5 +1,5 @@
 /* Copyright 2015 Samsung Electronics, license APACHE-2.0, see LICENSE file */
-#include "tpk/step/step_symbolic_link.h"
+#include "tpk/step/step_create_symbolic_link.h"
 #include <boost/filesystem.hpp>
 #include <iostream>
 #include "common/step/step.h"
@@ -75,7 +75,7 @@ bool RemoveSymLink(T *app, ContextInstaller* context) {
 
 
 
-Status StepSymbolicLink::process() {
+Status StepCreateSymbolicLink::process() {
   // Get manifest_x
   manifest_x *m = context_->manifest_data();
   if (!m) {
@@ -97,12 +97,12 @@ Status StepSymbolicLink::process() {
 }
 
 
-Status StepSymbolicLink::clean() {
+Status StepCreateSymbolicLink::clean() {
   return Status::OK;
 }
 
 
-Status StepSymbolicLink::undo() {
+Status StepCreateSymbolicLink::undo() {
   manifest_x* m = context_->manifest_data();
   uiapplication_x *uiapp = m->uiapplication;
   serviceapplication_x *svcapp = m->serviceapplication;

@@ -2,28 +2,29 @@
 // Use of this source code is governed by an apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef COMMON_STEP_STEP_SIGNATURE_H_
-#define COMMON_STEP_STEP_SIGNATURE_H_
+#ifndef COMMON_STEP_STEP_REMOVE_FILES_H_
+#define COMMON_STEP_STEP_REMOVE_FILES_H_
 
 #include "common/context_installer.h"
+
 #include "common/step/step.h"
 #include "utils/logging.h"
 
 namespace common_installer {
-namespace signature {
+namespace remove {
 
-class StepSignature : public Step {
+class StepRemoveFiles : public Step {
  public:
   using Step::Step;
 
   Status process() override;
-  Status undo() override { return Status::OK; }
-  Status clean() override { return Status::OK; }
+  Status clean() override;
+  Status undo() override;
 
-  SCOPE_LOG_TAG(Signature)
+  SCOPE_LOG_TAG(Remove)
 };
 
-}  // namespace signature
+}  // namespace remove
 }  // namespace common_installer
 
-#endif  // COMMON_STEP_STEP_SIGNATURE_H_
+#endif  // COMMON_STEP_STEP_REMOVE_FILES_H_

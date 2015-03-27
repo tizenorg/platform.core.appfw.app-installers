@@ -8,16 +8,16 @@
 #include "common/step/step_copy.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_parse.h"
-#include "common/step/step_record.h"
-#include "common/step/step_remove.h"
+#include "common/step/step_register_app.h"
+#include "common/step/step_remove_files.h"
 #include "common/step/step_revoke_security.h"
-#include "common/step/step_security.h"
+#include "common/step/step_register_security.h"
 #include "common/step/step_signal.h"
-#include "common/step/step_signature.h"
-#include "common/step/step_unregister.h"
+#include "common/step/step_check_signature.h"
+#include "common/step/step_unregister_app.h"
 #include "common/step/step_unzip.h"
 #include "tpk/step/step_parse.h"
-#include "tpk/step/step_symbolic_link.h"
+#include "tpk/step/step_create_symbolic_link.h"
 #include "utils/logging.h"
 #endif
 
@@ -92,14 +92,14 @@ int Task::Install() {
   ci::AppInstaller ai(pi_, kPkgType);
 
   ai.AddStep<ci::unzip::StepUnzip>();
-  ai.AddStep<ci::signature::StepSignature>();
+  ai.AddStep<ci::signature::StepCheckSignature>();
   ai.AddStep<tpk::step::StepParse>();
   ai.AddStep<ci::signal::StepSignal>();
   ai.AddStep<ci::copy::StepCopy>();
-  ai.AddStep<tpk::step::StepSymbolicLink>();
-  ai.AddStep<ci::security::StepSecurity>();
+  ai.AddStep<tpk::step::StepCreateSymbolicLink>();
+  ai.AddStep<ci::security::StepRegisterSecurity>();
   ai.AddStep<ci::generate_xml::StepGenerateXml>();
-  ai.AddStep<ci::record::StepRecord>();
+  ai.AddStep<ci::register_app::StepRegisterApplication>();
 
   return ai.Run();
 }
@@ -109,8 +109,8 @@ int Task::Uninstall() {
 
   ai.AddStep<ci::parse::StepParse>();
   ai.AddStep<ci::signal::StepSignal>();
-  ai.AddStep<ci::unregister::StepUnregister>();
-  ai.AddStep<ci::remove::StepRemove>();
+  ai.AddStep<ci::unregister_app::StepUnregisterApplication>();
+  ai.AddStep<ci::remove::StepRemoveFiles>();
   ai.AddStep<ci::revoke_security::StepRevokeSecurity>();
 
   return ai.Run();

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 
-#include "common/step/step_remove.h"
+#include "common/step/step_remove_files.h"
 
 #include <pkgmgr-info.h>
 
@@ -16,7 +16,7 @@ namespace remove {
 
 namespace fs = boost::filesystem;
 
-Step::Status StepRemove::process() {
+Step::Status StepRemoveFiles::process() {
   uiapplication_x* ui = context_->manifest_data()->uiapplication;
 
   if (!fs::exists(context_->pkg_path()))
@@ -37,11 +37,11 @@ Step::Status StepRemove::process() {
   return Status::OK;
 }
 
-Step::Status StepRemove::clean() {
+Step::Status StepRemoveFiles::clean() {
   return Status::OK;
 }
 
-Step::Status StepRemove::undo() {
+Step::Status StepRemoveFiles::undo() {
   return Status::OK;
 }
 

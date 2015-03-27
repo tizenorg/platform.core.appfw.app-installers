@@ -1,6 +1,6 @@
 /* 2014, Copyright © Eurogiciel Coporation, APACHE-2.0, see LICENSE file */
 
-#include "wgt/step/step_symbolic_link.h"
+#include "wgt/step/step_create_symbolic_link.h"
 
 #include <pkgmgr-info.h>
 #include <unistd.h>
@@ -18,7 +18,7 @@ namespace symbolic_link {
 
 namespace fs = boost::filesystem;
 
-common_installer::Step::Status StepSymbolicLink::process() {
+common_installer::Step::Status StepCreateSymbolicLink::process() {
   assert(context_->manifest_data());
   boost::system::error_code error;
   uiapplication_x* ui = context_->manifest_data()->uiapplication;
@@ -64,11 +64,11 @@ common_installer::Step::Status StepSymbolicLink::process() {
   return Status::OK;
 }
 
-common_installer::Step::Status StepSymbolicLink::clean() {
+common_installer::Step::Status StepCreateSymbolicLink::clean() {
   return Status::OK;
 }
 
-common_installer::Step::Status StepSymbolicLink::undo() {
+common_installer::Step::Status StepCreateSymbolicLink::undo() {
   uiapplication_x* ui = context_->manifest_data()->uiapplication;
   serviceapplication_x* svc = context_->manifest_data()->serviceapplication;
 
