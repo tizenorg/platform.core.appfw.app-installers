@@ -6,6 +6,7 @@ Group:          Application Framework/Package Management
 License:        Apache-2.0
 Source0:        %{name}-%{version}.tar.gz
 Source1001:     wgt-backend.manifest
+Source1002:     tpk-backend.manifest
 
 BuildRequires:  boost-devel
 BuildRequires:  cmake
@@ -98,6 +99,7 @@ ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 
 %files -n tpk-backend
 %{_sysconfdir}/package-manager/backend/tpk
+%manifest tpk-backend.manifest
 %{_bindir}/tpk-backend
 
 %files tests
