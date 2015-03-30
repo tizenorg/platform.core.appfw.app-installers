@@ -38,9 +38,9 @@ int main(int argc, char** argv) {
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::copy::StepCopy>();
       installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
-      installer.AddStep<ci::security::StepRegisterSecurity>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
       installer.AddStep<ci::register_app::StepRegisterApplication>();
+      installer.AddStep<ci::security::StepRegisterSecurity>();
       break;
     }
     case ci::PkgMgrInterface::Type::Uninstall: {
