@@ -51,9 +51,9 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::signal::StepSignal>();
       installer.AddStep<ci::copy::StepCopy>();
       installer.AddStep<wgt::symbolic_link::StepSymbolicLink>();
-      installer.AddStep<ci::security::StepSecurity>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
       installer.AddStep<ci::record::StepRecord>();
+      installer.AddStep<ci::security::StepSecurity>();
       break;
     }
     case PKGMGR_REQ_UNINSTALL: {
