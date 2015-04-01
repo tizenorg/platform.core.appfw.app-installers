@@ -38,11 +38,11 @@ common_installer::Step::Status StepParse::process() {
   }
 
   // Copy data from ManifestData to ContextInstaller
-  context_->config_data()->set_application_name(
+  context_->config_data()->application_name(
       std::string(manifest->uiapplication->label->name));
-  context_->config_data()->set_required_version(
+  context_->config_data()->required_version(
       std::string(parser_->GetRequiredAPIVersion()));
-  context_->set_pkgid(
+  context_->pkgid(
       std::string(manifest->package));
 
   LOG(DEBUG) << " Read data -[ ";

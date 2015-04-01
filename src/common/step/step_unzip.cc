@@ -253,7 +253,7 @@ Step::Status StepUnzip::process() {
     LOG(ERROR) << "Failed to process unpack step";
     return Step::Status::ERROR;
   }
-  context_->set_unpacked_dir_path(tmp_dir.string());
+  context_->unpacked_dir_path(tmp_dir.string());
 
   LOG(INFO) << context_->file_path() << " was successfully unzipped into "
       << context_->unpacked_dir_path();

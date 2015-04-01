@@ -23,7 +23,7 @@ Step::Status StepParse::process() {
       / fs::path(context_->pkgid());
   xml_path += ".xml";
 
-  context_->set_xml_path(xml_path.string());
+  context_->xml_path(xml_path.string());
   xmlInitParser();
   manifest_x* mfx = pkgmgr_parser_usr_process_manifest_xml(
     context_->xml_path().c_str(), context_->uid());
@@ -32,8 +32,8 @@ Step::Status StepParse::process() {
     return Step::Status::ERROR;
   }
 
-  context_->set_manifest(mfx);
-  context_->set_pkg_path(context_->GetApplicationPath());
+  context_->manifest_data(mfx);
+  context_->pkg_path(context_->GetApplicationPath());
 
   LOG(DEBUG) << "Successfully parse tizen manifest xml";
 

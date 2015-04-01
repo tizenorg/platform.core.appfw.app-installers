@@ -19,7 +19,7 @@ Step::Status StepCopy::process() {
 
   bf::path install_path = bf::path(context_->GetApplicationPath());
 
-  context_->set_pkg_path(install_path.string());
+  context_->pkg_path(install_path.string());
 
   // FIXME: correctly order app's data.
   // If there is 1 app in package, app's data are stored in <pkg_path>/<app_id>
