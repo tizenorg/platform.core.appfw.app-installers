@@ -167,7 +167,7 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
 }
 
 common_installer::Step::Status StepParse::process() {
-  if (!StepParse::Check(context_->unpacked_dir_path())) {
+  if (!StepParse::Check(context_->unpacked_dir_path.get())) {
     LOG(ERROR) << "No config.xml";
     return common_installer::Step::Status::ERROR;
   }
@@ -196,7 +196,7 @@ common_installer::Step::Status StepParse::process() {
     return common_installer::Step::Status::ERROR;
   }
 
-  const manifest_x* manifest = context_->manifest_data();
+  const manifest_x* manifest = context_->manifest_data.get();
   if (!FillManifestX(const_cast<manifest_x*>(manifest))) {
     LOG(ERROR) << "[Parse] Storing manifest_x failed. "
                <<  parser_->GetErrorMessage();
@@ -222,10 +222,10 @@ common_installer::Step::Status StepParse::process() {
       app_keys::kVersionKey, &version);
   required_api_version = info->required_version();
 
-  context_->config_data()->set_application_name(
+  context_->config_data.get().application_name.set(
       std::string(manifest->uiapplication->label->name));
-  context_->set_pkgid(std::string(manifest->package));
-  context_->config_data()->set_required_version(required_api_version);
+  context_->config_data.get().required_version.set(required_api_version);
+  context_->pkgid.set(std::string(manifest->package));
 
   std::shared_ptr<const PermissionsInfo> perm_info =
       std::static_pointer_cast<const PermissionsInfo>(

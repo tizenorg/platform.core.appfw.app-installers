@@ -76,7 +76,7 @@ using boost::filesystem::path;
  */
 Status StepParse::process() {
   std::unique_ptr<boost::filesystem::path> mPath(
-      GetManifestFilePath(context_->unpacked_dir_path()));
+      GetManifestFilePath(context_->unpacked_dir_path.get()));
   if (!mPath) {
     return Status::ERROR;
   }
@@ -142,14 +142,15 @@ bool StepParse::SetContextByManifestParser(XmlTree* tree) {
   }
 
   // set context_
-  context_->config_data()->set_application_name(label->content());
-  context_->config_data()->set_required_version(manifest->attr("api_version"));
-  context_->set_pkgid(manifest->attr("package"));
-  context_->set_manifest(static_cast<manifest_x*>(
+  context_->config_data.get().application_name.set(label->content());
+  context_->config_data.get().required_version.set(
+      manifest->attr("api_version"));
+  context_->pkgid.set(manifest->attr("package"));
+  context_->manifest_data.set(static_cast<manifest_x*>(
       calloc(1, sizeof(manifest_x))));
 
   // set context_->manifest_data()
-  return SetPkgInfoManifest(context_->manifest_data(), tree, manifest);
+  return SetPkgInfoManifest(context_->manifest_data.get(), tree, manifest);
 }
 
 

@@ -4,7 +4,6 @@
 
 #include <pkgmgr-info.h>
 #include <unistd.h>
-
 #include <boost/filesystem.hpp>
 #include <cassert>
 #include <cstring>
@@ -28,7 +27,7 @@ namespace register_app {
 namespace fs = boost::filesystem;
 
 Step::Status StepRegisterApplication::process() {
-  assert(!context_->xml_path().empty());
+  assert(!context_->xml_path.get().empty());
 
   const char* const appinst_tags[] = {"removable=true", nullptr, };
   // TODO(sdi2): Check if data->removable is correctly setting
@@ -38,12 +37,13 @@ Step::Status StepRegisterApplication::process() {
   // Having a specific step to implement a installer commandline tool
   // for image build could be usefull also.
 
-  int ret = context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+  int ret = context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       pkgmgr_parser_parse_usr_manifest_for_installation(
-          context_->xml_path().c_str(), context_->uid(),
+          context_->xml_path.get().c_str(), context_->uid.get(),
           const_cast<char* const*>(appinst_tags)) :
       pkgmgr_parser_parse_manifest_for_installation(
-          context_->xml_path().c_str(), const_cast<char* const*>(appinst_tags));
+          context_->xml_path.get().c_str(),
+          const_cast<char* const*>(appinst_tags));
 
   if (ret != 0) {
     LOG(ERROR) << "Failed to record package into database";
@@ -58,7 +58,7 @@ Step::Status StepRegisterApplication::clean() {
 }
 
 Step::Status StepRegisterApplication::undo() {
-  if (context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
+  if (context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
     const char* ail_cmd[] = {kAilInitUser, nullptr};
     const char* pkgmgr_cmd[] = {kPkgInitUser, nullptr};
 

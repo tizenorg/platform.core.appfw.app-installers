@@ -15,25 +15,29 @@
 
 namespace common_installer {
 
-class ConfigData;
-using ConfigDataPtr = std::unique_ptr<ConfigData>;
+/** Template class for defining smart attributes.
+ *
+ *  Property should be used when, given attribute needs to have pure
+ *  setter and getter. This template class will generate getter and setter.
+ *  It uses operator() overloading.
+ */
+template<typename Type>
+class Property {
+ public:
+  Property() {}
+  Property(const Type &val): value_(val) { } // NOLINT
+  const Type& get() const { return value_; }
+  Type& get() { return value_; }
+  void set(const Type &val) { value_ = val; }
+ private:
+  Type value_;
+};
 
 class ConfigData {
  public:
   ConfigData() {}
-
-  std::string application_name() const { return application_name_; }
-  void set_application_name(const std::string& app_name) {
-    application_name_ = app_name;
-  }
-  std::string required_version() const { return required_version_; }
-  void set_required_version(const std::string& required_version) {
-    required_version_ = required_version;
-  }
-
- private:
-  std::string application_name_;
-  std::string required_version_;
+  Property<std::string> application_name;
+  Property<std::string> required_version;
 };
 
 // TODO(p.sikorski@samsung.com) this class should be divided into:
@@ -47,91 +51,50 @@ class ContextInstaller {
   ContextInstaller();
   ~ContextInstaller();
 
-  int request_type() const { return req_; }
-  void set_request_type(int req) {
-    req_ = req;
-  }
+  // request type: Install, Reinstall, Uninstall, Update.
+  Property<int> request_type;
 
-  std::string pkg_type() const { return pkg_type_; }
-  void set_pkg_type(const std::string& pkg_type) {
-    pkg_type_ = pkg_type;
-  }
+  // package_type
+  Property<std::string> pkg_type;
 
-  manifest_x* manifest_data() const { return manifest_; }
-  void set_manifest(manifest_x* manifest) {
-    manifest_ = manifest;
-  }
+  //  manifest information used to generate xml file
+  Property<manifest_x*> manifest_data;
 
-  std::string xml_path() const { return xml_path_; }
-  void set_xml_path(const std::string& xml) {
-    xml_path_ = xml;
-  }
+  // path to manifest xml file used to register data in databases
+  Property<std::string> xml_path;
 
-  std::string pkgid() const { return pkgid_; }
-  void set_pkgid(const std::string& pkgid) {
-    pkgid_ = pkgid;
-  }
-  void set_new_temporary_pkgid(void);
+  // pkgid used for update or uninstallation processing
+  Property<std::string> pkgid;
 
-  std::string pkg_path() const { return pkg_path_; }
-  void set_pkg_path(const std::string& package_path) {
-    pkg_path_ = package_path;
-  }
+  // package directory path containing app data
+  Property<std::string> pkg_path;
 
-  std::string file_path() const { return file_path_; }
-  void set_file_path(const std::string& file_path) {
-    file_path_ = file_path;
-  }
+  // file path used for installation or reinstallation process
+  Property<std::string> file_path;
 
+  // directory path where app data are temporarily extracted
+  Property<std::string> unpacked_dir_path;
+
+  // uid of the user that request the operation
+  Property<uid_t> uid;
+
+
+  // data from config.xml
+  Property<ConfigData> config_data;
+
+  // TODO(p.sikorski@samsung.com) change "pi" to Property
+  PkgmgrSignal* pi() const { return pi_.get(); }
   void set_pi(std::unique_ptr<PkgmgrSignal> pi) {
     pi_ = std::move(pi);
   }
 
-  uid_t uid() const { return uid_; }
+  // path for the applications directory
+  Property<std::string> application_path;
 
-  std::string unpacked_dir_path() const { return unpacked_dir_path_; }
-  void set_unpacked_dir_path(const std::string& dir_path) {
-    unpacked_dir_path_ = dir_path;
-  }
-
-  ConfigData* config_data() const { return config_data_.get(); }
-
-  PkgmgrSignal* pi() const { return pi_.get(); }
-
-  const char* GetApplicationPath() const;
-  const char* GetRootApplicationPath() const;
+  // path for the applications root directory
+  Property<std::string> root_application_path;
 
  private :
-  // request type: Install, Reinstall, Uninstall, Update.
-  int req_;
-
-  //  manifest information used to generate xml file
-  manifest_x* manifest_;
-
-  // path to manifest xml file used to register data in databases
-  std::string xml_path_;
-
-  // pkgid used for update or uninstallation processing
-  std::string pkgid_;
-
-  // package_type
-  std::string pkg_type_;
-
-  // uid of the user that request the operation
-  uid_t uid_;
-
-  // package directory path containing app data
-  std::string pkg_path_;
-
-  // file path used for installation or reinstallation process
-  std::string file_path_;
-
-  // directory path where app data are temporarily extracted
-  std::string unpacked_dir_path_;
-
-  // data from config.xml
-  ConfigDataPtr config_data_;
-
   // data used to send signal
   std::unique_ptr<PkgmgrSignal> pi_;
 };
