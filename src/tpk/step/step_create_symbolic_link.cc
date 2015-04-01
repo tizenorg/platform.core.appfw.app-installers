@@ -25,7 +25,7 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
   boost::system::error_code error;
 
   for (; app != nullptr; app=app->next) {
-    fs::path bindir = fs::path(context->pkg_path()) / fs::path(app->appid) /
+    fs::path bindir = fs::path(context->pkg_path.get()) / fs::path(app->appid) /
         fs::path("bin");
     LOG(INFO) << "Creating dir: " << bindir;
     if (!common_installer::utils::CreateDir(bindir)) {
@@ -64,7 +64,7 @@ bool RemoveSymLink(T *app, ContextInstaller* context) {
    * So we don't remove the bin/ directory itself.
    */
   for (; app != nullptr; app=app->next) {
-    fs::path exec_path = fs::path(context->pkg_path()) /
+    fs::path exec_path = fs::path(context->pkg_path.get()) /
         fs::path(app->appid) / fs::path("bin");
     fs::remove_all(exec_path / fs::path(app->appid));
   }
@@ -77,7 +77,7 @@ bool RemoveSymLink(T *app, ContextInstaller* context) {
 
 Status StepCreateSymbolicLink::process() {
   // Get manifest_x
-  manifest_x *m = context_->manifest_data();
+  manifest_x *m = context_->manifest_data.get();
   if (!m) {
     LOG(ERROR) << "manifest_x is null";
     return Status::ERROR;
@@ -103,7 +103,7 @@ Status StepCreateSymbolicLink::clean() {
 
 
 Status StepCreateSymbolicLink::undo() {
-  manifest_x* m = context_->manifest_data();
+  manifest_x* m = context_->manifest_data.get();
   uiapplication_x *uiapp = m->uiapplication;
   serviceapplication_x *svcapp = m->serviceapplication;
   if (!RemoveSymLink(uiapp, context_)) return Status::ERROR;

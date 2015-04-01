@@ -17,16 +17,17 @@ namespace unregister_app {
 namespace fs = boost::filesystem;
 
 Step::Status StepUnregisterApplication::process() {
-  assert(!context_->pkgid().empty());
+  assert(!context_->pkgid.get().empty());
 
   const char* const appinst_tags[] = {"removable=true", nullptr, };
 
-  int ret = context_->uid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+  int ret = context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
       pkgmgr_parser_parse_usr_manifest_for_uninstallation(
-          context_->xml_path().c_str(), context_->uid(),
+          context_->xml_path.get().c_str(), context_->uid.get(),
           const_cast<char* const*>(appinst_tags)) :
       pkgmgr_parser_parse_manifest_for_uninstallation(
-          context_->xml_path().c_str(), const_cast<char* const*>(appinst_tags));
+          context_->xml_path.get().c_str(),
+          const_cast<char* const*>(appinst_tags));
 
   if (ret != 0) {
     LOG(ERROR) << "Failed to unregister package into database";

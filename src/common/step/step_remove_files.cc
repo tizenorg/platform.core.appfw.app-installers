@@ -17,22 +17,22 @@ namespace remove {
 namespace fs = boost::filesystem;
 
 Step::Status StepRemoveFiles::process() {
-  uiapplication_x* ui = context_->manifest_data()->uiapplication;
+  uiapplication_x* ui = context_->manifest_data.get()->uiapplication;
 
-  if (!fs::exists(context_->pkg_path()))
-    LOG(DEBUG) << "dir: " << context_->pkg_path() << "not exist";
+  if (!fs::exists(context_->pkg_path.get()))
+    LOG(DEBUG) << "dir: " << context_->pkg_path.get() << "not exist";
 
-  fs::remove_all(context_->pkg_path());
+  fs::remove_all(context_->pkg_path.get());
   for (; ui != nullptr; ui = ui->next) {
-    fs::path app_icon = fs::path(getIconPath(context_->uid()))
+    fs::path app_icon = fs::path(getIconPath(context_->uid.get()))
       / fs::path(ui->appid);
     app_icon += fs::path(".png");
     if (fs::exists(app_icon))
       fs::remove_all(app_icon);
   }
-  fs::remove_all(context_->xml_path());
+  fs::remove_all(context_->xml_path.get());
 
-  LOG(DEBUG) << "Removing dir: " << context_->pkg_path();
+  LOG(DEBUG) << "Removing dir: " << context_->pkg_path.get();
 
   return Status::OK;
 }

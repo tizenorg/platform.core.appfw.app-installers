@@ -11,8 +11,8 @@ namespace security {
 
 Step::Status StepRegisterSecurity::process() {
   if (!RegisterSecurityContextForApps(
-      context_->pkgid(), context_->GetApplicationPath(),
-      context_->manifest_data())) {
+      context_->pkgid.get(), context_->application_path.get(),
+      context_->manifest_data.get())) {
     return Status::ERROR;
   }
   LOG(DEBUG) << "Security context installed";
@@ -21,7 +21,7 @@ Step::Status StepRegisterSecurity::process() {
 
 Step::Status StepRegisterSecurity::undo() {
   if (!UnregisterSecurityContextForApps(
-      context_->pkgid(), context_->manifest_data())) {
+      context_->pkgid.get(), context_->manifest_data.get())) {
     return Status::ERROR;
   }
   LOG(DEBUG) << "Security context uninstalled";

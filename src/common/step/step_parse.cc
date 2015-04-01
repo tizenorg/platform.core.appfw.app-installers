@@ -19,21 +19,22 @@ namespace parse {
 namespace fs = boost::filesystem;
 
 Step::Status StepParse::process() {
-  fs::path xml_path = fs::path(getUserManifestPath(context_->uid()))
-      / fs::path(context_->pkgid());
+  fs::path xml_path = fs::path(getUserManifestPath(context_->uid.get()))
+      / fs::path(context_->pkgid.get());
   xml_path += ".xml";
 
-  context_->set_xml_path(xml_path.string());
+  context_->xml_path.set(xml_path.string());
   xmlInitParser();
   manifest_x* mfx = pkgmgr_parser_usr_process_manifest_xml(
-    context_->xml_path().c_str(), context_->uid());
+    context_->xml_path.get().c_str(), context_->uid.get());
   if (!mfx) {
-    LOG(ERROR) << "Failed to parse tizen manifest xml " << context_->xml_path();
+    LOG(ERROR) << "Failed to parse tizen manifest xml "
+        << context_->xml_path.get();
     return Step::Status::ERROR;
   }
 
-  context_->set_manifest(mfx);
-  context_->set_pkg_path(context_->GetApplicationPath());
+  context_->manifest_data.set(mfx);
+  context_->pkg_path.set(context_->application_path.get());
 
   LOG(DEBUG) << "Successfully parse tizen manifest xml";
 

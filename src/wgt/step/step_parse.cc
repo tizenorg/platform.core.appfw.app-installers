@@ -20,7 +20,7 @@ namespace wgt {
 namespace parse {
 
 common_installer::Step::Status StepParse::process() {
-  if (!StepParse::Check(context_->unpacked_dir_path())) {
+  if (!StepParse::Check(context_->unpacked_dir_path.get())) {
     LOG(ERROR) << "No config.xml";
     return common_installer::Step::Status::ERROR;
   }
@@ -30,7 +30,7 @@ common_installer::Step::Status StepParse::process() {
     LOG(ERROR) << "[Parse] Parse failed. " <<  parser_->GetErrorMessage();
     return common_installer::Step::Status::ERROR;
   }
-  const manifest_x* manifest = context_->manifest_data();
+  const manifest_x* manifest = context_->manifest_data.get();
   if (!parser_->FillManifestX(const_cast<manifest_x*>(manifest))) {
     LOG(ERROR) << "[Parse] Storing manifest_x failed. "
                <<  parser_->GetErrorMessage();
@@ -38,12 +38,11 @@ common_installer::Step::Status StepParse::process() {
   }
 
   // Copy data from ManifestData to ContextInstaller
-  context_->config_data()->set_application_name(
-      std::string(manifest->uiapplication->label->name));
-  context_->config_data()->set_required_version(
-      std::string(parser_->GetRequiredAPIVersion()));
-  context_->set_pkgid(
-      std::string(manifest->package));
+  context_->config_data.get().application_name.set(
+      manifest->uiapplication->label->name);
+  context_->config_data.get().required_version.set(
+      parser_->GetRequiredAPIVersion());
+  context_->pkgid.set(manifest->package);
 
   LOG(DEBUG) << " Read data -[ ";
   LOG(DEBUG) << "  package     = " <<  manifest->package;

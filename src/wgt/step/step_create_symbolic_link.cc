@@ -19,10 +19,11 @@ namespace symbolic_link {
 namespace fs = boost::filesystem;
 
 common_installer::Step::Status StepCreateSymbolicLink::process() {
-  assert(context_->manifest_data());
+  assert(context_->manifest_data.get());
   boost::system::error_code error;
-  uiapplication_x* ui = context_->manifest_data()->uiapplication;
-  serviceapplication_x* svc = context_->manifest_data()->serviceapplication;
+  uiapplication_x* ui = context_->manifest_data.get()->uiapplication;
+  serviceapplication_x* svc =
+      context_->manifest_data.get()->serviceapplication;
   if ((!ui) && (!svc)) {
      LOG(ERROR) << "There is neither UI applications nor"
         << "Services applications described!";
@@ -31,8 +32,9 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
   // add ui-application element per ui application
   for (; ui != nullptr; ui = ui->next) {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(ui->appid)
-        / fs::path("bin");
+    fs::path exec_path =
+        fs::path(context_->pkg_path.get()) / fs::path(ui->appid)
+            / fs::path("bin");
     common_installer::utils::CreateDir(exec_path);
 
     exec_path /= fs::path(ui->appid);
@@ -46,8 +48,9 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
   }
   for (; svc != nullptr; svc = svc->next) {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(svc->appid)
-        / fs::path("bin");
+    fs::path exec_path =
+        fs::path(context_->pkg_path.get()) / fs::path(svc->appid)/
+            fs::path("bin");
     common_installer::utils::CreateDir(exec_path);
 
     exec_path /= fs::path(svc->appid);
@@ -69,18 +72,20 @@ common_installer::Step::Status StepCreateSymbolicLink::clean() {
 }
 
 common_installer::Step::Status StepCreateSymbolicLink::undo() {
-  uiapplication_x* ui = context_->manifest_data()->uiapplication;
-  serviceapplication_x* svc = context_->manifest_data()->serviceapplication;
+  uiapplication_x* ui = context_->manifest_data.get()->uiapplication;
+  serviceapplication_x* svc = context_->manifest_data.get()->serviceapplication;
 
   for (; ui != nullptr; ui = ui->next) {
-    fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(ui->appid)
-    / fs::path("bin");
+    fs::path exec_path =
+        fs::path(context_->pkg_path.get()) / fs::path(ui->appid)
+            / fs::path("bin");
     if (fs::exists(exec_path))
       fs::remove_all(exec_path);
   }
   for (; svc != nullptr; svc = svc->next) {
-    fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(svc->appid)
-    / fs::path("bin");
+    fs::path exec_path =
+        fs::path(context_->pkg_path.get()) / fs::path(svc->appid)
+            / fs::path("bin");
     if (fs::exists(exec_path))
       fs::remove_all(exec_path);
   }

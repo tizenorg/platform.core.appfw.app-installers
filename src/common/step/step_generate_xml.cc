@@ -26,16 +26,16 @@ namespace common_installer {
 namespace generate_xml {
 
 Step::Status StepGenerateXml::process() {
-  assert(context_->manifest_data());
+  assert(context_->manifest_data.get());
 
-  fs::path xml_path = fs::path(getUserManifestPath(context_->uid()))
-      / fs::path(context_->pkgid());
+  fs::path xml_path = fs::path(getUserManifestPath(context_->uid.get()))
+      / fs::path(context_->pkgid.get());
   xml_path += ".xml";
 
-  context_->set_xml_path(xml_path.string());
+  context_->xml_path.set(xml_path.string());
   boost::system::error_code error;
-  if ((!context_->manifest_data()->uiapplication) &&
-     (!context_->manifest_data()->serviceapplication)) {
+  if ((!context_->manifest_data.get()->uiapplication) &&
+     (!context_->manifest_data.get()->serviceapplication)) {
     LOG(ERROR) << "There is neither UI applications nor"
                << "Services applications described!";
     return Step::Status::ERROR;
@@ -51,7 +51,7 @@ Step::Status StepGenerateXml::process() {
 
   xmlTextWriterPtr writer;
 
-  writer = xmlNewTextWriterFilename(context_->xml_path().c_str(), 0);
+  writer = xmlNewTextWriterFilename(context_->xml_path.get().c_str(), 0);
   if (!writer) {
     LOG(ERROR) << "Failed to create new file";
     return Step::Status::ERROR;
@@ -67,22 +67,22 @@ Step::Status StepGenerateXml::process() {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns",
       BAD_CAST "http://tizen.org/ns/packages");
   xmlTextWriterWriteAttribute(writer, BAD_CAST "package",
-      BAD_CAST context_->manifest_data()->package);
+      BAD_CAST context_->manifest_data.get()->package);
   xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
-      BAD_CAST context_->manifest_data()->type);
+      BAD_CAST context_->manifest_data.get()->type);
   xmlTextWriterWriteAttribute(writer, BAD_CAST "version",
-      BAD_CAST context_->manifest_data()->version);
+      BAD_CAST context_->manifest_data.get()->version);
 
-  if ( context_->manifest_data()->description &&
-      context_->manifest_data()->description->name )
+  if ( context_->manifest_data.get()->description &&
+      context_->manifest_data.get()->description->name )
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
-        "%s", BAD_CAST context_->manifest_data()->description->name);
+        "%s", BAD_CAST context_->manifest_data.get()->description->name);
   else
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
         "%s", BAD_CAST "");
 
   // add ui-application element per ui application
-  for (uiapplication_x* ui = context_->manifest_data()->uiapplication;
+  for (uiapplication_x* ui = context_->manifest_data.get()->uiapplication;
       ui != nullptr; ui = ui->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
 
@@ -90,8 +90,9 @@ Step::Status StepGenerateXml::process() {
                                       BAD_CAST ui->appid);
 
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(ui->appid)
-        / fs::path("bin") / fs::path(ui->appid);
+    fs::path exec_path =
+        fs::path(context_->pkg_path.get()) / fs::path(ui->appid)
+            / fs::path("bin") / fs::path(ui->appid);
 
     xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
         BAD_CAST exec_path.string().c_str());
@@ -110,14 +111,14 @@ Step::Status StepGenerateXml::process() {
     // the icon is renamed to <appid.png>
     // and located in TZ_USER_ICON/TZ_SYS_ICON
     // if the icon isn't exist print the default icon app-installers.png
-    icon_path_ = fs::path(getIconPath(context_->uid()));
+    icon_path_ = fs::path(getIconPath(context_->uid.get()));
     utils::CreateDir(icon_path_);
 
     fs::path icon = fs::path(ui->appid) += fs::path(".png");
 
     if (ui->icon && ui->icon->name) {
-      fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(ui->appid)
-        / fs::path(ui->icon->name);
+      fs::path app_icon = fs::path(context_->pkg_path.get())
+          / fs::path(ui->appid) / fs::path(ui->icon->name);
       if (fs::exists(app_icon))
         fs::rename(app_icon, icon_path_ /= icon);
     } else {
@@ -159,15 +160,16 @@ Step::Status StepGenerateXml::process() {
 
   // add service-application element per service application
   for (serviceapplication_x* svc =
-      context_->manifest_data()->serviceapplication;
+      context_->manifest_data.get()->serviceapplication;
       svc != nullptr; svc = svc->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "service-application");
 
     xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST svc->appid);
 
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path = fs::path(context_->pkg_path()) / fs::path(svc->appid)
-        / fs::path("bin") / fs::path(svc->appid);
+    fs::path exec_path =
+        fs::path(context_->pkg_path.get()) / fs::path(svc->appid)
+            / fs::path("bin") / fs::path(svc->appid);
 
     xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
         BAD_CAST exec_path.string().c_str());
@@ -181,13 +183,14 @@ Step::Status StepGenerateXml::process() {
     // the icon is renamed to <appid.png>
     // and located in TZ_USER_ICON/TZ_SYS_ICON
     // if the icon isn't exist print the default icon app-installers.png
-    icon_path_ = fs::path(getIconPath(context_->uid()));
+    icon_path_ = fs::path(getIconPath(context_->uid.get()));
     utils::CreateDir(icon_path_);
     fs::path icon = fs::path(svc->appid) += fs::path(".png");
 
     if (svc->icon && svc->icon->name) {
-      fs::path app_icon = fs::path(context_->pkg_path()) / fs::path(svc->appid)
-          / fs::path(svc->icon->name);
+      fs::path app_icon =
+          fs::path(context_->pkg_path.get()) / fs::path(svc->appid)
+              / fs::path(svc->icon->name);
       if (fs::exists(app_icon))
         fs::rename(app_icon, icon_path_ /= icon);
     } else {
@@ -226,7 +229,9 @@ Step::Status StepGenerateXml::process() {
 
   // add privilege element
   privileges_x* pvlg = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data()->privileges, pvlg);
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(
+      context_->manifest_data.get()->privileges,
+      pvlg);
   for (; pvlg != nullptr; pvlg = pvlg->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "privileges");
     privilege_x* pv = nullptr;
@@ -244,12 +249,13 @@ Step::Status StepGenerateXml::process() {
   xmlFreeTextWriter(writer);
 
   if (pkgmgr_parser_check_manifest_validation(
-      context_->xml_path().c_str()) != 0) {
+      context_->xml_path.get().c_str()) != 0) {
     LOG(ERROR) << "Manifest is not valid";
     return Step::Status::ERROR;
   }
 
-  LOG(DEBUG) << "Successfully create manifest xml " << context_->xml_path();
+  LOG(DEBUG) << "Successfully create manifest xml "
+      << context_->xml_path.get();
   return Status::OK;
 }
 

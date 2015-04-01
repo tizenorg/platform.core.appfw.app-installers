@@ -12,7 +12,7 @@ namespace signal {
 
 Step::Status StepSignal::process() {
   if (!context_->pi()->sendStarted(
-      context_->manifest_data()->type, context_->pkgid())) {
+      context_->manifest_data.get()->type, context_->pkgid.get())) {
     return Status::ERROR;
   }
   LOG(DEBUG) << "Send Start";
@@ -22,7 +22,7 @@ Step::Status StepSignal::process() {
 Step::Status StepSignal::clean() {
   if (!context_->pi()->sendFinished(
         PkgmgrSignal::Result::SUCCESS,
-        context_->manifest_data()->type, context_->pkgid())) {
+        context_->manifest_data.get()->type, context_->pkgid.get())) {
     return Status::ERROR;
   }
   LOG(DEBUG) << "Send Success";
@@ -32,7 +32,7 @@ Step::Status StepSignal::clean() {
 Step::Status StepSignal::undo() {
   if (!context_->pi()->sendFinished(
         PkgmgrSignal::Result::FAILED,
-        context_->manifest_data()->type, context_->pkgid())) {
+        context_->manifest_data.get()->type, context_->pkgid.get())) {
     return Status::ERROR;
   }
   LOG(ERROR) << "Send Error";
