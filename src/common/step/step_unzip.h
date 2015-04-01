@@ -5,8 +5,6 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include <string>
-
 #include "common/context_installer.h"
 #include "common/step/step.h"
 #include "utils/logging.h"
@@ -23,7 +21,8 @@ class StepUnzip : public Step {
   Status undo() override;
 
  private:
-  boost::filesystem::path GenerateTmpDir(const std::string &app_path);
+  boost::filesystem::path GenerateTmpDir(
+      const boost::filesystem::path& app_path);
   Step::Status ExtractToTmpDir(const char* source_dir,
       const boost::filesystem::path& tmp_dir);
 

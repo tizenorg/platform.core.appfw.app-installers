@@ -3,6 +3,8 @@
 #ifndef COMMON_CONTEXT_INSTALLER_H_
 #define COMMON_CONTEXT_INSTALLER_H_
 
+#include <boost/filesystem/path.hpp>
+
 #include <pkgmgr_parser.h>
 
 #include <unistd.h>
@@ -56,19 +58,19 @@ class ContextInstaller {
   Property<manifest_x*> manifest_data;
 
   // path to manifest xml file used to register data in databases
-  Property<std::string> xml_path;
+  Property<boost::filesystem::path> xml_path;
 
   // pkgid used for update or uninstallation processing
   Property<std::string> pkgid;
 
   // package directory path containing app data
-  Property<std::string> pkg_path;
+  Property<boost::filesystem::path> pkg_path;
 
   // file path used for installation or reinstallation process
-  Property<std::string> file_path;
+  Property<boost::filesystem::path> file_path;
 
   // directory path where app data are temporarily extracted
-  Property<std::string> unpacked_dir_path;
+  Property<boost::filesystem::path> unpacked_dir_path;
 
   // uid of the user that request the operation
   Property<uid_t> uid;
@@ -77,10 +79,10 @@ class ContextInstaller {
   Property<ConfigData> config_data;
 
   // path for the applications directory
-  Property<std::string> application_path;
+  Property<boost::filesystem::path> application_path;
 
   // path for the applications root directory
-  Property<std::string> root_application_path;
+  Property<boost::filesystem::path> root_application_path;
 };
 
 }  // namespace common_installer

@@ -109,7 +109,7 @@ StepUnzip::StepUnzip(ContextInstaller* context)
     : Step(context),
       is_extracted_(false) {}
 
-boost::filesystem::path StepUnzip::GenerateTmpDir(const std::string &app_path) {
+boost::filesystem::path StepUnzip::GenerateTmpDir(const bf::path &app_path) {
   boost::filesystem::path install_tmp_dir;
   boost::filesystem::path tmp_dir(app_path);
 
@@ -230,8 +230,7 @@ Step::Status StepUnzip::process() {
     return Step::Status::ERROR;
   }
 
-  int64_t required_size =
-      GetUnpackedPackageSize(bf::path(context_->file_path.get()));
+  int64_t required_size = GetUnpackedPackageSize(context_->file_path.get());
 
   if (required_size == -1) {
     LOG(ERROR) << "Couldn't get uncompressed size for package: "
@@ -252,12 +251,12 @@ Step::Status StepUnzip::process() {
     return Step::Status::OUT_OF_SPACE;
   }
 
-  if (ExtractToTmpDir(context_->file_path.get().c_str(), tmp_dir)
+  if (ExtractToTmpDir(context_->file_path.get().string().c_str(), tmp_dir)
       != Step::Status::OK) {
     LOG(ERROR) << "Failed to process unpack step";
     return Step::Status::ERROR;
   }
-  context_->unpacked_dir_path.set(tmp_dir.string());
+  context_->unpacked_dir_path.set(tmp_dir);
 
   LOG(INFO) << context_->file_path.get() << " was successfully unzipped into "
       << context_->unpacked_dir_path.get();
@@ -265,7 +264,7 @@ Step::Status StepUnzip::process() {
 }
 
 Step::Status StepUnzip::undo() {
-  if (access(context_->unpacked_dir_path.get().c_str(), F_OK) == 0) {
+  if (access(context_->unpacked_dir_path.get().string().c_str(), F_OK) == 0) {
     bf::remove_all(context_->unpacked_dir_path.get());
     LOG(DEBUG) << "remove temp dir: " << context_->unpacked_dir_path.get();
   }

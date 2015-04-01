@@ -25,7 +25,7 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
   boost::system::error_code error;
 
   for (; app != nullptr; app=app->next) {
-    fs::path bindir = fs::path(context->pkg_path.get()) / fs::path(app->appid) /
+    fs::path bindir = context->pkg_path.get() / fs::path(app->appid) /
         fs::path("bin");
     LOG(INFO) << "Creating dir: " << bindir;
     if (!common_installer::utils::CreateDir(bindir)) {
