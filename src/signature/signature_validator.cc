@@ -19,12 +19,13 @@
 #include "signature/signature_data.h"
 #include "signature/signature_parser.h"
 #include "signature/signature_xmlsec_adaptor.h"
+#include "utils/byte_size_literals.h"
 
 namespace bf = boost::filesystem;
 
 namespace {
 
-const int kXMLLogSize = 1024;
+const int kXMLLogSize = 1_kB;
 
 const char kAuthorSignatureName[] = "author-signature.xml";
 const char kTokenRoleAuthorURI[] =

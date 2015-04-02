@@ -11,6 +11,7 @@
 #include <string>
 
 #include "common/step/step.h"
+#include "utils/macros.h"
 
 namespace common_installer {
 
@@ -51,9 +52,7 @@ class PkgmgrSignal {
   pkgmgr_installer* pi_;
   static State state_;
 
-  // TODO(t.iwanek): use DISALLOW_COPY_AND_ASSIGN
-  PkgmgrSignal(const PkgmgrSignal&) = delete;
-  PkgmgrSignal& operator=(const PkgmgrSignal&) = delete;
+  DISALLOW_COPY_AND_ASSIGN(PkgmgrSignal);
 };
 
 }  // namespace common_installer

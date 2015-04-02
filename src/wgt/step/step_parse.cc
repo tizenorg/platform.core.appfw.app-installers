@@ -211,8 +211,8 @@ common_installer::Step::Status StepParse::process() {
     new WidgetHandler
   };
 
-  std::unique_ptr<parser::ManifestHandlerRegistry> registry;
-  registry.reset(new parser::ManifestHandlerRegistry(handlers));
+  std::unique_ptr<parser::ManifestHandlerRegistry> registry(
+      new parser::ManifestHandlerRegistry(handlers));
 
   parser_.reset(new parser::ManifestParser(std::move(registry)));
   if (!parser_->ParseManifest(config_)) {

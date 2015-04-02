@@ -15,7 +15,6 @@ class Task {
   bool Init(int argc, char** argv);
   bool Run();
 
-
  private:
   int Install();
   int Uninstall();
@@ -23,4 +22,5 @@ class Task {
 };  //  class Task
 
 }  //  namespace tpk
+
 #endif  // TPK_TASK_H_

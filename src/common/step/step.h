@@ -4,7 +4,7 @@
 // found in the LICENSE file.
 
 /*
-  A step is made of 3 functions (that can be defined or NULL)
+  A step is made of 3 functions (that can be defined or null)
   and one data pointer.
 
   The functions are:

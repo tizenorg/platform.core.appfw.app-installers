@@ -23,7 +23,7 @@ std::string DecodePercentEscapedCharacter(const std::string& path) {
       char str[3] = {"\0", };
       str[0] = input[i + 1];
       str[1] = input[i + 2];
-      int result = strtol(str, NULL, 16);
+      int result = strtol(str, nullptr, 16);
       // RFC 1738 - octets 80 to FF are not allowed
       if (result >= 128)
         return std::string();

@@ -156,7 +156,7 @@ XmlTree* XmlParser::ParseAndGetNewTree(const char* xmlFilePath) {
   LIBXML_TEST_VERSION
 
   XmlTree* t = nullptr;
-  xmlDocPtr doc = xmlReadFile(xmlFilePath, NULL, 0);
+  xmlDocPtr doc = xmlReadFile(xmlFilePath, nullptr, 0);
   if (doc) {
     t = new XmlTree(doc);
   } else {

@@ -25,7 +25,9 @@
 namespace ci = common_installer;
 
 namespace {
-  const char kPkgType[] = "tpk";
+
+const char kPkgType[] = "tpk";
+
 }  // namespace
 
 namespace tpk {

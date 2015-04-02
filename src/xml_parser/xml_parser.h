@@ -54,8 +54,6 @@ class XmlParser {
   XmlParser();
   ~XmlParser();
   XmlTree* ParseAndGetNewTree(const char* xmlFilePath = "");
-
- private:
 };
 
 }  // namespace xml_parser

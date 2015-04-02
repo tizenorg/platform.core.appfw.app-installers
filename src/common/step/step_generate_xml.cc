@@ -136,7 +136,7 @@ Step::Status StepGenerateXml::process() {
     return Step::Status::ERROR;
   }
 
-  xmlTextWriterStartDocument(writer, NULL, NULL, NULL);
+  xmlTextWriterStartDocument(writer, nullptr, nullptr, nullptr);
 
   xmlTextWriterSetIndent(writer, 1);
 

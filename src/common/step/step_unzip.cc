@@ -21,10 +21,15 @@
 #include <cstring>
 #include <string>
 
+#include "utils/byte_size_literals.h"
 #include "utils/file_util.h"
 
-#define ZIPBUFSIZE 8192
-#define ZIPMAXPATH 256
+namespace {
+
+unsigned kZipBufSize = 8_kB;
+unsigned kZipMaxPath = 256;
+
+}
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
@@ -55,7 +60,7 @@ int64_t GetUnpackedPackageSize(const bf::path& path) {
 
   unz_global_info info;
   unz_file_info64 raw_file_info;
-  char raw_file_name_in_zip[ZIPMAXPATH];
+  char raw_file_name_in_zip[kZipMaxPath];
 
   unzFile* zip_file = static_cast<unzFile*>(unzOpen(path.string().c_str()));
   if (zip_file == nullptr) {
@@ -71,7 +76,7 @@ int64_t GetUnpackedPackageSize(const bf::path& path) {
 
   for (uLong i = 0; i < info.number_entry; i++) {
     if (unzGetCurrentFileInfo64(zip_file, &raw_file_info, raw_file_name_in_zip,
-        sizeof(raw_file_name_in_zip), NULL, 0, NULL, 0) != UNZ_OK) {
+        sizeof(raw_file_name_in_zip), nullptr, 0, nullptr, 0) != UNZ_OK) {
       LOG(ERROR) << "Failed to read file info";
       return -1;
     }
@@ -136,14 +141,14 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
   }
 
   unz_global_info info;
-  char read_buffer[ZIPBUFSIZE];
+  char read_buffer[kZipBufSize];
   unz_file_info raw_file_info;
-  char raw_file_name_in_zip[ZIPMAXPATH];
+  char raw_file_name_in_zip[kZipMaxPath];
 
   current_path(tmp_dir);
 
   unzFile* zip_file = static_cast<unzFile*>(unzOpen(src));
-  if (zip_file == NULL) {
+  if (!zip_file) {
     LOG(ERROR) << "Failed to open the source dir: " << src;
     return Step::Status::ERROR;
   }
@@ -156,7 +161,7 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
 
   for (uLong i = 0; i < info.number_entry; i++) {
     if (unzGetCurrentFileInfo(zip_file, &raw_file_info, raw_file_name_in_zip,
-        sizeof(raw_file_name_in_zip), NULL, 0, NULL, 0) != UNZ_OK) {
+        sizeof(raw_file_name_in_zip), nullptr, 0, nullptr, 0) != UNZ_OK) {
       LOG(ERROR) << "Failed to read file info";
       unzClose(zip_file);
       return Step::Status::ERROR;
@@ -190,7 +195,7 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
 
       int ret = UNZ_OK;
       do {
-        ret = unzReadCurrentFile(zip_file, read_buffer, ZIPBUFSIZE);
+        ret = unzReadCurrentFile(zip_file, read_buffer, kZipBufSize);
         if (ret < 0) {
           LOG(ERROR) << "Failed to read data: " << ret;
           unzCloseCurrentFile(zip_file);
