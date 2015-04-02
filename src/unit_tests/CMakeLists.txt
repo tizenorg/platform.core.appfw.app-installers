@@ -15,6 +15,8 @@ ADD_EXECUTABLE(xml_parser_unittest
                xml_parser_unittest.cc ../xml_parser/xml_parser.cc)
 
 INSTALL(DIRECTORY test_samples/ DESTINATION ${SHAREDIR}/${DESTINATION_DIR}/test_samples)
+INSTALL(FILES run-unit-tests.sh DESTINATION ${BINDIR}/app-installers-ut/
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ)
 
 FOREACH(test ${TESTS})
 APPLY_PKG_CONFIG(${test} PUBLIC
