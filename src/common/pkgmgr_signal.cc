@@ -15,9 +15,10 @@
 
 namespace common_installer {
 
+PkgmgrSignal::State PkgmgrSignal::state_ = PkgmgrSignal::State::NOT_SENT;
+
 PkgmgrSignal::PkgmgrSignal(pkgmgr_installer* pi)
-    : pi_(pi),
-      state_(State::NOT_SENT) {
+    : pi_(pi) {
 }
 
 bool PkgmgrSignal::SendStarted(

@@ -16,11 +16,6 @@ namespace common_installer {
 
 //
 // Utility for sending signal to pkgmgr
-//
-// One installation process should not create more than one instance of this
-// class. Object contains state of signaling and will report error if
-// used in wrong way.
-//
 class PkgmgrSignal {
  public:
   enum class State {
@@ -54,7 +49,7 @@ class PkgmgrSignal {
   const char* GetResultKey(Step::Status result) const;
 
   pkgmgr_installer* pi_;
-  State state_;
+  static State state_;
 
   // TODO(t.iwanek): use DISALLOW_COPY_AND_ASSIGN
   PkgmgrSignal(const PkgmgrSignal&) = delete;
