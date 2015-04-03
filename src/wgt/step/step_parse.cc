@@ -18,8 +18,6 @@
 
 #include "parser/manifest_handler.h"
 #include "parser/manifest_constants.h"
-#include "manifest_handlers/app_control_handler.h"
-#include "manifest_handlers/application_icons_handler.h"
 #include "manifest_handlers/application_manifest_constants.h"
 #include "manifest_handlers/appwidget_handler.h"
 #include "manifest_handlers/category_handler.h"
@@ -28,8 +26,7 @@
 #include "manifest_handlers/navigation_handler.h"
 #include "manifest_handlers/setting_handler.h"
 #include "manifest_handlers/splash_screen_handler.h"
-#include "manifest_handlers/tizen_application_handler.h"
-#include "manifest_handlers/widget_handler.h"
+
 
 namespace wgt {
 namespace parse {
@@ -42,59 +39,14 @@ std::set<std::string> StepParse::ExtractPrivileges(
   return perm_info->GetAPIPermissions();
 }
 
-bool StepParse::FillManifestX(manifest_x* manifest) {
-  std::string api_version, short_name, version;
-  std::shared_ptr<const TizenApplicationInfo> app_info =
-      std::static_pointer_cast<const TizenApplicationInfo>(
-          parser_->GetManifestData(app_keys::kTizenApplicationKey));
-  if (!app_info.get()) {
-    LOG(ERROR) << "Application info manifest data has not been found.";
-    return false;
-  }
-  api_version = app_info->required_version();
-  std::shared_ptr<const WidgetInfo> wgt_info =
-      std::static_pointer_cast<const WidgetInfo>(parser_->GetManifestData(
-          parser::kWidgetKey));
-  if (!wgt_info.get()) {
-    LOG(ERROR) << "Widget info manifest data has not been found.";
-    return false;
-  }
-  wgt_info->GetWidgetInfo()->GetString(app_keys::kShortNameKey, &short_name);
-  wgt_info->GetWidgetInfo()->GetString(app_keys::kVersionKey, &version);
+const std::string& StepParse::GetPackageVersion(
+     const std::string& manifest_version) {
+  if (!manifest_version.empty())
+    return manifest_version;
+  return "1.0.0";
+}
 
-  if (!version.empty())
-    manifest->version = strdup(version.c_str());
-  else
-    manifest->version = strdup("1.0.0");
-
-  // application data
-  manifest->serviceapplication = nullptr;
-  manifest->uiapplication = reinterpret_cast<uiapplication_x*>
-    (calloc (1, sizeof(uiapplication_x)));
-  manifest->uiapplication->label = reinterpret_cast<label_x*>
-    (calloc(1, sizeof(label_x)));
-  manifest->uiapplication->appcontrol = nullptr;
-
-  manifest->uiapplication->appid = strdup(app_info->id().c_str());
-  manifest->uiapplication->type = strdup("webapp");
-
-  // package data
-  manifest->package = strdup(app_info->package().c_str());
-  manifest->mainapp_id = strdup(app_info->id().c_str());
-
-  manifest->type = strdup("wgt");
-
-  description_x* description = reinterpret_cast<description_x*>
-      (calloc(1, sizeof(description_x)));
-  std::string name;
-  wgt_info->GetWidgetInfo()->GetString(manifest_keys::kNameKey, &name);
-  description->name = strdup(name.c_str());
-  manifest->description = description;
-  manifest->label =
-      reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
-  manifest->label->name = strdup(name.c_str());
-
-  // icons
+bool StepParse::FillIconPaths(manifest_x* manifest) {
   std::shared_ptr<const ApplicationIconsInfo> icons_info =
       std::static_pointer_cast<const ApplicationIconsInfo>(
           parser_->GetManifestData(manifest_keys::kIconsKey));
@@ -106,30 +58,60 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
       LISTADD(manifest->icon, icon);
     }
   }
+  return true;
+}
 
-  // privileges
-  std::shared_ptr<const PermissionsInfo> perm_info =
-      std::static_pointer_cast<const PermissionsInfo>(parser_->GetManifestData(
-          app_keys::kTizenPermissionsKey));
-  std::set<std::string> privileges;
-  privileges.insert({"priv"});
-  privileges.clear();
-  if (perm_info)
-    privileges = ExtractPrivileges(perm_info);
-
-  if (!privileges.empty()) {
-    privileges_x* privileges_x_list =
-        reinterpret_cast<privileges_x*> (calloc(1, sizeof(privileges_x)));\
-    manifest->privileges = privileges_x_list;
-    for (const std::string& p : privileges) {
-      privilege_x* privilege_x_node =
-          reinterpret_cast<privilege_x*> (calloc(1, sizeof(privilege_x)));
-      privilege_x_node->text = strdup(p.c_str());
-      LISTADD(manifest->privileges->privilege, privilege_x_node);
-    }
+bool StepParse::FillWidgetInfo(manifest_x* manifest) {
+  std::string short_name, version;
+  std::shared_ptr<const WidgetInfo> wgt_info =
+      std::static_pointer_cast<const WidgetInfo>(parser_->GetManifestData(
+          parser::kWidgetKey));
+  if (!wgt_info.get()) {
+    LOG(ERROR) << "Widget info manifest data has not been found.";
+    return false;
   }
+  wgt_info->GetWidgetInfo()->GetString(app_keys::kShortNameKey, &short_name);
+  wgt_info->GetWidgetInfo()->GetString(app_keys::kVersionKey, &version);
 
-  // appcontrol
+  manifest->version = strdup(GetPackageVersion(version).c_str());
+  description_x* description = reinterpret_cast<description_x*>
+      (calloc(1, sizeof(description_x)));
+  std::string name;
+  wgt_info->GetWidgetInfo()->GetString(manifest_keys::kNameKey, &name);
+  description->name = strdup(name.c_str());
+  manifest->description = description;
+
+  manifest->label->name = strdup(name.c_str());
+
+  // For wgt package use the long name if the short name is empty
+  if (!short_name.empty())
+    manifest->uiapplication->label->name = strdup(short_name.c_str());
+  else
+    manifest->uiapplication->label->name =
+        strdup(manifest->description->name);
+  return true;
+}
+
+bool StepParse::FillApplicationInfo(manifest_x* manifest) {
+  std::string api_version;
+  std::shared_ptr<const TizenApplicationInfo> app_info =
+      std::static_pointer_cast<const TizenApplicationInfo>(
+          parser_->GetManifestData(app_keys::kTizenApplicationKey));
+  if (!app_info.get()) {
+    LOG(ERROR) << "Application info manifest data has not been found.";
+    return false;
+  }
+  api_version = app_info->required_version();
+  manifest->uiapplication->appid = strdup(app_info->id().c_str());
+  manifest->uiapplication->type = strdup("webapp");
+  manifest->package = strdup(app_info->package().c_str());
+  manifest->mainapp_id = strdup(app_info->id().c_str());
+  manifest->type = strdup("wgt");
+
+  return true;
+}
+
+bool StepParse::FillAppControl(manifest_x* manifest) {
   std::shared_ptr<const AppControlInfoList> app_info_list =
       std::static_pointer_cast<const AppControlInfoList>(
           parser_->GetManifestData(app_keys::kTizenApplicationAppControlsKey));
@@ -150,16 +132,56 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
       LISTADD(manifest->uiapplication->appcontrol, app_control);
     }
   }
+  return true;
+}
 
-  // For wgt package use the long name if the short name is empty
-  if (!short_name.empty())
-    manifest->uiapplication->label->name = strdup(short_name.c_str());
-  else
-    manifest->uiapplication->label->name =
-        strdup(manifest->description->name);
+bool StepParse::FillPrivileges(manifest_x* manifest) {
+  std::shared_ptr<const PermissionsInfo> perm_info =
+      std::static_pointer_cast<const PermissionsInfo>(parser_->GetManifestData(
+          app_keys::kTizenPermissionsKey));
+  std::set<std::string> privileges;
+  privileges.insert({"priv"});
+  privileges.clear();
+  if (perm_info)
+    privileges = ExtractPrivileges(perm_info);
 
+  if (!privileges.empty()) {
+    privileges_x* privileges_x_list =
+        reinterpret_cast<privileges_x*> (calloc(1, sizeof(privileges_x)));\
+    manifest->privileges = privileges_x_list;
+    for (const std::string& p : privileges) {
+      privilege_x* privilege_x_node =
+          reinterpret_cast<privilege_x*> (calloc(1, sizeof(privilege_x)));
+      privilege_x_node->text = strdup(p.c_str());
+      LISTADD(manifest->privileges->privilege, privilege_x_node);
+    }
+  }
+  return true;
+}
+
+bool StepParse::FillManifestX(manifest_x* manifest) {
+  // application data
+  manifest->serviceapplication = nullptr;
+  manifest->uiapplication = reinterpret_cast<uiapplication_x*>
+    (calloc (1, sizeof(uiapplication_x)));
+  manifest->uiapplication->label = reinterpret_cast<label_x*>
+    (calloc(1, sizeof(label_x)));
+  manifest->uiapplication->appcontrol = nullptr;
+  manifest->label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
   manifest->uiapplication->icon =
       reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
+
+  if (!FillWidgetInfo(manifest))
+    return false;
+  if (!FillApplicationInfo(manifest))
+    return false;
+  if (!FillIconPaths(manifest))
+    return false;
+  if (!FillPrivileges(manifest))
+    return false;
+  if (!FillAppControl(manifest))
+    return false;
+
   if (manifest->icon)
     manifest->uiapplication->icon->name = strdup(manifest->icon->name);
   manifest->uiapplication->next = nullptr;
