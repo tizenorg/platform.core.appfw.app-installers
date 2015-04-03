@@ -3,7 +3,7 @@
 #ifdef HOSTTEST
 #include "test/mock_pkgmgr_installer.h"
 #else
-#include <pkgmgr_installer.h>
+#include "common/pkgmgr_interface.h"
 #include "common/app_installer.h"
 #include "common/step/step_copy.h"
 #include "common/step/step_generate_xml.h"
@@ -33,51 +33,39 @@ SCOPE_LOG_TAG(TpkTask)
 
 /* Constructor
  */
-Task::Task() :
-  pi_(nullptr),
-  request_(PKGMGR_REQ_INVALID) {
+Task::Task() {
 }
 
 
 /* Destructor
  */
 ::tpk::Task::~Task() {
-  if (pi_) {
-    pkgmgr_installer_free(pi_);
-    pi_ = nullptr;
-  }
 }
 
 
 bool Task::Init(int argc, char** argv) {
-  pi_ = pkgmgr_installer_new();
-  if (!pi_) {
-    LOG(ERROR) << "Failed to run pkgmgr_installer_new()";
+  int result = ci::PkgMgrInterface::Init(argc, argv);
+  if (!result) {
+    LOG(ERROR) << "Cannot connect to PkgMgrInstaller";
     return false;
   }
-  if (!!pkgmgr_installer_receive_request(pi_, argc, argv)) {
-    LOG(ERROR) << "Invalid argument";
-    pkgmgr_installer_free(pi_);
-    pi_ = nullptr;
-    return false;
-  }
-  request_ = pkgmgr_installer_get_request_type(pi_);
-
   return true;
 }
 
 
 bool Task::Run() {
   int ret = 0;
-  switch (request_) {
-    case PKGMGR_REQ_INSTALL:
+  switch (ci::PkgMgrInterface::Instance()->GetRequestType()) {
+    case ci::PkgMgrInterface::Type::Install:
       ret = Install();
       break;
-    case PKGMGR_REQ_UNINSTALL:
+    case ci::PkgMgrInterface::Type::Uninstall:
       ret = Uninstall();
       break;
-    case PKGMGR_REQ_REINSTALL:
+    case ci::PkgMgrInterface::Type::Reinstall:
       ret = Reinstall();
+      break;
+    default:
       break;
   }
   if (ret != 0) {
@@ -88,7 +76,7 @@ bool Task::Run() {
 }
 
 int Task::Install() {
-  ci::AppInstaller ai(pi_, kPkgType);
+  ci::AppInstaller ai(kPkgType);
 
   ai.AddStep<ci::unzip::StepUnzip>();
   ai.AddStep<ci::signature::StepCheckSignature>();
@@ -103,7 +91,7 @@ int Task::Install() {
 }
 
 int Task::Uninstall() {
-  ci::AppInstaller ai(pi_, kPkgType);
+  ci::AppInstaller ai(kPkgType);
 
   ai.AddStep<ci::parse::StepParse>();
   ai.AddStep<ci::unregister_app::StepUnregisterApplication>();

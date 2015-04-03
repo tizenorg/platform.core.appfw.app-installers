@@ -4,8 +4,6 @@
 
 #ifdef HOSTTEST
 #include "test/mock_pkgmgr_installer.h"
-#else
-#include <pkgmgr_installer.h>
 #endif
 
 namespace tpk {
@@ -22,9 +20,6 @@ class Task {
   int Install();
   int Uninstall();
   int Reinstall();
-
-  pkgmgr_installer* pi_;
-  int request_;
 };  //  class Task
 
 }  //  namespace tpk
