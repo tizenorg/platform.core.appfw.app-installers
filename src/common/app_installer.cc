@@ -23,8 +23,7 @@ AppInstaller::AppInstaller(const char* package_type)
   PkgMgrPtr pkgmgr = PkgMgrInterface::Instance();
   pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi()));
   context_->pkg_type.set(package_type);
-  context_->request_type.set(pkgmgr->GetRequestType());
-  switch (context_->request_type.get()) {
+  switch (pkgmgr->GetRequestType()) {
     case PkgMgrInterface::Type::Install:
       context_->file_path.set(pkgmgr->GetRequestInfo());
       context_->pkgid.set(STR_EMPTY);

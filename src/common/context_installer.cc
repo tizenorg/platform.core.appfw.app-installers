@@ -11,8 +11,7 @@ namespace common_installer {
 namespace fs = boost::filesystem;
 
 ContextInstaller::ContextInstaller()
-    : request_type(PkgMgrInterface::Type::Unknown),
-      manifest_data(static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)))),
+    : manifest_data(static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)))),
       uid(getuid()) {
 
     std::string root_app_path =
