@@ -9,4 +9,6 @@
   CLASS(const CLASS&) = delete;                    \
   CLASS& operator=(const CLASS&) = delete          \
 
+#define DEPRECATED  __attribute__ ((__deprecated__))
+
 #endif  // UTILS_MACROS_H_

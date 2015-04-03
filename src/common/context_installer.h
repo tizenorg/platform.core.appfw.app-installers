@@ -11,6 +11,8 @@
 #include <memory>
 #include <string>
 
+#include "common/pkgmgr_interface.h"
+
 namespace common_installer {
 
 /** Template class for defining smart attributes.
@@ -49,8 +51,9 @@ class ContextInstaller {
   ContextInstaller();
   ~ContextInstaller();
 
+  // TODO(p.sikorski) it looks, as it is not used anywhere.
   // request type: Install, Reinstall, Uninstall, Update.
-  Property<int> request_type;
+  Property<PkgMgrInterface::Type> request_type;
 
   // package_type
   Property<std::string> pkg_type;

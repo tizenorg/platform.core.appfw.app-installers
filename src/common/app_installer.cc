@@ -4,6 +4,7 @@
 
 #include "common/app_installer.h"
 #include "common/context_installer.h"
+#include "common/pkgmgr_interface.h"
 #include "common/pkgmgr_signal.h"
 #include "utils/logging.h"
 
@@ -17,21 +18,25 @@ const unsigned kProgressRange = 100;
 
 namespace common_installer {
 
-AppInstaller::AppInstaller(pkgmgr_installer *pi, const char* package_type)
-  : context_(new ContextInstaller()) {
-  int request_type = pkgmgr_installer_get_request_type(pi);
-  pi_.reset(new PkgmgrSignal(pi));
-  context_->request_type.set(request_type);
+AppInstaller::AppInstaller(const char* package_type)
+    : context_(new ContextInstaller()) {
+  PkgMgrPtr pkgmgr = PkgMgrInterface::Instance();
+  pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi()));
   context_->pkg_type.set(package_type);
-  switch (request_type) {
-    case PKGMGR_REQ_INSTALL:
-     context_->file_path.set(pkgmgr_installer_get_request_info(pi));
-     context_->pkgid.set(STR_EMPTY);
-    break;
-    case PKGMGR_REQ_UNINSTALL:
-     context_->pkgid.set(pkgmgr_installer_get_request_info(pi));
-     context_->file_path.set(STR_EMPTY);
-    break;
+  context_->request_type.set(pkgmgr->GetRequestType());
+  switch (context_->request_type.get()) {
+    case PkgMgrInterface::Type::Install:
+      context_->file_path.set(pkgmgr->GetRequestInfo());
+      context_->pkgid.set(STR_EMPTY);
+      break;
+    case PkgMgrInterface::Type::Uninstall:
+      context_->pkgid.set(pkgmgr->GetRequestInfo());
+      context_->file_path.set(STR_EMPTY);
+      break;
+    default:
+      // currently, only installation and uninstallation handled
+      // TODO(p.sikorski): should return unsupported, and display error
+      break;
   }
 }
 

@@ -3,7 +3,6 @@
 #ifndef COMMON_APP_INSTALLER_H_
 #define COMMON_APP_INSTALLER_H_
 
-#include <pkgmgr_installer.h>
 #include <list>
 #include <memory>
 
@@ -16,7 +15,7 @@ namespace common_installer {
 
 class AppInstaller {
  public:
-  explicit AppInstaller(pkgmgr_installer *pi, const char* package_type);
+  explicit AppInstaller(const char* package_type);
   virtual ~AppInstaller();
 
   // Adds new step to installer by specified type

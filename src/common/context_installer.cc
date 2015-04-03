@@ -1,13 +1,9 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
 #include "common/context_installer.h"
-
 #include <boost/filesystem.hpp>
-
-#include <pkgmgr_installer.h>
 #include <tzplatform_config.h>
 #include <unistd.h>
-
 #include <cstdlib>
 
 namespace common_installer {
@@ -15,7 +11,7 @@ namespace common_installer {
 namespace fs = boost::filesystem;
 
 ContextInstaller::ContextInstaller()
-    : request_type(PKGMGR_REQ_INVALID),
+    : request_type(PkgMgrInterface::Type::Unknown),
       manifest_data(static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)))),
       uid(getuid()) {
 
