@@ -12,9 +12,13 @@
 #include "common/app_installer.h"
 #include "common/context_installer.h"
 #include "common/step/step.h"
+#include "manifest_handlers/app_control_handler.h"
+#include "manifest_handlers/application_icons_handler.h"
+#include "manifest_handlers/permissions_handler.h"
+#include "manifest_handlers/tizen_application_handler.h"
+#include "manifest_handlers/widget_handler.h"
 #include "parser/manifest_parser.h"
 #include "utils/logging.h"
-#include "manifest_handlers/permissions_handler.h"
 
 namespace wgt {
 namespace parse {
@@ -30,6 +34,14 @@ class StepParse : public common_installer::Step {
  private:
   std::set<std::string> ExtractPrivileges(
       std::shared_ptr<const PermissionsInfo> perm_info) const;
+
+  const std::string& GetPackageVersion(const std::string& manifest_version);
+
+  bool FillIconPaths(manifest_x* manifest);
+  bool FillWidgetInfo(manifest_x* manifest);
+  bool FillApplicationInfo(manifest_x* manifest);
+  bool FillAppControl(manifest_x* manifest);
+  bool FillPrivileges(manifest_x* manifest);
   bool FillManifestX(manifest_x* manifest);
 
   std::unique_ptr<parser::ManifestParser> parser_;
