@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: manifest-handlers
+Description: Manifest handlers for manifest parser
+Version: @VERSION@
+Requires: manifest-parser
+Libs: -L${libdir} -lmanifest-handlers
+Cflags: -I${includedir}
