@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: manifest-parser
+Description: Universal manifest parser
+Version: @VERSION@
+Requires: libiri libxml-2.0 pkgmgr-info pkgmgr-parser vconf
+Libs: -L${libdir} -lmanifest-parser
+Cflags: -I${includedir}
