@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "parser/macros.h"
 #include "parser/manifest.h"
 
 namespace parser {
@@ -36,6 +37,10 @@ class ManifestData {
 typedef std::map<const std::string, std::shared_ptr<ManifestData> >
     ManifestDataMap;
 
+// TODO(j.izydorczyk):
+// Each class, which inherits from ManifestHandler
+// is defined as non-copyable and non-assignable, we need to check
+// if it is really needed
 class ManifestHandler {
  public:
   virtual ~ManifestHandler();
