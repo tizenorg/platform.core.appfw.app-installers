@@ -17,8 +17,9 @@ class StepUnregisterApplication : public Step {
   using Step::Step;
 
   Step::Status process() override;
-  Step::Status clean() override;
-  Step::Status undo() override;
+  Step::Status clean() override { return Status::OK; }
+  Step::Status undo() override { return Status::OK; }
+  Status precheck() override;
 
   SCOPE_LOG_TAG(Unregister)
 };
