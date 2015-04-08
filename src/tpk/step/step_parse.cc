@@ -70,20 +70,41 @@ SCOPE_LOG_TAG(StepParse)
 typedef common_installer::Step::Status Status;
 using boost::filesystem::path;
 
+Status StepParse::precheck() {
+  if (context_->unpacked_dir_path.get().empty()) {
+      LOG(ERROR) << "unpacked_dir_path attribute is empty";
+      return Step::Status::INVALID_VALUE;
+  }
+  if (!boost::filesystem::exists(context_->unpacked_dir_path.get())) {
+    LOG(ERROR) << "unpacked_dir_path ("
+               << context_->unpacked_dir_path.get()
+               << ") path does not exist";
+    return Step::Status::INVALID_VALUE;
+  }
+
+  boost::filesystem::path tmp(context_->unpacked_dir_path.get());
+  tmp /= kManifestFileName;
+
+  if (!boost::filesystem::exists(tmp)) {
+    LOG(ERROR) << kManifestFileName << " not found from the package";
+    return Step::Status::INVALID_VALUE;
+  }
+
+  return Step::Status::OK;
+}
+
 /* process()
  * Parse tizen-manifest.xml and get the data from it
  * Store the data into the context_
  */
 Status StepParse::process() {
-  std::unique_ptr<boost::filesystem::path> mPath(
-      GetManifestFilePath(context_->unpacked_dir_path.get()));
-  if (!mPath) {
-    return Status::ERROR;
-  }
-  LOG(INFO) << "Parse " << mPath->c_str();
+  boost::filesystem::path mPath(context_->unpacked_dir_path.get());
+  mPath /= kManifestFileName;
+
+  LOG(INFO) << "Parse " << mPath.c_str();
 
   XmlParser parser;
-  std::unique_ptr<XmlTree> tree(parser.ParseAndGetNewTree(mPath->c_str()));
+  std::unique_ptr<XmlTree> tree(parser.ParseAndGetNewTree(mPath.c_str()));
   if (tree == nullptr) {
     LOG(ERROR) << "Failure on parsing xml";
     return Status::ERROR;
@@ -93,23 +114,6 @@ Status StepParse::process() {
   }
   return Status::OK;
 }
-
-
-/* in parse() : Get manifest file path from the package unzipped directory
- */
-boost::filesystem::path* StepParse::GetManifestFilePath(
-    const boost::filesystem::path& dir) {
-  path* mPath = new path(dir);
-  *mPath /= kManifestFileName;
-
-  LOG(INFO) << "manifest file path: " << mPath->string();
-  if (!boost::filesystem::exists(*mPath)) {
-    LOG(ERROR) << kManifestFileName << " not found from the package";
-    return nullptr;
-  }
-  return mPath;  // object copy
-}
-
 
 /* Read manifest xml, and set up context_ object
  */
