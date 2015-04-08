@@ -19,6 +19,7 @@ class StepUnzip : public Step {
   Status process() override;
   Status clean() override { return Status::OK; }
   Status undo() override;
+  Status precheck() override;
 
  private:
   boost::filesystem::path GenerateTmpDir(

@@ -56,7 +56,9 @@ int AppInstaller::Run() {
   unsigned current_step = 1;
 
   for (; it != itEnd; ++it, ++current_step) {
-    process_status = (*it)->process();
+    process_status = (*it)->precheck();
+    if (process_status == Step::Status::OK)
+      process_status = (*it)->process();
 
     // send START signal as soon as possible
     if (pi_->state() == PkgmgrSignal::State::NOT_SENT) {

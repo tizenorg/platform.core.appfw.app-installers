@@ -214,14 +214,36 @@ Step::Status StepUnzip::ExtractToTmpDir(const char* src,
   return Status::OK;
 }
 
-Step::Status StepUnzip::process() {
-  assert(!context_->file_path.get().empty());
+Step::Status StepUnzip::precheck() {
+  if (context_->file_path.get().empty()) {
+    LOG(ERROR) << "file_path attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
   if (!boost::filesystem::exists(context_->file_path.get())) {
-    LOG(ERROR) << "Specified widget does not exist: "
-               << context_->file_path.get();
-    return Step::Status::ERROR;
+    LOG(ERROR) << "file_path ("
+               << context_->file_path.get()
+               << ") path does not exist";
+    return Step::Status::INVALID_VALUE;
   }
 
+  if (context_->root_application_path.get().empty()) {
+    LOG(ERROR) << "root_application_path attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+  if (!boost::filesystem::exists(context_->root_application_path.get())) {
+    LOG(ERROR) << "root_application_path ("
+               << context_->root_application_path.get()
+               << ") path does not exist";
+    // TODO(p.sikorski) maybe it should be created (instead of returning error)
+    // but, if so, then it should be created in a separate step, eg.
+    // AppInstallerConfigure or something similar
+    return Step::Status::INVALID_VALUE;
+  }
+
+  return Step::Status::OK;
+}
+
+Step::Status StepUnzip::process() {
   bf::path tmp_dir =
       GenerateTmpDir(context_->root_application_path.get());
 

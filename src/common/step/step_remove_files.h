@@ -20,6 +20,7 @@ class StepRemoveFiles : public Step {
   Status process() override;
   Status clean() override;
   Status undo() override;
+  Status precheck() override;
 
   SCOPE_LOG_TAG(Remove)
 };

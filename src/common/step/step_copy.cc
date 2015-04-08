@@ -14,12 +14,48 @@ namespace copy {
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
-Step::Status StepCopy::process() {
-  assert(!context_->pkgid.get().empty());
+Step::Status StepCopy::precheck() {
+  if (context_->root_application_path.get().empty()) {
+    LOG(ERROR) << "root_application_path attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+  if (!boost::filesystem::exists(context_->root_application_path.get())) {
+    LOG(ERROR) << "root_application_path ("
+               << context_->root_application_path.get()
+               << ") path does not exist";
+    return Step::Status::INVALID_VALUE;
+  }
 
+  if (context_->unpacked_dir_path.get().empty()) {
+    LOG(ERROR) << "unpacked_dir_path attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+  if (!boost::filesystem::exists(context_->unpacked_dir_path.get())) {
+    LOG(ERROR) << "unpacked_dir_path ("
+               << context_->unpacked_dir_path.get()
+               << ") path does not exist";
+    return Step::Status::INVALID_VALUE;
+  }
+
+  if (!context_->manifest_data.get()) {
+    LOG(ERROR) << "manifest_data attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+
+  if (context_->pkgid.get().empty()) {
+    LOG(ERROR) << "pkgid attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+
+  // TODO(p.sikorski) asserts?
+
+  return Step::Status::OK;
+}
+
+Step::Status StepCopy::process() {
   // set application path
   context_->application_path.set(
-      context_->root_application_path.get() / context_->pkgid.get());
+    context_->root_application_path.get() / context_->pkgid.get());
 
   bf::path install_path = bf::path(context_->application_path.get());
 
