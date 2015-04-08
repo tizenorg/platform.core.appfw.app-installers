@@ -106,22 +106,27 @@ bool RemoveSymLink(T *app, ContextInstaller* context) {
 
 }  // namespace
 
+Status StepCreateSymbolicLink::precheck() {
+  manifest_x *m = context_->manifest_data.get();
+  if (!m) {
+    LOG(ERROR) << "manifest_data attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+  if (!(m->uiapplication || m->serviceapplication)) {
+    LOG(ERROR) << "Neither ui-application nor service-application exists";
+    return Step::Status::ERROR;
+  }
+
+  return Step::Status::OK;
+}
 
 Status StepCreateSymbolicLink::process() {
   // Get manifest_x
   manifest_x *m = context_->manifest_data.get();
-  if (!m) {
-    LOG(ERROR) << "manifest_x is null";
-    return Status::ERROR;
-  }
 
   // get ui-app and service-app
   uiapplication_x *uiapp = m->uiapplication;
   serviceapplication_x *svcapp = m->serviceapplication;
-  if (!(uiapp || svcapp)) {
-    LOG(ERROR) << "Neither ui-application nor service-application exists";
-    return Status::ERROR;
-  }
 
   if (!CreateSymLink(uiapp, context_)) return Status::ERROR;
   if (!CreateSymLink(svcapp, context_)) return Status::ERROR;

@@ -13,7 +13,7 @@ class StepCreateSymbolicLink : public common_installer::Step {
   Status process() override;
   Status clean() override { return Status::OK; }
   Status undo() override;
-  Status precheck() override { return Status::OK; }
+  Status precheck() override;
 };
 
 }  // namespace filesystem
