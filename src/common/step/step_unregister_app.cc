@@ -16,9 +16,28 @@ namespace unregister_app {
 
 namespace fs = boost::filesystem;
 
-Step::Status StepUnregisterApplication::process() {
-  assert(!context_->pkgid.get().empty());
+Step::Status StepUnregisterApplication::precheck() {
+  if (context_->pkgid.get().empty()) {
+    LOG(ERROR) << "pkgid attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+  if (context_->xml_path.get().empty()) {
+    LOG(ERROR) << "xml_path attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+  if (!boost::filesystem::exists(context_->xml_path.get())) {
+    LOG(ERROR) << "xml_path ("
+               << context_->xml_path.get()
+               << ") path does not exist";
+    return Step::Status::INVALID_VALUE;
+  }
 
+  // TODO(p.sikorski) check context_->uid.get()
+
+  return Step::Status::OK;
+}
+
+Step::Status StepUnregisterApplication::process() {
   const char* const appinst_tags[] = {"removable=true", nullptr, };
 
   int ret = context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
@@ -35,16 +54,6 @@ Step::Status StepUnregisterApplication::process() {
   }
   LOG(DEBUG) << "Successfully unregister the application";
 
-  return Status::OK;
-}
-
-Step::Status StepUnregisterApplication::clean() {
-  LOG(DEBUG) << "Empty 'clean' method";
-  return Status::OK;
-}
-
-Step::Status StepUnregisterApplication::undo() {
-  LOG(DEBUG) << "Empty 'undo' method";
   return Status::OK;
 }
 

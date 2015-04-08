@@ -42,6 +42,7 @@ class Step {
   virtual Status process() = 0;
   virtual Status undo() = 0;
   virtual Status clean() = 0;
+  virtual Status precheck() = 0;
 
  protected:
   ContextInstaller* context_;

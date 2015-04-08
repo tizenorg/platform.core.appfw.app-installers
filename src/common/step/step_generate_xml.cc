@@ -99,16 +99,31 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
   return Step::Status::OK;
 }
 
-Step::Status StepGenerateXml::process() {
-  assert(context_->manifest_data.get());
+Step::Status StepGenerateXml::precheck() {
+  if (context_->manifest_data.get()) {
+    LOG(ERROR) << "manifest_data attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+  if (context_->pkgid.get().empty()) {
+    LOG(ERROR) << "pkgid attribute is empty";
+    return Step::Status::INVALID_VALUE;   }
 
-  boost::system::error_code error;
   if ((!context_->manifest_data.get()->uiapplication) &&
      (!context_->manifest_data.get()->serviceapplication)) {
     LOG(ERROR) << "There is neither UI applications nor"
                << "Services applications described!";
-    return Step::Status::ERROR;
+    return Step::Status::INVALID_VALUE;
   }
+  // TODO(p.sikorski) check context_->uid.get()
+
+  return Step::Status::OK;
+}
+
+Step::Status StepGenerateXml::process() {
+  fs::path xml_path = fs::path(getUserManifestPath(context_->uid.get()))
+      / fs::path(context_->pkgid.get());
+  xml_path += ".xml";
+  context_->xml_path.set(xml_path.string());
 
   xmlTextWriterPtr writer;
 

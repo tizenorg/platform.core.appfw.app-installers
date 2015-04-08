@@ -30,6 +30,7 @@ class StepParse : public common_installer::Step {
   Status process() override;
   Status clean() override { return Status::OK; }
   Status undo() override { return Status::OK; }
+  Status precheck() override { return Status::OK; }
 
  private:
   std::set<std::string> ExtractPrivileges(

@@ -21,6 +21,7 @@ class StepGenerateXml : public Step {
   Status process() override;
   Status clean() override;
   Status undo() override;
+  Status precheck() override;
 
  private:
   // This function is used to generate common xml data

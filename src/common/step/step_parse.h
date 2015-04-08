@@ -18,6 +18,7 @@ class StepParse : public Step {
   Status process() override;
   Status clean() override;
   Status undo() override;
+  Status precheck() override { return Status::OK; }
 
   SCOPE_LOG_TAG(Parse)
 };
