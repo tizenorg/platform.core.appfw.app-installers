@@ -16,11 +16,35 @@ namespace remove {
 
 namespace fs = boost::filesystem;
 
+Step::Status StepRemoveFiles::precheck() {
+  if (context_->manifest_data.get()) {
+    LOG(ERROR) << "manifest_data attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+
+  // TODO(p.sikorski) should it return ERROR?
+  if (context_->pkg_path.get().empty())
+    LOG(ERROR) << "pkg_path attribute is empty";
+  else if (!fs::exists(context_->pkg_path.get()))
+    LOG(ERROR) << "pkg_path ("
+               << context_->pkg_path.get()
+               << ") path does not exist";
+
+  // TODO(p.sikorski) should it return ERROR?
+  if (context_->xml_path.get().empty())
+    LOG(ERROR) << "xml_path attribute is empty";
+  else if (!fs::exists(context_->xml_path.get()))
+    LOG(ERROR) << "xml_path ("
+               << context_->xml_path.get()
+               << ") path does not exist";
+
+  // TODO(p.sikorski) check context_->uid.get()
+
+  return Step::Status::OK;
+}
+
 Step::Status StepRemoveFiles::process() {
   uiapplication_x* ui = context_->manifest_data.get()->uiapplication;
-
-  if (!fs::exists(context_->pkg_path.get()))
-    LOG(DEBUG) << "dir: " << context_->pkg_path.get() << "not exist";
 
   fs::remove_all(context_->pkg_path.get());
   for (; ui != nullptr; ui = ui->next) {

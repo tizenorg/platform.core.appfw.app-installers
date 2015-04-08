@@ -19,6 +19,7 @@ class StepRevokeSecurity : public Step {
   Status process() override;
   Status undo() override;
   Status clean() override { return Status::OK; }
+  Status precheck() override;
 
   SCOPE_LOG_TAG(RevokeSecurity)
 };

@@ -14,9 +14,31 @@ namespace copy {
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
-Step::Status StepCopy::process() {
-  assert(!context_->pkgid.get().empty());
+#define FIELD_CHECK(field)  \
+  if (field) { \
+    LOG(ERROR) << #field  "attribute is empty"; \
+    return Step::Status::INVALID_VALUE; \
+  }
 
+#define PATH_CHECK(dir)  \
+  FIELD_CHECK(dir.empty()) \
+  if (!boost::filesystem::exists(dir)) { \
+    LOG(ERROR) << #dir " (" << dir << ") path does not exist"; \
+    return Step::Status::INVALID_VALUE; \
+  }
+
+Step::Status StepCopy::precheck() {
+  PATH_CHECK(context_->application_path.get())
+  PATH_CHECK(context_->unpacked_dir_path.get())
+  FIELD_CHECK(context_->manifest_data.get())
+  // TODO(p.sikorski) asserts?
+
+  return Step::Status::OK;
+}
+#undef PATH_CHECK
+#undef FIELD_CHECK
+
+Step::Status StepCopy::process() {
   bf::path install_path = bf::path(context_->application_path.get());
 
   context_->pkg_path.set(install_path.string());

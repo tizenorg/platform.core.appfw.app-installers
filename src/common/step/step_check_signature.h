@@ -19,6 +19,7 @@ class StepCheckSignature : public Step {
   Status process() override;
   Status undo() override { return Status::OK; }
   Status clean() override { return Status::OK; }
+  Status precheck() override;
 
   SCOPE_LOG_TAG(Signature)
 };

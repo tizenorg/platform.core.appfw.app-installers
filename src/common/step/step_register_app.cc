@@ -26,9 +26,23 @@ namespace register_app {
 
 namespace fs = boost::filesystem;
 
-Step::Status StepRegisterApplication::process() {
-  assert(!context_->xml_path.get().empty());
+Step::Status StepRegisterApplication::precheck() {
+  if (context_->xml_path.get().empty()) {
+    LOG(ERROR) << "xml_path attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+  if (!boost::filesystem::exists(context_->xml_path.get())) {
+    LOG(ERROR) << "xml_path ("
+               << context_->xml_path.get()
+               << ") path does not exist";
+    return Step::Status::INVALID_VALUE;
+  }
+  // TODO(p.sikorski) check context_->uid.get()
 
+  return Step::Status::OK;
+}
+
+Step::Status StepRegisterApplication::process() {
   const char* const appinst_tags[] = {"removable=true", nullptr, };
   // TODO(sdi2): Check if data->removable is correctly setting
   // during parsing step.
