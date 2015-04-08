@@ -73,19 +73,26 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
       appc = appc->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
-    xmlTextWriterStartElement(writer, BAD_CAST "operation");
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-        BAD_CAST appc->operation->name);
-    xmlTextWriterEndElement(writer);
+    if (appc->operation) {
+      xmlTextWriterStartElement(writer, BAD_CAST "operation");
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+          BAD_CAST appc->operation->name);
+      xmlTextWriterEndElement(writer);
+    }
 
-    xmlTextWriterStartElement(writer, BAD_CAST "uri");
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-        BAD_CAST appc->uri->name);
-    xmlTextWriterEndElement(writer);
+    if (appc->uri) {
+      xmlTextWriterStartElement(writer, BAD_CAST "uri");
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+          BAD_CAST appc->uri->name);
+      xmlTextWriterEndElement(writer);
+    }
 
-    xmlTextWriterStartElement(writer, BAD_CAST "mime");
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-        BAD_CAST appc->mime->name);
+    if (appc->mime) {
+      xmlTextWriterStartElement(writer, BAD_CAST "mime");
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+          BAD_CAST appc->mime->name);
+      xmlTextWriterEndElement(writer);
+    }
 
     xmlTextWriterEndElement(writer);
   }
