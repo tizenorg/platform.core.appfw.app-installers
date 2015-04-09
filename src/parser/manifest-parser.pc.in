@@ -1,7 +1,7 @@
-prefix=/usr
-exec_prefix=${prefix}
-libdir=${prefix}/lib
-includedir=${prefix}/include
+prefix=@PREFIX@
+exec_prefix=@PREFIX@
+libdir=@LIBDIR@
+includedir=@INCLUDEDIR@
 
 Name: manifest-parser
 Description: Universal manifest parser
