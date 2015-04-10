@@ -17,7 +17,7 @@
 #include "manifest_handlers/permissions_handler.h"
 #include "manifest_handlers/tizen_application_handler.h"
 #include "manifest_handlers/widget_handler.h"
-#include "parser/manifest_parser.h"
+#include "manifest_parser/manifest_parser.h"
 #include "utils/logging.h"
 
 namespace wgt {

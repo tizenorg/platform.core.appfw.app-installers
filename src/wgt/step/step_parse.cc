@@ -16,8 +16,6 @@
 #include "common/context_installer.h"
 #include "common/step/step.h"
 
-#include "parser/manifest_handler.h"
-#include "parser/manifest_constants.h"
 #include "manifest_handlers/application_manifest_constants.h"
 #include "manifest_handlers/appwidget_handler.h"
 #include "manifest_handlers/category_handler.h"
@@ -26,7 +24,8 @@
 #include "manifest_handlers/navigation_handler.h"
 #include "manifest_handlers/setting_handler.h"
 #include "manifest_handlers/splash_screen_handler.h"
-
+#include "manifest_parser/manifest_handler.h"
+#include "manifest_parser/manifest_constants.h"
 
 namespace wgt {
 namespace parse {
