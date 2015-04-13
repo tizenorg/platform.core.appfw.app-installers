@@ -5,8 +5,6 @@
 
 #include <pkgmgr_parser.h>
 
-#include <boost/filesystem/path.hpp>
-
 #include <unistd.h>
 #include <sys/types.h>
 
@@ -58,7 +56,7 @@ class ContextInstaller {
   Property<manifest_x*> manifest_data;
 
   // path to manifest xml file used to register data in databases
-  Property<boost::filesystem::path> xml_path;
+  Property<std::string> xml_path;
 
   // pkgid used for update or uninstallation processing
   Property<std::string> pkgid;

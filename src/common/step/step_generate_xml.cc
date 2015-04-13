@@ -102,6 +102,11 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
 Step::Status StepGenerateXml::process() {
   assert(context_->manifest_data.get());
 
+  fs::path xml_path = fs::path(getUserManifestPath(context_->uid.get()))
+      / fs::path(context_->pkgid.get());
+  xml_path += ".xml";
+
+  context_->xml_path.set(xml_path.string());
   boost::system::error_code error;
   if ((!context_->manifest_data.get()->uiapplication) &&
      (!context_->manifest_data.get()->serviceapplication)) {
