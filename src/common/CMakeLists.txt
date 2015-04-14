@@ -7,6 +7,7 @@ SET(SRCS
   security_registration.cc
   step/step_unzip.cc
   step/step_check_signature.cc
+  step/step_configure.cc
   step/step_copy.cc
   step/step_generate_xml.cc
   step/step_register_app.cc

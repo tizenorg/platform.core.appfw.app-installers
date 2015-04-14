@@ -11,8 +11,6 @@
 #include "common/pkgmgr_signal.h"
 #include "utils/logging.h"
 
-#define STR_EMPTY ""
-
 namespace {
 
 const unsigned kProgressRange = 100;
@@ -25,21 +23,10 @@ AppInstaller::AppInstaller(const char* package_type)
     : context_(new ContextInstaller()) {
   PkgMgrPtr pkgmgr = PkgMgrInterface::Instance();
   pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi()));
+
+  // TODO(p.sikorski) below property is only used in AppInstaller.
+  // maybe it should then be kept in AppInstaller
   context_->pkg_type.set(package_type);
-  switch (pkgmgr->GetRequestType()) {
-    case PkgMgrInterface::Type::Install:
-      context_->file_path.set(pkgmgr->GetRequestInfo());
-      context_->pkgid.set(STR_EMPTY);
-      break;
-    case PkgMgrInterface::Type::Uninstall:
-      context_->pkgid.set(pkgmgr->GetRequestInfo());
-      context_->file_path.set(STR_EMPTY);
-      break;
-    default:
-      // currently, only installation and uninstallation handled
-      // TODO(p.sikorski): should return unsupported, and display error
-      break;
-  }
 }
 
 AppInstaller::~AppInstaller() {

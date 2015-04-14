@@ -5,6 +5,7 @@
 #else
 #include "common/pkgmgr_interface.h"
 #include "common/app_installer.h"
+#include "common/step/step_configure.h"
 #include "common/step/step_copy.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_parse.h"
@@ -78,6 +79,7 @@ bool Task::Run() {
 int Task::Install() {
   ci::AppInstaller ai(kPkgType);
 
+  ai.AddStep<ci::configure::StepConfigure>();
   ai.AddStep<ci::unzip::StepUnzip>();
   ai.AddStep<ci::signature::StepCheckSignature>();
   ai.AddStep<tpk::step::StepParse>();
@@ -93,6 +95,7 @@ int Task::Install() {
 int Task::Uninstall() {
   ci::AppInstaller ai(kPkgType);
 
+  ai.AddStep<ci::configure::StepConfigure>();
   ai.AddStep<ci::parse::StepParse>();
   ai.AddStep<ci::unregister_app::StepUnregisterApplication>();
   ai.AddStep<ci::remove::StepRemoveFiles>();

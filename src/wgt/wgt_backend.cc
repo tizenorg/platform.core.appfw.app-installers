@@ -7,6 +7,7 @@
 
 #include "common/app_installer.h"
 #include "common/pkgmgr_interface.h"
+#include "common/step/step_configure.h"
 #include "common/step/step_copy.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_parse.h"
@@ -36,6 +37,7 @@ int main(int argc, char** argv) {
   /* treat the request */
   switch (pkgmgr->GetRequestType()) {
     case ci::PkgMgrInterface::Type::Install : {
+      installer.AddStep<ci::configure::StepConfigure>();
       installer.AddStep<ci::unzip::StepUnzip>();
       installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<wgt::parse::StepParse>();
@@ -47,6 +49,7 @@ int main(int argc, char** argv) {
       break;
     }
     case ci::PkgMgrInterface::Type::Uninstall: {
+      installer.AddStep<ci::configure::StepConfigure>();
       installer.AddStep<ci::parse::StepParse>();
       installer.AddStep<ci::unregister_app::StepUnregisterApplication>();
       installer.AddStep<ci::remove::StepRemoveFiles>();
