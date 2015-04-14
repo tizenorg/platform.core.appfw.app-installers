@@ -50,9 +50,6 @@ int AppInstaller::Run() {
   Step::Status process_status = Step::Status::OK;
   int ret = 0;
   unsigned total_steps = steps_.size();
-  pi_->SendProgress(0, context_->pkg_type.get(),
-      context_->pkgid.get());
-
   unsigned current_step = 1;
 
   for (; it != itEnd; ++it, ++current_step) {
