@@ -17,6 +17,10 @@ namespace bs = boost::system;
 Step::Status StepCopy::process() {
   assert(!context_->pkgid.get().empty());
 
+  // set application path
+  context_->application_path.set(
+      context_->root_application_path.get() / context_->pkgid.get());
+
   bf::path install_path = bf::path(context_->application_path.get());
 
   context_->pkg_path.set(install_path.string());

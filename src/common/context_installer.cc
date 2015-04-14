@@ -20,8 +20,6 @@ ContextInstaller::ContextInstaller()
           : tzplatform_getenv(TZ_SYS_RW_APP);
 
     root_application_path.set(root_app_path);
-    application_path.set(
-        (fs::path(root_app_path) / fs::path(pkgid.get())).native());
 }
 
 ContextInstaller::~ContextInstaller() {
