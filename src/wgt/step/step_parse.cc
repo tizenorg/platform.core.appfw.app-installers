@@ -64,7 +64,6 @@ bool StepParse::FillIconPaths(manifest_x* manifest) {
 }
 
 bool StepParse::FillWidgetInfo(manifest_x* manifest) {
-  std::string short_name, version;
   std::shared_ptr<const WidgetInfo> wgt_info =
       std::static_pointer_cast<const WidgetInfo>(parser_->GetManifestData(
           parser::kWidgetKey));
@@ -72,14 +71,14 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
     LOG(ERROR) << "Widget info manifest data has not been found.";
     return false;
   }
-  wgt_info->GetWidgetInfo()->GetString(app_keys::kShortNameKey, &short_name);
-  wgt_info->GetWidgetInfo()->GetString(app_keys::kVersionKey, &version);
+
+  const std::string& short_name = wgt_info->short_name();
+  const std::string& version = wgt_info->version();
 
   manifest->version = strdup(GetPackageVersion(version).c_str());
   description_x* description = reinterpret_cast<description_x*>
       (calloc(1, sizeof(description_x)));
-  std::string name;
-  wgt_info->GetWidgetInfo()->GetString(manifest_keys::kNameKey, &name);
+  const std::string& name = wgt_info->name();
   description->name = strdup(name.c_str());
   manifest->description = description;
 
@@ -237,14 +236,10 @@ common_installer::Step::Status StepParse::process() {
           parser_->GetManifestData(
               wgt::application_widget_keys::kTizenWidgetKey));
 
-  std::string name, short_name, version, required_api_version;
-  wgt_info->GetWidgetInfo()->GetString(
-      manifest_keys::kNameKey, &name);
-  wgt_info->GetWidgetInfo()->GetString(
-      app_keys::kShortNameKey, &short_name);
-  wgt_info->GetWidgetInfo()->GetString(
-      app_keys::kVersionKey, &version);
-  required_api_version = info->required_version();
+  const std::string& name = wgt_info->name();
+  const std::string& short_name = wgt_info->short_name();
+  const std::string& version = wgt_info->version();
+  const std::string& required_api_version = info->required_version();
 
   context_->config_data.get().application_name.set(
       std::string(manifest->uiapplication->label->name));
