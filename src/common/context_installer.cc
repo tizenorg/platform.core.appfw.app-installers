@@ -4,8 +4,6 @@
 // found in the LICENSE file.
 
 #include "common/context_installer.h"
-#include <boost/filesystem.hpp>
-#include <tzplatform_config.h>
 #include <unistd.h>
 #include <cstdlib>
 
@@ -16,15 +14,7 @@ namespace fs = boost::filesystem;
 ContextInstaller::ContextInstaller()
     : manifest_data(static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)))),
       old_manifest_data(nullptr),
-      uid(getuid()) {
-
-    std::string root_app_path =
-        uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
-          ? tzplatform_getenv(TZ_USER_APP)
-          : tzplatform_getenv(TZ_SYS_RW_APP);
-
-    root_application_path.set(root_app_path);
-}
+      uid(getuid()) {}
 
 ContextInstaller::~ContextInstaller() {
   if (manifest_data.get())

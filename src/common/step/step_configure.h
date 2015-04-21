@@ -21,6 +21,8 @@ class StepConfigure : public Step {
   Status clean() override { return Status::OK; }
   Status undo() override { return Status::OK; }
   Status precheck() override { return Status::OK; }
+ private:
+  bool SetupRootAppDirectory();
 
   SCOPE_LOG_TAG(Configure)
 };

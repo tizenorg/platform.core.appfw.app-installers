@@ -4,7 +4,11 @@
 
 #include "common/step/step_configure.h"
 
+#include <tzplatform_config.h>
+#include <string>
+
 #include "common/pkgmgr_interface.h"
+#include "utils/file_util.h"
 
 namespace common_installer {
 namespace configure {
@@ -13,6 +17,9 @@ const char *kStrEmpty = "";
 
 Step::Status StepConfigure::process() {
   PkgMgrPtr pkgmgr = PkgMgrInterface::Instance();
+
+  if (!SetupRootAppDirectory())
+    return Status::ERROR;
 
   switch (pkgmgr->GetRequestType()) {
     case PkgMgrInterface::Type::Install:
@@ -32,6 +39,30 @@ Step::Status StepConfigure::process() {
   }
 
   return Status::OK;
+}
+
+bool StepConfigure::SetupRootAppDirectory() {
+  if (context_->root_application_path.get().empty()) {
+    std::string root_app_path =
+        context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
+          ? tzplatform_getenv(TZ_USER_APP)
+          : tzplatform_getenv(TZ_SYS_RW_APP);
+    if (root_app_path.empty())
+      return false;
+
+    context_->root_application_path.set(root_app_path);
+  }
+  if (!boost::filesystem::exists(context_->root_application_path.get())) {
+    boost::system:: error_code error;
+    boost::filesystem::create_directories(
+        context_->root_application_path.get());
+    if (error) {
+      LOG(ERROR) << "Cannot create directory: "
+                 << context_->root_application_path.get();
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace configure
