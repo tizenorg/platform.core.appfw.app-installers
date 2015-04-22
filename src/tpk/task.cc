@@ -46,7 +46,7 @@ Task::Task() {
 
 bool Task::Init(int argc, char** argv) {
   int result = ci::PkgMgrInterface::Init(argc, argv);
-  if (!result) {
+  if (result != 0) {
     LOG(ERROR) << "Cannot connect to PkgMgrInstaller";
     return false;
   }
