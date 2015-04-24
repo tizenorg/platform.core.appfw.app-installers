@@ -1,5 +1,5 @@
 // Copyright (c) 2015 Samsung Electronics Co., Ltd All Rights Reserved
-// Use of this source code is governed by a BSD-style license that can be
+// Use of this source code is governed by an apache 2.0 license that can be
 // found in the LICENSE file.
 
 #include "common/step/step_update_app.h"
