@@ -28,14 +28,6 @@ Step::Status StepRevokeSecurity::precheck() {
     // However, during "undo" application_path has to exist.
     // return Step::Status::INVALID_VALUE;
   }
-  if (!boost::filesystem::exists(context_->application_path.get())) {
-    LOG(ERROR) << "application_path ("
-               << context_->application_path.get()
-               << ") path does not exist";
-    // TODO(p.sikorski) during standard process(), it does not need to exist
-    // However, during "undo" application_path has to exist.
-    // return Step::Status::INVALID_VALUE;
-  }
 
   return Step::Status::OK;
 }
