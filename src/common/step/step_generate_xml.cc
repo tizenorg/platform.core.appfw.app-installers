@@ -48,8 +48,18 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
     xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
         BAD_CAST "true");
 
-  xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
-      "%s", BAD_CAST app->label->name);
+  label_x* label = nullptr;
+  LISTHEAD(app->label, label);
+  for (; label; label = label->next) {
+    xmlTextWriterStartElement(writer, BAD_CAST "label");
+    if (strlen(label->lang)) {
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                  BAD_CAST label->lang);
+    }
+    xmlTextWriterWriteString(writer, BAD_CAST label->name);
+    xmlTextWriterEndElement(writer);
+  }
+
   // the icon is renamed to <appid.png>
   // and located in TZ_USER_ICON/TZ_SYS_ICON
   // if the icon isn't exist print the default icon app-installers.png
@@ -152,13 +162,22 @@ Step::Status StepGenerateXml::process() {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "version",
       BAD_CAST context_->manifest_data.get()->version);
 
-  if ( context_->manifest_data.get()->description &&
-      context_->manifest_data.get()->description->name )
-    xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
-        "%s", BAD_CAST context_->manifest_data.get()->description->name);
-  else
+  if (!context_->manifest_data.get()->description) {
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
         "%s", BAD_CAST "");
+  } else {
+    description_x* description = nullptr;
+    LISTHEAD(context_->manifest_data.get()->description, description);
+    for (; description; description = description->next) {
+      xmlTextWriterStartElement(writer, BAD_CAST "description");
+      if (strlen(description->lang)) {
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                    BAD_CAST description->lang);
+      }
+      xmlTextWriterWriteString(writer, BAD_CAST description->name);
+      xmlTextWriterEndElement(writer);
+    }
+  }
 
   // add ui-application element per ui application
   for (uiapplication_x* ui = context_->manifest_data.get()->uiapplication;

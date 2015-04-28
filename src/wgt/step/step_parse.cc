@@ -30,6 +30,12 @@
 #include "manifest_parser/manifest_handler.h"
 #include "manifest_parser/manifest_constants.h"
 
+namespace {
+
+const std::string kManifestVersion = "1.0.0";
+
+}
+
 namespace wgt {
 namespace parse {
 
@@ -45,7 +51,7 @@ const std::string& StepParse::GetPackageVersion(
      const std::string& manifest_version) {
   if (!manifest_version.empty())
     return manifest_version;
-  return "1.0.0";
+  return kManifestVersion;
 }
 
 bool StepParse::FillIconPaths(manifest_x* manifest) {
@@ -54,7 +60,7 @@ bool StepParse::FillIconPaths(manifest_x* manifest) {
           parser_->GetManifestData(manifest_keys::kIconsKey));
   if (icons_info.get()) {
     std::vector<std::string> icons = icons_info->get_icon_paths();
-    for (std::string icon_str : icons) {
+    for (auto& icon_str : icons) {
       icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
       icon->name = strdup(icon_str.c_str());
       LISTADD(manifest->icon, icon);
@@ -72,24 +78,42 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
     return false;
   }
 
-  const std::string& short_name = wgt_info->short_name();
   const std::string& version = wgt_info->version();
 
   manifest->version = strdup(GetPackageVersion(version).c_str());
-  description_x* description = reinterpret_cast<description_x*>
-      (calloc(1, sizeof(description_x)));
-  const std::string& name = wgt_info->name();
-  description->name = strdup(name.c_str());
-  manifest->description = description;
 
-  manifest->label->name = strdup(name.c_str());
+  for (auto& item : wgt_info->description_set()) {
+    description_x* description = reinterpret_cast<description_x*>
+        (calloc(1, sizeof(description_x)));
+    description->name = strdup(item.second.c_str());
+    description->lang = strdup(item.first.c_str());
+    LISTADD(manifest->description, description);
+  }
+
+  for (auto& item : wgt_info->name_set()) {
+    label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
+    label->name = strdup(item.second.c_str());
+    label->lang = strdup(item.first.c_str());
+    LISTADD(manifest->label, label);
+  }
+
+  manifest->type = strdup("wgt");
 
   // For wgt package use the long name if the short name is empty
-  if (!short_name.empty())
-    manifest->uiapplication->label->name = strdup(short_name.c_str());
-  else
-    manifest->uiapplication->label->name =
-        strdup(manifest->description->name);
+  const auto& shorts = wgt_info->short_name_set();
+  for (auto& item : wgt_info->name_set()) {
+    label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
+    auto short_item = shorts.find(item.first);
+    if (short_item != shorts.end()) {
+      label->name = strdup(short_item->second.c_str());
+      label->lang = strdup(short_item->first.c_str());
+    } else {
+      label->name = strdup(item.second.c_str());
+      label->lang = strdup(item.first.c_str());
+    }
+    LISTADD(manifest->uiapplication->label, label);
+  }
+
   return true;
 }
 
@@ -102,12 +126,24 @@ bool StepParse::FillApplicationInfo(manifest_x* manifest) {
     LOG(ERROR) << "Application info manifest data has not been found.";
     return false;
   }
+  // application data
+  manifest->serviceapplication = nullptr;
+  manifest->uiapplication = reinterpret_cast<uiapplication_x*>
+    (calloc (1, sizeof(uiapplication_x)));
+  manifest->uiapplication->appcontrol = nullptr;
+  manifest->uiapplication->icon =
+      reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
+
   api_version = app_info->required_version();
   manifest->uiapplication->appid = strdup(app_info->id().c_str());
   manifest->uiapplication->type = strdup("webapp");
+
+  if (manifest->icon)
+    manifest->uiapplication->icon->name = strdup(manifest->icon->name);
+  manifest->uiapplication->next = nullptr;
+
   manifest->package = strdup(app_info->package().c_str());
   manifest->mainapp_id = strdup(app_info->id().c_str());
-  manifest->type = strdup("wgt");
 
   return true;
 }
@@ -161,31 +197,16 @@ bool StepParse::FillPrivileges(manifest_x* manifest) {
 }
 
 bool StepParse::FillManifestX(manifest_x* manifest) {
-  // application data
-  manifest->serviceapplication = nullptr;
-  manifest->uiapplication = reinterpret_cast<uiapplication_x*>
-    (calloc (1, sizeof(uiapplication_x)));
-  manifest->uiapplication->label = reinterpret_cast<label_x*>
-    (calloc(1, sizeof(label_x)));
-  manifest->uiapplication->appcontrol = nullptr;
-  manifest->label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
-  manifest->uiapplication->icon =
-      reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
-
-  if (!FillWidgetInfo(manifest))
+  if (!FillIconPaths(manifest))
     return false;
   if (!FillApplicationInfo(manifest))
     return false;
-  if (!FillIconPaths(manifest))
+  if (!FillWidgetInfo(manifest))
     return false;
   if (!FillPrivileges(manifest))
     return false;
   if (!FillAppControl(manifest))
     return false;
-
-  if (manifest->icon)
-    manifest->uiapplication->icon->name = strdup(manifest->icon->name);
-  manifest->uiapplication->next = nullptr;
   return true;
 }
 
@@ -236,8 +257,20 @@ common_installer::Step::Status StepParse::process() {
           parser_->GetManifestData(
               wgt::application_widget_keys::kTizenWidgetKey));
 
-  const std::string& name = wgt_info->name();
-  const std::string& short_name = wgt_info->short_name();
+  std::string name;
+  const auto& name_set = wgt_info->name_set();
+  if (name_set.find("") != name_set.end())
+    name = name_set.find("")->second;
+  if (name_set.begin() != name_set.end())
+    name = name_set.begin()->second;
+
+  std::string short_name;
+  const auto& short_name_set = wgt_info->short_name_set();
+  if (short_name_set.find("") != short_name_set.end())
+    short_name = short_name_set.find("")->second;
+  if (short_name_set.begin() != short_name_set.end())
+    short_name = short_name_set.begin()->second;
+
   const std::string& version = wgt_info->version();
   const std::string& required_api_version = info->required_version();
 
