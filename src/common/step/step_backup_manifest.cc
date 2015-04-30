@@ -27,6 +27,7 @@ Step::Status StepBackupManifest::precheck() {
     LOG(ERROR) << "Xml manifest file does not exist";
     return Status::ERROR;
   }
+  return Status::OK;
 }
 
 Step::Status StepBackupManifest::process() {
