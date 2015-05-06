@@ -56,12 +56,12 @@ Step::Status StepRegisterApplication::process() {
           const_cast<char* const*>(kAppinstTags));
 
   if (ret) {
-    LOG(ERROR) << "Failed to record package into database";
+    LOG(ERROR) << "Failed to register the app";
     return Step::Status::ERROR;
   }
   in_registry_ = true;
 
-  LOG(INFO) << "Successfully install the application";
+  LOG(INFO) << "Successfully registered the app";
   return Status::OK;
 }
 

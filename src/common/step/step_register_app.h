@@ -24,7 +24,7 @@ class StepRegisterApplication : public Step {
  private:
   bool in_registry_;
 
-  SCOPE_LOG_TAG(Record)
+  SCOPE_LOG_TAG(RegisterApp)
 };
 
 }  // namespace register_app
