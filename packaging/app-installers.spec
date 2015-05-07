@@ -1,3 +1,6 @@
+#Available values for profile: mobile, wearable, tv, ivi, common
+%{!?profile:%define profile tv}
+
 Name:           app-installers
 Summary:        Application installers
 Version:        1.0
@@ -61,6 +64,7 @@ Requires: %{name} = %{version}
 %description tests
 Unit tests for al modules of app-installers
 
+
 %prep
 %setup -q
 
@@ -68,7 +72,12 @@ cp %{SOURCE1001} .
 cp %{SOURCE1002} .
 
 %build
-%cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type} -DWRT_LAUNCHER=%{_bindir}/xwalk-launcher
+#Variable for setting symlink to runtime
+runtime_path=%{_bindir}/xwalk-launcher
+%if "%{profile}" == "mobile" || "%{profile}" == "wearable" || "%{profile}" == "tv"
+runtime_path=%{_bindir}/wrt
+%endif
+%cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type} -DWRT_LAUNCHER=${runtime_path}
 make %{?_smp_mflags}
 
 %install
