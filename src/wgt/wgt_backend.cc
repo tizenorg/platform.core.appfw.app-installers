@@ -24,13 +24,18 @@
 #include "common/step/step_unzip.h"
 #include "common/step/step_update_app.h"
 #include "common/step/step_update_security.h"
+
+#include "wgt/update_workaround.h"
+
 #include "wgt/step/step_parse.h"
 #include "wgt/step/step_create_symbolic_link.h"
-
 
 namespace ci = common_installer;
 
 int main(int argc, char** argv) {
+  // TODO(t.iwanek): remove this when update installation detection is ready
+  workaround::OverwriteArgvIfNeeded(argc, argv);
+
   int result = ci::PkgMgrInterface::Init(argc, argv);
   if (result) {
     LOG(ERROR) << "Cannot connect to PkgMgrInstaller";
