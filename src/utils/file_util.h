@@ -5,6 +5,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include <string>
+
 namespace common_installer {
 namespace utils {
 
@@ -18,6 +20,17 @@ bool MoveDir(const boost::filesystem::path& src,
 
 bool MoveFile(const boost::filesystem::path& src,
               const boost::filesystem::path& dst);
+
+int64_t GetUnpackedPackageSize(const boost::filesystem::path& path);
+
+boost::filesystem::path GenerateTmpDir(const boost::filesystem::path& app_path);
+
+bool ExtractToTmpDir(const char* zip_path,
+                     const boost::filesystem::path& tmp_dir);
+
+bool ExtractToTmpDir(const char* zip_path,
+                     const boost::filesystem::path& tmp_dir,
+                     const std::string& filter_prefix);
 
 }  // namespace utils
 }  // namespace common_installer

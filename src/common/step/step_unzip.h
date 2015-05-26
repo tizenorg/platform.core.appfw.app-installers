@@ -24,14 +24,6 @@ class StepUnzip : public Step {
   Status undo() override;
   Status precheck() override;
 
- private:
-  boost::filesystem::path GenerateTmpDir(
-      const boost::filesystem::path& app_path);
-  Step::Status ExtractToTmpDir(const char* source_dir,
-      const boost::filesystem::path& tmp_dir);
-
-  bool is_extracted_;
-
   SCOPE_LOG_TAG(Unzip)
 };
 
