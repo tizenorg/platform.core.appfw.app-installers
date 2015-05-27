@@ -116,7 +116,7 @@ boost::filesystem::path* StepParse::GetManifestFilePath(
 bool StepParse::SetContextByManifestParser(XmlTree* tree) {
   // Get required elements
   XmlElement* manifest,
-      * ui_application, * label;
+      * ui_application, * service_application, * label;
 
   // manifest
   if (nullptr == (manifest = tree->GetRootElement())) {
@@ -130,21 +130,26 @@ bool StepParse::SetContextByManifestParser(XmlTree* tree) {
                 "' package='" << manifest->attr("package") <<
                 "' versionr='" << manifest->attr("version") << "'";
 
-  // ui_application
-  if (nullptr == (ui_application = Get1stChild(tree,
-          manifest, "ui-application"))) {
-    LOG(ERROR) << "No mandatory ui-application element in manifest xml";
+  // At least one of ui_application or service_application must be given
+  ui_application = Get1stChild(tree, manifest, "ui-application");
+  service_application = Get1stChild(tree, manifest, "service-application");
+  if (nullptr == ui_application && nullptr == service_application) {
+    LOG(ERROR) << "Neither <ui-application> nor <service-application>" <<
+        " element is found in manifest xml";
     return false;
   }
-  if (nullptr == (label = Get1stChild(tree, ui_application, "label"))) {
-    LOG(ERROR) << "No mandatory label element in manifest xml";
+  // label must be given
+  label = ui_application ? Get1stChild(tree, ui_application, "label") :
+      Get1stChild(tree, service_application, "label");
+  if (nullptr == label) {
+    LOG(ERROR) << "No mandatory <label> element in manifest xml";
     return false;
   }
 
   // set context_
   context_->config_data.get().application_name.set(label->content());
   context_->config_data.get().required_version.set(
-      manifest->attr("api_version"));
+      manifest->attr("api-version"));
   context_->pkgid.set(manifest->attr("package"));
   context_->manifest_data.set(static_cast<manifest_x*>(
       calloc(1, sizeof(manifest_x))));
@@ -160,8 +165,11 @@ bool StepParse::SetPkgInfoManifest(manifest_x* m,
 
   // Get required elements
   XmlElement* ui_application = Get1stChild(tree, manifest, "ui-application");
-  if (!ui_application) {
-    LOG(ERROR) << "No <ui-application> element is found in manifest xml";
+  XmlElement* service_application = Get1stChild(tree, manifest,
+      "service-application");
+  if (!(ui_application || service_application)) {   // mandatory check
+    LOG(ERROR) << "Neither <ui-application> nor <service-application>" <<
+        " element is found in manifest xml";
     return false;
   }
 
@@ -171,10 +179,13 @@ bool StepParse::SetPkgInfoManifest(manifest_x* m,
   m->version = string_strdup(manifest->attr("version"));
   m->installlocation = string_strdup(manifest->attr("install-location"));
 
-  m->mainapp_id = string_strdup(ui_application->attr("appid"));
+  // Choose main app among ui-application or service-application
+  // NOTE: main app must have appid attribute
+  XmlElement* main_app = ui_application ? ui_application : service_application;
+  m->mainapp_id = string_strdup(main_app->attr("appid"));
 
   // manifest' attribute from children's values
-  XmlElement* label = Get1stChild(tree, ui_application, "label");
+  XmlElement* label = Get1stChild(tree, main_app, "label");
   if (label) {
     m->label =  static_cast<label_x*>(calloc(1, sizeof(label_x)));
     m->label->name = string_strdup(label->content());
@@ -184,7 +195,7 @@ bool StepParse::SetPkgInfoManifest(manifest_x* m,
   return SetPkgInfoChildren(m, tree, manifest);
 }
 
-// Read and feel struct hierarchy
+// Read and fill struct hierarchy
 // The spec of tizen-manifest is referred from Tizen 2.2.1 header.
 bool StepParse::SetPkgInfoChildren(manifest_x* m,
     XmlTree* tree, XmlElement* manifest) {

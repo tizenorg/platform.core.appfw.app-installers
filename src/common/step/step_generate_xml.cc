@@ -27,11 +27,29 @@ namespace fs = boost::filesystem;
 namespace common_installer {
 namespace generate_xml {
 
+static void _writeUIApplicationAttributes(
+    xmlTextWriterPtr writer, uiapplication_x *app) {
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
+        BAD_CAST "true");
+}
+
+static void _writeServiceApplicationAttributes(
+    xmlTextWriterPtr writer, serviceapplication_x *app) {
+  xmlTextWriterWriteAttribute(writer, BAD_CAST "auto-restart",
+      BAD_CAST(app->autorestart ? app->autorestart : "false"));
+  xmlTextWriterWriteAttribute(writer, BAD_CAST "on-boot",
+      BAD_CAST(app->onboot ? app->onboot : "false"));
+  xmlTextWriterWriteAttribute(writer, BAD_CAST "permission-type",
+      BAD_CAST(app->permission_type ? app->permission_type : ""));
+}
+
 template <typename T>
 Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
     xmlTextWriterPtr writer) {
   fs::path default_icon(
       tzplatform_mkpath(TZ_SYS_RW_ICONS, "app-installers.png"));
+
+  // common appributes among uiapplication_x and serviceapplication_x
   xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST app->appid);
 
   // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
@@ -44,9 +62,13 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
   else
     xmlTextWriterWriteAttribute(writer, BAD_CAST "type", BAD_CAST "capp");
 
+  // app-specific attributes
   if (std::is_same<T, uiapplication_x>::value)
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
-        BAD_CAST "true");
+    _writeUIApplicationAttributes(
+        writer, reinterpret_cast<uiapplication_x *>(app));
+  if (std::is_same<T, serviceapplication_x>::value)
+    _writeServiceApplicationAttributes(
+        writer, reinterpret_cast<serviceapplication_x *>(app));
 
   label_x* label = nullptr;
   LISTHEAD(app->label, label);

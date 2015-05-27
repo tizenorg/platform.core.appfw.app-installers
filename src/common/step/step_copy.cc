@@ -65,12 +65,16 @@ Step::Status StepCopy::process() {
   context_->pkg_path.set(install_path.string());
 
   // FIXME: correctly order app's data.
-  // If there is 1 app in package, app's data are stored in <pkg_path>/<app_id>
-  // If there are >1 apps in package, app's data are stored in <pkg_path>
+  // If there is 1 app in package, the app's data are stored in
+  // <pkg_path>/<app_id>/
+  // If there are >1 apps in the package, app's data are stored in <pkg_path>
   // considering that multiple apps data are already separated in folders.
-  if (context_->manifest_data.get()->uiapplication &&
-      !context_->manifest_data.get()->uiapplication->next)
+  manifest_x *m = context_->manifest_data.get();
+  if ((m->uiapplication && !m->uiapplication->next && !m->serviceapplication) ||
+      (m->serviceapplication && !m->serviceapplication->next &&
+      !m->uiapplication)) {
     install_path /= bf::path(context_->manifest_data.get()->mainapp_id);
+  }
 
   bs::error_code error;
   bf::create_directories(install_path.parent_path(), error);
