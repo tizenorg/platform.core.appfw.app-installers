@@ -87,9 +87,6 @@ class ContextInstaller {
   // data from config.xml
   Property<ConfigData> config_data;
 
-  // path for the applications directory
-  Property<boost::filesystem::path> application_path;
-
   // path for the applications root directory
   Property<boost::filesystem::path> root_application_path;
 };

@@ -38,12 +38,8 @@ Step::Status StepParse::process() {
 
   context_->manifest_data.set(mfx);
 
-  // TODO(t.iwanek): fix me -> it shouldn't be here
-  // set application path
-  context_->application_path.set(
+  context_->pkg_path.set(
       context_->root_application_path.get() / context_->pkgid.get());
-
-  context_->pkg_path.set(context_->application_path.get());
 
   LOG(DEBUG) << "Successfully parse tizen manifest xml";
 

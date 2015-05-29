@@ -22,19 +22,19 @@ Step::Status StepCopyBackup::process() {
   assert(!context_->pkgid.get().empty());
 
   // set application path
-  context_->application_path.set(
+  context_->pkg_path.set(
       context_->root_application_path.get() / context_->pkgid.get());
 
-  // set paths
-  install_path_ = context_->application_path.get();
-  context_->pkg_path.set(install_path_.string());
+  install_path_ = context_->pkg_path.get();
 
   // FIXME: correctly order app's data.
   // If there is 1 app in package, app's data are stored in <pkg_path>/<app_id>
   // If there are >1 apps in package, app's data are stored in <pkg_path>
   // considering that multiple apps data are already separated in folders.
-  if (context_->manifest_data.get()->uiapplication &&
-      !context_->manifest_data.get()->uiapplication->next)
+  manifest_x *m = context_->manifest_data.get();
+  if ((m->uiapplication && !m->uiapplication->next && !m->serviceapplication) ||
+      (m->serviceapplication && !m->serviceapplication->next &&
+      !m->uiapplication))
     install_path_ /= bf::path(context_->manifest_data.get()->mainapp_id);
 
   backup_path_ = context_->pkg_path.get();

@@ -21,14 +21,6 @@ Step::Status StepRevokeSecurity::precheck() {
     return Step::Status::INVALID_VALUE;
   }
 
-  // application_path is used in undo, but still, it might need to be checked
-  if (context_->application_path.get().empty()) {
-    LOG(ERROR) << "application_path attribute is empty";
-    // TODO(p.sikorski) during standard process(), it does not need to exist
-    // However, during "undo" application_path has to exist.
-    // return Step::Status::INVALID_VALUE;
-  }
-
   return Step::Status::OK;
 }
 
@@ -45,7 +37,7 @@ Step::Status StepRevokeSecurity::process() {
 
 Step::Status StepRevokeSecurity::undo() {
   if (!RegisterSecurityContextForApps(
-      context_->pkgid.get(), context_->application_path.get(),
+      context_->pkgid.get(), context_->pkg_path.get(),
       context_->manifest_data.get())) {
     LOG(ERROR) << "Failure on re-installing security context for app "
                << context_->pkgid.get();

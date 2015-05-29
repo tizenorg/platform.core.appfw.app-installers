@@ -57,12 +57,10 @@ Step::Status StepCopy::precheck() {
 
 Step::Status StepCopy::process() {
   // set application path
-  context_->application_path.set(
+  context_->pkg_path.set(
     context_->root_application_path.get() / context_->pkgid.get());
 
-  bf::path install_path = bf::path(context_->application_path.get());
-
-  context_->pkg_path.set(install_path.string());
+  bf::path install_path = context_->pkg_path.get();
 
   // FIXME: correctly order app's data.
   // If there is 1 app in package, the app's data are stored in
