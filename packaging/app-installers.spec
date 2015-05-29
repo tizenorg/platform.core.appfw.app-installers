@@ -29,6 +29,7 @@ BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  pkgconfig(xmlsec1)
 BuildRequires:  pkgconfig(vconf)
+BuildRequires:  pkgconfig(cert-svc-vcore)
 BuildRequires:  pkgconfig(manifest-parser)
 BuildRequires:  pkgconfig(manifest-handlers)
 
@@ -95,10 +96,9 @@ ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %files
 %defattr(-,root,root)
 %{_libdir}/libcommon-installer.so*
-%{_libdir}/libcommon-installer-signature.so*
 %{_libdir}/libcommon-installer-utils.so*
 %{_datarootdir}/app-installers/signature_schema.xsd
-%license LICENSE LICENSE-xwalk
+%license LICENSE
 
 %files -n wgt-backend
 %manifest wgt-backend.manifest

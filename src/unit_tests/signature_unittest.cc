@@ -7,10 +7,7 @@
 
 #include <memory>
 
-#include "signature/signature_data.h"
-#include "signature/signature_parser.h"
-#include "signature/signature_validator.h"
-#include "signature/signature_xmlsec_adaptor.h"
+#include "common/step/step_check_signature.h"
 
 namespace bf = boost::filesystem;
 
@@ -22,39 +19,22 @@ class SignatureValidatorTest : public testing::Test {
   std::unique_ptr<bf::path> signature_file;
 };
 
-
 // Tests signature verifier with proper signatures
 TEST_F(SignatureValidatorTest, HandlesInitializedSignatureDir) {
   signature_file.reset(new bf::path(
       "/usr/share/app-installers-ut/test_samples/good_signatures"));
-  ASSERT_NE(nullptr, signature_file);
-  EXPECT_EQ(SignatureValidator::Check(*signature_file),
-            SignatureValidator::Status::VALID);
+  PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
+  EXPECT_EQ(ValidateSignatures(*signature_file, &level),
+            Step::Status::OK);
 }
 
 // Tests signature verifier with signature directory containing bad signatures
 TEST_F(SignatureValidatorTest, HandlesBadSignatureDir) {
   signature_file.reset(new bf::path(
       "/usr/share/app-installers-ut/test_samples/bad_signatures"));
-  ASSERT_NE(nullptr, signature_file);
-  EXPECT_EQ(SignatureValidator::Check(*signature_file),
-            SignatureValidator::Status::INVALID);
-}
-
-class SignatureXMLSecAdaptorTest : public testing::Test {
- protected:
-  std::unique_ptr<bf::path> signature_file;
-  std::unique_ptr<SignatureData> data;
-};
-
-// Tests SignatureXMLSecAdaptor file verification with proper data
-TEST_F(SignatureXMLSecAdaptorTest, HandlesValidateFileInitializedSignature) {
-  signature_file.reset(new bf::path(
-      "/usr/share/app-installers-ut/test_samples/"
-      "good_signatures/signature1.xml"));
-  data = SignatureParser::CreateSignatureData(*signature_file, 1);
-  ASSERT_TRUE(data.get());
-  EXPECT_TRUE(SignatureXmlSecAdaptor::ValidateFile(*data));
+  PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
+  EXPECT_EQ(ValidateSignatures(*signature_file, &level),
+            Step::Status::ERROR);
 }
 
 }  // namespace signature

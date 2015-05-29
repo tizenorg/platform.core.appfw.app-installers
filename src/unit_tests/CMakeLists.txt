@@ -29,7 +29,7 @@ ENDFOREACH(test)
 # FindGTest module do not sets all needed libraries in GTEST_LIBRARIES and
 # GTest main libraries is still missing, so additional linking of
 # GTEST_MAIN_LIBRARIES is needed.
-target_link_libraries(signature_unittest PUBLIC ${TARGET_LIBNAME_SIGNATURE} ${GTEST_MAIN_LIBRARIES})
+target_link_libraries(signature_unittest PUBLIC ${TARGET_LIBNAME_COMMON} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(xml_parser_unittest PUBLIC ${TARGET_LIBNAME_PARSER} ${GTEST_MAIN_LIBRARIES})
 
 FOREACH(test ${TESTS})
