@@ -83,6 +83,9 @@ class ContextInstaller {
   Property<BackendData*> backend_data;
 };
 
+boost::filesystem::path GetBackupPathForPackagePath(
+    const boost::filesystem::path& pkg_path);
+
 }  // namespace common_installer
 
 #endif  // COMMON_CONTEXT_INSTALLER_H_

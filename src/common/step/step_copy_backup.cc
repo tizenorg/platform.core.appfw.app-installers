@@ -37,8 +37,7 @@ Step::Status StepCopyBackup::process() {
       !m->uiapplication))
     install_path_ /= bf::path(context_->manifest_data.get()->mainapp_id);
 
-  backup_path_ = context_->pkg_path.get();
-  backup_path_ += ".bck";
+  backup_path_ = GetBackupPathForPackagePath(context_->pkg_path.get());
 
   // backup old content
   if (!utils::MoveDir(context_->pkg_path.get(), backup_path_)) {

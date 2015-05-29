@@ -20,8 +20,8 @@ const char kDataLocation[] = "data";
 const char kSharedLocation[] = "shared";
 
 bool RestoreApplicationStorageForData(const bf::path& pkg_path) {
-  bf::path backup_path = pkg_path;
-  backup_path += ".bck";
+  bf::path backup_path =
+      common_installer::GetBackupPathForPackagePath(pkg_path);
 
   bs::error_code error_code;
   if (!bf::exists(backup_path, error_code)) {
