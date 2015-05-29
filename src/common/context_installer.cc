@@ -26,4 +26,11 @@ ContextInstaller::~ContextInstaller() {
     delete backend_data.get();
 }
 
+boost::filesystem::path GetBackupPathForPackagePath(
+    const boost::filesystem::path& pkg_path) {
+  fs::path backup_path = pkg_path;
+  backup_path += ".bck";
+  return backup_path;
+}
+
 }  // namespace common_installer
