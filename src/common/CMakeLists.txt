@@ -12,6 +12,8 @@ SET(SRCS
   step/step_configure.cc
   step/step_copy.cc
   step/step_copy_backup.cc
+  step/step_copy_storage_directories.cc
+  step/step_create_storage_directories.cc
   step/step_generate_xml.cc
   step/step_register_app.cc
   step/step_old_manifest.cc

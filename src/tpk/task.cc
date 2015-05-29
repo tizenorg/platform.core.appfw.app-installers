@@ -10,6 +10,8 @@
 #include "common/step/step_backup_manifest.h"
 #include "common/step/step_copy.h"
 #include "common/step/step_copy_backup.h"
+#include "common/step/step_copy_storage_directories.h"
+#include "common/step/step_create_storage_directories.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_old_manifest.h"
 #include "common/step/step_parse.h"
@@ -95,6 +97,7 @@ int Task::Install() {
   ai.AddStep<tpk::step::StepParse>();
   ai.AddStep<ci::signature::StepCheckSignature>();
   ai.AddStep<ci::copy::StepCopy>();
+  ai.AddStep<ci::create_storage::StepCreateStorageDirectories>();
   ai.AddStep<tpk::step::StepCreateSymbolicLink>();
   ai.AddStep<ci::security::StepRegisterSecurity>();
   ai.AddStep<ci::generate_xml::StepGenerateXml>();
@@ -114,6 +117,7 @@ int Task::Update() {
   ai.AddStep<ci::backup_manifest::StepBackupManifest>();
   ai.AddStep<ci::backup_icons::StepBackupIcons>();
   ai.AddStep<ci::copy_backup::StepCopyBackup>();
+  ai.AddStep<ci::copy_storage::StepCopyStorageDirectories>();
   ai.AddStep<tpk::step::StepCreateSymbolicLink>();
   ai.AddStep<ci::update_security::StepUpdateSecurity>();
   ai.AddStep<ci::generate_xml::StepGenerateXml>();
