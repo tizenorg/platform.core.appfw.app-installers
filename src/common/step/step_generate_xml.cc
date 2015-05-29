@@ -16,11 +16,8 @@
 #include <cstring>
 #include <string>
 
+#include "utils/clist_helpers.h"
 #include "utils/file_util.h"
-
-#define PKGMGR_LIST_MOVE_NODE_TO_HEAD(list, node) do {                        \
-    if (list) { LISTHEAD(list, node); }                                       \
-  } while (0)
 
 namespace fs = boost::filesystem;
 
