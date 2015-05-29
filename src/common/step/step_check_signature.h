@@ -24,6 +24,10 @@ class StepCheckSignature : public Step {
   SCOPE_LOG_TAG(Signature)
 };
 
+// Exposed for tests
+Step::Status ValidateSignatures(const boost::filesystem::path& base_path,
+                                PrivilegeLevel* level);
+
 }  // namespace signature
 }  // namespace common_installer
 

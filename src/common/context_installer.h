@@ -32,6 +32,15 @@ class BackendData {
   virtual ~BackendData() { }
 };
 
+enum class PrivilegeLevel : int {
+  UNTRUSTED  = 0,
+  PUBLIC     = 1,
+  PARTNER    = 2,
+  PLATFORM   = 3
+};
+
+const char* PrivilegeLevelToString(PrivilegeLevel level);
+
 // TODO(p.sikorski@samsung.com) this class should be divided into:
 //  Base Context class
 //  CtxInstall class that inherits from Context
@@ -81,9 +90,11 @@ class ContextInstaller {
 
   // Backend specific data
   Property<BackendData*> backend_data;
+
+  // request privilege level of package
+  Property<PrivilegeLevel> privilege_level;
 };
 
 }  // namespace common_installer
 
 #endif  // COMMON_CONTEXT_INSTALLER_H_
-

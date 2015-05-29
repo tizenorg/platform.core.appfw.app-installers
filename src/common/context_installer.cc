@@ -11,11 +11,27 @@ namespace common_installer {
 
 namespace fs = boost::filesystem;
 
+const char* PrivilegeLevelToString(PrivilegeLevel level) {
+  switch (level) {
+    case PrivilegeLevel::UNTRUSTED:
+      return "UNTRUSTED";
+    case PrivilegeLevel::PUBLIC:
+      return "PUBLIC";
+    case PrivilegeLevel::PARTNER:
+      return "PARTNER";
+    case PrivilegeLevel::PLATFORM:
+      return "PLATFORM";
+    default:
+      return "";
+  }
+}
+
 ContextInstaller::ContextInstaller()
     : manifest_data(static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)))),
       old_manifest_data(nullptr),
       uid(getuid()),
-      backend_data(nullptr) {}
+      backend_data(nullptr),
+      privilege_level(PrivilegeLevel::UNTRUSTED) {}
 
 ContextInstaller::~ContextInstaller() {
   if (manifest_data.get())

@@ -1,7 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
 // Copyright (c) 2015 Samsung Electronics Co., Ltd All Rights Reserved
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE-xwalk file.
+// Use of this source code is governed by a apache 2.0 license that can be
+// found in the LICENSE file.
+
+// This file was rewritten completely in
+// 7c807fc0d4561d178b7c2d8b8d532f48e78ab1bc so fixing license.
 
 #include "utils/string_util.h"
 
