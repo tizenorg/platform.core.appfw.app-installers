@@ -12,6 +12,8 @@
 #include "common/step/step_backup_icons.h"
 #include "common/step/step_copy.h"
 #include "common/step/step_copy_backup.h"
+#include "common/step/step_copy_storage_directories.h"
+#include "common/step/step_create_storage_directories.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_parse.h"
 #include "common/step/step_register_app.h"
@@ -52,6 +54,7 @@ int main(int argc, char** argv) {
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<ci::copy::StepCopy>();
+      installer.AddStep<ci::create_storage::StepCreateStorageDirectories>();
       installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
       installer.AddStep<ci::register_app::StepRegisterApplication>();
@@ -67,6 +70,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::backup_manifest::StepBackupManifest>();
       installer.AddStep<ci::backup_icons::StepBackupIcons>();
       installer.AddStep<ci::copy_backup::StepCopyBackup>();
+      installer.AddStep<ci::copy_storage::StepCopyStorageDirectories>();
       installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
       installer.AddStep<ci::update_security::StepUpdateSecurity>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
