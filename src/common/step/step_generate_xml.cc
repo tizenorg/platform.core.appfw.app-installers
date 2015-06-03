@@ -74,7 +74,7 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
   LISTHEAD(app->label, label);
   for (; label; label = label->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "label");
-    if (strlen(label->lang)) {
+    if (label->lang && strlen(label->lang)) {
       xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
                                   BAD_CAST label->lang);
     }
@@ -192,7 +192,7 @@ Step::Status StepGenerateXml::process() {
     LISTHEAD(context_->manifest_data.get()->description, description);
     for (; description; description = description->next) {
       xmlTextWriterStartElement(writer, BAD_CAST "description");
-      if (strlen(description->lang)) {
+      if (description->lang && strlen(description->lang)) {
         xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
                                     BAD_CAST description->lang);
       }
