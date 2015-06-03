@@ -94,7 +94,8 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
       / fs::path(app->appid)
       / fs::path(app->icon->name);
     if (fs::exists(app_icon))
-      fs::rename(app_icon, icon_path_ /= icon);
+      fs::copy_file(app_icon, icon_path_ /= icon,
+                        fs::copy_option::overwrite_if_exists);
   } else {
     boost::system::error_code error;
     fs::create_symlink(default_icon, icon_path_ /= icon, error);
