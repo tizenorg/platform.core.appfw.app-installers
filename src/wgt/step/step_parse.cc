@@ -157,15 +157,9 @@ bool StepParse::FillAppControl(manifest_x* manifest) {
     for (const auto& control : app_info_list->controls) {
       appcontrol_x* app_control =
           static_cast<appcontrol_x*>(calloc(sizeof(appcontrol_x), 1));
-      app_control->operation =
-          static_cast<operation_x*>(calloc(sizeof(operation_x), 1));
-      app_control->operation->name = strdup(control.operation().c_str());
-      app_control->mime =
-          static_cast<mime_x*>(calloc(sizeof(mime_x), 1));
-      app_control->mime->name = strdup(control.mime().c_str());
-      app_control->uri =
-          static_cast<uri_x*>(calloc(sizeof(uri_x), 1));
-      app_control->uri->name = strdup(control.uri().c_str());
+      app_control->operation = strdup(control.operation().c_str());
+      app_control->mime = strdup(control.mime().c_str());
+      app_control->uri = strdup(control.uri().c_str());
       LISTADD(manifest->uiapplication->appcontrol, app_control);
     }
   }

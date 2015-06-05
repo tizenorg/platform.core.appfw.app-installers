@@ -112,21 +112,21 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
     if (appc->operation) {
       xmlTextWriterStartElement(writer, BAD_CAST "operation");
       xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-          BAD_CAST appc->operation->name);
+          BAD_CAST appc->operation);
       xmlTextWriterEndElement(writer);
     }
 
     if (appc->uri) {
       xmlTextWriterStartElement(writer, BAD_CAST "uri");
       xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-          BAD_CAST appc->uri->name);
+          BAD_CAST appc->uri);
       xmlTextWriterEndElement(writer);
     }
 
     if (appc->mime) {
       xmlTextWriterStartElement(writer, BAD_CAST "mime");
       xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
-          BAD_CAST appc->mime->name);
+          BAD_CAST appc->mime);
       xmlTextWriterEndElement(writer);
     }
 
