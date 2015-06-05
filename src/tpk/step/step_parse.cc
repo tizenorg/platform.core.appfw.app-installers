@@ -239,31 +239,19 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
     p->onboot = string_strdup(el->attr("on-boot"));
     p->type = string_strdup(el->attr("type"));
 
+    // FIXME: temporary fix to avoid build break
     // app-control
     SetChildren(&(p->appcontrol), tree, el, "app-control",
         [&](XmlElement *el, appcontrol_x* p){
-      p->text = string_strdup(el->content());
-
-      // mime
-      SetChildren(&(p->mime), tree, el, "mime",
-          [&](XmlElement *el, mime_x* p){
-        p->text = string_strdup(el->content());
-        p->name = string_strdup(el->attr("name"));
-      });
-
-      // operation
-      SetChildren(&(p->operation), tree, el, "operation",
-          [&](XmlElement *el, operation_x* p){
-        p->text = string_strdup(el->content());
-        p->name = string_strdup(el->attr("name"));
-      });
-
-      // uri
-      SetChildren(&(p->uri), tree, el, "uri",
-          [&](XmlElement *el, uri_x* p){
-        p->text = string_strdup(el->content());
-        p->name = string_strdup(el->attr("name"));
-      });
+      vector<XmlElement*> v = tree->Children(el, "operation");
+      if (!v.empty())
+        p->operation = string_strdup(v.front()->attr("name"));
+      v = tree->Children(el, "uri");
+      if (!v.empty())
+        p->uri = string_strdup(v.front()->attr("name"));
+      v = tree->Children(el, "mime");
+      if (!v.empty())
+        p->mime = string_strdup(v.front()->attr("name"));
     });
 
     // datacontrol
@@ -316,31 +304,19 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
     p->type = string_strdup(el->attr("type"));
     // NOTE: onboot and auto-restart are in spec, but not in uiapplication_x
 
+    // FIXME: temporary fix to avoid build break
     // app-control
     SetChildren(&(p->appcontrol), tree, el, "app-control",
         [&](XmlElement *el, appcontrol_x* p){
-      p->text = string_strdup(el->content());
-
-      // mime
-      SetChildren(&(p->mime), tree, el, "mime",
-          [&](XmlElement *el, mime_x* p){
-        p->text = string_strdup(el->content());
-        p->name = string_strdup(el->attr("name"));
-      });
-
-      // operation
-      SetChildren(&(p->operation), tree, el, "operation",
-          [&](XmlElement *el, operation_x* p){
-        p->text = string_strdup(el->content());
-        p->name = string_strdup(el->attr("name"));
-      });
-
-      // uri
-      SetChildren(&(p->uri), tree, el, "uri",
-          [&](XmlElement *el, uri_x* p){
-        p->text = string_strdup(el->content());
-        p->name = string_strdup(el->attr("name"));
-      });
+      vector<XmlElement*> v = tree->Children(el, "operation");
+      if (!v.empty())
+        p->operation = string_strdup(v.front()->attr("name"));
+      v = tree->Children(el, "uri");
+      if (!v.empty())
+        p->uri = string_strdup(v.front()->attr("name"));
+      v = tree->Children(el, "mime");
+      if (!v.empty())
+        p->mime = string_strdup(v.front()->attr("name"));
     });
 
     // datacontrol
