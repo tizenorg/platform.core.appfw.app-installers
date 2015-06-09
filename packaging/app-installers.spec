@@ -29,8 +29,8 @@ BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  pkgconfig(xmlsec1)
 BuildRequires:  pkgconfig(vconf)
-BuildRequires:  manifest-parser
-BuildRequires:  manifest-parser-devel
+BuildRequires:  pkgconfig(manifest-parser)
+BuildRequires:  pkgconfig(manifest-handlers)
 
 Requires: ca-certificates-tizen
 Requires: libtzplatform-config
