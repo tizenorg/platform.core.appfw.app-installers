@@ -92,8 +92,8 @@ int Task::Install() {
 
   ai.AddStep<ci::configure::StepConfigure>();
   ai.AddStep<ci::unzip::StepUnzip>();
-  ai.AddStep<ci::signature::StepCheckSignature>();
   ai.AddStep<tpk::step::StepParse>();
+  ai.AddStep<ci::signature::StepCheckSignature>();
   ai.AddStep<ci::copy::StepCopy>();
   ai.AddStep<tpk::step::StepCreateSymbolicLink>();
   ai.AddStep<ci::security::StepRegisterSecurity>();
@@ -108,8 +108,8 @@ int Task::Update() {
 
   ai.AddStep<ci::configure::StepConfigure>();
   ai.AddStep<ci::unzip::StepUnzip>();
-  ai.AddStep<ci::signature::StepCheckSignature>();
   ai.AddStep<tpk::step::StepParse>();
+  ai.AddStep<ci::signature::StepCheckSignature>();
   ai.AddStep<ci::old_manifest::StepOldManifest>();
   ai.AddStep<ci::backup_manifest::StepBackupManifest>();
   ai.AddStep<ci::backup_icons::StepBackupIcons>();
