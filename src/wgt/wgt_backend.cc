@@ -49,8 +49,8 @@ int main(int argc, char** argv) {
     case ci::PkgMgrInterface::Type::Install : {
       installer.AddStep<ci::configure::StepConfigure>();
       installer.AddStep<ci::unzip::StepUnzip>();
-      installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<wgt::parse::StepParse>();
+      installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<ci::copy::StepCopy>();
       installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
@@ -61,8 +61,8 @@ int main(int argc, char** argv) {
     case ci::PkgMgrInterface::Type::Update: {
       installer.AddStep<ci::configure::StepConfigure>();
       installer.AddStep<ci::unzip::StepUnzip>();
-      installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<wgt::parse::StepParse>();
+      installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<ci::old_manifest::StepOldManifest>();
       installer.AddStep<ci::backup_manifest::StepBackupManifest>();
       installer.AddStep<ci::backup_icons::StepBackupIcons>();
