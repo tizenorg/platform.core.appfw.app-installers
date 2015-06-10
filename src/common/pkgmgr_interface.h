@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "common/app_query_interface.h"
 #include "utils/macros.h"
 #include "utils/logging.h"
 
@@ -53,7 +54,8 @@ class PkgMgrInterface {
 
   /** Initialize PkgMgrInterface.
    */
-  static int Init(int argc, char** argv);
+  static int Init(int argc, char** argv,
+        AppQueryInterface* interface = nullptr);
 
   /** Get Raw pointer to pkgmgr_installer object
    *
@@ -67,10 +69,14 @@ class PkgMgrInterface {
   ~PkgMgrInterface();
 
  private:
-  PkgMgrInterface() :pi_(nullptr) {}
+  explicit PkgMgrInterface(AppQueryInterface* interface)
+      : pi_(nullptr),
+        query_interface_(interface) {}
   int InitInternal(int argc, char** argv);
 
   pkgmgr_installer* pi_;
+  bool is_app_installed_;
+  AppQueryInterface* query_interface_;
   static PkgMgrPtr instance_;
 
   SCOPE_LOG_TAG(PkgMgrInterface)

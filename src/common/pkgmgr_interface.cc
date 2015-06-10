@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "common/app_query_interface.h"
+
 namespace common_installer {
 
 PkgMgrPtr PkgMgrInterface::instance_;
@@ -14,11 +16,11 @@ PkgMgrPtr PkgMgrInterface::Instance() {
   return instance_;
 }
 
-int PkgMgrInterface::Init(int argc, char** argv) {
+int PkgMgrInterface::Init(int argc, char** argv, AppQueryInterface* interface) {
   if (instance_)
     return 0;
 
-  PkgMgrPtr tmp(new PkgMgrInterface());
+  PkgMgrPtr tmp(new PkgMgrInterface(interface));
   int result = tmp->InitInternal(argc, argv);
 
   instance_ = tmp;
@@ -39,6 +41,11 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
     LOG(ERROR) << "Cannot receive request. Invalid arguments?";
     // no need to free pkgmgr_installer here. it will be freed in DTOR.
   }
+
+  is_app_installed_ = false;
+  if (query_interface_)
+    is_app_installed_ = query_interface_->IsAppInstalledByArgv(argc, argv);
+
   return result;
 }
 
@@ -50,9 +57,11 @@ PkgMgrInterface::~PkgMgrInterface() {
 PkgMgrInterface::Type PkgMgrInterface::GetRequestType() const {
   switch (pkgmgr_installer_get_request_type(pi_)) {
     case PKGMGR_REQ_INSTALL:
-      return PkgMgrInterface::Type::Install;
-    case PKGMGR_REQ_UPGRADE:
-      return PkgMgrInterface::Type::Update;
+      if (!is_app_installed_) {
+        return PkgMgrInterface::Type::Install;
+      } else {
+        return PkgMgrInterface::Type::Update;
+      }
     case PKGMGR_REQ_UNINSTALL:
       return PkgMgrInterface::Type::Uninstall;
     case PKGMGR_REQ_REINSTALL:

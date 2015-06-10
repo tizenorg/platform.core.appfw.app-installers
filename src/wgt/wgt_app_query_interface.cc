@@ -2,7 +2,7 @@
 // Use of this source code is governed by an apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "wgt/update_workaround.h"
+#include "wgt/wgt_app_query_interface.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -35,7 +35,7 @@ namespace {
 std::pair<std::string, int> GetInstallationPackagePath(int argc, char** argv) {
   int index = -1;
   std::string path;
-  for (unsigned i = 0; i < argc; ++i) {
+  for (int i = 0; i < argc; ++i) {
     if (!strcmp(argv[i], "-i")) {
       index = i;
       if (i + 1 < argc) {
@@ -94,32 +94,23 @@ bool IsPackageInstalled(const std::string& pkg_id) {
   return true;
 }
 
-void OverwriteArgvForUpdate(int index, char** argv) {
-  // overwriting argv to fake update
-  argv[index][1] = 'a';
-}
-
 }  // namespace
 
-namespace workaround {
+namespace wgt {
 
-void OverwriteArgvIfNeeded(int argc, char** argv) {
+bool WgtAppQueryInterface::IsAppInstalledByArgv(int argc, char** argv) {
   std::string path;
   int index;
   std::tie(path, index) =
       GetInstallationPackagePath(argc, argv);
   if (path.empty()) {
     // not the installaton
-    return;
+    return false;
   }
   std::string pkg_id = GetAppIdFromPath(path);
   if (pkg_id.empty())
-    return;
-  bool should_hack = IsPackageInstalled(pkg_id);
-  if (should_hack) {
-    LOG(INFO) << "Update detected - hacking argv to update installation";
-    OverwriteArgvForUpdate(index, argv);
-  }
+    return false;
+  return IsPackageInstalled(pkg_id);
 }
 
-}  // namespace workaround
+}  // namespace wgt
