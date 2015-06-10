@@ -2,7 +2,7 @@
 SET(SRCS
   step/step_create_symbolic_link.cc
   step/step_parse.cc
-  update_workaround.cc
+  wgt_app_query_interface.cc
   wgt_backend.cc
   wgt_backend_data.cc
 )
