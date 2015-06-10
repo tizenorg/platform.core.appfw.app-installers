@@ -6,7 +6,7 @@
 
 #include <cassert>
 
-#include "utils/logging.h"
+#include "common/utils/logging.h"
 
 // Redefine this value as it is not exported by pkgmgr
 // this should probably be in public interface because of

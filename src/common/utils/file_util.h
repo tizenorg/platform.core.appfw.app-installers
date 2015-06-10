@@ -1,14 +1,13 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#ifndef UTILS_FILE_UTIL_H_
-#define UTILS_FILE_UTIL_H_
+#ifndef COMMON_UTILS_FILE_UTIL_H_
+#define COMMON_UTILS_FILE_UTIL_H_
 
 #include <boost/filesystem.hpp>
 
 #include <string>
 
 namespace common_installer {
-namespace utils {
 
 bool CreateDir(const boost::filesystem::path& path);
 
@@ -32,7 +31,6 @@ bool ExtractToTmpDir(const char* zip_path,
                      const boost::filesystem::path& tmp_dir,
                      const std::string& filter_prefix);
 
-}  // namespace utils
 }  // namespace common_installer
 
-#endif  // UTILS_FILE_UTIL_H_
+#endif  // COMMON_UTILS_FILE_UTIL_H_

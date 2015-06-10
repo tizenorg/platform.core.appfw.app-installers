@@ -6,7 +6,7 @@
 #define COMMON_STEP_STEP_UPDATE_SECURITY_H_
 
 #include "common/step/step.h"
-#include "utils/logging.h"
+#include "common/utils/logging.h"
 
 namespace common_installer {
 namespace update_security {

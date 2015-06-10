@@ -13,8 +13,8 @@
 
 #include <string>
 
-#include "utils/file_util.h"
-#include "utils/logging.h"
+#include "common/utils/file_util.h"
+#include "common/utils/logging.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
@@ -36,7 +36,7 @@ Step::Status StepBackupManifest::process() {
   backup_xml_path =  + ".bck";
   context_->backup_xml_path.set(backup_xml_path);
 
-  if (!utils::MoveFile(context_->xml_path.get(),
+  if (!MoveFile(context_->xml_path.get(),
       context_->backup_xml_path.get())) {
     LOG(ERROR) << "Failed to make a copy of xml manifest file";
     return Status::ERROR;
@@ -64,7 +64,7 @@ Step::Status StepBackupManifest::undo() {
       LOG(ERROR) << "Failed to remove newly generated xml file in revert";
       return Status::ERROR;
     }
-    if (!utils::MoveFile(context_->backup_xml_path.get(),
+    if (!MoveFile(context_->backup_xml_path.get(),
         context_->xml_path.get())) {
       LOG(ERROR) << "Failed to revert a content of xml manifest file";
       return Status::ERROR;
