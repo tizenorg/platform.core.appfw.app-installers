@@ -6,6 +6,8 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+#include <glib.h>
+#include <privilege_manager.h>
 #include <tzplatform_config.h>
 #include <vcore/Certificate.h>
 #include <vcore/SignatureReader.h>
@@ -13,7 +15,11 @@
 #include <vcore/WrtSignatureValidator.h>
 #include <vcore/VCore.h>
 
+#include <cassert>
+#include <cstdlib>
 #include <string>
+
+#include "common/utils/clist_helpers.h"
 
 namespace bf = boost::filesystem;
 
@@ -34,6 +40,20 @@ common_installer::PrivilegeLevel CertStoreIdToPrivilegeLevel(
       return common_installer::PrivilegeLevel::PLATFORM;
     default:
       return common_installer::PrivilegeLevel::UNTRUSTED;
+  }
+}
+
+privilege_manager_visibility_e PrivilegeLevelToVisibility(
+    common_installer::PrivilegeLevel level) {
+  switch (level) {
+    case common_installer::PrivilegeLevel::PUBLIC:
+      return PRVMGR_PACKAGE_VISIBILITY_PUBLIC;
+    case common_installer::PrivilegeLevel::PARTNER:
+      return PRVMGR_PACKAGE_VISIBILITY_PARTNER;
+    case common_installer::PrivilegeLevel::PLATFORM:
+      return PRVMGR_PACKAGE_VISIBILITY_PLATFORM;
+    default:
+      assert(false && "Not reached");
   }
 }
 
@@ -97,6 +117,44 @@ common_installer::Step::Status ValidateSignatureFile(
   return common_installer::Step::Status::OK;
 }
 
+bool ValidatePrivilegeLevel(common_installer::PrivilegeLevel level,
+    bool is_webapp, const char* api_version, privileges_x *privileges) {
+  GList* list = nullptr;
+  privileges_x* pvlg = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges, pvlg);
+  for (; pvlg != nullptr; pvlg = pvlg->next) {
+    privilege_x* pv = nullptr;
+    PKGMGR_LIST_MOVE_NODE_TO_HEAD(pvlg->privilege, pv);
+    for (; pv != nullptr; pv = pv->next) {
+      list = g_list_append(list, const_cast<char*>(pv->text));
+    }
+  }
+
+  if (level == common_installer::PrivilegeLevel::UNTRUSTED) {
+    g_list_free(list);
+    if (list) {
+      LOG(ERROR) << "Untrusted application cannot declare privileges";
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  char* error = nullptr;
+  int status = privilege_manager_verify_privilege(api_version,
+      is_webapp ? PRVMGR_PACKAGE_TYPE_WRT : PRVMGR_PACKAGE_TYPE_CORE, list,
+      PrivilegeLevelToVisibility(level),
+      &error);
+  g_list_free(list);
+  if (status != PRVMGR_ERR_NONE) {
+    LOG(ERROR) << "Error while verifing privilege level: " << error;
+    free(error);
+    return false;
+  }
+  LOG(INFO) << "Privilege level checked";
+  return true;
+}
+
 }  // namespace
 
 namespace common_installer {
@@ -156,7 +214,12 @@ Step::Status StepCheckSignature::process() {
 
   // TODO(t.iwanek): check settings for privilege level...
 
-  // TODO(t.iwanek): verify privileges according to privilege level...
+  // TODO(t.iwanek): refactoring, move to wgt backend
+  bool is_webapp = context_->pkg_type.get() == "wgt";
+  if (!ValidatePrivilegeLevel(level, is_webapp,
+      context_->config_data.get().required_version.get().c_str(),
+      context_->manifest_data.get()->privileges))
+    return Status::ERROR;
 
   // TODO(t.iwanek): check old certificate during update...
 
