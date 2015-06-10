@@ -24,8 +24,8 @@
 #include <utility>
 #include <vector>
 
-#include "utils/file_util.h"
-#include "utils/logging.h"
+#include "common/utils/file_util.h"
+#include "common/utils/logging.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
@@ -48,12 +48,12 @@ std::pair<std::string, int> GetInstallationPackagePath(int argc, char** argv) {
 }
 
 std::string GetAppIdFromPath(const std::string& path) {
-  bf::path tmp_path = common_installer::utils::GenerateTmpDir("/tmp");
+  bf::path tmp_path = common_installer::GenerateTmpDir("/tmp");
   bs::error_code code;
   bf::create_directories(tmp_path, code);
   if (code)
     return {};
-  if (!common_installer::utils::ExtractToTmpDir(path.c_str(), tmp_path,
+  if (!common_installer::ExtractToTmpDir(path.c_str(), tmp_path,
       "config.xml")) {
     bf::remove_all(tmp_path, code);
     return {};

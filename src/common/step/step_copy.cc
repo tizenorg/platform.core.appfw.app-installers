@@ -9,7 +9,7 @@
 #include <cstring>
 #include <string>
 
-#include "utils/file_util.h"
+#include "common/utils/file_util.h"
 
 namespace common_installer {
 namespace copy {
@@ -81,7 +81,7 @@ Step::Status StepCopy::process() {
                << install_path.parent_path().string();
     return Step::Status::ERROR;
   }
-  if (!utils::MoveDir(context_->unpacked_dir_path.get(), install_path)) {
+  if (!MoveDir(context_->unpacked_dir_path.get(), install_path)) {
     LOG(ERROR) << "Cannot move widget directory to install path";
     return Status::ERROR;
   }

@@ -10,7 +10,7 @@
 #include <cassert>
 #include <string>
 
-#include "utils/file_util.h"
+#include "common/utils/file_util.h"
 
 namespace common_installer {
 namespace copy_backup {
@@ -41,7 +41,7 @@ Step::Status StepCopyBackup::process() {
   backup_path_ += ".bck";
 
   // backup old content
-  if (!utils::MoveDir(context_->pkg_path.get(), backup_path_)) {
+  if (!MoveDir(context_->pkg_path.get(), backup_path_)) {
     LOG(ERROR) << "Fail to backup widget directory";
     return Step::Status::ERROR;
   }
@@ -54,7 +54,7 @@ Step::Status StepCopyBackup::process() {
     LOG(ERROR) << "Cannot create widget directory";
     return Status::ERROR;
   }
-  if (!utils::MoveDir(context_->unpacked_dir_path.get(), install_path_)) {
+  if (!MoveDir(context_->unpacked_dir_path.get(), install_path_)) {
     LOG(ERROR) << "Fail to copy tmp dir: " << context_->unpacked_dir_path.get()
                << " to dst dir: " << install_path_;
     return Step::Status::ERROR;
@@ -117,7 +117,7 @@ bool StepCopyBackup::RollbackApplicationDirectory() {
     }
   }
 
-  if (!utils::MoveDir(backup_path_, context_->pkg_path.get())) {
+  if (!MoveDir(backup_path_, context_->pkg_path.get())) {
     return false;
   }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by an apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef UTILS_CLIST_HELPERS_H_
-#define UTILS_CLIST_HELPERS_H_
+#ifndef COMMON_UTILS_CLIST_HELPERS_H_
+#define COMMON_UTILS_CLIST_HELPERS_H_
 
 #include "pkgmgr/pkgmgr_parser.h"
 
@@ -18,4 +18,4 @@
     }                                                                          \
   } while (0)                                                                  \
 
-#endif  // UTILS_CLIST_HELPERS_H_
+#endif  // COMMON_UTILS_CLIST_HELPERS_H_

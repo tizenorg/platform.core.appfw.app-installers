@@ -16,8 +16,8 @@
 #include <cstring>
 #include <string>
 
-#include "utils/clist_helpers.h"
-#include "utils/file_util.h"
+#include "common/utils/clist_helpers.h"
+#include "common/utils/file_util.h"
 
 namespace fs = boost::filesystem;
 
@@ -84,7 +84,7 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
   // and located in TZ_USER_ICON/TZ_SYS_ICON
   // if the icon isn't exist print the default icon app-installers.png
   icon_path_ = fs::path(getIconPath(context_->uid.get()));
-  utils::CreateDir(icon_path_);
+  CreateDir(icon_path_);
   fs::path icon = fs::path(app->appid) += fs::path(".png");
 
   if (app->icon->name) {

@@ -1,7 +1,7 @@
 /* Copyright 2015 Samsung Electronics, license APACHE-2.0, see LICENSE file */
 #include <iostream>
 #include "tpk/task.h"
-#include "utils/logging.h"
+#include "common/utils/logging.h"
 
 
 int main(const int argc, char* argv[]) {

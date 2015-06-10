@@ -2,15 +2,15 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef UTILS_LOGGING_H_
-#define UTILS_LOGGING_H_
+#ifndef COMMON_UTILS_LOGGING_H_
+#define COMMON_UTILS_LOGGING_H_
 
 #include <cassert>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
-namespace utils {
+namespace common_installer {
 
 enum class LogLevel {
   LOG_ERROR,
@@ -43,7 +43,7 @@ class LogCatcher {
   }
 };
 
-}  // namespace utils
+}  // namespace common_installer
 
 inline static const constexpr char* __tag_for_logging() {
   return "";
@@ -61,9 +61,10 @@ inline static const constexpr char* __tag_for_logging() {
 //     where:
 //       LEVEL = ERROR | WARNING | INFO | DEBUG
 #define LOG(LEVEL)                                                             \
-    ::utils::LogCatcher() & std::ostringstream()                               \
-      << ::utils::LogTag<::utils::LogLevel::LOG_ ## LEVEL>::value              \
+    ::common_installer::LogCatcher() & std::ostringstream()                    \
+      << ::common_installer::LogTag<                                           \
+         ::common_installer::LogLevel::LOG_ ## LEVEL>::value                   \
       << " " << std::setw(20) << std::left << __tag_for_logging()              \
       << std::setw(0) << " : "                                                 \
 
-#endif  // UTILS_LOGGING_H_
+#endif  // COMMON_UTILS_LOGGING_H_

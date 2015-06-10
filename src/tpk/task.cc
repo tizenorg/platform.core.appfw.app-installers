@@ -24,7 +24,7 @@
 #include "common/step/step_update_security.h"
 #include "tpk/step/step_parse.h"
 #include "tpk/step/step_create_symbolic_link.h"
-#include "utils/logging.h"
+#include "common/utils/logging.h"
 #endif
 
 

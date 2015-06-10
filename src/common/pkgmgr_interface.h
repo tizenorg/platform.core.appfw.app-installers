@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include "utils/macros.h"
-#include "utils/logging.h"
+#include "common/utils/macros.h"
+#include "common/utils/logging.h"
 
 namespace common_installer {
 

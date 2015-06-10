@@ -14,7 +14,7 @@
 #include <cstdio>
 #include <string>
 
-#include "utils/file_util.h"
+#include "common/utils/file_util.h"
 
 namespace wgt {
 namespace symbolic_link {
@@ -38,7 +38,7 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
     fs::path exec_path =
         context_->pkg_path.get() / fs::path(ui->appid)
             / fs::path("bin");
-    common_installer::utils::CreateDir(exec_path);
+    common_installer::CreateDir(exec_path);
 
     exec_path /= fs::path(ui->appid);
 
@@ -54,7 +54,7 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
     fs::path exec_path =
         context_->pkg_path.get() / fs::path(svc->appid)/
             fs::path("bin");
-    common_installer::utils::CreateDir(exec_path);
+    common_installer::CreateDir(exec_path);
 
     exec_path /= fs::path(svc->appid);
 

@@ -1,6 +1,6 @@
 /* 2014, Copyright © Intel Coporation, license APACHE-2.0, see LICENSE file */
 
-#include "utils/file_util.h"
+#include "common/utils/file_util.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -12,8 +12,8 @@
 
 #include <string>
 
-#include "utils/byte_size_literals.h"
-#include "utils/logging.h"
+#include "common/utils/byte_size_literals.h"
+#include "common/utils/logging.h"
 
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
@@ -40,7 +40,6 @@ int64_t RoundUpToBlockSizeOf(int64_t size, int64_t block_size) {
 }  // namespace
 
 namespace common_installer {
-namespace utils {
 
 bool CreateDir(const bf::path& path) {
   if (bf::exists(path))
@@ -119,7 +118,7 @@ bool MoveDir(const bf::path& src, const bf::path& dst) {
   bf::rename(src, dst, error);
   if (error) {
     LOG(WARNING) << "Cannot move directory: " << src << ". Will copy/remove...";
-    if (!utils::CopyDir(src, dst)) {
+    if (!CopyDir(src, dst)) {
       LOG(ERROR) << "Cannot copy directory: " << src;
       return false;
     }
@@ -247,7 +246,7 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
         std::string(raw_file_name_in_zip).find(filter_prefix) == 0) {
       bf::path filename_in_zip_path(raw_file_name_in_zip);
       if (!filename_in_zip_path.parent_path().empty()) {
-        if (!utils::CreateDir(filename_in_zip_path.parent_path())) {
+        if (!CreateDir(filename_in_zip_path.parent_path())) {
           LOG(ERROR) << "Failed to create directory: "
               << filename_in_zip_path.parent_path();
           return false;
@@ -297,5 +296,4 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
   return true;
 }
 
-}  // namespace utils
 }  // namespace common_installer

@@ -17,7 +17,7 @@
 #include <cstring>
 #include <string>
 
-#include "utils/file_util.h"
+#include "common/utils/file_util.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
@@ -83,15 +83,15 @@ Step::Status StepUnzip::precheck() {
 
 Step::Status StepUnzip::process() {
   bf::path tmp_dir =
-      utils::GenerateTmpDir(context_->root_application_path.get());
+      GenerateTmpDir(context_->root_application_path.get());
 
-  if (!utils::CreateDir(tmp_dir)) {
+  if (!CreateDir(tmp_dir)) {
     LOG(ERROR) << "Failed to create temp directory: " << tmp_dir;
     return Step::Status::ERROR;
   }
 
   int64_t required_size =
-      utils::GetUnpackedPackageSize(context_->file_path.get());
+      GetUnpackedPackageSize(context_->file_path.get());
 
   if (required_size == -1) {
     LOG(ERROR) << "Couldn't get uncompressed size for package: "
@@ -112,7 +112,7 @@ Step::Status StepUnzip::process() {
     return Step::Status::OUT_OF_SPACE;
   }
 
-  if (!utils::ExtractToTmpDir(context_->file_path.get().string().c_str(),
+  if (!ExtractToTmpDir(context_->file_path.get().string().c_str(),
       tmp_dir)) {
     LOG(ERROR) << "Failed to process unpack step";
     return Step::Status::ERROR;

@@ -10,7 +10,7 @@
 #include "common/app_installer.h"
 #include "common/context_installer.h"
 #include "common/step/step.h"
-#include "utils/logging.h"
+#include "common/utils/logging.h"
 
 namespace wgt {
 namespace symbolic_link {

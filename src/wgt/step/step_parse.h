@@ -20,7 +20,7 @@
 #include "manifest_handlers/tizen_application_handler.h"
 #include "manifest_handlers/widget_handler.h"
 #include "manifest_parser/manifest_parser.h"
-#include "utils/logging.h"
+#include "common/utils/logging.h"
 
 namespace wgt {
 namespace parse {

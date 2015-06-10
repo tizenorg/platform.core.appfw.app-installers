@@ -6,7 +6,7 @@
 #include <vector>
 #include "common/context_installer.h"
 #include "common/step/step.h"
-#include "utils/logging.h"
+#include "common/utils/logging.h"
 #include "xml_parser/xml_parser.h"
 
 using std::vector;
