@@ -32,6 +32,7 @@ BuildRequires:  pkgconfig(vconf)
 BuildRequires:  pkgconfig(cert-svc-vcore)
 BuildRequires:  pkgconfig(manifest-parser)
 BuildRequires:  pkgconfig(manifest-handlers)
+BuildRequires:  pkgconfig(capi-security-privilege-manager)
 
 Requires: ca-certificates-tizen
 Requires: libtzplatform-config
