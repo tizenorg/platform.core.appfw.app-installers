@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "common/app_query_interface.h"
-#include "utils/macros.h"
-#include "utils/logging.h"
+#include "common/utils/macros.h"
+#include "common/utils/logging.h"
 
 namespace common_installer {
 

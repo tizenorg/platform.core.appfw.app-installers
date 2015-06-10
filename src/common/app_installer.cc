@@ -9,7 +9,7 @@
 #include "common/context_installer.h"
 #include "common/pkgmgr_interface.h"
 #include "common/pkgmgr_signal.h"
-#include "utils/logging.h"
+#include "common/utils/logging.h"
 
 namespace {
 

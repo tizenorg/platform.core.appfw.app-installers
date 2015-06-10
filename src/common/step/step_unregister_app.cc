@@ -9,7 +9,7 @@
 #include <cstring>
 
 #include "common/step/step_unregister_app.h"
-#include "utils/file_util.h"
+#include "common/utils/file_util.h"
 
 namespace common_installer {
 namespace unregister_app {

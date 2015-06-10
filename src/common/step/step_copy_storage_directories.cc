@@ -31,14 +31,14 @@ bool RestoreApplicationStorageForData(const bf::path& pkg_path) {
 
   bf::path data_path = pkg_path / kDataLocation;
   bf::path data_backup_path = backup_path / kDataLocation;
-  if (!common_installer::utils::CopyDir(data_backup_path, data_path)) {
+  if (!common_installer::CopyDir(data_backup_path, data_path)) {
     LOG(ERROR) << "Failed to restore private directory for widget in update";
     return false;
   }
 
   bf::path shared_path = pkg_path / kSharedLocation;
   bf::path shared_backup_path = backup_path / kSharedLocation;
-  if (!common_installer::utils::CopyDir(shared_backup_path, shared_path)) {
+  if (!common_installer::CopyDir(shared_backup_path, shared_path)) {
     LOG(ERROR) << "Failed to restore shared directory for widget in update";
     return false;
   }

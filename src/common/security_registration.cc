@@ -6,8 +6,8 @@
 
 #include <security-manager.h>
 
-#include "utils/clist_helpers.h"
-#include "utils/logging.h"
+#include "common/utils/clist_helpers.h"
+#include "common/utils/logging.h"
 
 namespace bf = boost::filesystem;
 

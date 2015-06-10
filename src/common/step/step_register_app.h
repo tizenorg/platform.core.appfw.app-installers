@@ -5,7 +5,7 @@
 
 #include "common/context_installer.h"
 #include "common/step/step.h"
-#include "utils/logging.h"
+#include "common/utils/logging.h"
 
 namespace common_installer {
 namespace register_app {

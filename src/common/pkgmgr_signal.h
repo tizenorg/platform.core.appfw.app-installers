@@ -11,7 +11,7 @@
 #include <string>
 
 #include "common/step/step.h"
-#include "utils/macros.h"
+#include "common/utils/macros.h"
 
 namespace common_installer {
 

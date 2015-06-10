@@ -24,6 +24,8 @@ SET(SRCS
   step/step_unregister_app.cc
   step/step_update_app.cc
   step/step_update_security.cc
+  utils/file_util.cc
+  utils/string_util.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})
@@ -39,10 +41,10 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   TZPLATFORM_CONFIG_DEPS
   LIBXML_DEPS
   CERT_SVC_DEPS_VCORE
+  MINIZIP_DEPS
+  ZLIB_DEPS
   Boost
 )
-# Target in-package deps
-TARGET_LINK_LIBRARIES(${TARGET_LIBNAME_COMMON} PUBLIC ${TARGET_LIBNAME_UTILS})
 
 # Extra
 SET_TARGET_PROPERTIES(${TARGET_LIBNAME_COMMON} PROPERTIES VERSION ${VERSION})

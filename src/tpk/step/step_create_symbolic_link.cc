@@ -5,8 +5,8 @@
 #include "common/step/step.h"
 #include "common/app_installer.h"
 #include "common/context_installer.h"
-#include "utils/file_util.h"
-#include "utils/logging.h"
+#include "common/utils/file_util.h"
+#include "common/utils/logging.h"
 
 
 namespace tpk {
@@ -28,7 +28,7 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
     fs::path bindir = context->pkg_path.get() / fs::path(app->appid) /
         fs::path("bin");
     LOG(INFO) << "Creating dir: " << bindir;
-    if (!common_installer::utils::CreateDir(bindir)) {
+    if (!common_installer::CreateDir(bindir)) {
       LOG(ERROR) << "Directory creation failure";
       return false;
     }

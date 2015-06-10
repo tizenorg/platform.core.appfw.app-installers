@@ -11,8 +11,8 @@
 
 #include "common/pkgmgr_signal.h"
 #include "common/step/step.h"
-#include "utils/logging.h"
-#include "utils/macros.h"
+#include "common/utils/logging.h"
+#include "common/utils/macros.h"
 
 namespace common_installer {
 

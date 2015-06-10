@@ -24,12 +24,10 @@ SET(CMAKE_CXX_FLAGS_CCOV       "-O0 -std=c++11 -g --coverage")
 
 # Targets
 SET(TARGET_LIBNAME_COMMON "common-installer")
-SET(TARGET_LIBNAME_UTILS "common-installer-utils")
 SET(TARGET_LIBNAME_PARSER "manifest-parser")
 SET(TARGET_LIBNAME_MANIFEST_HANDLERS "manifest-handlers")
 SET(TARGET_WGT_BACKEND "wgt-backend")
 SET(TARGET_XPK_BACKEND "xpk-backend")
-SET(TARGET_NATIVE_BACKEND "native-backend")
 SET(TARGET_TPK_BACKEND "tpk-backend")
 
 ADD_DEFINITIONS("-Wall")

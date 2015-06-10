@@ -5,14 +5,13 @@
 // This file was rewritten completely in
 // 7c807fc0d4561d178b7c2d8b8d532f48e78ab1bc so fixing license.
 
-#include "utils/string_util.h"
+#include "common/utils/string_util.h"
 
 #include <cstdlib>
 #include <string>
 #include <vector>
 
 namespace common_installer {
-namespace utils {
 
 std::string DecodePercentEscapedCharacter(const std::string& path) {
   std::vector<int> input(path.begin(), path.end());
@@ -39,5 +38,4 @@ std::string DecodePercentEscapedCharacter(const std::string& path) {
   return std::string(output.begin(), output.end());
 }
 
-}  // namespace utils
 }  // namespace common_installer
