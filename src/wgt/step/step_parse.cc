@@ -5,12 +5,24 @@
 
 #include "wgt/step/step_parse.h"
 
-#include <string.h>
+#include <manifest_handlers/application_manifest_constants.h>
+#include <manifest_handlers/appwidget_handler.h>
+#include <manifest_handlers/category_handler.h>
+#include <manifest_handlers/ime_handler.h>
+#include <manifest_handlers/metadata_handler.h>
+#include <manifest_handlers/navigation_handler.h>
+#include <manifest_handlers/setting_handler.h>
+#include <manifest_handlers/splash_screen_handler.h>
+#include <manifest_parser/manifest_handler.h>
+#include <manifest_parser/manifest_constants.h>
 
 #include <pkgmgr/pkgmgr_parser.h>
 
+#include <string.h>
+
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -19,16 +31,7 @@
 #include "common/context_installer.h"
 #include "common/step/step.h"
 
-#include "manifest_handlers/application_manifest_constants.h"
-#include "manifest_handlers/appwidget_handler.h"
-#include "manifest_handlers/category_handler.h"
-#include "manifest_handlers/ime_handler.h"
-#include "manifest_handlers/metadata_handler.h"
-#include "manifest_handlers/navigation_handler.h"
-#include "manifest_handlers/setting_handler.h"
-#include "manifest_handlers/splash_screen_handler.h"
-#include "manifest_parser/manifest_handler.h"
-#include "manifest_parser/manifest_constants.h"
+#include "wgt/wgt_backend_data.h"
 
 namespace {
 
@@ -280,6 +283,17 @@ common_installer::Step::Status StepParse::process() {
   parser::PermissionSet permissions;
   if (perm_info)
      permissions = perm_info->GetAPIPermissions();
+
+  std::unique_ptr<WgtBackendData> backend_data(new WgtBackendData());
+
+  std::shared_ptr<const SettingInfo> settings_info =
+      std::static_pointer_cast<const SettingInfo>(
+          parser_->GetManifestData(
+              wgt::application_widget_keys::kTizenSettingKey));
+  if (settings_info)
+    backend_data->settings.set(*settings_info);
+
+  context_->backend_data.set(backend_data.release());
 
   LOG(DEBUG) << " Read data -[ ";
   LOG(DEBUG) << "App id: " << info->id();

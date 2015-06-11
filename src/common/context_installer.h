@@ -16,31 +16,20 @@
 #include <memory>
 #include <string>
 
-namespace common_installer {
+#include "common/utils/property.h"
 
-/** Template class for defining smart attributes.
- *
- *  Property should be used when, given attribute needs to have pure
- *  setter and getter. This template class will generate getter and setter.
- *  It uses operator() overloading.
- */
-template<typename Type>
-class Property {
- public:
-  Property() {}
-  Property(const Type &val): value_(val) { } // NOLINT
-  const Type& get() const { return value_; }
-  Type& get() { return value_; }
-  void set(const Type &val) { value_ = val; }
- private:
-  Type value_;
-};
+namespace common_installer {
 
 class ConfigData {
  public:
   ConfigData() {}
   Property<std::string> application_name;
   Property<std::string> required_version;
+};
+
+class BackendData {
+ public:
+  virtual ~BackendData() { }
 };
 
 // TODO(p.sikorski@samsung.com) this class should be divided into:
@@ -89,6 +78,9 @@ class ContextInstaller {
 
   // path for the applications root directory
   Property<boost::filesystem::path> root_application_path;
+
+  // Backend specific data
+  Property<BackendData*> backend_data;
 };
 
 }  // namespace common_installer
