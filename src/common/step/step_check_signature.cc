@@ -213,8 +213,6 @@ Step::Status StepCheckSignature::process() {
   LOG(INFO) << "Privilege level: " << PrivilegeLevelToString(level);
   context_->privilege_level.set(level);
 
-  // TODO(t.iwanek): check settings for privilege level...
-
   // TODO(t.iwanek): refactoring, move to wgt backend
   bool is_webapp = context_->pkg_type.get() == "wgt";
   if (!ValidatePrivilegeLevel(level, is_webapp,

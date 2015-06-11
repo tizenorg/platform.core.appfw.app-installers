@@ -39,6 +39,8 @@ enum class PrivilegeLevel : int {
   PLATFORM   = 3
 };
 
+bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
+                   PrivilegeLevel allowed_level);
 const char* PrivilegeLevelToString(PrivilegeLevel level);
 
 // TODO(p.sikorski@samsung.com) this class should be divided into:

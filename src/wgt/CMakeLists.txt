@@ -1,5 +1,6 @@
 # Target - sources
 SET(SRCS
+  step/step_check_settings_level.cc
   step/step_create_symbolic_link.cc
   step/step_parse.cc
   wgt_app_query_interface.cc

@@ -11,6 +11,11 @@ namespace common_installer {
 
 namespace fs = boost::filesystem;
 
+bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
+                   PrivilegeLevel allowed_level) {
+  return static_cast<int>(required_level) <= static_cast<int>(allowed_level);
+}
+
 const char* PrivilegeLevelToString(PrivilegeLevel level) {
   switch (level) {
     case PrivilegeLevel::UNTRUSTED:
