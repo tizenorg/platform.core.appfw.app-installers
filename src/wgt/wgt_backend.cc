@@ -27,8 +27,8 @@
 
 #include "wgt/update_workaround.h"
 
-#include "wgt/step/step_parse.h"
 #include "wgt/step/step_create_symbolic_link.h"
+#include "wgt/step/step_parse.h"
 
 namespace ci = common_installer;
 

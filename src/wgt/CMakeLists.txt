@@ -4,6 +4,7 @@ SET(SRCS
   step/step_create_symbolic_link.cc
   update_workaround.cc
   wgt_backend.cc
+  wgt_backend_data.cc
 )
 
 IF(WRT_LAUNCHER)
