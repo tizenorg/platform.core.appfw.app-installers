@@ -6,6 +6,7 @@
 #define COMMON_PKGMGR_REGISTRATION_H_
 
 #include <boost/filesystem.hpp>
+#include <pkgmgr-info.h>
 #include <unistd.h>
 
 #include <string>
@@ -22,7 +23,8 @@ bool UpgradeAppInPkgmgr(const boost::filesystem::path& xml_path,
                         const CertificateInfo& cert_info, uid_t uid);
 bool UnregisterAppInPkgmgr(const boost::filesystem::path& xml_path,
                            const std::string& pkgid, uid_t uid);
-std::string QueryCertificateAuthorCertificate(const std::string& pkgid);
+std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
+                                              uid_t uid);
 
 }  // namespace common_installer
 

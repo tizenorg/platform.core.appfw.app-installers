@@ -52,7 +52,8 @@ Step::Status StepUpdateApplication::clean() {
 Step::Status StepUpdateApplication::undo() {
   // Prepare certification info for revert
   ValidationCore::Base64Decoder decoder;
-  decoder.append(QueryCertificateAuthorCertificate(context_->pkgid.get()));
+  decoder.append(QueryCertificateAuthorCertificate(context_->pkgid.get(),
+                                                   context_->uid.get()));
   decoder.finalize();
   CertificateInfo certificate_info;
   certificate_info.author_certificate.set(ValidationCore::CertificatePtr(
