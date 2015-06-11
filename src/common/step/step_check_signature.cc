@@ -228,8 +228,6 @@ Step::Status StepCheckSignature::process() {
       context_->manifest_data.get()->privileges))
     return Status::ERROR;
 
-  // TODO(t.iwanek): check old certificate during update...
-
   LOG(INFO) << "Signature done";
   return Status::OK;
 }
