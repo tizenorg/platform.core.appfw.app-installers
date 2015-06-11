@@ -26,6 +26,7 @@
 #include "common/step/step_unzip.h"
 #include "common/step/step_update_app.h"
 #include "common/step/step_update_security.h"
+#include "common/step/step_check_old_certificate.h"
 
 #include "wgt/step/step_create_symbolic_link.h"
 #include "wgt/step/step_check_settings_level.h"
@@ -66,6 +67,7 @@ int main(int argc, char** argv) {
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<wgt::check_settings::StepCheckSettingsLevel>();
+      installer.AddStep<ci::old_certificate::StepCheckOldCertificate>();
       installer.AddStep<ci::old_manifest::StepOldManifest>();
       installer.AddStep<ci::backup_manifest::StepBackupManifest>();
       installer.AddStep<ci::backup_icons::StepBackupIcons>();
