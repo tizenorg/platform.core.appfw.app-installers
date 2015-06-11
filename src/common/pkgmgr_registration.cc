@@ -4,7 +4,6 @@
 
 #include "common/pkgmgr_registration.h"
 
-#include <pkgmgr-info.h>
 #include <pkgmgr_installer.h>
 #include <tzplatform_config.h>
 
@@ -32,16 +31,10 @@ bool RegisterAuthorCertificate(
   }
 
   const auto& cert = cert_info.author_certificate.get();
-  pkgmgr_instcert_type inst_cert_type = PM_SET_AUTHOR_ROOT_CERT;
-  if (cert->isRootCert()) {
-    inst_cert_type = PM_SET_AUTHOR_ROOT_CERT;
-  } else if (cert->isCA()) {
-    inst_cert_type = PM_SET_AUTHOR_INTERMEDIATE_CERT;
-  } else {
-    inst_cert_type = PM_SET_AUTHOR_SIGNER_CERT;
-  }
 
-  if (pkgmgr_installer_set_cert_value(handle, inst_cert_type,
+  // TODO(t.iwanek): set other certificates if needed
+
+  if (pkgmgr_installer_set_cert_value(handle, PM_SET_AUTHOR_SIGNER_CERT,
       const_cast<char*>(cert->getBase64().c_str())) < 0) {
     pkgmgr_installer_destroy_certinfo_set_handle(handle);
     LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
@@ -128,7 +121,8 @@ bool UnregisterAppInPkgmgr(const bf::path& xml_path,
   return true;
 }
 
-std::string QueryCertificateAuthorCertificate(const std::string& pkgid) {
+std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
+                                              uid_t uid) {
   pkgmgrinfo_certinfo_h handle;
   int ret = pkgmgrinfo_pkginfo_create_certinfo(&handle);
   if (ret != PMINFO_R_OK) {
@@ -136,7 +130,7 @@ std::string QueryCertificateAuthorCertificate(const std::string& pkgid) {
                << ret;
     return {};
   }
-  ret = pkgmgrinfo_pkginfo_load_certinfo(pkgid.c_str(), handle, getuid());
+  ret = pkgmgrinfo_pkginfo_load_certinfo(pkgid.c_str(), handle, uid);
   if (ret != PMINFO_R_OK) {
     LOG(ERROR) << "pkgmgrinfo_pkginfo_load_certinfo failed with error: " << ret;
     pkgmgrinfo_pkginfo_destroy_certinfo(handle);

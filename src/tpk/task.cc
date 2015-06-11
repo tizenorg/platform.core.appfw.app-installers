@@ -3,8 +3,8 @@
 #ifdef HOSTTEST
 #include "test/mock_pkgmgr_installer.h"
 #else
-#include "common/pkgmgr_interface.h"
 #include "common/app_installer.h"
+#include "common/pkgmgr_interface.h"
 #include "common/step/step_configure.h"
 #include "common/step/step_backup_icons.h"
 #include "common/step/step_backup_manifest.h"
@@ -24,11 +24,12 @@
 #include "common/step/step_unzip.h"
 #include "common/step/step_update_app.h"
 #include "common/step/step_update_security.h"
+#include "common/step/step_check_old_certificate.h"
+#include "common/utils/logging.h"
+
 #include "tpk/step/step_parse.h"
 #include "tpk/step/step_create_symbolic_link.h"
-#include "common/utils/logging.h"
 #endif
-
 
 namespace ci = common_installer;
 
@@ -113,6 +114,7 @@ int Task::Update() {
   ai.AddStep<ci::unzip::StepUnzip>();
   ai.AddStep<tpk::step::StepParse>();
   ai.AddStep<ci::signature::StepCheckSignature>();
+  ai.AddStep<ci::old_certificate::StepCheckOldCertificate>();
   ai.AddStep<ci::old_manifest::StepOldManifest>();
   ai.AddStep<ci::backup_manifest::StepBackupManifest>();
   ai.AddStep<ci::backup_icons::StepBackupIcons>();
