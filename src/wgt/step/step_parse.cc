@@ -30,11 +30,26 @@
 #include "manifest_parser/manifest_handler.h"
 #include "manifest_parser/manifest_constants.h"
 
+#include "utils/clist_helpers.h"
+
 namespace {
 
 const std::string kManifestVersion = "1.0.0";
 
+metadata_x* GenerateMetadataListX(const wgt::parse::MetaDataInfo& meta_info,
+    metadata_x* head) {
+  for (auto& meta : meta_info.metadata()) {
+    metadata_x* new_meta =
+        static_cast<metadata_x*>(calloc(1, sizeof(metadata_x)));
+    new_meta->key = strdup(meta.first.c_str());
+    if (!meta.second.empty())
+      new_meta->value = strdup(meta.second.c_str());
+    LISTADD(head, new_meta);
+  }
+  return head;
 }
+
+}  // namespace
 
 namespace wgt {
 namespace parse {
@@ -190,6 +205,29 @@ bool StepParse::FillPrivileges(manifest_x* manifest) {
   return true;
 }
 
+bool StepParse::FillMetadata(manifest_x* manifest) {
+  std::shared_ptr<const MetaDataInfo> meta_info =
+      std::static_pointer_cast<const MetaDataInfo>(parser_->GetManifestData(
+          app_keys::kTizenMetaDataKey));
+  if (!meta_info)
+    return true;
+
+  uiapplication_x* ui_app = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->uiapplication, ui_app);
+  for (; ui_app; ui_app = ui_app->next) {
+    manifest->uiapplication->metadata =
+        GenerateMetadataListX(*meta_info, manifest->uiapplication->metadata);
+  }
+  serviceapplication_x* svc_app = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->serviceapplication, svc_app);
+  for (; svc_app; svc_app = svc_app->next) {
+    manifest->serviceapplication->metadata =
+        GenerateMetadataListX(*meta_info,
+                              manifest->serviceapplication->metadata);
+  }
+  return true;
+}
+
 bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillIconPaths(manifest))
     return false;
@@ -200,6 +238,8 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillPrivileges(manifest))
     return false;
   if (!FillAppControl(manifest))
+    return false;
+  if (!FillMetadata(manifest))
     return false;
   return true;
 }
