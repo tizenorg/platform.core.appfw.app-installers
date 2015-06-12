@@ -30,6 +30,8 @@
 #include "wgt/step/step_create_symbolic_link.h"
 #include "wgt/step/step_check_settings_level.h"
 #include "wgt/step/step_parse.h"
+#include "wgt/step/step_rds_parse.h"
+#include "wgt/step/step_rds_modify.h"
 #include "wgt/wgt_app_query_interface.h"
 
 namespace ci = common_installer;
@@ -85,6 +87,16 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::revoke_security::StepRevokeSecurity>();
       break;
     }
+    case ci::PkgMgrInterface::Type::Reinstall: {
+      installer.AddStep<ci::configure::StepConfigure>();
+      installer.AddStep<wgt::parse::StepParse>();
+      installer.AddStep<ci::old_manifest::StepOldManifest>();
+      installer.AddStep<wgt::rds_parse::StepRDSParse>();
+      installer.AddStep<wgt::rds_modify::StepRDSModify>();
+      installer.AddStep<ci::update_security::StepUpdateSecurity>();
+
+    break;
+  }
     default: {
       // unsupported operation
       return EINVAL;
