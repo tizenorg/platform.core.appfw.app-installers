@@ -32,6 +32,7 @@
 #include "wgt/step/step_parse.h"
 #include "wgt/step/step_rds_parse.h"
 #include "wgt/step/step_rds_modify.h"
+#include "wgt/step/step_wgt_resource_directory.h"
 #include "wgt/wgt_app_query_interface.h"
 
 namespace ci = common_installer;
@@ -54,6 +55,7 @@ int main(int argc, char** argv) {
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<wgt::check_settings::StepCheckSettingsLevel>();
+      installer.AddStep<wgt::wgt_resources::StepWgtResourceDirectory>();
       installer.AddStep<ci::copy::StepCopy>();
       installer.AddStep<ci::create_storage::StepCreateStorageDirectories>();
       installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
@@ -68,6 +70,7 @@ int main(int argc, char** argv) {
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<wgt::check_settings::StepCheckSettingsLevel>();
+      installer.AddStep<wgt::wgt_resources::StepWgtResourceDirectory>();
       installer.AddStep<ci::old_manifest::StepOldManifest>();
       installer.AddStep<ci::backup_manifest::StepBackupManifest>();
       installer.AddStep<ci::backup_icons::StepBackupIcons>();

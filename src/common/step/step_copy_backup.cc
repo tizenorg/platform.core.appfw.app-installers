@@ -27,16 +27,6 @@ Step::Status StepCopyBackup::process() {
 
   install_path_ = context_->pkg_path.get();
 
-  // FIXME: correctly order app's data.
-  // If there is 1 app in package, app's data are stored in <pkg_path>/<app_id>
-  // If there are >1 apps in package, app's data are stored in <pkg_path>
-  // considering that multiple apps data are already separated in folders.
-  manifest_x *m = context_->manifest_data.get();
-  if ((m->uiapplication && !m->uiapplication->next && !m->serviceapplication) ||
-      (m->serviceapplication && !m->serviceapplication->next &&
-      !m->uiapplication))
-    install_path_ /= bf::path(context_->manifest_data.get()->mainapp_id);
-
   backup_path_ = GetBackupPathForPackagePath(context_->pkg_path.get());
 
   // backup old content
