@@ -9,31 +9,18 @@
 #include <unistd.h>
 
 #include <boost/filesystem.hpp>
+#include <vcore/Base64.h>
+#include <vcore/Certificate.h>
+
 #include <cassert>
 #include <cstdio>
 #include <cstring>
 #include <string>
 
+#include "common/pkgmgr_registration.h"
 #include "common/utils/file_util.h"
 
 namespace bf = boost::filesystem;
-
-namespace {
-
-const char* const kAppinstTags[] = {"removable=true", nullptr, };
-
-bool UpgradeManifestInformation(uid_t uid, const bf::path& xml_path) {
-  int ret = uid != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
-       pkgmgr_parser_parse_usr_manifest_for_upgrade(
-           xml_path.string().c_str(), uid,
-           const_cast<char* const*>(kAppinstTags)) :
-       pkgmgr_parser_parse_manifest_for_upgrade(
-           xml_path.string().c_str(),
-           const_cast<char* const*>(kAppinstTags));
-  return !ret;
-}
-
-}  // anonymous namespace
 
 namespace common_installer {
 namespace update_app {
@@ -47,8 +34,9 @@ Step::Status StepUpdateApplication::precheck() {
 }
 
 Step::Status StepUpdateApplication::process() {
-  if (!UpgradeManifestInformation(context_->uid.get(),
-      context_->xml_path.get())) {
+  if (!UpgradeAppInPkgmgr(context_->xml_path.get(),
+      context_->pkgid.get(), context_->certificate_info.get(),
+      context_->uid.get())) {
     LOG(ERROR) << "Cannot upgrade manifest for application";
     return Status::ERROR;
   }
@@ -62,8 +50,17 @@ Step::Status StepUpdateApplication::clean() {
 }
 
 Step::Status StepUpdateApplication::undo() {
-  if (!UpgradeManifestInformation(context_->uid.get(),
-      context_->backup_xml_path.get())) {
+  // Prepare certification info for revert
+  ValidationCore::Base64Decoder decoder;
+  decoder.append(QueryCertificateAuthorCertificate(context_->pkgid.get()));
+  decoder.finalize();
+  CertificateInfo certificate_info;
+  certificate_info.author_certificate.set(ValidationCore::CertificatePtr(
+      new ValidationCore::Certificate(decoder.get())));
+
+  if (!UpgradeAppInPkgmgr(context_->backup_xml_path.get(),
+      context_->pkgid.get(), certificate_info,
+      context_->uid.get())) {
     LOG(ERROR) << "Cannot revert manifest for application";
     return Status::ERROR;
   }

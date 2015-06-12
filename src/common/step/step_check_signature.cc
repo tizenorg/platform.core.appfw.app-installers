@@ -60,7 +60,8 @@ privilege_manager_visibility_e PrivilegeLevelToVisibility(
 common_installer::Step::Status ValidateSignatureFile(
     const bf::path& base_path,
     const ValidationCore::SignatureFileInfo& file_info,
-    common_installer::PrivilegeLevel* level) {
+    common_installer::PrivilegeLevel* level,
+    common_installer::CertificateInfo* cert_info) {
   bf::path path = base_path / file_info.getFileName();
   LOG(INFO) << "Processing signature: " << path;
   ValidationCore::SignatureData data(path.string(), file_info.getFileNumber());
@@ -101,6 +102,9 @@ common_installer::Step::Status ValidateSignatureFile(
               *level == common_installer::PrivilegeLevel::UNTRUSTED) {
             *level = CertStoreIdToPrivilegeLevel(data.getVisibilityLevel());
           }
+        } else {
+          // set author certificate to be saved in pkgmgr
+          cert_info->author_certificate.set(data.getEndEntityCertificatePtr());
         }
         break;
       };
@@ -162,7 +166,7 @@ namespace common_installer {
 namespace signature {
 
 Step::Status ValidateSignatures(const bf::path& base_path,
-                                PrivilegeLevel* level) {
+    PrivilegeLevel* level, common_installer::CertificateInfo* cert_info) {
   ValidationCore::VCoreInit();
   // Find signature files
   ValidationCore::SignatureFileInfoSet signature_files;
@@ -177,7 +181,8 @@ Step::Status ValidateSignatures(const bf::path& base_path,
 
   // Read xml schema for signatures
   for (auto& file_info : signature_files) {
-    Step::Status status = ValidateSignatureFile(base_path, file_info, level);
+    Step::Status status = ValidateSignatureFile(base_path, file_info, level,
+                                                cert_info);
     if (status != Step::Status::OK) {
       ValidationCore::VCoreDeinit();
       return status;
@@ -205,7 +210,8 @@ Step::Status StepCheckSignature::precheck() {
 Step::Status StepCheckSignature::process() {
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
   Status status =
-      ValidateSignatures(context_->unpacked_dir_path.get(), &level);
+      ValidateSignatures(context_->unpacked_dir_path.get(), &level,
+                         &context_->certificate_info.get());
   if (status != Status::OK) {
     return status;
   }
