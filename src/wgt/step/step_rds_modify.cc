@@ -56,8 +56,7 @@ common_installer::Step::Status StepRDSModify::process() {
   }
   context_->pkg_path.set(
         context_->root_application_path.get() /context_->pkgid.get());
-  bf::path install_path = context_->pkg_path.get() /
-      context_->manifest_data.get()->mainapp_id;
+  bf::path install_path = context_->pkg_path.get() / "res" / "wgt";
   bf::path unzip_path = context_->unpacked_dir_path.get();
   if (!AddFiles(unzip_path, install_path) ||
      !ModifyFiles(unzip_path, install_path) ||

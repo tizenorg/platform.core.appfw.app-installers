@@ -129,7 +129,7 @@ bool RegisterSecurityContextForApps(
       return false;
     }
     if (!RegisterSecurityContext(ui->appid, pkg_id,
-        path/ui->appid, manifest)) {
+        path, manifest)) {
       return false;
     }
   }
@@ -141,7 +141,7 @@ bool RegisterSecurityContextForApps(
       return false;
     }
     if (!RegisterSecurityContext(svc->appid, pkg_id,
-        path/svc->appid, manifest)) {
+        path, manifest)) {
       return false;
     }
   }
