@@ -3,6 +3,7 @@ SET(SRCS
   app_installer.cc
   context_installer.cc
   pkgmgr_interface.cc
+  pkgmgr_registration.cc
   pkgmgr_signal.cc
   security_registration.cc
   step/step_backup_icons.cc

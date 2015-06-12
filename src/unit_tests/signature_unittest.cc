@@ -24,7 +24,8 @@ TEST_F(SignatureValidatorTest, HandlesInitializedSignatureDir) {
   signature_file.reset(new bf::path(
       "/usr/share/app-installers-ut/test_samples/good_signatures"));
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
-  EXPECT_EQ(ValidateSignatures(*signature_file, &level),
+  common_installer::CertificateInfo cert_info;
+  EXPECT_EQ(ValidateSignatures(*signature_file, &level, &cert_info),
             Step::Status::OK);
 }
 
@@ -33,7 +34,8 @@ TEST_F(SignatureValidatorTest, HandlesBadSignatureDir) {
   signature_file.reset(new bf::path(
       "/usr/share/app-installers-ut/test_samples/bad_signatures"));
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
-  EXPECT_EQ(ValidateSignatures(*signature_file, &level),
+  common_installer::CertificateInfo cert_info;
+  EXPECT_EQ(ValidateSignatures(*signature_file, &level, &cert_info),
             Step::Status::ERROR);
 }
 

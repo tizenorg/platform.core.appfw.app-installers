@@ -2,21 +2,14 @@
 
 #include "common/step/step_register_app.h"
 
-#include <pkgmgr-info.h>
 #include <unistd.h>
-#include <boost/filesystem.hpp>
 #include <cassert>
 #include <cstring>
 #include <cstdio>
 #include <string>
 
+#include "common/pkgmgr_registration.h"
 #include "common/utils/file_util.h"
-
-namespace {
-
-const char* const kAppinstTags[] = {"removable=true", nullptr, };
-
-}  // anonymous namespace
 
 namespace common_installer {
 namespace register_app {
@@ -40,26 +33,13 @@ Step::Status StepRegisterApplication::precheck() {
 }
 
 Step::Status StepRegisterApplication::process() {
-  // TODO(sdi2): Check if data->removable is correctly setting
-  // during parsing step.
-  // Same check should be done for preload field.
-
-  // Having a specific step to implement a installer commandline tool
-  // for image build could be usefull also.
-
-  int ret = context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
-      pkgmgr_parser_parse_usr_manifest_for_installation(
-          context_->xml_path.get().c_str(), context_->uid.get(),
-          const_cast<char* const*>(kAppinstTags)) :
-      pkgmgr_parser_parse_manifest_for_installation(
-          context_->xml_path.get().c_str(),
-          const_cast<char* const*>(kAppinstTags));
-
-  if (ret) {
+  if (!RegisterAppInPkgmgr(context_->xml_path.get(),
+                           context_->pkgid.get().c_str(),
+                           context_->certificate_info.get(),
+                           context_->uid.get())) {
     LOG(ERROR) << "Failed to register the app";
     return Step::Status::ERROR;
   }
-  in_registry_ = true;
 
   LOG(INFO) << "Successfully registered the app";
   return Status::OK;
@@ -70,21 +50,9 @@ Step::Status StepRegisterApplication::clean() {
 }
 
 Step::Status StepRegisterApplication::undo() {
-  if (in_registry_) {
-    int ret = context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
-        pkgmgr_parser_parse_usr_manifest_for_uninstallation(
-            context_->xml_path.get().c_str(), context_->uid.get(),
-            const_cast<char* const*>(kAppinstTags)) :
-        pkgmgr_parser_parse_manifest_for_uninstallation(
-            context_->xml_path.get().c_str(),
-            const_cast<char* const*>(kAppinstTags));
-
-    if (ret) {
-      LOG(ERROR) << "Failed to restore old content pkgmgr database";
-      return Step::Status::ERROR;
-    }
-    LOG(INFO) << "Successfuly clean database";
-  }
+  UnregisterAppInPkgmgr(context_->xml_path.get(), context_->pkgid.get(),
+                        context_->uid.get());
+  LOG(INFO) << "Successfuly clean database";
   return Status::OK;
 }
 

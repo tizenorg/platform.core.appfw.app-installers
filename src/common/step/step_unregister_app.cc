@@ -5,9 +5,11 @@
 #include <unistd.h>
 
 #include <boost/filesystem.hpp>
+#include <pkgmgr_installer.h>
 #include <cassert>
 #include <cstring>
 
+#include "common/pkgmgr_registration.h"
 #include "common/step/step_unregister_app.h"
 #include "common/utils/file_util.h"
 
@@ -38,20 +40,12 @@ Step::Status StepUnregisterApplication::precheck() {
 }
 
 Step::Status StepUnregisterApplication::process() {
-  const char* const appinst_tags[] = {"removable=true", nullptr, };
-
-  int ret = context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
-      pkgmgr_parser_parse_usr_manifest_for_uninstallation(
-          context_->xml_path.get().c_str(), context_->uid.get(),
-          const_cast<char* const*>(appinst_tags)) :
-      pkgmgr_parser_parse_manifest_for_uninstallation(
-          context_->xml_path.get().c_str(),
-          const_cast<char* const*>(appinst_tags));
-
-  if (ret != 0) {
+  if (!UnregisterAppInPkgmgr(context_->xml_path.get(), context_->pkgid.get(),
+                             context_->uid.get())) {
     LOG(ERROR) << "Failed to unregister package into database";
     return Status::ERROR;
   }
+
   LOG(DEBUG) << "Successfully unregister the application";
 
   return Status::OK;

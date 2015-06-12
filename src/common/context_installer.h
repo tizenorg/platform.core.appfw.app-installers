@@ -12,6 +12,7 @@
 
 #include <unistd.h>
 #include <sys/types.h>
+#include <vcore/Certificate.h>
 
 #include <memory>
 #include <string>
@@ -30,6 +31,11 @@ class ConfigData {
 class BackendData {
  public:
   virtual ~BackendData() { }
+};
+
+class CertificateInfo {
+ public:
+  Property<ValidationCore::CertificatePtr> author_certificate;
 };
 
 enum class PrivilegeLevel : int {
@@ -95,6 +101,9 @@ class ContextInstaller {
 
   // request privilege level of package
   Property<PrivilegeLevel> privilege_level;
+
+  // certificate information
+  Property<CertificateInfo> certificate_info;
 };
 
 boost::filesystem::path GetBackupPathForPackagePath(
