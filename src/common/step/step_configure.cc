@@ -34,6 +34,11 @@ Step::Status StepConfigure::process() {
       context_->pkgid.set(pkgmgr->GetRequestInfo());
       context_->file_path.set(kStrEmpty);
       break;
+    case PkgMgrInterface::Type::Reinstall:
+      context_->unpacked_dir_path.set(pkgmgr->GetRequestInfo());
+      context_->pkgid.set(kStrEmpty);
+      context_->file_path.set(kStrEmpty);
+      break;
     default:
       // TODO(p.sikorski): should return unsupported, and display error
       LOG(ERROR) <<

@@ -1,6 +1,9 @@
 # Target - sources
 SET(SRCS
+  rds_parser.cc
   step/step_parse.cc
+  step/step_rds_parse.cc
+  step/step_rds_modify.cc
   step/step_create_symbolic_link.cc
   update_workaround.cc
   wgt_backend.cc
