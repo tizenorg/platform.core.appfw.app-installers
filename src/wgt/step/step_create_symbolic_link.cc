@@ -36,7 +36,7 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
   for (; ui != nullptr; ui = ui->next) {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
     fs::path exec_path =
-        context_->pkg_path.get() / fs::path(ui->appid)
+        context_->pkg_path.get()
             / fs::path("bin");
     common_installer::CreateDir(exec_path);
 
@@ -51,9 +51,7 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
   }
   for (; svc != nullptr; svc = svc->next) {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path =
-        context_->pkg_path.get() / fs::path(svc->appid)/
-            fs::path("bin");
+    fs::path exec_path = context_->pkg_path.get() / fs::path("bin");
     common_installer::CreateDir(exec_path);
 
     exec_path /= fs::path(svc->appid);
@@ -75,16 +73,12 @@ common_installer::Step::Status StepCreateSymbolicLink::undo() {
   serviceapplication_x* svc = context_->manifest_data.get()->serviceapplication;
 
   for (; ui != nullptr; ui = ui->next) {
-    fs::path exec_path =
-        context_->pkg_path.get() / fs::path(ui->appid)
-            / fs::path("bin");
+    fs::path exec_path = context_->pkg_path.get() / fs::path("bin");
     if (fs::exists(exec_path))
       fs::remove_all(exec_path);
   }
   for (; svc != nullptr; svc = svc->next) {
-    fs::path exec_path =
-        context_->pkg_path.get() / fs::path(svc->appid)
-            / fs::path("bin");
+    fs::path exec_path = context_->pkg_path.get() / fs::path("bin");
     if (fs::exists(exec_path))
       fs::remove_all(exec_path);
   }

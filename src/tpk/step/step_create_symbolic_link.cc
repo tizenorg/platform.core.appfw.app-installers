@@ -29,7 +29,7 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
   boost::system::error_code boost_error;
 
   for (; app != nullptr; app=app->next) {
-    fs::path bindir = context->pkg_path.get() / fs::path(app->appid) /
+    fs::path bindir = context->pkg_path.get() /
         fs::path("bin");
     LOG(INFO) << "Creating dir: " << bindir;
     if (!common_installer::CreateDir(bindir)) {
@@ -99,8 +99,7 @@ bool RemoveSymLink(T *app, ContextInstaller* context) {
    * So we don't remove the bin/ directory.
    */
   for (; app != nullptr; app=app->next) {
-    fs::path exec_path = fs::path(context->pkg_path.get()) /
-        fs::path(app->appid) / fs::path("bin");
+    fs::path exec_path = fs::path(context->pkg_path.get()) / fs::path("bin");
     fs::remove_all(exec_path / fs::path(app->appid));
   }
   return true;

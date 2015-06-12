@@ -80,8 +80,6 @@ namespace {
       try {
         // Find (ui|service)-application element, and get appid
         if (boost::regex_search(line, m, appid_pattern)) {
-          std::string appid = m[3].str();
-          pkg_path /= bf::path(appid);
           pkg_path /= bf::path("bin");
 
           result = boost::regex_replace(line, appid_exec_replace_pattern,
