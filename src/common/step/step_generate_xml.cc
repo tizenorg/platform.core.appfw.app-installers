@@ -49,7 +49,7 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
   xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST app->appid);
 
   // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-  fs::path exec_path = context_->pkg_path.get() / fs::path(app->appid)
+  fs::path exec_path = context_->pkg_path.get()
       / fs::path("bin") / fs::path(app->appid);
   xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
                               BAD_CAST exec_path.string().c_str());
