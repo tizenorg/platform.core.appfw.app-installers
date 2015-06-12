@@ -45,6 +45,7 @@ class StepParse : public common_installer::Step {
   bool FillApplicationInfo(manifest_x* manifest);
   bool FillAppControl(manifest_x* manifest);
   bool FillPrivileges(manifest_x* manifest);
+  bool FillMetadata(manifest_x* manifest);
   bool FillManifestX(manifest_x* manifest);
 
   std::unique_ptr<parser::ManifestParser> parser_;

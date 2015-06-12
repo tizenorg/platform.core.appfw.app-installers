@@ -130,6 +130,19 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
 
     xmlTextWriterEndElement(writer);
   }
+
+  metadata_x* meta = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(app->metadata, meta);
+  for (; meta; meta = meta->next) {
+    xmlTextWriterStartElement(writer, BAD_CAST "metadata");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "key",
+        BAD_CAST meta->key);
+    if (meta->value)
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "value",
+          BAD_CAST meta->value);
+    xmlTextWriterEndElement(writer);
+  }
+
   return Step::Status::OK;
 }
 
