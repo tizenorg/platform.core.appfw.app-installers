@@ -264,7 +264,7 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
 
     // icon
     SetChildren(&(p->icon), tree, el, "icon",
-        [&](XmlElement *el, icon_x* p){
+        [&](XmlElement *el, icon_x* p) {  // NOLINT
       p->text = string_strdup(el->content());
       // NOTE: name is an attribute, but the xml writer uses it as text.
       // This must be fixed in whole app-installer modules, including wgt.
@@ -275,7 +275,7 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
 
     // label
     SetChildren(&(p->label), tree, el, "label",
-        [&](XmlElement *el, label_x* p){
+        [&](XmlElement *el, label_x* p) {
       // NOTE: name is an attribute, but the xml writer uses it as text.
       // This must be fixed in whole app-installer modules, including wgt.
       // Current implementation is just for compatibility.

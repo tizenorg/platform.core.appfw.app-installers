@@ -25,7 +25,7 @@ namespace common_installer {
 namespace generate_xml {
 
 static void _writeUIApplicationAttributes(
-    xmlTextWriterPtr writer, uiapplication_x *app) {
+    xmlTextWriterPtr writer, uiapplication_x */*app*/) {
     xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
         BAD_CAST "true");
 }
@@ -66,7 +66,7 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
   if (std::is_same<T, serviceapplication_x>::value)
     _writeServiceApplicationAttributes(
         writer, reinterpret_cast<serviceapplication_x *>(app));
-  if(app->label){
+  if (app->label) {
     label_x* label = nullptr;
     LISTHEAD(app->label, label);
     for (; label; label = label->next) {
