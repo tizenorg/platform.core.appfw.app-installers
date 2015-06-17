@@ -66,17 +66,18 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
   if (std::is_same<T, serviceapplication_x>::value)
     _writeServiceApplicationAttributes(
         writer, reinterpret_cast<serviceapplication_x *>(app));
-
-  label_x* label = nullptr;
-  LISTHEAD(app->label, label);
-  for (; label; label = label->next) {
-    xmlTextWriterStartElement(writer, BAD_CAST "label");
-    if (label->lang && strlen(label->lang)) {
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
-                                  BAD_CAST label->lang);
+  if(app->label){
+    label_x* label = nullptr;
+    LISTHEAD(app->label, label);
+    for (; label; label = label->next) {
+      xmlTextWriterStartElement(writer, BAD_CAST "label");
+      if (label->lang && strlen(label->lang)) {
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                    BAD_CAST label->lang);
+      }
+      xmlTextWriterWriteString(writer, BAD_CAST label->name);
+      xmlTextWriterEndElement(writer);
     }
-    xmlTextWriterWriteString(writer, BAD_CAST label->name);
-    xmlTextWriterEndElement(writer);
   }
 
   // the icon is renamed to <appid.png>
