@@ -5,6 +5,7 @@
 
 #include "common/step/step_generate_xml.h"
 
+#include <boost/system/error_code.hpp>
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
 #include <pkgmgr-info.h>
@@ -19,6 +20,7 @@
 #include "utils/clist_helpers.h"
 #include "utils/file_util.h"
 
+namespace bs = boost::system;
 namespace fs = boost::filesystem;
 
 namespace common_installer {
@@ -171,6 +173,15 @@ Step::Status StepGenerateXml::process() {
       / fs::path(context_->pkgid.get());
   xml_path += ".xml";
   context_->xml_path.set(xml_path.string());
+
+  bs::error_code error;
+  if (!fs::exists(xml_path.parent_path(), error)) {
+    if (!utils::CreateDir(xml_path.parent_path())) {
+      LOG(ERROR) <<
+          "Directory for manifest xml is missing and cannot be created";
+      return Status::ERROR;
+    }
+  }
 
   xmlTextWriterPtr writer;
 
