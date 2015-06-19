@@ -8,6 +8,7 @@
 #include <manifest_handlers/application_manifest_constants.h>
 #include <manifest_handlers/appwidget_handler.h>
 #include <manifest_handlers/category_handler.h>
+#include <manifest_handlers/content_handler.h>
 #include <manifest_handlers/ime_handler.h>
 #include <manifest_handlers/metadata_handler.h>
 #include <manifest_handlers/navigation_handler.h>
@@ -251,6 +252,7 @@ common_installer::Step::Status StepParse::process() {
     new ApplicationIconsHandler,
     new AppWidgetHandler,
     new CategoryHandler,
+    new ContentHandler,
     new ImeHandler,
     new MetaDataHandler,
     new NavigationHandler,
