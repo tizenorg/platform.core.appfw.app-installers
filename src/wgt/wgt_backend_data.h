@@ -7,6 +7,8 @@
 
 #include <manifest_handlers/setting_handler.h>
 
+#include <string>
+
 #include "common/context_installer.h"
 #include "common/utils/property.h"
 
@@ -17,6 +19,8 @@ class WgtBackendData : public common_installer::BackendData {
   WgtBackendData();
 
   Property<parse::SettingInfo> settings;
+
+  Property<std::string> content;
 };
 
 }  // namespace wgt

@@ -331,6 +331,13 @@ common_installer::Step::Status StepParse::process() {
   if (settings_info)
     backend_data->settings.set(*settings_info);
 
+  std::shared_ptr<const ContentInfo> content_info =
+      std::static_pointer_cast<const ContentInfo>(
+          parser_->GetManifestData(
+              wgt::application_widget_keys::kTizenContentKey));
+  if (content_info)
+    backend_data->content.set(content_info->src());
+
   context_->backend_data.set(backend_data.release());
 
   LOG(DEBUG) << " Read data -[ ";

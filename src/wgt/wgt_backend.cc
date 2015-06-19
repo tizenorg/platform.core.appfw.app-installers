@@ -28,6 +28,7 @@
 #include "common/step/step_update_security.h"
 
 #include "wgt/step/step_create_symbolic_link.h"
+#include "wgt/step/step_validate_config.h"
 #include "wgt/step/step_parse.h"
 #include "wgt/wgt_app_query_interface.h"
 
@@ -49,6 +50,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::configure::StepConfigure>();
       installer.AddStep<ci::unzip::StepUnzip>();
       installer.AddStep<wgt::parse::StepParse>();
+      installer.AddStep<wgt::validate_config::StepValidateConfig>();
       installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<ci::copy::StepCopy>();
       installer.AddStep<ci::create_storage::StepCreateStorageDirectories>();
@@ -62,6 +64,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::configure::StepConfigure>();
       installer.AddStep<ci::unzip::StepUnzip>();
       installer.AddStep<wgt::parse::StepParse>();
+      installer.AddStep<wgt::validate_config::StepValidateConfig>();
       installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<ci::old_manifest::StepOldManifest>();
       installer.AddStep<ci::backup_manifest::StepBackupManifest>();
