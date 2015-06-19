@@ -117,18 +117,11 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
 
   manifest->type = strdup("wgt");
 
-  // For wgt package use the long name if the short name is empty
-  const auto& shorts = wgt_info->short_name_set();
+  // For wgt package use the long name
   for (auto& item : wgt_info->name_set()) {
     label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
-    auto short_item = shorts.find(item.first);
-    if (short_item != shorts.end()) {
-      label->name = strdup(short_item->second.c_str());
-      label->lang = strdup(short_item->first.c_str());
-    } else {
-      label->name = strdup(item.second.c_str());
-      label->lang = strdup(item.first.c_str());
-    }
+    label->name = strdup(item.second.c_str());
+    label->lang = strdup(item.first.c_str());
     LISTADD(manifest->uiapplication->label, label);
   }
 
