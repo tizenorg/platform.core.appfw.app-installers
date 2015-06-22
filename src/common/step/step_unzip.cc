@@ -41,7 +41,7 @@ bool CheckFreeSpaceAtPath(int64_t required_size,
     return false;
   }
 
-  return (space_info.free >= required_size);
+  return (space_info.free >= static_cast<uint64_t>(required_size));
 }
 
 }  // namespace

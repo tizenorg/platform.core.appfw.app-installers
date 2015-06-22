@@ -72,7 +72,7 @@ const string& XmlElement::null_string() {
 
 
 // class XmlTree
-XmlTree::XmlTree(xmlDoc* doc) : doc_(doc), root_(nullptr) {
+XmlTree::XmlTree(xmlDoc* doc) : root_(nullptr), doc_(doc) {
 }
 
 XmlTree::~XmlTree() {

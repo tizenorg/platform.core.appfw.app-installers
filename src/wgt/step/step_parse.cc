@@ -304,7 +304,7 @@ common_installer::Step::Status StepParse::process() {
   const std::string& version = wgt_info->version();
   const std::string& required_api_version = info->required_version();
 
-  if(manifest->uiapplication->label){
+  if (manifest->uiapplication->label) {
     context_->config_data.get().application_name.set(
         std::string(manifest->uiapplication->label->name));
   }
