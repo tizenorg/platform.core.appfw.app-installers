@@ -176,7 +176,7 @@ Step::Status StepGenerateXml::process() {
 
   bs::error_code error;
   if (!fs::exists(xml_path.parent_path(), error)) {
-    if (!utils::CreateDir(xml_path.parent_path())) {
+    if (!common_installer::CreateDir(xml_path.parent_path())) {
       LOG(ERROR) <<
           "Directory for manifest xml is missing and cannot be created";
       return Status::ERROR;
