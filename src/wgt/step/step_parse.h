@@ -6,6 +6,8 @@
 #define WGT_STEP_STEP_PARSE_H_
 
 #include <boost/filesystem.hpp>
+#include <manifest_handlers/permissions_handler.h>
+#include <manifest_handlers/widget_config_parser.h>
 
 #include <memory>
 #include <set>
@@ -14,12 +16,6 @@
 #include "common/app_installer.h"
 #include "common/context_installer.h"
 #include "common/step/step.h"
-#include "manifest_handlers/app_control_handler.h"
-#include "manifest_handlers/application_icons_handler.h"
-#include "manifest_handlers/permissions_handler.h"
-#include "manifest_handlers/tizen_application_handler.h"
-#include "manifest_handlers/widget_handler.h"
-#include "manifest_parser/manifest_parser.h"
 #include "common/utils/logging.h"
 
 namespace wgt {
@@ -48,7 +44,7 @@ class StepParse : public common_installer::Step {
   bool FillMetadata(manifest_x* manifest);
   bool FillManifestX(manifest_x* manifest);
 
-  std::unique_ptr<parser::ManifestParser> parser_;
+  std::unique_ptr<wgt::parse::WidgetConfigParser> parser_;
   boost::filesystem::path config_;
   bool Check(const boost::filesystem::path& widget_path);
 
