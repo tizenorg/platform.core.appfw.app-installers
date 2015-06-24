@@ -44,12 +44,6 @@ Summary: Backend of WGT files
 %description -n wgt-backend
 Backend for standard widget files WGT
 
-%package -n xpk-backend
-Summary: Backend of XPK files
-
-%description -n xpk-backend
-Backend for standard widget files XPK
-
 %package -n tpk-backend
 Summary: Backend of TPK files
 
@@ -84,7 +78,6 @@ make %{?_smp_mflags}
 
 mkdir -p %{buildroot}/etc/package-manager/backend
 ln -s %{_bindir}/wgt-backend %{buildroot}%{_sysconfdir}/package-manager/backend/wgt
-ln -s %{_bindir}/xpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/xpk
 ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/tpk
 
 %post -p /sbin/ldconfig
@@ -101,9 +94,6 @@ ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %manifest wgt-backend.manifest
 %{_sysconfdir}/package-manager/backend/wgt
 %{_bindir}/wgt-backend
-
-%files -n xpk-backend
-%{_sysconfdir}/package-manager/backend/xpk
 
 %files -n tpk-backend
 %{_sysconfdir}/package-manager/backend/tpk
