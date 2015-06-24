@@ -27,8 +27,8 @@ bool UpgradeManifestInformation(uid_t uid, const bf::path& xml_path) {
        pkgmgr_parser_parse_usr_manifest_for_upgrade(
            xml_path.string().c_str(), uid,
            const_cast<char* const*>(kAppinstTags)) :
-       pkgmgr_parser_parse_usr_manifest_for_upgrade(
-           xml_path.string().c_str(), uid,
+       pkgmgr_parser_parse_manifest_for_upgrade(
+           xml_path.string().c_str(),
            const_cast<char* const*>(kAppinstTags));
   return !ret;
 }
