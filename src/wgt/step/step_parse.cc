@@ -5,16 +5,14 @@
 
 #include "wgt/step/step_parse.h"
 
+#include <manifest_handlers/app_control_handler.h>
+#include <manifest_handlers/application_icons_handler.h>
 #include <manifest_handlers/application_manifest_constants.h>
-#include <manifest_handlers/appwidget_handler.h>
-#include <manifest_handlers/category_handler.h>
 #include <manifest_handlers/content_handler.h>
-#include <manifest_handlers/ime_handler.h>
 #include <manifest_handlers/metadata_handler.h>
-#include <manifest_handlers/navigation_handler.h>
 #include <manifest_handlers/setting_handler.h>
-#include <manifest_handlers/splash_screen_handler.h>
-#include <manifest_parser/manifest_handler.h>
+#include <manifest_handlers/tizen_application_handler.h>
+#include <manifest_handlers/widget_handler.h>
 #include <manifest_parser/manifest_constants.h>
 
 #include <pkgmgr/pkgmgr_parser.h>
@@ -31,10 +29,8 @@
 #include "common/app_installer.h"
 #include "common/context_installer.h"
 #include "common/step/step.h"
-
-#include "wgt/wgt_backend_data.h"
-
 #include "utils/clist_helpers.h"
+#include "wgt/wgt_backend_data.h"
 
 namespace {
 
@@ -246,26 +242,7 @@ common_installer::Step::Status StepParse::process() {
     return common_installer::Step::Status::ERROR;
   }
 
-  std::vector<parser::ManifestHandler*> handlers = {
-    new AppControlHandler,
-    new ApplicationIconsHandler,
-    new AppWidgetHandler,
-    new CategoryHandler,
-    new ContentHandler,
-    new ImeHandler,
-    new MetaDataHandler,
-    new NavigationHandler,
-    new PermissionsHandler,
-    new SettingHandler,
-    new SplashScreenHandler,
-    new TizenApplicationHandler,
-    new WidgetHandler
-  };
-
-  std::unique_ptr<parser::ManifestHandlerRegistry> registry(
-      new parser::ManifestHandlerRegistry(handlers));
-
-  parser_.reset(new parser::ManifestParser(std::move(registry)));
+  parser_.reset(new wgt::parse::WidgetConfigParser());
   if (!parser_->ParseManifest(config_)) {
     LOG(ERROR) << "[Parse] Parse failed. " <<  parser_->GetErrorMessage();
     return common_installer::Step::Status::ERROR;
