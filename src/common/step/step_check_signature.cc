@@ -145,12 +145,14 @@ bool ValidatePrivilegeLevel(common_installer::PrivilegeLevel level,
   }
 
   char* error = nullptr;
-  int status = privilege_manager_verify_privilege(api_version,
-      is_webapp ? PRVMGR_PACKAGE_TYPE_WRT : PRVMGR_PACKAGE_TYPE_CORE, list,
-      PrivilegeLevelToVisibility(level),
-      &error);
-  if (list)
+  int status = PRVMGR_ERR_NONE;
+  if (list) {  // Do the privilege check only if the package has privileges
+    status = privilege_manager_verify_privilege(api_version,
+        is_webapp ? PRVMGR_PACKAGE_TYPE_WRT : PRVMGR_PACKAGE_TYPE_CORE, list,
+        PrivilegeLevelToVisibility(level),
+        &error);
     g_list_free(list);
+  }
   if (status != PRVMGR_ERR_NONE) {
     LOG(ERROR) << "Error while verifing privilege level: " << error;
     free(error);
