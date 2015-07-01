@@ -45,9 +45,6 @@ static void _writeServiceApplicationAttributes(
 template <typename T>
 Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
     xmlTextWriterPtr writer) {
-  fs::path default_icon(
-      tzplatform_mkpath(TZ_SYS_RW_ICONS, "app-installers.png"));
-
   // common appributes among uiapplication_x and serviceapplication_x
   xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST app->appid);
 
@@ -83,8 +80,6 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
   }
 
   // the icon is renamed to <appid.png>
-  // and located in TZ_USER_ICON/TZ_SYS_ICON
-  // if the icon isn't exist print the default icon app-installers.png
   icon_path_ = fs::path(getIconPath(context_->uid.get()));
   CreateDir(icon_path_);
   fs::path icon = fs::path(app->appid) += fs::path(".png");
@@ -97,9 +92,8 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
       fs::copy_file(app_icon, icon_path_ /= icon,
                         fs::copy_option::overwrite_if_exists);
   } else {
-    boost::system::error_code error;
-    fs::create_symlink(default_icon, icon_path_ /= icon, error);
-    LOG(DEBUG) << "Icon was not found in package, the default icon will be set";
+    //Default icon setting is role of the platform
+    LOG(DEBUG) << "Icon was not found in package";
   }
 
   xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
