@@ -145,8 +145,11 @@ bool StepParse::FillApplicationInfo(manifest_x* manifest) {
   manifest->uiapplication->appid = strdup(app_info->id().c_str());
   manifest->uiapplication->type = strdup("webapp");
 
-  if (manifest->icon)
-    manifest->uiapplication->icon->name = strdup(manifest->icon->name);
+  if (manifest->icon) {
+    icon_x* icon = nullptr;
+    LISTHEAD(manifest->icon, icon);
+    manifest->uiapplication->icon->name = strdup(icon->name);
+  }
   manifest->uiapplication->next = nullptr;
 
   manifest->package = strdup(app_info->package().c_str());

@@ -88,16 +88,16 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
     fs::path app_icon = fs::path(context_->pkg_path.get())
       / fs::path(app->appid)
       / fs::path(app->icon->name);
-    if (fs::exists(app_icon))
+    if (fs::exists(app_icon)) {
       fs::copy_file(app_icon, icon_path_ /= icon,
                         fs::copy_option::overwrite_if_exists);
+      xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
+                                       "%s", BAD_CAST icon.c_str());
+    }
   } else {
     //Default icon setting is role of the platform
     LOG(DEBUG) << "Icon was not found in package";
   }
-
-  xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
-                                       "%s", BAD_CAST icon.c_str());
 
   for (appcontrol_x* appc = app->appcontrol; appc != nullptr;
       appc = appc->next) {
