@@ -31,6 +31,10 @@ Step::Status StepBackupIcons::process() {
   // backup
   for (auto& pair : icons_) {
     bs::error_code error;
+    if (!bf::exists(pair.first)) {
+      LOG(INFO) << "Not exist icon file.";
+      return Status::OK;
+    }
     bf::copy_file(pair.first, pair.second, bf::copy_option::overwrite_if_exists,
         error);
     if (error) {
@@ -52,6 +56,10 @@ Step::Status StepBackupIcons::clean() {
 Step::Status StepBackupIcons::undo() {
   for (auto& pair : icons_) {
     bs::error_code error;
+    if (!bf::exists(pair.second)) {
+      LOG(INFO) << "Not exist icon file.";
+      return Status::OK;
+    }
     bf::copy_file(pair.second, pair.first, bf::copy_option::overwrite_if_exists,
         error);
     if (error) {
