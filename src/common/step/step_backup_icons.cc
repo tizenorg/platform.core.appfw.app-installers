@@ -25,7 +25,8 @@ Step::Status StepBackupIcons::process() {
     app_icon += ".png";
     bf::path icon_backup = app_icon;
     icon_backup += ".bck";
-    icons_.emplace_back(app_icon, icon_backup);
+    if (bf::exists(app_icon))
+        icons_.emplace_back(app_icon, icon_backup);
   }
 
   // backup
