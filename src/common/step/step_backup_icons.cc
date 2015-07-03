@@ -9,6 +9,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/system/error_code.hpp>
 
+#include "common/utils/file_util.h"
+
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
@@ -31,10 +33,7 @@ Step::Status StepBackupIcons::process() {
 
   // backup
   for (auto& pair : icons_) {
-    bs::error_code error;
-    bf::copy_file(pair.first, pair.second, bf::copy_option::overwrite_if_exists,
-        error);
-    if (error) {
+    if (!MoveFile(pair.first, pair.second)) {
       LOG(ERROR) << "Cannot create backup for icon: " << pair.first;
       return Status::ERROR;
     }
@@ -52,16 +51,12 @@ Step::Status StepBackupIcons::clean() {
 
 Step::Status StepBackupIcons::undo() {
   for (auto& pair : icons_) {
-    bs::error_code error;
-    bf::copy_file(pair.second, pair.first, bf::copy_option::overwrite_if_exists,
-        error);
-    if (error) {
+    if (!MoveFile(pair.second, pair.first)) {
       LOG(ERROR) << "Cannot revert icon from backup: " << pair.first;
-      return Status::ERROR;
+//      return Status::ERROR; // undo cannot fail, so no break
     }
   }
   LOG(DEBUG) << "Icons reverted from backup";
-  RemoveBackupIcons();
   return Status::OK;
 }
 

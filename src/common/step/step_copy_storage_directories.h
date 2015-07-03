@@ -5,6 +5,8 @@
 #ifndef COMMON_STEP_STEP_COPY_STORAGE_DIRECTORIES_H_
 #define COMMON_STEP_STEP_COPY_STORAGE_DIRECTORIES_H_
 
+#include <boost/filesystem/path.hpp>
+
 #include "common/step/step.h"
 #include "utils/logging.h"
 
@@ -17,8 +19,11 @@ class StepCopyStorageDirectories : public common_installer::Step {
 
   Status process() override;
   Status clean() override { return Status::OK; }
-  Status undo() override { return Status::OK; }
-  Status precheck() override { return Status::OK; }
+  Status undo() override;
+  Status precheck() override;
+
+ private:
+  boost::filesystem::path backup_path_;
 
   SCOPE_LOG_TAG(CreateStorageDirectories)
 };
