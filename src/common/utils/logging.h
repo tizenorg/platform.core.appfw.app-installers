@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 namespace common_installer {
 
@@ -62,8 +63,8 @@ inline static const constexpr char* __tag_for_logging() {
 //       LEVEL = ERROR | WARNING | INFO | DEBUG
 #define LOG(LEVEL)                                                             \
     ::common_installer::LogCatcher() & std::ostringstream()                    \
-      << ::common_installer::LogTag<                                           \
-         ::common_installer::LogLevel::LOG_ ## LEVEL>::value                   \
+      << std::string(::common_installer::LogTag<                               \
+         ::common_installer::LogLevel::LOG_ ## LEVEL>::value)                  \
       << " " << std::setw(20) << std::left << __tag_for_logging()              \
       << std::setw(0) << " : "                                                 \
 
