@@ -74,9 +74,9 @@ bool StepParse::FillIconPaths(manifest_x* manifest) {
       std::static_pointer_cast<const ApplicationIconsInfo>(
           parser_->GetManifestData(manifest_keys::kIconsKey));
   if (icons_info.get()) {
-    for (auto& icon_str : icons_info->get_icon_paths()) {
+    for (auto& application_icon : icons_info->icons()) {
       icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
-      icon->name = strdup(icon_str.c_str());
+      icon->name = strdup(application_icon.path().c_str());
       LISTADD(manifest->icon, icon);
     }
   }
