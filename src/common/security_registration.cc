@@ -45,7 +45,7 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     privileges_x *privileges = nullptr;
     PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->privileges, privileges);
     for (; privileges != nullptr; privileges = privileges->next) {
-      privilege_x* priv;
+      privilege_x* priv = nullptr;
       PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges->privilege, priv);
       for (; priv != nullptr; priv = priv->next) {
         security_manager_app_inst_req_add_privilege(req, priv->text);
