@@ -24,8 +24,9 @@
 #include "common/step/step_unzip.h"
 #include "common/step/step_update_app.h"
 #include "common/step/step_update_security.h"
-#include "tpk/step/step_parse.h"
+#include "tpk/step/step_copy_manifest_xml.h"
 #include "tpk/step/step_create_symbolic_link.h"
+#include "tpk/step/step_parse.h"
 #include "common/utils/logging.h"
 #endif
 
@@ -100,7 +101,7 @@ int Task::Install() {
   ai.AddStep<ci::create_storage::StepCreateStorageDirectories>();
   ai.AddStep<tpk::step::StepCreateSymbolicLink>();
   ai.AddStep<ci::security::StepRegisterSecurity>();
-  ai.AddStep<ci::generate_xml::StepGenerateXml>();
+  ai.AddStep<tpk::step::StepCopyManifestXml>();
   ai.AddStep<ci::register_app::StepRegisterApplication>();
 
   return ai.Run();
@@ -120,7 +121,7 @@ int Task::Update() {
   ai.AddStep<ci::copy_storage::StepCopyStorageDirectories>();
   ai.AddStep<tpk::step::StepCreateSymbolicLink>();
   ai.AddStep<ci::update_security::StepUpdateSecurity>();
-  ai.AddStep<ci::generate_xml::StepGenerateXml>();
+  ai.AddStep<tpk::step::StepCopyManifestXml>();
   ai.AddStep<ci::update_app::StepUpdateApplication>();
 
   return ai.Run();
