@@ -4,7 +4,7 @@
 Name:           app-installers
 Summary:        Application installers
 Version:        1.0
-Release:        1
+Release:        2
 Group:          Application Framework/Package Management
 License:        Apache-2.0
 Source0:        %{name}-%{version}.tar.gz
