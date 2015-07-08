@@ -64,8 +64,6 @@ namespace {
 
 }  // namespace
 
-SCOPE_LOG_TAG(StepParse)
-
 /* short namespace/class name */
 typedef common_installer::Step::Status Status;
 using boost::filesystem::path;
