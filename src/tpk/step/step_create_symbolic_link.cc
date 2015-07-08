@@ -1,7 +1,9 @@
 /* Copyright 2015 Samsung Electronics, license APACHE-2.0, see LICENSE file */
 #include "tpk/step/step_create_symbolic_link.h"
 #include <boost/filesystem.hpp>
+
 #include <iostream>
+
 #include "common/step/step.h"
 #include "common/app_installer.h"
 #include "common/context_installer.h"
@@ -43,7 +45,7 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
       return false;
     }
 
-    // Give a execution permission to the original executable
+    // Give an execution permission to the original executable
     fs::path exec_path = bindir / fs::path(app->exec);
     LOG(INFO) << "Giving exec permission to " << exec_path;
     fs::permissions(exec_path, fs::owner_all |
