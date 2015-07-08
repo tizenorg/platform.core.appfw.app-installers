@@ -95,7 +95,7 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
                                           "%s", BAD_CAST icon.c_str());
     }
   } else {
-    //Default icon setting is role of the platform
+    // Default icon setting is role of the platform
     LOG(DEBUG) << "Icon was not found in package";
   }
 

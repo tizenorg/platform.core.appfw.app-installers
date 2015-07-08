@@ -71,12 +71,14 @@ bool RegisterAppInPkgmgr(const bf::path& xml_path,
       pkgmgr_parser_parse_manifest_for_installation(
           xml_path.c_str(), const_cast<char* const*>(kAppinstTags));
   if (ret) {
-    LOG(ERROR) << "Failed to unregister package: " << xml_path;
+    LOG(ERROR) << "Failed to register package: " << xml_path << ", "
+        "error code=" << ret;
     return false;
   }
 
   if (!!cert_info.author_certificate.get()) {
     if (!RegisterAuthorCertificate(cert_info, pkgid, uid)) {
+      LOG(ERROR) << "Failed to register author certificate";
       return false;
     }
   }
