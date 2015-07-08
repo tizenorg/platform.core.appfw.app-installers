@@ -43,8 +43,6 @@ const char kPkgType[] = "tpk";
 
 namespace tpk {
 
-SCOPE_LOG_TAG(TpkTask)
-
 /* Constructor
  */
 Task::Task() {

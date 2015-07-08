@@ -20,8 +20,6 @@ namespace fs = boost::filesystem;
 using common_installer::ContextInstaller;
 typedef common_installer::Step::Status Status;
 
-SCOPE_LOG_TAG(SymbolicLink)
-
 namespace {
 
 template <typename T>

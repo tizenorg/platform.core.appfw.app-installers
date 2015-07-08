@@ -5,6 +5,7 @@
 #ifdef HOSTTEST
 #include "test/mock_pkgmgr_installer.h"
 #endif
+#include "common/utils/logging.h"
 
 namespace tpk {
 
@@ -20,6 +21,8 @@ class Task {
   int Update();
   int Uninstall();
   int Reinstall();
+
+  SCOPE_LOG_TAG(TpkTask)
 };  //  class Task
 
 }  //  namespace tpk
