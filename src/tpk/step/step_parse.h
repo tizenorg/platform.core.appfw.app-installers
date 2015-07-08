@@ -3,6 +3,7 @@
 #define TPK_STEP_STEP_PARSE_H_
 
 #include "common/step/step.h"
+#include "common/utils/logging.h"
 #include "tpk/xml_parser/xml_parser.h"
 
 namespace tpk {
@@ -23,6 +24,8 @@ class StepParse : public common_installer::Step {
       xml_parser::XmlTree* tree, xml_parser::XmlElement* manifest);
   bool SetPkgInfoChildren(manifest_x *m,
       xml_parser::XmlTree *tree, xml_parser::XmlElement* manifest);
+
+  SCOPE_LOG_TAG(StepParse)
 };
 
 }  // namespace parse
