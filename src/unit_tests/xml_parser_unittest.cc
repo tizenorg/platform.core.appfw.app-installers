@@ -21,11 +21,6 @@ using xml_parser::XmlParser;
 namespace bf = boost::filesystem;
 
 class TestXmlParser : public testing::Test {
- protected:
-  virtual void SetUp() {
-  }
-  virtual void TearDown() {
-  }
 };
 
 // Tests manifest parser with proper manifest

@@ -17,6 +17,7 @@ using xml_parser::XmlElement;
 
 
 namespace tpk {
+
 namespace parse {
 
 namespace {

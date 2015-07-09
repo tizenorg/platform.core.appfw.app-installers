@@ -68,10 +68,6 @@ bool PkgmgrSignal::SendFinished(
   return true;
 }
 
-bool PkgmgrSignal::IsFinished() const {
-  return state_ == State::FINISHED;
-}
-
 bool PkgmgrSignal::SendSignal(
     const char* key,
     const char* value,

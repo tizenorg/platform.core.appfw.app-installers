@@ -49,12 +49,10 @@ const string& XmlElement::attr(const string& attrName) {
 
 void XmlElement::SetAttrMap(xmlNode* node) {
   xmlAttr* attr;
-  const xmlChar* name;
-  xmlChar* value;
 
   for (attr=node->properties; attr != nullptr; attr=attr->next) {
-    name = attr->name;
-    value = xmlGetProp(node, name);  // NOTE: Needs to be freed
+    const xmlChar* name = attr->name;
+    xmlChar* value = xmlGetProp(node, name);  // NOTE: Needs to be freed
 
     attr_map_.insert(map<string, string>::value_type(
           xmlChar2string(name), xmlChar2string(value)));
