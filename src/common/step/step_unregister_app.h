@@ -18,14 +18,16 @@ class StepUnregisterApplication : public Step {
 
   Step::Status process() override;
   Step::Status clean() override { return Status::OK; }
-  Step::Status undo() override { return Status::OK; }
+  Step::Status undo() override;
   Status precheck() override;
+
+ private:
+  void BackupCertInfo();
 
   SCOPE_LOG_TAG(Unregister)
 };
 
 }  // namespace unregister_app
 }  // namespace common_installer
-
 
 #endif  // COMMON_STEP_STEP_UNREGISTER_APP_H_
