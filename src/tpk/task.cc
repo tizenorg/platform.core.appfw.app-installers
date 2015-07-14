@@ -16,6 +16,7 @@
 #include "common/step/step_old_manifest.h"
 #include "common/step/step_parse.h"
 #include "common/step/step_register_app.h"
+#include "common/step/step_remove_icons.h"
 #include "common/step/step_remove_files.h"
 #include "common/step/step_revoke_security.h"
 #include "common/step/step_register_security.h"
@@ -134,6 +135,7 @@ int Task::Uninstall() {
   ai.AddStep<ci::parse::StepParse>();
   ai.AddStep<ci::unregister_app::StepUnregisterApplication>();
   ai.AddStep<ci::remove::StepRemoveFiles>();
+  ai.AddStep<ci::remove_icons::StepRemoveIcons>();
   ai.AddStep<ci::revoke_security::StepRevokeSecurity>();
 
   return ai.Run();
