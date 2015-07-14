@@ -2,18 +2,16 @@
 // Use of this source code is governed by an apache 2.0 license that can be
 // found in the LICENSE file.
 
-
 #include "common/step/step_remove_files.h"
 
-#include <pkgmgr-info.h>
-
-#include <cstring>
+#include <boost/system/error_code.hpp>
 
 #include "common/utils/file_util.h"
 
 namespace common_installer {
 namespace remove {
 
+namespace bs = boost::system;
 namespace fs = boost::filesystem;
 
 Step::Status StepRemoveFiles::precheck() {
@@ -30,42 +28,38 @@ Step::Status StepRemoveFiles::precheck() {
     LOG(ERROR) << "pkg_path ("
                << context_->pkg_path.get()
                << ") path does not exist";
-
-  if (context_->xml_path.get().empty())
-    LOG(ERROR) << "xml_path attribute is empty";
-  else if (!fs::exists(context_->xml_path.get()))
-    LOG(ERROR) << "xml_path ("
-               << context_->xml_path.get()
-               << ") path does not exist";
-
   // TODO(p.sikorski) check context_->uid.get()
 
   return Step::Status::OK;
 }
 
 Step::Status StepRemoveFiles::process() {
-  uiapplication_x* ui = context_->manifest_data.get()->uiapplication;
-
-  fs::remove_all(context_->pkg_path.get());
-  for (; ui != nullptr; ui = ui->next) {
-    fs::path app_icon = fs::path(getIconPath(context_->uid.get()))
-      / fs::path(ui->appid);
-    app_icon += fs::path(".png");
-    if (fs::exists(app_icon))
-      fs::remove_all(app_icon);
+  fs::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
+  if (!MoveDir(context_->pkg_path.get(), backup_path)) {
+    LOG(ERROR) << "Cannot remove widget files from its location";
+    return Status::ERROR;
   }
-  fs::remove_all(context_->xml_path.get());
-
-  LOG(DEBUG) << "Removing dir: " << context_->pkg_path.get();
-
+  LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
   return Status::OK;
 }
 
 Step::Status StepRemoveFiles::clean() {
+  bs::error_code error;
+  fs::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
+  fs::remove_all(backup_path, error);
   return Status::OK;
 }
 
 Step::Status StepRemoveFiles::undo() {
+  fs::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
+  if (fs::exists(backup_path)) {
+    LOG(DEBUG) << "Restoring directory: " << context_->pkg_path.get();
+    if (!MoveDir(backup_path, context_->pkg_path.get())) {
+      LOG(ERROR) << "Cannot restore widget files";
+      return Status::OK;
+    }
+  }
+
   return Status::OK;
 }
 

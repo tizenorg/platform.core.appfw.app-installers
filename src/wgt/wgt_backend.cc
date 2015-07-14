@@ -17,6 +17,7 @@
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_parse.h"
 #include "common/step/step_register_app.h"
+#include "common/step/step_remove_icons.h"
 #include "common/step/step_remove_files.h"
 #include "common/step/step_revoke_security.h"
 #include "common/step/step_register_security.h"
@@ -86,6 +87,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::parse::StepParse>();
       installer.AddStep<ci::unregister_app::StepUnregisterApplication>();
       installer.AddStep<ci::remove::StepRemoveFiles>();
+      installer.AddStep<ci::remove_icons::StepRemoveIcons>();
       installer.AddStep<ci::revoke_security::StepRevokeSecurity>();
       break;
     }
