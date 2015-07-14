@@ -82,6 +82,7 @@ int main(int argc, char** argv) {
     case ci::PkgMgrInterface::Type::Uninstall: {
       installer.AddStep<ci::configure::StepConfigure>();
       installer.AddStep<ci::parse::StepParse>();
+      installer.AddStep<ci::backup_manifest::StepBackupManifest>();
       installer.AddStep<ci::unregister_app::StepUnregisterApplication>();
       installer.AddStep<ci::remove::StepRemoveFiles>();
       installer.AddStep<ci::revoke_security::StepRevokeSecurity>();

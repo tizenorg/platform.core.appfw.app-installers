@@ -132,6 +132,7 @@ int Task::Uninstall() {
 
   ai.AddStep<ci::configure::StepConfigure>();
   ai.AddStep<ci::parse::StepParse>();
+  ai.AddStep<ci::backup_manifest::StepBackupManifest>();
   ai.AddStep<ci::unregister_app::StepUnregisterApplication>();
   ai.AddStep<ci::remove::StepRemoveFiles>();
   ai.AddStep<ci::revoke_security::StepRevokeSecurity>();

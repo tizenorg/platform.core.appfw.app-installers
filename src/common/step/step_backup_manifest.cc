@@ -11,6 +11,7 @@
 #include <pkgmgr-info.h>
 #include <pkgmgr_installer.h>
 
+#include <algorithm>
 #include <string>
 
 #include "common/utils/file_util.h"
@@ -33,11 +34,11 @@ Step::Status StepBackupManifest::precheck() {
 Step::Status StepBackupManifest::process() {
   // set backup file path
   bf::path backup_xml_path = context_->xml_path.get();
-  backup_xml_path =  + ".bck";
+  backup_xml_path += ".bck";
   context_->backup_xml_path.set(backup_xml_path);
-
-  if (!MoveFile(context_->xml_path.get(),
-      context_->backup_xml_path.get())) {
+  bs::error_code error;
+  bf::copy(context_->xml_path.get(), context_->backup_xml_path.get(), error);
+  if (error) {
     LOG(ERROR) << "Failed to make a copy of xml manifest file";
     return Status::ERROR;
   }
