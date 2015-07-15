@@ -1,6 +1,6 @@
 /* Copyright 2015 Samsung Electronics, license APACHE-2.0, see LICENSE file */
-#ifndef XML_PARSER_XML_PARSER_H_
-#define XML_PARSER_XML_PARSER_H_
+#ifndef TPK_XML_PARSER_XML_PARSER_H_
+#define TPK_XML_PARSER_XML_PARSER_H_
 
 #include <libxml/tree.h>
 #include <map>
@@ -58,4 +58,4 @@ class XmlParser {
 
 }  // namespace xml_parser
 
-#endif  // XML_PARSER_XML_PARSER_H_
+#endif  // TPK_XML_PARSER_XML_PARSER_H_

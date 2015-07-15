@@ -10,7 +10,7 @@ SET(SRCS
     step/step_parse.cc
     step/step_create_symbolic_link.cc
     step/step_copy_manifest_xml.cc
-    ../xml_parser/xml_parser.cc
+    xml_parser/xml_parser.cc
 )
 ADD_EXECUTABLE(${TARGET_TPK} ${SRCS})
 
@@ -26,7 +26,10 @@ ELSE(${HOSTTEST})
   ADD_DEFINITIONS(${TPK_CFLAGS})
 ENDIF(${HOSTTEST})
 
-APPLY_PKG_CONFIG(${TARGET_TPK} PUBLIC PKGMGR_DEPS Boost)
-TARGET_LINK_LIBRARIES(${TARGET_TPK} PUBLIC ${TARGET_LIBNAME_COMMON} -lboost_regex)
+APPLY_PKG_CONFIG(${TARGET_TPK}
+  PUBLIC PKGMGR_DEPS
+  Boost
+)
+TARGET_LINK_LIBRARIES(${TARGET_TPK} PUBLIC ${TARGET_LIBNAME_COMMON})
 
 INSTALL(TARGETS ${TARGET_TPK} DESTINATION ${BINDIR})

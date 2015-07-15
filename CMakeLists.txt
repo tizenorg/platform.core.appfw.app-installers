@@ -7,7 +7,6 @@ SET(SHAREDIR "${CMAKE_INSTALL_PREFIX}/share")
 SET(INCLUDEDIR "${CMAKE_INSTALL_PREFIX}/include")
 SET(VERSION_MAJOR 0)
 SET(VERSION "${VERSION_MAJOR}.1.0")
-SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE "Release")
@@ -24,8 +23,6 @@ SET(CMAKE_CXX_FLAGS_CCOV       "-O0 -std=c++11 -g --coverage")
 
 # Targets
 SET(TARGET_LIBNAME_COMMON "common-installer")
-SET(TARGET_LIBNAME_PARSER "manifest-parser")
-SET(TARGET_LIBNAME_MANIFEST_HANDLERS "manifest-handlers")
 SET(TARGET_WGT_BACKEND "wgt-backend")
 SET(TARGET_TPK_BACKEND "tpk-backend")
 
@@ -39,10 +36,6 @@ INCLUDE(FindPkgConfig)
 INCLUDE(ApplyPkgConfig)
 
 # Find all needed packages once
-# BUILD_PARSER macro is defined so we can build two separate projects
-# with cmake, which are on one repository. Later this macro
-# is used in CMakeLists.txt files to distinguish, which project
-# is currently being build.
 PKG_CHECK_MODULES(PKGMGR_DEPS REQUIRED pkgmgr)
 PKG_CHECK_MODULES(PKGMGR_INSTALLER_DEPS REQUIRED pkgmgr-installer)
 PKG_CHECK_MODULES(MINIZIP_DEPS REQUIRED minizip)
@@ -57,7 +50,7 @@ PKG_CHECK_MODULES(PKGMGR_INFO_DEPS REQUIRED pkgmgr-info)
 PKG_CHECK_MODULES(LIBXML_DEPS REQUIRED libxml-2.0)
 PKG_CHECK_MODULES(PRIVILEGE_CHECKER_DEPS REQUIRED capi-security-privilege-manager)
 
-FIND_PACKAGE(Boost REQUIRED COMPONENTS system filesystem)
+FIND_PACKAGE(Boost REQUIRED COMPONENTS system filesystem regex)
 FIND_PACKAGE(GTest REQUIRED)
 
 ADD_SUBDIRECTORY(data)

@@ -6,7 +6,7 @@
 #include <boost/filesystem/path.hpp>
 #include <iostream>
 #include <memory>
-#include "xml_parser/xml_parser.h"
+#include "tpk/xml_parser/xml_parser.h"
 
 namespace {
 
