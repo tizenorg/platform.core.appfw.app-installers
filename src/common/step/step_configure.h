@@ -13,6 +13,12 @@
 namespace common_installer {
 namespace configure {
 
+/**
+ * \brief Installation,Update, Deinstallation, RDS.
+ *        Responsible for filling ContextInstaller based on the request type.
+ *
+ * Based on started request, process fills ContextInstaller with proper data.
+ */
 class StepConfigure : public Step {
  public:
   using Step::Step;

@@ -4,24 +4,24 @@
 // found in the LICENSE file.
 
 /*
-  A step is made of 3 functions (that can be defined or null)
+  A step is made of 4 functions (that must be defined)
   and one data pointer.
 
   The functions are:
-    - process  process the installation step
-    - undo     undo the installation step after failure
+    - precheck checks the input data used during process method
+    - process  handles the job to be done
+    - undo     undo the step's work after failure
     - clean    remove temporary data of the step after success
 
-  These functions all have the same signature: they accept
-  a pointer to something and they return a value which states
-  the execution issue.
+  All these functions have the same signature: they do not accept any arguments
+  and they return a value which states the execution result.
 
-  The returned code of Step::Status::OK indicates a succeful execution.
+  The returned code of Step::Status::OK indicates a successful execution.
   Otherwise, the returned code should be set to value different than
   Step::Status::OK.
 
-  Errornous result of processing is casted to interger value and sent to
-  client which sent request.
+  Errornous result of processing is casted to integer value and sent to
+  client which initialized request.
 */
 #ifndef COMMON_STEP_STEP_H_
 #define COMMON_STEP_STEP_H_
@@ -30,8 +30,15 @@
 
 namespace common_installer {
 
+/**
+ * \brief Abstract base class for all Steps* used for requests handling.
+ *
+ * It is an abstract base class that demands the definition of
+ * 4 methods: process, precheck, undo and clean.
+ */
 class Step {
  public:
+  /** Possible code returned by process, undo, clean, precheck methods. */
   enum class Status {
     OUT_OF_SPACE = -3,      /**< Out of disc space */
     INVALID_VALUE = -2,     /**< Invalid argument */
@@ -39,12 +46,22 @@ class Step {
     OK = 0                  /**< General success */
   };
 
+  /** Standard constructor */
   explicit Step(ContextInstaller* context) : context_(context) { }
+
+  /** Virtual "empty" destructor */
   virtual ~Step() { }
 
+  /** Handles the job to be done */
   virtual Status process() = 0;
+
+  /** Undos the step's work after failure */
   virtual Status undo() = 0;
+
+  /** Removes temporary data of the step after success */
   virtual Status clean() = 0;
+
+  /** Checks the input data used during process method */
   virtual Status precheck() = 0;
 
  protected:
