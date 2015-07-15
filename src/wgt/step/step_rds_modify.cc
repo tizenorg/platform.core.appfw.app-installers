@@ -35,7 +35,7 @@ common_installer::Step::Status StepRDSModify::precheck() {
     LOG(ERROR) << "pkgid is not set";
     return common_installer::Step::Status::ERROR;
   }
-  if(!context_->manifest_data.get()) {
+  if (!context_->manifest_data.get()) {
     LOG(ERROR) << "no manifest info available";
     return common_installer::Step::Status::ERROR;
   }
@@ -89,7 +89,8 @@ bool StepRDSModify::AddFiles(bf::path unzip_path, bf::path install_path) {
     }
     bf::path temp_install_path(install_path / file);
     if (bf::is_directory(temp_install_path)) {
-      if (!bf::exists(temp_install_path) && (!cu::CreateDir(temp_install_path))) {
+      if (!bf::exists(temp_install_path) &&
+         (!cu::CreateDir(temp_install_path))) {
         LOG(ERROR) << "unable to create dir for temp backup data";
         return false;
       }
