@@ -15,6 +15,15 @@
 namespace common_installer {
 namespace unzip {
 
+/**
+ * \brief Installation and Update.
+ *        Responsible for unpacking the archive (wgt/tpk)
+ *
+ * process method implements unpacking the archive. It also checks the
+ * rough space requirements vs availability.
+ * Since process method unpacks the package to given directory, undo method
+ * removes them.
+ */
 class StepUnzip : public Step {
  public:
   using Step::Step;
