@@ -304,10 +304,6 @@ Step::Status StepGenerateXml::process() {
   return Status::OK;
 }
 
-Step::Status StepGenerateXml::clean() {
-  return Status::OK;
-}
-
 Step::Status  StepGenerateXml::undo() {
   if (fs::exists(icon_path_))
     fs::remove_all(icon_path_);

@@ -91,10 +91,6 @@ Step::Status StepCopy::process() {
   return Status::OK;
 }
 
-Step::Status StepCopy::clean() {
-  return Status::OK;
-}
-
 Step::Status StepCopy::undo() {
   if (bf::exists(context_->pkg_path.get()))
     bf::remove_all(context_->pkg_path.get());

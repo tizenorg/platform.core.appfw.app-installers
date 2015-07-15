@@ -45,10 +45,6 @@ Step::Status StepRegisterApplication::process() {
   return Status::OK;
 }
 
-Step::Status StepRegisterApplication::clean() {
-  return Status::OK;
-}
-
 Step::Status StepRegisterApplication::undo() {
   UnregisterAppInPkgmgr(context_->xml_path.get(), context_->pkgid.get(),
                         context_->uid.get());

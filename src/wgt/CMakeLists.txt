@@ -8,7 +8,6 @@ SET(SRCS
   step/step_rds_modify.cc
   wgt_app_query_interface.cc
   wgt_backend.cc
-  wgt_backend_data.cc
 )
 
 IF(WRT_LAUNCHER)

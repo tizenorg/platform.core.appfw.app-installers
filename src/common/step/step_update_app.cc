@@ -45,10 +45,6 @@ Step::Status StepUpdateApplication::process() {
   return Status::OK;
 }
 
-Step::Status StepUpdateApplication::clean() {
-  return Status::OK;
-}
-
 Step::Status StepUpdateApplication::undo() {
   // Prepare certification info for revert
   ValidationCore::Base64Decoder decoder;

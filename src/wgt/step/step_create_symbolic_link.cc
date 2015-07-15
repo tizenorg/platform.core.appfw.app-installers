@@ -70,10 +70,6 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
   return Status::OK;
 }
 
-common_installer::Step::Status StepCreateSymbolicLink::clean() {
-  return Status::OK;
-}
-
 common_installer::Step::Status StepCreateSymbolicLink::undo() {
   uiapplication_x* ui = context_->manifest_data.get()->uiapplication;
   serviceapplication_x* svc = context_->manifest_data.get()->serviceapplication;

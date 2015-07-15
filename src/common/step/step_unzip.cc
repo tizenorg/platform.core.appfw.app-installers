@@ -49,9 +49,6 @@ bool CheckFreeSpaceAtPath(int64_t required_size,
 namespace common_installer {
 namespace unzip {
 
-StepUnzip::StepUnzip(ContextInstaller* context)
-    : Step(context) {}
-
 Step::Status StepUnzip::precheck() {
   if (context_->file_path.get().empty()) {
     LOG(ERROR) << "file_path attribute is empty";

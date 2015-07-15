@@ -17,8 +17,6 @@ namespace wgt {
 
 class WgtBackendData : public common_installer::BackendData {
  public:
-  WgtBackendData();
-
   Property<std::vector<std::string>> files_to_add;
   Property<std::vector<std::string>> files_to_modify;
   Property<std::vector<std::string>> files_to_delete;
