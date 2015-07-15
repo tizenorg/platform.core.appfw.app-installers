@@ -46,13 +46,5 @@ Step::Status StepParse::process() {
   return Status::OK;
 }
 
-Step::Status StepParse::clean() {
-  return Status::OK;
-}
-
-Step::Status StepParse::undo() {
-  return Status::OK;
-}
-
 }  // namespace parse
 }  // namespace common_installer

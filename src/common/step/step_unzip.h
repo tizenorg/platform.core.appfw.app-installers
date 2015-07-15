@@ -17,8 +17,7 @@ namespace unzip {
 
 class StepUnzip : public Step {
  public:
-  explicit StepUnzip(ContextInstaller* context);
-
+  using Step::Step;
   Status process() override;
   Status clean() override { return Status::OK; }
   Status undo() override;

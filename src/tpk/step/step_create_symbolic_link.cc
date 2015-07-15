@@ -131,11 +131,6 @@ Status StepCreateSymbolicLink::process() {
 }
 
 
-Status StepCreateSymbolicLink::clean() {
-  return Status::OK;
-}
-
-
 Status StepCreateSymbolicLink::undo() {
   manifest_x* m = context_->manifest_data.get();
   uiapplication_x *uiapp = m->uiapplication;

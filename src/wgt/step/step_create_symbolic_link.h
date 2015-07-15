@@ -20,7 +20,7 @@ class StepCreateSymbolicLink : public common_installer::Step {
   using Step::Step;
 
   Status process() override;
-  Status clean() override;
+  Status clean() override { return Status::OK; }
   Status undo() override;
   Status precheck() override { return Status::OK; }
 
