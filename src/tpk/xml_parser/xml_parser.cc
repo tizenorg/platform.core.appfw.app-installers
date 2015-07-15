@@ -1,5 +1,6 @@
 /* Copyright 2015 Samsung Electronics, license APACHE-2.0, see LICENSE file */
-#include "xml_parser/xml_parser.h"
+
+#include "tpk/xml_parser/xml_parser.h"
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xmlstring.h>

@@ -1,5 +1,6 @@
 /* Copyright 2015 Samsung Electronics, license APACHE-2.0, see LICENSE file */
 #include "tpk/step/step_parse.h"
+
 #include <boost/filesystem.hpp>
 #include <memory>
 #include <string>
@@ -7,7 +8,6 @@
 #include "common/context_installer.h"
 #include "common/step/step.h"
 #include "common/utils/logging.h"
-#include "xml_parser/xml_parser.h"
 
 using std::vector;
 using std::string;

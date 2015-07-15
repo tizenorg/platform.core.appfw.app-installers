@@ -1,5 +1,3 @@
-SET(PRJ_PATH ..)
-
 SET(TESTS
   signature_unittest
   xml_parser_unittest
@@ -10,9 +8,12 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../)
 
 # Executables
 ADD_EXECUTABLE(signature_unittest
-               signature_unittest.cc)
+  signature_unittest.cc
+)
 ADD_EXECUTABLE(xml_parser_unittest
-               xml_parser_unittest.cc ../xml_parser/xml_parser.cc)
+  xml_parser_unittest.cc
+  ../tpk/xml_parser/xml_parser.cc
+)
 
 INSTALL(DIRECTORY test_samples/ DESTINATION ${SHAREDIR}/${DESTINATION_DIR}/test_samples)
 INSTALL(FILES run-unit-tests.sh DESTINATION ${BINDIR}/app-installers-ut/

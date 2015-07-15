@@ -4,7 +4,7 @@
 
 #include <boost/filesystem.hpp>
 #include "common/step/step.h"
-#include "xml_parser/xml_parser.h"
+#include "tpk/xml_parser/xml_parser.h"
 
 namespace tpk {
 namespace step {
