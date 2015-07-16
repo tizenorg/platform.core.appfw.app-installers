@@ -201,6 +201,23 @@ Step::Status StepGenerateXml::process() {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "version",
       BAD_CAST context_->manifest_data.get()->version);
 
+  if (!context_->manifest_data.get()->label) {
+    xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
+        "%s", BAD_CAST "");
+  } else {
+    label_x* label = nullptr;
+    LISTHEAD(context_->manifest_data.get()->label, label);
+    for (; label; label = label->next) {
+      xmlTextWriterStartElement(writer, BAD_CAST "label");
+      if (label->lang && strlen(label->lang)) {
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                    BAD_CAST label->lang);
+      }
+      xmlTextWriterWriteString(writer, BAD_CAST label->name);
+      xmlTextWriterEndElement(writer);
+    }
+  }
+
   if (!context_->manifest_data.get()->description) {
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
         "%s", BAD_CAST "");
