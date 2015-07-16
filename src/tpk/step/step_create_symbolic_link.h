@@ -5,7 +5,7 @@
 #include "common/app_installer.h"
 
 namespace tpk {
-namespace step {
+namespace filesystem {
 
 class StepCreateSymbolicLink : public common_installer::Step {
  public:
@@ -16,7 +16,7 @@ class StepCreateSymbolicLink : public common_installer::Step {
   Status precheck() override { return Status::OK; }
 };
 
-}  // namespace step
+}  // namespace filesystem
 }  // namespace tpk
 
 #endif  // TPK_STEP_STEP_CREATE_SYMBOLIC_LINK_H_

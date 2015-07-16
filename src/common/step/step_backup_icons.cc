@@ -15,7 +15,7 @@ namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
 namespace common_installer {
-namespace backup_icons {
+namespace backup {
 
 Step::Status StepBackupIcons::process() {
   uiapplication_x* ui = context_->old_manifest_data.get()->uiapplication;
@@ -69,5 +69,5 @@ void StepBackupIcons::RemoveBackupIcons() {
   }
 }
 
-}  // namespace backup_icons
+}  // namespace backup
 }  // namespace common_installer

@@ -13,7 +13,7 @@ namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
 namespace wgt {
-namespace wgt_resources {
+namespace filesystem {
 
 common_installer::Step::Status StepWgtResourceDirectory::process() {
   bf::path temp_path = context_->unpacked_dir_path.get();
@@ -41,5 +41,5 @@ common_installer::Step::Status StepWgtResourceDirectory::process() {
   return Status::OK;
 }
 
-}  // namespace wgt_resources
+}  // namespace filesystem
 }  // namespace wgt

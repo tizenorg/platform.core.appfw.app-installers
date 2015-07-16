@@ -22,7 +22,7 @@
 namespace bf = boost::filesystem;
 
 namespace common_installer {
-namespace update_app {
+namespace pkgmgr {
 
 Step::Status StepUpdateApplication::precheck() {
   if (context_->xml_path.get().empty()) {
@@ -72,5 +72,5 @@ Step::Status StepUpdateApplication::undo() {
   return Status::OK;
 }
 
-}  // namespace update_app
+}  // namespace pkgmgr
 }  // namespace common_installer

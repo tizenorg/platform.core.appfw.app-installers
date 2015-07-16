@@ -165,7 +165,7 @@ bool ValidatePrivilegeLevel(common_installer::PrivilegeLevel level,
 }  // namespace
 
 namespace common_installer {
-namespace signature {
+namespace security {
 
 Step::Status ValidateSignatures(const bf::path& base_path,
     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info) {
@@ -232,5 +232,5 @@ Step::Status StepCheckSignature::process() {
   return Status::OK;
 }
 
-}  // namespace signature
+}  // namespace security
 }  // namespace common_installer

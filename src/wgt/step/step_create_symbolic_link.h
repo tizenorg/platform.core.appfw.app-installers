@@ -13,7 +13,7 @@
 #include "common/utils/logging.h"
 
 namespace wgt {
-namespace symbolic_link {
+namespace filesystem {
 
 class StepCreateSymbolicLink : public common_installer::Step {
  public:
@@ -27,7 +27,7 @@ class StepCreateSymbolicLink : public common_installer::Step {
   SCOPE_LOG_TAG(SymbolicLink)
 };
 
-}  // namespace symbolic_link
+}  // namespace filesystem
 }  // namespace wgt
 
 #endif  // WGT_STEP_STEP_CREATE_SYMBOLIC_LINK_H_

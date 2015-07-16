@@ -9,7 +9,7 @@
 #include "utils/logging.h"
 
 namespace wgt {
-namespace create_storage {
+namespace filesystem {
 
 /**
  * \brief Installation (WGT).
@@ -27,10 +27,9 @@ namespace create_storage {
  * * TZ_SER_APPS/PKGID  (/{HOME}/apps_rw/PKGID)
  */
 class StepWgtCreateStorageDirectories :
-    public common_installer::create_storage::StepCreateStorageDirectories {
+    public common_installer::filesystem::StepCreateStorageDirectories {
  public:
-  using common_installer::create_storage::
-      StepCreateStorageDirectories::StepCreateStorageDirectories;
+  using StepCreateStorageDirectories::StepCreateStorageDirectories;
 
   Status process() override;
   Status clean() override { return Status::OK; }
@@ -44,7 +43,7 @@ class StepWgtCreateStorageDirectories :
   SCOPE_LOG_TAG(CreateWgtStorageDirectories)
 };
 
-}  // namespace create_storage
+}  // namespace filesystem
 }  // namespace wgt
 
 #endif  // WGT_STEP_STEP_WGT_CREATE_STORAGE_DIRECTORIES_H_

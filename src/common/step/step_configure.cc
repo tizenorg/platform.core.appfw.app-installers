@@ -11,7 +11,7 @@
 #include "common/utils/file_util.h"
 
 namespace common_installer {
-namespace configure {
+namespace configuration {
 
 const char *kStrEmpty = "";
 
@@ -82,5 +82,5 @@ bool StepConfigure::SetupRootAppDirectory() {
   return true;
 }
 
-}  // namespace configure
+}  // namespace configuration
 }  // namespace common_installer

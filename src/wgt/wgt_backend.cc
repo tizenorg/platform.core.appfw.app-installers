@@ -53,56 +53,57 @@ int main(int argc, char** argv) {
   /* treat the request */
   switch (pkgmgr->GetRequestType()) {
     case ci::PkgMgrInterface::Type::Install : {
-      installer.AddStep<ci::configure::StepConfigure>();
-      installer.AddStep<ci::unzip::StepUnzip>();
+      installer.AddStep<ci::configuration::StepConfigure>();
+      installer.AddStep<ci::filesystem::StepUnzip>();
       installer.AddStep<wgt::parse::StepParse>();
-      installer.AddStep<ci::signature::StepCheckSignature>();
-      installer.AddStep<wgt::check_settings::StepCheckSettingsLevel>();
-      installer.AddStep<wgt::wgt_resources::StepWgtResourceDirectory>();
-      installer.AddStep<ci::copy::StepCopy>();
-      installer.AddStep<wgt::create_storage::StepWgtCreateStorageDirectories>();
-      installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
-      installer.AddStep<ci::generate_xml::StepGenerateXml>();
-      installer.AddStep<ci::register_app::StepRegisterApplication>();
+      installer.AddStep<ci::security::StepCheckSignature>();
+      installer.AddStep<wgt::security::StepCheckSettingsLevel>();
+      installer.AddStep<wgt::filesystem::StepWgtResourceDirectory>();
+      installer.AddStep<ci::filesystem::StepCopy>();
+      installer.AddStep<wgt::filesystem::StepWgtCreateStorageDirectories>();
+      installer.AddStep<ci::filesystem::StepCreateStorageDirectories>();
+      installer.AddStep<wgt::filesystem::StepCreateSymbolicLink>();
+      installer.AddStep<ci::pkgmgr::StepGenerateXml>();
+      installer.AddStep<ci::pkgmgr::StepRegisterApplication>();
       installer.AddStep<ci::security::StepRegisterSecurity>();
       break;
     }
     case ci::PkgMgrInterface::Type::Update: {
-      installer.AddStep<ci::configure::StepConfigure>();
-      installer.AddStep<ci::unzip::StepUnzip>();
+      installer.AddStep<ci::configuration::StepConfigure>();
+      installer.AddStep<ci::filesystem::StepUnzip>();
       installer.AddStep<wgt::parse::StepParse>();
-      installer.AddStep<ci::signature::StepCheckSignature>();
-      installer.AddStep<wgt::check_settings::StepCheckSettingsLevel>();
-      installer.AddStep<ci::old_certificate::StepCheckOldCertificate>();
-      installer.AddStep<wgt::wgt_resources::StepWgtResourceDirectory>();
-      installer.AddStep<ci::old_manifest::StepOldManifest>();
-      installer.AddStep<ci::backup_manifest::StepBackupManifest>();
-      installer.AddStep<ci::backup_icons::StepBackupIcons>();
-      installer.AddStep<ci::copy_backup::StepCopyBackup>();
-      installer.AddStep<wgt::copy_storage::StepWgtCopyStorageDirectories>();
-      installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
-      installer.AddStep<ci::update_security::StepUpdateSecurity>();
-      installer.AddStep<ci::generate_xml::StepGenerateXml>();
-      installer.AddStep<ci::update_app::StepUpdateApplication>();
+      installer.AddStep<ci::security::StepCheckSignature>();
+      installer.AddStep<wgt::security::StepCheckSettingsLevel>();
+      installer.AddStep<ci::security::StepCheckOldCertificate>();
+      installer.AddStep<wgt::filesystem::StepWgtResourceDirectory>();
+      installer.AddStep<ci::backup::StepOldManifest>();
+      installer.AddStep<ci::backup::StepBackupManifest>();
+      installer.AddStep<ci::backup::StepBackupIcons>();
+      installer.AddStep<ci::backup::StepCopyBackup>();
+      installer.AddStep<wgt::filesystem::StepWgtCopyStorageDirectories>();
+      installer.AddStep<wgt::filesystem::StepCreateSymbolicLink>();
+      installer.AddStep<ci::security::StepUpdateSecurity>();
+      installer.AddStep<ci::pkgmgr::StepGenerateXml>();
+      installer.AddStep<ci::pkgmgr::StepUpdateApplication>();
       break;
     }
     case ci::PkgMgrInterface::Type::Uninstall: {
-      installer.AddStep<ci::configure::StepConfigure>();
+      installer.AddStep<ci::configuration::StepConfigure>();
       installer.AddStep<ci::parse::StepParse>();
-      installer.AddStep<ci::backup_manifest::StepBackupManifest>();
-      installer.AddStep<ci::unregister_app::StepUnregisterApplication>();
-      installer.AddStep<ci::remove::StepRemoveFiles>();
-      installer.AddStep<ci::remove_icons::StepRemoveIcons>();
-      installer.AddStep<ci::revoke_security::StepRevokeSecurity>();
+      installer.AddStep<ci::backup::StepBackupManifest>();
+      installer.AddStep<ci::pkgmgr::StepUnregisterApplication>();
+      installer.AddStep<ci::filesystem::StepRemoveFiles>();
+      installer.AddStep<ci::filesystem::StepRemoveIcons>();
+      installer.AddStep<ci::security::StepRevokeSecurity>();
       break;
     }
     case ci::PkgMgrInterface::Type::Reinstall: {
-      installer.AddStep<ci::configure::StepConfigure>();
+      installer.AddStep<ci::configuration::StepConfigure>();
       installer.AddStep<wgt::parse::StepParse>();
-      installer.AddStep<ci::old_manifest::StepOldManifest>();
-      installer.AddStep<wgt::rds_parse::StepRDSParse>();
-      installer.AddStep<wgt::rds_modify::StepRDSModify>();
-      installer.AddStep<ci::update_security::StepUpdateSecurity>();
+      installer.AddStep<ci::backup::StepOldManifest>();
+      installer.AddStep<wgt::rds::StepRDSParse>();
+      installer.AddStep<wgt::rds::StepRDSModify>();
+      installer.AddStep<ci::security::StepUpdateSecurity>();
 
     break;
   }

@@ -21,7 +21,7 @@ const char kResWgtSubPath[] = "res/wgt";
 }  // namespace
 
 namespace wgt {
-namespace create_storage {
+namespace filesystem {
 
 common_installer::Step::Status StepWgtCreateStorageDirectories::process() {
   if (!PrivateDir())
@@ -81,5 +81,5 @@ bool StepWgtCreateStorageDirectories::ShareDirFor3x() {
   return true;
 }
 
-}  // namespace create_storage
+}  // namespace filesystem
 }  // namespace wgt

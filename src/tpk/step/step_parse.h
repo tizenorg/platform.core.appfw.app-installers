@@ -7,7 +7,7 @@
 #include "tpk/xml_parser/xml_parser.h"
 
 namespace tpk {
-namespace step {
+namespace parse {
 
 class StepParse : public common_installer::Step {
  public:
@@ -28,7 +28,7 @@ class StepParse : public common_installer::Step {
       xml_parser::XmlTree *tree, xml_parser::XmlElement* manifest);
 };
 
-}  // namespace step
+}  // namespace parse
 }  // namespace tpk
 
 #endif  // TPK_STEP_STEP_PARSE_H_

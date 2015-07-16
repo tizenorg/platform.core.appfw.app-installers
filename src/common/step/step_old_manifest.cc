@@ -11,7 +11,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace old_manifest {
+namespace backup {
 
 namespace bf = boost::filesystem;
 
@@ -45,5 +45,5 @@ Step::Status StepOldManifest::process() {
   return Status::OK;
 }
 
-}  // namespace old_manifest
+}  // namespace backup
 }  // namespace common_installer

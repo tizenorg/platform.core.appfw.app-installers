@@ -9,7 +9,7 @@
 #include "common/security_registration.h"
 
 namespace common_installer {
-namespace revoke_security {
+namespace security {
 
 Step::Status StepRevokeSecurity::precheck() {
   if (context_->pkgid.get().empty()) {
@@ -47,5 +47,5 @@ Step::Status StepRevokeSecurity::undo() {
   return Status::OK;
 }
 
-}  // namespace revoke_security
+}  // namespace security
 }  // namespace common_installer

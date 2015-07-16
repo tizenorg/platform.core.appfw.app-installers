@@ -17,7 +17,7 @@ using xml_parser::XmlElement;
 
 
 namespace tpk {
-namespace step {
+namespace parse {
 
 namespace {
   const char kManifestFileName[] = "tizen-manifest.xml";
@@ -361,5 +361,5 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
   return true;
 }
 
-}  // namespace step
+}  // namespace parse
 }  // namespace tpk

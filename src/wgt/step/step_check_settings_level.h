@@ -11,7 +11,7 @@
 #include "common/utils/logging.h"
 
 namespace wgt {
-namespace check_settings {
+namespace security {
 
 class StepCheckSettingsLevel : public common_installer::Step {
  public:
@@ -25,7 +25,7 @@ class StepCheckSettingsLevel : public common_installer::Step {
   SCOPE_LOG_TAG(CheckSettingsLevel)
 };
 
-}  // namespace check_settings
+}  // namespace security
 }  // namespace wgt
 
 #endif  // WGT_STEP_STEP_CHECK_SETTINGS_LEVEL_H_
