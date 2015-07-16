@@ -9,7 +9,7 @@
 #include "common/utils/file_util.h"
 
 namespace common_installer {
-namespace remove {
+namespace filesystem {
 
 namespace bs = boost::system;
 namespace fs = boost::filesystem;
@@ -63,5 +63,5 @@ Step::Status StepRemoveFiles::undo() {
   return Status::OK;
 }
 
-}  // namespace remove
+}  // namespace filesystem
 }  // namespace common_installer

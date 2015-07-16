@@ -12,7 +12,7 @@
 namespace bf = boost::filesystem;
 
 namespace common_installer {
-namespace signature {
+namespace security {
 
 class SignatureValidatorTest : public testing::Test {
  protected:
@@ -39,5 +39,5 @@ TEST_F(SignatureValidatorTest, HandlesBadSignatureDir) {
             Step::Status::ERROR);
 }
 
-}  // namespace signature
+}  // namespace security
 }  // namespace common_installer

@@ -11,7 +11,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace configure {
+namespace configuration {
 
 /**
  * \brief Installation,Update, Deinstallation, RDS.
@@ -33,7 +33,7 @@ class StepConfigure : public Step {
   SCOPE_LOG_TAG(Configure)
 };
 
-}  // namespace configure
+}  // namespace configuration
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_CONFIGURE_H_

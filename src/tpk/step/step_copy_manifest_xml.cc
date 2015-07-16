@@ -116,7 +116,7 @@ namespace {
 
 
 namespace tpk {
-namespace step {
+namespace filesystem {
 
 SCOPE_LOG_TAG(TPKCopyManifestXml)
 
@@ -184,5 +184,5 @@ Status StepCopyManifestXml::undo() {
   return Status::OK;
 }
 
-}  // namespace step
+}  // namespace filesystem
 }  // namespace tpk

@@ -12,7 +12,7 @@
 
 
 namespace wgt {
-namespace rds_parse {
+namespace rds {
 
 namespace bf = boost::filesystem;
 
@@ -45,5 +45,5 @@ common_installer::Step::Status StepRDSParse::process() {
   return common_installer::Step::Status::OK;
 }
 
-}  // namespace rds_parse
+}  // namespace rds
 }  // namespace wgt

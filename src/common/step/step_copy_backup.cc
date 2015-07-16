@@ -13,7 +13,7 @@
 #include "common/utils/file_util.h"
 
 namespace common_installer {
-namespace copy_backup {
+namespace backup {
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
@@ -113,5 +113,5 @@ bool StepCopyBackup::RollbackApplicationDirectory() {
   return true;
 }
 
-}  // namespace copy_backup
+}  // namespace backup
 }  // namespace common_installer

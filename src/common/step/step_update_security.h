@@ -9,7 +9,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace update_security {
+namespace security {
 
 class StepUpdateSecurity : public Step {
  public:
@@ -23,7 +23,7 @@ class StepUpdateSecurity : public Step {
   SCOPE_LOG_TAG(UpdateSecurity)
 };
 
-}  // namespace update_security
+}  // namespace security
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_UPDATE_SECURITY_H_

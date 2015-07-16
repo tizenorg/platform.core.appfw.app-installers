@@ -22,7 +22,7 @@ const char kSharedLocation[] = "shared";
 }  // namespace
 
 namespace common_installer {
-namespace copy_storage {
+namespace filesystem {
 
 bool StepCopyStorageDirectories::MoveAppStorage(
     const bf::path& in_src,
@@ -82,5 +82,5 @@ common_installer::Step::Status StepCopyStorageDirectories::undo() {
   return Status::OK;
 }
 
-}  // namespace copy_storage
+}  // namespace filesystem
 }  // namespace common_installer

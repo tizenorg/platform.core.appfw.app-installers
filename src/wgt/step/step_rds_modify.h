@@ -14,7 +14,7 @@
 #include "wgt/wgt_backend_data.h"
 
 namespace wgt {
-namespace rds_modify {
+namespace rds {
 
 class StepRDSModify : public common_installer::Step {
  public:
@@ -48,6 +48,6 @@ class StepRDSModify : public common_installer::Step {
   std::vector<std::string> files_to_add_;
   std::vector<std::string> files_to_delete_;
 };
-}  // namespace rds_modify
+}  // namespace rds
 }  // namespace wgt
 #endif  // WGT_STEP_STEP_RDS_MODIFY_H_

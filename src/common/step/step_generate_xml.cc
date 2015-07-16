@@ -24,7 +24,7 @@ namespace bs = boost::system;
 namespace fs = boost::filesystem;
 
 namespace common_installer {
-namespace generate_xml {
+namespace pkgmgr {
 
 static void _writeUIApplicationAttributes(
     xmlTextWriterPtr writer, uiapplication_x */*app*/) {
@@ -311,5 +311,5 @@ Step::Status  StepGenerateXml::undo() {
   return Status::OK;
 }
 
-}  // namespace generate_xml
+}  // namespace pkgmgr
 }  // namespace common_installer

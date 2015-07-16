@@ -21,7 +21,7 @@ const char kSharedTrusted[] = "trusted";
 }  // namespace
 
 namespace common_installer {
-namespace create_storage {
+namespace filesystem {
 
 common_installer::Step::Status StepCreateStorageDirectories::process() {
   if (!ShareDir())
@@ -78,6 +78,5 @@ bool StepCreateStorageDirectories::PrivateDir() {
   return true;
 }
 
-
-}  // namespace create_storage
+}  // namespace filesystem
 }  // namespace common_installer

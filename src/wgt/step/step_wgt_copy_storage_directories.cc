@@ -24,7 +24,7 @@ const char kResWgtSubPath[] = "res/wgt";
 }  // namespace
 
 namespace wgt {
-namespace copy_storage {
+namespace filesystem {
 
 common_installer::Step::Status StepWgtCopyStorageDirectories::process() {
   int rel_version =
@@ -151,6 +151,6 @@ StepWgtCopyStorageDirectories::CopyDataDirectory() {
   return Status::OK;
 }
 
-}  // namespace copy_storage
+}  // namespace filesystem
 }  // namespace wgt
 

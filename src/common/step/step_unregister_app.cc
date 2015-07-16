@@ -17,7 +17,7 @@
 #include "common/utils/file_util.h"
 
 namespace common_installer {
-namespace unregister_app {
+namespace pkgmgr {
 
 namespace fs = boost::filesystem;
 
@@ -90,5 +90,5 @@ Step::Status StepUnregisterApplication::undo() {
   return Status::OK;
 }
 
-}  // namespace unregister_app
+}  // namespace pkgmgr
 }  // namespace common_installer

@@ -12,7 +12,7 @@
 #include "common/utils/file_util.h"
 
 namespace common_installer {
-namespace copy {
+namespace filesystem {
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
@@ -85,5 +85,5 @@ Step::Status StepCopy::undo() {
   return Status::OK;
 }
 
-}  // namespace copy
+}  // namespace filesystem
 }  // namespace common_installer

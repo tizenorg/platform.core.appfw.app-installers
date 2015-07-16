@@ -32,7 +32,7 @@ bool ValidateSettingsForLevel(common_installer::PrivilegeLevel level,
 }  // namespace
 
 namespace wgt {
-namespace check_settings {
+namespace security {
 
 common_installer::Step::Status StepCheckSettingsLevel::process() {
   if (!ValidateSettingsForLevel(context_->privilege_level.get(),
@@ -44,5 +44,5 @@ common_installer::Step::Status StepCheckSettingsLevel::process() {
   return Status::OK;
 }
 
-}  // namespace check_settings
+}  // namespace security
 }  // namespace wgt

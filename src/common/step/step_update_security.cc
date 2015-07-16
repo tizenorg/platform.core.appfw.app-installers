@@ -7,7 +7,7 @@
 #include "common/security_registration.h"
 
 namespace common_installer {
-namespace update_security {
+namespace security {
 
 Step::Status StepUpdateSecurity::process() {
   if (!RegisterSecurityContextForApps(
@@ -29,5 +29,5 @@ Step::Status StepUpdateSecurity::undo() {
   return Status::OK;
 }
 
-}  // namespace update_security
+}  // namespace security
 }  // namespace common_installer

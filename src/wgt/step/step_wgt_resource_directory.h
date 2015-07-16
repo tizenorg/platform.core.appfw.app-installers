@@ -11,7 +11,7 @@
 #include "common/utils/logging.h"
 
 namespace wgt {
-namespace wgt_resources {
+namespace filesystem {
 
 //
 // This step fixes unpacked directory structure so that all widget content
@@ -30,7 +30,7 @@ class StepWgtResourceDirectory : public common_installer::Step {
   SCOPE_LOG_TAG(CreateWgtResourceDirectory)
 };
 
-}  // namespace wgt_resources
+}  // namespace filesystem
 }  // namespace wgt
 
 #endif  // WGT_STEP_STEP_WGT_RESOURCE_DIRECTORY_H_

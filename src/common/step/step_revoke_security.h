@@ -9,7 +9,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace revoke_security {
+namespace security {
 
 // Step that is used during uninstallation
 class StepRevokeSecurity : public Step {
@@ -24,7 +24,7 @@ class StepRevokeSecurity : public Step {
   SCOPE_LOG_TAG(RevokeSecurity)
 };
 
-}  // namespace revoke_security
+}  // namespace security
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_REVOKE_SECURITY_H_
