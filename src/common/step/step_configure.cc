@@ -50,6 +50,14 @@ Step::Status StepConfigure::process() {
   return Status::OK;
 }
 
+Step::Status StepConfigure::precheck() {
+  if (getuid() == 0) {
+    LOG(ERROR) << "App-installer should not run with superuser!";
+    return Status::ERROR;
+  }
+  return Status::OK;
+}
+
 bool StepConfigure::SetupRootAppDirectory() {
   if (context_->root_application_path.get().empty()) {
     std::string root_app_path =
