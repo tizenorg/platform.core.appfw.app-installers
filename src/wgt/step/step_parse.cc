@@ -121,6 +121,15 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
     LISTADD(manifest->uiapplication->label, label);
   }
 
+  author_x* author = reinterpret_cast<author_x*>(calloc(1, sizeof(author_x)));
+  if (!wgt_info->author().empty())
+    author->text = strdup(wgt_info->author().c_str());
+  if (!wgt_info->author_email().empty())
+    author->email = strdup(wgt_info->author_email().c_str());
+  if (!wgt_info->author_href().empty())
+    author->href = strdup(wgt_info->author_href().c_str());
+  LISTADD(manifest->author, author);
+
   return true;
 }
 

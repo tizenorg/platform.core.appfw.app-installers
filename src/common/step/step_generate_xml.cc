@@ -201,6 +201,44 @@ Step::Status StepGenerateXml::process() {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "version",
       BAD_CAST context_->manifest_data.get()->version);
 
+  if (!context_->manifest_data.get()->label) {
+    xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
+        "%s", BAD_CAST "");
+  } else {
+    label_x* label = nullptr;
+    LISTHEAD(context_->manifest_data.get()->label, label);
+    for (; label; label = label->next) {
+      xmlTextWriterStartElement(writer, BAD_CAST "label");
+      if (label->lang && strlen(label->lang)) {
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                    BAD_CAST label->lang);
+      }
+      xmlTextWriterWriteString(writer, BAD_CAST label->name);
+      xmlTextWriterEndElement(writer);
+    }
+  }
+
+  if (!context_->manifest_data.get()->author) {
+    xmlTextWriterWriteFormatElement(writer, BAD_CAST "author",
+        "%s", BAD_CAST "");
+  } else {
+    author_x* author = nullptr;
+    LISTHEAD(context_->manifest_data.get()->author, author);
+    for (; author; author = author->next) {
+      xmlTextWriterStartElement(writer, BAD_CAST "author");
+      if (author->email && strlen(author->email)) {
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "email",
+                                    BAD_CAST author->email);
+      }
+      if (author->href && strlen(author->href)) {
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "href",
+                                    BAD_CAST author->href);
+      }
+      xmlTextWriterWriteString(writer, BAD_CAST author->text);
+      xmlTextWriterEndElement(writer);
+    }
+  }
+
   if (!context_->manifest_data.get()->description) {
     xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
         "%s", BAD_CAST "");
