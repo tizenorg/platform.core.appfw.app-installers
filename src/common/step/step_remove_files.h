@@ -11,7 +11,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace remove {
+namespace filesystem {
 
 class StepRemoveFiles : public Step {
  public:
@@ -25,7 +25,7 @@ class StepRemoveFiles : public Step {
   SCOPE_LOG_TAG(Remove)
 };
 
-}  // namespace remove
+}  // namespace filesystem
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_REMOVE_FILES_H_

@@ -17,7 +17,7 @@
 #include "common/utils/file_util.h"
 
 namespace wgt {
-namespace symbolic_link {
+namespace filesystem {
 
 namespace fs = boost::filesystem;
 
@@ -85,5 +85,5 @@ common_installer::Step::Status StepCreateSymbolicLink::undo() {
   return Status::OK;
 }
 
-}  // namespace symbolic_link
+}  // namespace filesystem
 }  // namespace wgt

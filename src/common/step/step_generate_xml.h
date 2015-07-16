@@ -15,7 +15,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace generate_xml {
+namespace pkgmgr {
 
 class StepGenerateXml : public Step {
  public:
@@ -38,7 +38,7 @@ class StepGenerateXml : public Step {
   SCOPE_LOG_TAG(GenerateXML)
 };
 
-}  // namespace generate_xml
+}  // namespace pkgmgr
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_GENERATE_XML_H_

@@ -14,7 +14,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace old_certificate {
+namespace security {
 
 Step::Status StepCheckOldCertificate::process() {
   std::string old_author_certificate =
@@ -50,5 +50,5 @@ Step::Status StepCheckOldCertificate::process() {
   return Status::OK;
 }
 
-}  // namespace old_certificate
+}  // namespace security
 }  // namespace common_installer

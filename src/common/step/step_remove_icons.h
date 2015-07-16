@@ -15,7 +15,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace remove_icons {
+namespace filesystem {
 
 class StepRemoveIcons : public Step {
  public:
@@ -33,7 +33,7 @@ class StepRemoveIcons : public Step {
   SCOPE_LOG_TAG(RemoveIcons)
 };
 
-}  // namespace remove_icons
+}  // namespace filesystem
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_REMOVE_ICONS_H_

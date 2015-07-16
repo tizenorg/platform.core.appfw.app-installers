@@ -8,7 +8,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace register_app {
+namespace pkgmgr {
 
 class StepRegisterApplication : public Step {
  public:
@@ -22,7 +22,7 @@ class StepRegisterApplication : public Step {
   SCOPE_LOG_TAG(RegisterApp)
 };
 
-}  // namespace register_app
+}  // namespace pkgmgr
 }  // namespace common_installer
 
 

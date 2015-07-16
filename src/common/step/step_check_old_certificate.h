@@ -10,7 +10,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace old_certificate {
+namespace security {
 
 class StepCheckOldCertificate : public Step {
  public:
@@ -24,7 +24,7 @@ class StepCheckOldCertificate : public Step {
   SCOPE_LOG_TAG(CheckOldCertificate)
 };
 
-}  // namespace old_certificate
+}  // namespace security
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_CHECK_OLD_CERTIFICATE_H_

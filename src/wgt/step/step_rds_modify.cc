@@ -10,7 +10,7 @@
 #include "common/utils/logging.h"
 
 namespace wgt {
-namespace rds_modify {
+namespace rds {
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
@@ -220,5 +220,5 @@ void StepRDSModify::RestoreFiles() {
   bf::remove_all(backup_temp_dir_);
 }
 
-}  // namespace rds_modify
+}  // namespace rds
 }  // namespace wgt

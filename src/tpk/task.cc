@@ -94,16 +94,16 @@ bool Task::Run() {
 int Task::Install() {
   ci::AppInstaller ai(kPkgType);
 
-  ai.AddStep<ci::configure::StepConfigure>();
-  ai.AddStep<ci::unzip::StepUnzip>();
-  ai.AddStep<tpk::step::StepParse>();
-  ai.AddStep<ci::signature::StepCheckSignature>();
-  ai.AddStep<ci::copy::StepCopy>();
-  ai.AddStep<ci::create_storage::StepCreateStorageDirectories>();
-  ai.AddStep<tpk::step::StepCreateSymbolicLink>();
+  ai.AddStep<ci::configuration::StepConfigure>();
+  ai.AddStep<ci::filesystem::StepUnzip>();
+  ai.AddStep<tpk::parse::StepParse>();
+  ai.AddStep<ci::security::StepCheckSignature>();
+  ai.AddStep<ci::filesystem::StepCopy>();
+  ai.AddStep<ci::filesystem::StepCreateStorageDirectories>();
+  ai.AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   ai.AddStep<ci::security::StepRegisterSecurity>();
-  ai.AddStep<tpk::step::StepCopyManifestXml>();
-  ai.AddStep<ci::register_app::StepRegisterApplication>();
+  ai.AddStep<tpk::filesystem::StepCopyManifestXml>();
+  ai.AddStep<ci::pkgmgr::StepRegisterApplication>();
 
   return ai.Run();
 }
@@ -111,20 +111,20 @@ int Task::Install() {
 int Task::Update() {
   ci::AppInstaller ai(kPkgType);
 
-  ai.AddStep<ci::configure::StepConfigure>();
-  ai.AddStep<ci::unzip::StepUnzip>();
-  ai.AddStep<tpk::step::StepParse>();
-  ai.AddStep<ci::signature::StepCheckSignature>();
-  ai.AddStep<ci::old_certificate::StepCheckOldCertificate>();
-  ai.AddStep<ci::old_manifest::StepOldManifest>();
-  ai.AddStep<ci::backup_manifest::StepBackupManifest>();
-  ai.AddStep<ci::backup_icons::StepBackupIcons>();
-  ai.AddStep<ci::copy_backup::StepCopyBackup>();
-  ai.AddStep<ci::copy_storage::StepCopyStorageDirectories>();
-  ai.AddStep<tpk::step::StepCreateSymbolicLink>();
-  ai.AddStep<ci::update_security::StepUpdateSecurity>();
-  ai.AddStep<tpk::step::StepCopyManifestXml>();
-  ai.AddStep<ci::update_app::StepUpdateApplication>();
+  ai.AddStep<ci::configuration::StepConfigure>();
+  ai.AddStep<ci::filesystem::StepUnzip>();
+  ai.AddStep<tpk::parse::StepParse>();
+  ai.AddStep<ci::security::StepCheckSignature>();
+  ai.AddStep<ci::security::StepCheckOldCertificate>();
+  ai.AddStep<ci::backup::StepOldManifest>();
+  ai.AddStep<ci::backup::StepBackupManifest>();
+  ai.AddStep<ci::backup::StepBackupIcons>();
+  ai.AddStep<ci::backup::StepCopyBackup>();
+  ai.AddStep<ci::filesystem::StepCopyStorageDirectories>();
+  ai.AddStep<tpk::filesystem::StepCreateSymbolicLink>();
+  ai.AddStep<ci::security::StepUpdateSecurity>();
+  ai.AddStep<tpk::filesystem::StepCopyManifestXml>();
+  ai.AddStep<ci::pkgmgr::StepUpdateApplication>();
 
   return ai.Run();
 }
@@ -132,13 +132,13 @@ int Task::Update() {
 int Task::Uninstall() {
   ci::AppInstaller ai(kPkgType);
 
-  ai.AddStep<ci::configure::StepConfigure>();
+  ai.AddStep<ci::configuration::StepConfigure>();
   ai.AddStep<ci::parse::StepParse>();
-  ai.AddStep<ci::backup_manifest::StepBackupManifest>();
-  ai.AddStep<ci::unregister_app::StepUnregisterApplication>();
-  ai.AddStep<ci::remove::StepRemoveFiles>();
-  ai.AddStep<ci::remove_icons::StepRemoveIcons>();
-  ai.AddStep<ci::revoke_security::StepRevokeSecurity>();
+  ai.AddStep<ci::backup::StepBackupManifest>();
+  ai.AddStep<ci::pkgmgr::StepUnregisterApplication>();
+  ai.AddStep<ci::filesystem::StepRemoveFiles>();
+  ai.AddStep<ci::filesystem::StepRemoveIcons>();
+  ai.AddStep<ci::security::StepRevokeSecurity>();
 
   return ai.Run();
 }

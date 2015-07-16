@@ -12,7 +12,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace copy {
+namespace filesystem {
 
 class StepCopy : public Step {
  public:
@@ -26,7 +26,7 @@ class StepCopy : public Step {
   SCOPE_LOG_TAG(Copy)
 };
 
-}  // namespace copy
+}  // namespace filesystem
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_COPY_H_

@@ -13,7 +13,7 @@
 #include "common/utils/file_util.h"
 
 namespace common_installer {
-namespace remove_icons {
+namespace filesystem {
 
 namespace bs = boost::system;
 namespace fs = boost::filesystem;
@@ -74,5 +74,5 @@ Step::Status StepRemoveIcons::undo() {
   }
   return Status::OK;
 }
-}  // namespace remove_icons
+}  // namespace filesystem
 }  // namespace common_installer

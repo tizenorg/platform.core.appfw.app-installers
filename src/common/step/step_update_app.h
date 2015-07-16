@@ -10,7 +10,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace update_app {
+namespace pkgmgr {
 
 class StepUpdateApplication : public Step {
  public:
@@ -24,7 +24,7 @@ class StepUpdateApplication : public Step {
   SCOPE_LOG_TAG(UpdateApplication)
 };
 
-}  // namespace update_app
+}  // namespace pkgmgr
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_UPDATE_APP_H_

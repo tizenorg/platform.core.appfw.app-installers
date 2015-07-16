@@ -13,7 +13,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace unzip {
+namespace filesystem {
 
 /**
  * \brief Installation and Update.
@@ -40,7 +40,7 @@ class StepUnzip : public Step {
   SCOPE_LOG_TAG(Unzip)
 };
 
-}  // namespace unzip
+}  // namespace filesystem
 }  // namespace common_installer
 
 

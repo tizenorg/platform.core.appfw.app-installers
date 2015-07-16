@@ -10,7 +10,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace unregister_app {
+namespace pkgmgr {
 
 class StepUnregisterApplication : public Step {
  public:
@@ -27,7 +27,7 @@ class StepUnregisterApplication : public Step {
   SCOPE_LOG_TAG(Unregister)
 };
 
-}  // namespace unregister_app
+}  // namespace pkgmgr
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_UNREGISTER_APP_H_

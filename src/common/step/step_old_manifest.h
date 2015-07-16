@@ -11,7 +11,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace old_manifest {
+namespace backup {
 
 class StepOldManifest : public Step {
  public:
@@ -25,7 +25,7 @@ class StepOldManifest : public Step {
   SCOPE_LOG_TAG(OldManifest)
 };
 
-}  // namespace old_manifest
+}  // namespace backup
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_OLD_MANIFEST_H_
