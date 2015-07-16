@@ -20,7 +20,7 @@ class StepConfigure : public Step {
   Status process() override;
   Status clean() override { return Status::OK; }
   Status undo() override { return Status::OK; }
-  Status precheck() override { return Status::OK; }
+  Status precheck() override;
  private:
   bool SetupRootAppDirectory();
 
