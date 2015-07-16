@@ -11,7 +11,7 @@
 #include "utils/logging.h"
 
 namespace common_installer {
-namespace copy_storage {
+namespace filesystem {
 
 class StepCopyStorageDirectories : public common_installer::Step {
  public:
@@ -32,7 +32,7 @@ class StepCopyStorageDirectories : public common_installer::Step {
   SCOPE_LOG_TAG(CreateStorageDirectories)
 };
 
-}  // namespace copy_storage
+}  // namespace filesystem
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_COPY_STORAGE_DIRECTORIES_H_

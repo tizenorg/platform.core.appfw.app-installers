@@ -12,7 +12,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace copy_backup {
+namespace backup {
 
 class StepCopyBackup : public Step {
  public:
@@ -33,7 +33,7 @@ class StepCopyBackup : public Step {
   SCOPE_LOG_TAG(CopyBackup)
 };
 
-}  // namespace copy_backup
+}  // namespace backup
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_COPY_BACKUP_H_

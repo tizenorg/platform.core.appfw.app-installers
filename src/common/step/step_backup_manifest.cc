@@ -21,7 +21,7 @@ namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
 namespace common_installer {
-namespace backup_manifest {
+namespace backup {
 
 Step::Status StepBackupManifest::precheck() {
   if (!bf::exists(context_->xml_path.get())) {
@@ -75,5 +75,5 @@ Step::Status StepBackupManifest::undo() {
   return Status::OK;
 }
 
-}  // namespace backup_manifest
+}  // namespace backup
 }  // namespace common_installer

@@ -47,7 +47,7 @@ bool CheckFreeSpaceAtPath(int64_t required_size,
 }  // namespace
 
 namespace common_installer {
-namespace unzip {
+namespace filesystem {
 
 Step::Status StepUnzip::precheck() {
   if (context_->file_path.get().empty()) {
@@ -130,5 +130,5 @@ Step::Status StepUnzip::undo() {
 }
 
 
-}  // namespace unzip
+}  // namespace filesystem
 }  // namespace common_installer

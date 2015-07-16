@@ -9,7 +9,7 @@
 #include "utils/logging.h"
 
 namespace wgt {
-namespace copy_storage {
+namespace filesystem {
 
 /**
  * \brief Update installation (WGT).
@@ -18,7 +18,7 @@ namespace copy_storage {
  *        2.x and 3.x shared dir handling
  */
 class StepWgtCopyStorageDirectories
-    : public common_installer::copy_storage::StepCopyStorageDirectories {
+    : public common_installer::filesystem::StepCopyStorageDirectories {
  public:
   using StepCopyStorageDirectories::StepCopyStorageDirectories;
 
@@ -35,7 +35,7 @@ class StepWgtCopyStorageDirectories
   SCOPE_LOG_TAG(CopyWgtStorageDirectories)
 };
 
-}  // namespace copy_storage
+}  // namespace filesystem
 }  // namespace wgt
 
 #endif  // WGT_STEP_STEP_WGT_COPY_STORAGE_DIRECTORIES_H_

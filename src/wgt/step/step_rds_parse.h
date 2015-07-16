@@ -12,7 +12,7 @@
 #include <vector>
 
 namespace wgt {
-namespace rds_parse {
+namespace rds {
 
 class StepRDSParse : public common_installer::Step {
  public:
@@ -26,6 +26,6 @@ class StepRDSParse : public common_installer::Step {
  private:
   boost::filesystem::path rds_file_path_;
 };
-}  // namespace rds_parse
+}  // namespace rds
 }  // namespace wgt
 #endif  // WGT_STEP_STEP_RDS_PARSE_H_

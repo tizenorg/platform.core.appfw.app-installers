@@ -12,7 +12,7 @@
 #include "common/utils/file_util.h"
 
 namespace common_installer {
-namespace register_app {
+namespace pkgmgr {
 
 namespace fs = boost::filesystem;
 
@@ -52,5 +52,5 @@ Step::Status StepRegisterApplication::undo() {
   return Status::OK;
 }
 
-}  // namespace register_app
+}  // namespace pkgmgr
 }  // namespace common_installer

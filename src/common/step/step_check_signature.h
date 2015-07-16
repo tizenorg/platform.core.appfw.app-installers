@@ -10,7 +10,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace signature {
+namespace security {
 
 class StepCheckSignature : public Step {
  public:
@@ -28,7 +28,7 @@ class StepCheckSignature : public Step {
 Step::Status ValidateSignatures(const boost::filesystem::path& base_path,
     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info);
 
-}  // namespace signature
+}  // namespace security
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_CHECK_SIGNATURE_H_

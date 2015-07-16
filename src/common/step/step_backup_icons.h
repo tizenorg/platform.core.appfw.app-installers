@@ -14,7 +14,7 @@
 #include "common/utils/logging.h"
 
 namespace common_installer {
-namespace backup_icons {
+namespace backup {
 
 class StepBackupIcons : public Step {
  public:
@@ -34,7 +34,7 @@ class StepBackupIcons : public Step {
   SCOPE_LOG_TAG(BackupIcons)
 };
 
-}  // namespace backup_icons
+}  // namespace backup
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_BACKUP_ICONS_H_

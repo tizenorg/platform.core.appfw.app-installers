@@ -9,7 +9,7 @@
 #include "utils/logging.h"
 
 namespace common_installer {
-namespace create_storage {
+namespace filesystem {
 
 /**
  * \brief Installation.
@@ -41,7 +41,7 @@ class StepCreateStorageDirectories : public common_installer::Step {
   SCOPE_LOG_TAG(CreateStorageDirectories)
 };
 
-}  // namespace create_storage
+}  // namespace filesystem
 }  // namespace common_installer
 
 #endif  // COMMON_STEP_STEP_CREATE_STORAGE_DIRECTORIES_H_

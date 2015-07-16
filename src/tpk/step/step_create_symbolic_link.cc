@@ -14,7 +14,7 @@
 
 
 namespace tpk {
-namespace step {
+namespace filesystem {
 
 namespace fs = boost::filesystem;
 using common_installer::ContextInstaller;
@@ -139,5 +139,5 @@ Status StepCreateSymbolicLink::undo() {
   return Status::OK;
 }
 
-}  // namespace step
+}  // namespace filesystem
 }  // namespace tpk
