@@ -87,7 +87,6 @@ ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %files
 %defattr(-,root,root)
 %{_libdir}/libcommon-installer.so*
-%{_datarootdir}/app-installers/signature_schema.xsd
 %license LICENSE
 
 %files -n wgt-backend
