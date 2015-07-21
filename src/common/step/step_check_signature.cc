@@ -8,12 +8,9 @@
 #include <boost/filesystem/path.hpp>
 #include <glib.h>
 #include <privilege_manager.h>
-#include <tzplatform_config.h>
-#include <vcore/Certificate.h>
-#include <vcore/SignatureReader.h>
+
 #include <vcore/SignatureFinder.h>
-#include <vcore/WrtSignatureValidator.h>
-#include <vcore/VCore.h>
+#include <vcore/SignatureValidator.h>
 
 #include <cassert>
 #include <cstdlib>
@@ -24,10 +21,6 @@
 namespace bf = boost::filesystem;
 
 namespace {
-
-const bf::path kSignatureXmlSchemaPath =
-    bf::path(tzplatform_getenv(TZ_SYS_SHARE))
-        / "app-installers/signature_schema.xsd";
 
 common_installer::PrivilegeLevel CertStoreIdToPrivilegeLevel(
     ValidationCore::CertStoreId::Type id) {
@@ -64,59 +57,50 @@ common_installer::Step::Status ValidateSignatureFile(
     common_installer::CertificateInfo* cert_info) {
   bf::path path = base_path / file_info.getFileName();
   LOG(INFO) << "Processing signature: " << path;
-  ValidationCore::SignatureData data(path.string(), file_info.getFileNumber());
-  try {
-    // Validate file syntax and schema
-    ValidationCore::SignatureReader xml;
-    xml.initialize(data, kSignatureXmlSchemaPath.string());
-    xml.read(data);
 
-    // Validate file semantic
-    ValidationCore::WrtSignatureValidator validator(
-        ValidationCore::WrtSignatureValidator::TIZEN, true, true, false);
-    ValidationCore::WrtSignatureValidator::Result result =
-        validator.check(data, base_path.string());
+  ValidationCore::SignatureData data;
+  ValidationCore::SignatureValidator::Result result =
+    ValidationCore::SignatureValidator::check(
+      file_info,           // signature file info
+      base_path.string(),  // app content path for checking hash of file ref.
+      true,                // ocsp check flag
+      true,                // file reference hash check flag
+      data);               // output signature data
 
-    switch (result) {
-      case ValidationCore::WrtSignatureValidator::SIGNATURE_REVOKED: {
-        LOG(ERROR) << "Certificate is revoked";
-        return common_installer::Step::Status::ERROR;
-      };
-      case ValidationCore::WrtSignatureValidator::SIGNATURE_INVALID: {
-        LOG(ERROR) << "Certificate is invalid";
-        return common_installer::Step::Status::ERROR;
-      };
-      case ValidationCore::WrtSignatureValidator::SIGNATURE_DISREGARD: {
-          if (data.isAuthorSignature()) {
-            LOG(ERROR) << "Author-signiture is disregarded";
-            return common_installer::Step::Status::ERROR;
-          }
-          LOG(WARNING) << "Signature disregarded: " << path;
-          break;
-      };
-      case ValidationCore::WrtSignatureValidator::SIGNATURE_VERIFIED: {
-        if (!data.isAuthorSignature()) {
-          // First distributor signature sets the privilege level
-          // (wrt spec. 0620.)
-          if (file_info.getFileNumber() == 1 &&
-              *level == common_installer::PrivilegeLevel::UNTRUSTED) {
-            *level = CertStoreIdToPrivilegeLevel(data.getVisibilityLevel());
-          }
-        } else {
-          // set author certificate to be saved in pkgmgr
-          cert_info->author_certificate.set(data.getEndEntityCertificatePtr());
-        }
-        break;
-      };
-      default: {
-        return common_installer::Step::Status::ERROR;
-      };
-    }
-  } catch (const ValidationCore::ParserSchemaException::Base& exception) {
-      // Needs to catch parser exceptions
-      LOG(ERROR) << "Error occured in ParserSchema: "
-                 << exception.DumpToString();
+  switch (result) {
+    case ValidationCore::SignatureValidator::SIGNATURE_REVOKED: {
+      LOG(ERROR) << "Certificate is revoked";
       return common_installer::Step::Status::ERROR;
+    };
+    case ValidationCore::SignatureValidator::SIGNATURE_INVALID: {
+      LOG(ERROR) << "Certificate is invalid";
+      return common_installer::Step::Status::ERROR;
+    };
+    case ValidationCore::SignatureValidator::SIGNATURE_DISREGARD: {
+        if (data.isAuthorSignature()) {
+          LOG(ERROR) << "Author-signiture is disregarded";
+          return common_installer::Step::Status::ERROR;
+        }
+        LOG(WARNING) << "Signature disregarded: " << path;
+        break;
+    };
+    case ValidationCore::SignatureValidator::SIGNATURE_VERIFIED: {
+      if (!data.isAuthorSignature()) {
+        // First distributor signature sets the privilege level
+        // (wrt spec. 0620.)
+        if (file_info.getFileNumber() == 1 &&
+            *level == common_installer::PrivilegeLevel::UNTRUSTED) {
+          *level = CertStoreIdToPrivilegeLevel(data.getVisibilityLevel());
+        }
+      } else {
+        // set author certificate to be saved in pkgmgr
+        cert_info->author_certificate.set(data.getEndEntityCertificatePtr());
+      }
+      break;
+    };
+    default: {
+      return common_installer::Step::Status::ERROR;
+    };
   }
   return common_installer::Step::Status::OK;
 }
@@ -169,14 +153,12 @@ namespace security {
 
 Step::Status ValidateSignatures(const bf::path& base_path,
     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info) {
-  ValidationCore::VCoreInit();
   // Find signature files
   ValidationCore::SignatureFileInfoSet signature_files;
   ValidationCore::SignatureFinder signature_finder(base_path.string());
   if (signature_finder.find(signature_files) !=
       ValidationCore::SignatureFinder::NO_ERROR) {
     LOG(ERROR) << "Error while searching for signatures";
-    ValidationCore::VCoreDeinit();
     return Step::Status::ERROR;
   }
   LOG(INFO) << "Number of signature files: " << signature_files.size();
@@ -186,11 +168,9 @@ Step::Status ValidateSignatures(const bf::path& base_path,
     Step::Status status = ValidateSignatureFile(base_path, file_info, level,
                                                 cert_info);
     if (status != Step::Status::OK) {
-      ValidationCore::VCoreDeinit();
       return status;
     }
   }
-  ValidationCore::VCoreDeinit();
   return Step::Status::OK;
 }
 
