@@ -224,7 +224,7 @@ Step::Status StepCheckSignature::process() {
   // TODO(t.iwanek): refactoring, move to wgt backend
   bool is_webapp = context_->pkg_type.get() == "wgt";
   if (!ValidatePrivilegeLevel(level, is_webapp,
-      context_->config_data.get().required_version.get().c_str(),
+      context_->config_data.get().required_api_version.get().c_str(),
       context_->manifest_data.get()->privileges))
     return Status::ERROR;
 

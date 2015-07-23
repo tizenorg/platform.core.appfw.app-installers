@@ -11,6 +11,19 @@
 namespace common_installer {
 namespace create_storage {
 
+/**
+ * \brief Installation.
+ *        Responsible for creating shared and data directories (wgt/tpk)
+ *
+ * * process method implements creation of data and shared directories for
+ *   package.
+ * * Other methods are empty.
+ *
+ * CreateStorageDirectories works on below directories:
+ * * context_->pkg_path.get(), eg:
+ *   * TZ_SYS_RW/PKGID/<new-dir> (/usr/apps/PKGID/<new-dir>)
+ *   * TZ_SER_APPS/PKGID/<new-dir>  (/{HOME}/apps_rw/PKGID/<new-dir>)
+ */
 class StepCreateStorageDirectories : public common_installer::Step {
  public:
   using Step::Step;
@@ -19,6 +32,11 @@ class StepCreateStorageDirectories : public common_installer::Step {
   Status clean() override { return Status::OK; }
   Status undo() override { return Status::OK; }
   Status precheck() override { return Status::OK; }
+
+ protected:
+  bool ShareDir();
+  bool SubShareDir();
+  bool PrivateDir();
 
   SCOPE_LOG_TAG(CreateStorageDirectories)
 };
