@@ -24,8 +24,10 @@ namespace common_installer {
 class ConfigData {
  public:
   ConfigData() {}
-  Property<std::string> application_name;
-  Property<std::string> required_version;
+  /** version pointed in <application> tag*/
+  Property<std::string> required_api_version;
+  /** version pointed int <widget> tag*/
+  Property<std::string> required_tizen_version;
 };
 
 class BackendData {

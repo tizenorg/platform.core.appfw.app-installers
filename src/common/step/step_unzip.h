@@ -23,6 +23,11 @@ namespace unzip {
  * rough space requirements vs availability.
  * Since process method unpacks the package to given directory, undo method
  * removes them.
+ *
+ * Unzip unpacks resources to following directory:
+ * * TZ_SYS_RW/tmpuniquedir (/usr/apps/tmpuniquedir)
+ * * TZ_SER_APPS/tmpdir  (/{HOME}/apps_rw/tmpuniquedir)
+ * ContextInstaller::unpacked_dir_path points to this location.
  */
 class StepUnzip : public Step {
  public:

@@ -147,8 +147,7 @@ bool StepParse::SetContextByManifestParser(XmlTree* tree) {
   }
 
   // set context_
-  context_->config_data.get().application_name.set(label->content());
-  context_->config_data.get().required_version.set(
+  context_->config_data.get().required_api_version.set(
       manifest->attr("api-version"));
   context_->pkgid.set(manifest->attr("package"));
   context_->manifest_data.set(static_cast<manifest_x*>(

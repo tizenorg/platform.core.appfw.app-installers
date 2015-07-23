@@ -291,15 +291,11 @@ common_installer::Step::Status StepParse::process() {
   if (short_name_set.begin() != short_name_set.end())
     short_name = short_name_set.begin()->second;
 
-  const std::string& version = wgt_info->version();
+  const std::string& tizen_version = wgt_info->version();
   const std::string& required_api_version = info->required_version();
 
-  if (manifest->uiapplication->label) {
-    context_->config_data.get().application_name.set(
-        std::string(manifest->uiapplication->label->name));
-  }
-
-  context_->config_data.get().required_version.set(required_api_version);
+  context_->config_data.get().required_api_version.set(required_api_version);
+  context_->config_data.get().required_tizen_version.set(tizen_version);
   context_->pkgid.set(std::string(manifest->package));
 
   std::shared_ptr<const PermissionsInfo> perm_info =
@@ -327,7 +323,7 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "  id          = " <<  info->id();
   LOG(DEBUG) << "  name        = " <<  name;
   LOG(DEBUG) << "  short_name  = " <<  short_name;
-  LOG(DEBUG) << "  version     = " <<  version;
+  LOG(DEBUG) << "  tizen_version     = " <<  tizen_version;
   LOG(DEBUG) << "  icon        = " <<  manifest->uiapplication->icon->name;
   LOG(DEBUG) << "  api_version = " <<  info->required_version();
   LOG(DEBUG) << "  privileges -[";
