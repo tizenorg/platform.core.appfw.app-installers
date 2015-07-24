@@ -18,46 +18,36 @@ namespace backup {
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
-Step::Status StepCopyBackup::process() {
-  assert(!context_->pkgid.get().empty());
+Step::Status StepCopyBackup::precheck() {
+  if (context_->pkgid.get().empty()) {
+    LOG(ERROR) << "pkgid attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
+  if (context_->root_application_path.get().empty()) {
+    LOG(ERROR) << "root_application_path attribute is empty";
+    return Step::Status::INVALID_VALUE;
+  }
 
   // set application path
   context_->pkg_path.set(
       context_->root_application_path.get() / context_->pkgid.get());
-
   install_path_ = context_->pkg_path.get();
-
   backup_path_ = GetBackupPathForPackagePath(context_->pkg_path.get());
 
-  // backup old content
-  if (!MoveDir(context_->pkg_path.get(), backup_path_)) {
-    LOG(ERROR) << "Fail to backup widget directory";
-    return Step::Status::ERROR;
-  }
-  LOG(INFO) << "Old widget context saved to: " << backup_path_;
+  return Status::OK;
+}
 
-  // copy new content
-  bs::error_code error;
-  bf::create_directories(install_path_.parent_path(), error);
-  if (error) {
-    LOG(ERROR) << "Cannot create widget directory";
+Step::Status StepCopyBackup::process() {
+  if (!Backup())
     return Status::ERROR;
-  }
-  if (!MoveDir(context_->unpacked_dir_path.get(), install_path_)) {
-    LOG(ERROR) << "Fail to copy tmp dir: " << context_->unpacked_dir_path.get()
-               << " to dst dir: " << install_path_;
-    return Step::Status::ERROR;
-  }
 
-  LOG(INFO) << "Successfully move: " << context_->unpacked_dir_path.get()
-            << " to: " << install_path_ << " directory";
+  if (!NewContent())
+    return Status::ERROR;
+
   return Status::OK;
 }
 
 Step::Status StepCopyBackup::clean() {
-  assert(!backup_path_.empty());
-  assert(!install_path_.empty());
-
   if (!CleanBackupDirectory()) {
     LOG(DEBUG) << "Cannot remove backup directory";
     return Status::ERROR;
@@ -68,9 +58,6 @@ Step::Status StepCopyBackup::clean() {
 }
 
 Step::Status StepCopyBackup::undo() {
-  assert(!backup_path_.empty());
-  assert(!install_path_.empty());
-
   // TODO(t.iwanek): this should be done in StepUnzip
   bs::error_code error;
   LOG(DEBUG) << "Remove tmp dir: " << context_->unpacked_dir_path.get();
@@ -79,12 +66,40 @@ Step::Status StepCopyBackup::undo() {
   // if backup was created then restore files
   if (bf::exists(backup_path_)) {
     if (!RollbackApplicationDirectory()) {
-      LOG(ERROR) << "Failed to revert widget directory";
+      LOG(ERROR) << "Failed to revert package directory";
       return Status::ERROR;
     }
     LOG(DEBUG) << "Application files reverted from backup";
   }
   return Status::OK;
+}
+
+bool StepCopyBackup::Backup() {
+  if (!MoveDir(context_->pkg_path.get(), backup_path_)) {
+    LOG(ERROR) << "Fail to backup package directory";
+    return false;
+  }
+  LOG(INFO) << "Old package context saved to: " << backup_path_;
+  return true;
+}
+
+bool StepCopyBackup::NewContent() {
+  bs::error_code error;
+  bf::create_directories(install_path_.parent_path(), error);
+  if (error) {
+    LOG(ERROR) << "Cannot create package directory";
+    return false;
+  }
+  if (!MoveDir(context_->unpacked_dir_path.get(), install_path_)) {
+    LOG(ERROR) << "Fail to copy tmp dir: " << context_->unpacked_dir_path.get()
+               << " to dst dir: " << install_path_;
+    return false;
+  }
+
+  LOG(INFO) << "Successfully move: " << context_->unpacked_dir_path.get()
+            << " to: " << install_path_ << " directory";
+
+  return true;
 }
 
 bool StepCopyBackup::CleanBackupDirectory() {

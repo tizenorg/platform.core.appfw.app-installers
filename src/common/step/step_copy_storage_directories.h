@@ -29,7 +29,7 @@ class StepCopyStorageDirectories : public common_installer::Step {
 
   boost::filesystem::path backup_path_;
 
-  SCOPE_LOG_TAG(CreateStorageDirectories)
+  SCOPE_LOG_TAG(CopyStorageDirectories)
 };
 
 }  // namespace filesystem
