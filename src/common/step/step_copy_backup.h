@@ -21,9 +21,11 @@ class StepCopyBackup : public Step {
   Status process() override;
   Status clean() override;
   Status undo() override;
-  Status precheck() override { return Status::OK; }
+  Status precheck() override;
 
  private:
+  bool Backup();
+  bool NewContent();
   bool CleanBackupDirectory();
   bool RollbackApplicationDirectory();
 
