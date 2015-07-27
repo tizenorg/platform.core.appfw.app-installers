@@ -7,6 +7,7 @@ SET(SRCS
   step/step_rds_parse.cc
   step/step_rds_modify.cc
   step/step_wgt_create_storage_directories.cc
+  step/step_wgt_copy_storage_directories.cc
   step/step_wgt_resource_directory.cc
   wgt_app_query_interface.cc
   wgt_backend.cc

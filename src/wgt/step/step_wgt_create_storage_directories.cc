@@ -16,7 +16,7 @@ namespace bs = boost::system;
 namespace {
 
 const char kSharedLocation[] = "shared";
-const char kResWgt[] = "res/wgt";
+const char kResWgtSubPath[] = "res/wgt";
 
 }  // namespace
 
@@ -58,7 +58,7 @@ bool StepWgtCreateStorageDirectories::ShareDirFor2x() {
 }
 
 bool StepWgtCreateStorageDirectories::ShareDirFor3x() {
-  bf::path res_wgt_path = context_->pkg_path.get() / kResWgt;
+  bf::path res_wgt_path = context_->pkg_path.get() / kResWgtSubPath;
   if (!bf::exists(res_wgt_path / kSharedLocation)) {
     if (!ShareDir())
       return false;
