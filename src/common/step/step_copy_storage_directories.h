@@ -22,7 +22,11 @@ class StepCopyStorageDirectories : public common_installer::Step {
   Status undo() override;
   Status precheck() override;
 
- private:
+ protected:
+  bool MoveAppStorage(const boost::filesystem::path& in_src,
+                      const boost::filesystem::path& in_dst,
+                      const char *key);
+
   boost::filesystem::path backup_path_;
 
   SCOPE_LOG_TAG(CreateStorageDirectories)
