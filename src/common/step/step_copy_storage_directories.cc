@@ -19,18 +19,19 @@ namespace {
 const char kDataLocation[] = "data";
 const char kSharedLocation[] = "shared";
 
-bool MoveAppStorage(const bf::path& in_src,
-                    const bf::path& in_dst,
-                    const char *key) {
-  bf::path src = in_src / key;
-  bf::path dst = in_dst / key;
-  return common_installer::MoveDir(src, dst);
-}
-
 }  // namespace
 
 namespace common_installer {
 namespace copy_storage {
+
+bool StepCopyStorageDirectories::MoveAppStorage(
+    const bf::path& in_src,
+    const bf::path& in_dst,
+    const char *key) {
+  bf::path src = in_src / key;
+  bf::path dst = in_dst / key;
+  return common_installer::MoveDir(src, dst);
+}
 
 common_installer::Step::Status StepCopyStorageDirectories::precheck() {
   backup_path_ =
@@ -59,7 +60,6 @@ common_installer::Step::Status StepCopyStorageDirectories::process() {
     LOG(ERROR) << "Failed to restore shared directory for widget in update";
     return Status::ERROR;
   }
-
 
   return Status::OK;
 }

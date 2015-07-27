@@ -34,6 +34,7 @@
 #include "wgt/step/step_rds_parse.h"
 #include "wgt/step/step_rds_modify.h"
 #include "wgt/step/step_wgt_create_storage_directories.h"
+#include "wgt/step/step_wgt_copy_storage_directories.h"
 #include "wgt/step/step_wgt_resource_directory.h"
 #include "wgt/wgt_app_query_interface.h"
 
@@ -78,7 +79,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::backup_manifest::StepBackupManifest>();
       installer.AddStep<ci::backup_icons::StepBackupIcons>();
       installer.AddStep<ci::copy_backup::StepCopyBackup>();
-      installer.AddStep<ci::copy_storage::StepCopyStorageDirectories>();
+      installer.AddStep<wgt::copy_storage::StepWgtCopyStorageDirectories>();
       installer.AddStep<wgt::symbolic_link::StepCreateSymbolicLink>();
       installer.AddStep<ci::update_security::StepUpdateSecurity>();
       installer.AddStep<ci::generate_xml::StepGenerateXml>();
