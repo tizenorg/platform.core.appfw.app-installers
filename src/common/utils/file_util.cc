@@ -245,6 +245,20 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
     if (filter_prefix.empty() ||
         std::string(raw_file_name_in_zip).find(filter_prefix) == 0) {
       bf::path filename_in_zip_path(raw_file_name_in_zip);
+
+      // prevent "directory climbing" attack
+      bs::error_code error;
+      if (bf::canonical(filename_in_zip_path, tmp_dir,
+                        error).string().find(bf::canonical(tmp_dir).string())
+          != 0) {
+        LOG(ERROR) << "Relative path of file in widget is malformed";
+        return false;
+      }
+      if (error) {
+        LOG(ERROR) << "Failed to get canonical form of relative path in widget";
+        return false;
+      }
+
       if (!filename_in_zip_path.parent_path().empty()) {
         if (!CreateDir(filename_in_zip_path.parent_path())) {
           LOG(ERROR) << "Failed to create directory: "
