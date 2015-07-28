@@ -6,7 +6,6 @@
 
 #include <boost/filesystem.hpp>
 #include <pkgmgr_installer.h>
-#include <vcore/Base64.h>
 #include <vcore/Certificate.h>
 
 #include <cassert>
@@ -51,12 +50,17 @@ void StepUnregisterApplication::BackupCertInfo() {
   std::string base64 = QueryCertificateAuthorCertificate(context_->pkgid.get(),
                                                          context_->uid.get());
   if (!base64.empty()) {
-    ValidationCore::Base64Decoder decoder;
-    decoder.append(base64);
-    decoder.finalize();
     CertificateInfo certificate_info;
-    certificate_info.author_certificate.set(ValidationCore::CertificatePtr(
-        new ValidationCore::Certificate(decoder.get())));
+    try {
+      certificate_info.author_certificate.set(ValidationCore::CertificatePtr(
+          new ValidationCore::Certificate(
+              base64,
+              ValidationCore::Certificate::FormType::FORM_BASE64)));
+    } catch (const ValidationCore::Certificate::Exception::Base &e) {
+      LOG(ERROR) << "Exception in cert-svc-vcore Certificate "
+                 << "Dump : " << e.DumpToString();
+      /* TODO(k.tak) how to handle this error? */
+    }
     context_->certificate_info.set(certificate_info);
   }
 }
