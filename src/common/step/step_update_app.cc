@@ -9,7 +9,6 @@
 #include <unistd.h>
 
 #include <boost/filesystem.hpp>
-#include <vcore/Base64.h>
 #include <vcore/Certificate.h>
 
 #include <cassert>
@@ -47,13 +46,21 @@ Step::Status StepUpdateApplication::process() {
 
 Step::Status StepUpdateApplication::undo() {
   // Prepare certification info for revert
-  ValidationCore::Base64Decoder decoder;
-  decoder.append(QueryCertificateAuthorCertificate(context_->pkgid.get(),
-                                                   context_->uid.get()));
-  decoder.finalize();
+  std::string base64 = QueryCertificateAuthorCertificate(context_->pkgid.get(),
+                                                         context_->uid.get());
   CertificateInfo certificate_info;
-  certificate_info.author_certificate.set(ValidationCore::CertificatePtr(
-      new ValidationCore::Certificate(decoder.get())));
+  if (!base64.empty()) {
+    try {
+      certificate_info.author_certificate.set(ValidationCore::CertificatePtr(
+          new ValidationCore::Certificate(
+              base64,
+              ValidationCore::Certificate::FormType::FORM_BASE64)));
+    } catch (const ValidationCore::Certificate::Exception::Base &e) {
+      LOG(ERROR) << "Exception in cert-svc-vcore Certificate "
+                 << "Dump : " << e.DumpToString();
+      return Status::ERROR;
+    }
+  }
 
   if (!UpgradeAppInPkgmgr(context_->backup_xml_path.get(),
       context_->pkgid.get(), certificate_info,

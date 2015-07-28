@@ -22,7 +22,7 @@ class StepUnregisterApplication : public Step {
   Status precheck() override;
 
  private:
-  void BackupCertInfo();
+  bool BackupCertInfo();
 
   SCOPE_LOG_TAG(Unregister)
 };

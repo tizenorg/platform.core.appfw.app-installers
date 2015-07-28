@@ -27,9 +27,15 @@ Step::Status StepCheckOldCertificate::process() {
                  << "when the previous version of package has signature";
       return Status::ERROR;
     } else {
-      if (old_author_certificate != cert->getBase64()) {
-        LOG(ERROR) << "Author signature doesn't match the previous one. "
-                   << "Update must be aborted";
+      try {
+        if (old_author_certificate != cert->getBase64()) {
+          LOG(ERROR) << "Author signature doesn't match the previous one. "
+                     << "Update must be aborted";
+          return Status::ERROR;
+        }
+      } catch (const ValidationCore::Certificate::Exception::Base &e) {
+        LOG(ERROR) << "Exception occured on cert-svc-vcore getBase64 "
+                   << "Dump : " << e.DumpToString();
         return Status::ERROR;
       }
     }
