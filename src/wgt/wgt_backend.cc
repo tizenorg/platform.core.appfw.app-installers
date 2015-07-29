@@ -31,6 +31,7 @@
 
 #include "wgt/step/step_create_symbolic_link.h"
 #include "wgt/step/step_check_settings_level.h"
+#include "wgt/step/step_encrypt_resources.h"
 #include "wgt/step/step_parse.h"
 #include "wgt/step/step_rds_parse.h"
 #include "wgt/step/step_rds_modify.h"
@@ -57,6 +58,7 @@ int main(int argc, char** argv) {
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<wgt::check_settings::StepCheckSettingsLevel>();
+      installer.AddStep<wgt::encrypt::StepEncryptResources>();
       installer.AddStep<wgt::wgt_resources::StepWgtResourceDirectory>();
       installer.AddStep<ci::copy::StepCopy>();
       installer.AddStep<ci::create_storage::StepCreateStorageDirectories>();
@@ -73,6 +75,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::signature::StepCheckSignature>();
       installer.AddStep<wgt::check_settings::StepCheckSettingsLevel>();
       installer.AddStep<ci::old_certificate::StepCheckOldCertificate>();
+      installer.AddStep<wgt::encrypt::StepEncryptResources>();
       installer.AddStep<wgt::wgt_resources::StepWgtResourceDirectory>();
       installer.AddStep<ci::old_manifest::StepOldManifest>();
       installer.AddStep<ci::backup_manifest::StepBackupManifest>();

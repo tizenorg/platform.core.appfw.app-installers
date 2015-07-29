@@ -3,6 +3,7 @@ SET(SRCS
   rds_parser.cc
   step/step_check_settings_level.cc
   step/step_create_symbolic_link.cc
+  step/step_encrypt_resources.cc
   step/step_parse.cc
   step/step_rds_parse.cc
   step/step_rds_modify.cc
@@ -27,6 +28,7 @@ APPLY_PKG_CONFIG(${TARGET_WGT_BACKEND} PUBLIC
   MANIFEST_HANDLERS_DEPS
   MANIFEST_PARSER_DEPS
   PKGMGR_INSTALLER_DEPS
+  ENCRYPTION_DEPS
 )
 
 # Target - in-package deps
