@@ -42,6 +42,49 @@ int64_t RoundUpToBlockSizeOf(int64_t size, int64_t block_size) {
   return ((size + block_size - 1) / block_size) * block_size;
 }
 
+class UnzFilePointer {
+ public:
+  UnzFilePointer()
+    : zipFile_(nullptr),
+      fileOpened_(false),
+      currentFileOpened_(false) { }
+
+  ~UnzFilePointer() {
+    if (currentFileOpened_)
+      unzCloseCurrentFile(zipFile_);
+    if (fileOpened_)
+      unzClose(zipFile_);
+  }
+
+  bool Open(const char* zip_path) {
+    zipFile_ = static_cast<unzFile*>(unzOpen(zip_path));
+    if (!zipFile_)
+       return false;
+    fileOpened_ = true;
+    return true;
+  }
+
+  bool OpenCurrent() {
+    if (unzOpenCurrentFile(zipFile_) != UNZ_OK)
+      return false;
+    currentFileOpened_ = true;
+    return true;
+  }
+
+  void CloseCurrent() {
+    if (currentFileOpened_)
+      unzCloseCurrentFile(zipFile_);
+    currentFileOpened_ = false;
+  }
+
+  unzFile* Get() { return zipFile_; }
+
+ private:
+  unzFile* zipFile_;
+  bool fileOpened_;
+  bool currentFileOpened_;
+};
+
 }  // namespace
 
 namespace common_installer {
@@ -223,23 +266,27 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
 
   current_path(tmp_dir);
 
-  unzFile* zip_file = static_cast<unzFile*>(unzOpen(zip_path));
-  if (!zip_file) {
-    LOG(ERROR) << "Failed to open the source dir: " << zip_file;
+  UnzFilePointer zip_file;
+  if (!zip_file.Open(zip_path)) {
+    LOG(ERROR) << "Failed to open the source dir: " << zip_path;
     return false;
   }
 
-  if (unzGetGlobalInfo(zip_file, &info) != UNZ_OK) {
+  if (unzGetGlobalInfo(zip_file.Get(), &info) != UNZ_OK) {
     LOG(ERROR) << "Failed to read global info";
-    unzClose(zip_file);
     return false;
   }
 
   for (uLong i = 0; i < info.number_entry; i++) {
-    if (unzGetCurrentFileInfo(zip_file, &raw_file_info, raw_file_name_in_zip,
-        sizeof(raw_file_name_in_zip), nullptr, 0, nullptr, 0) != UNZ_OK) {
+    if (unzGetCurrentFileInfo(zip_file.Get(),
+                              &raw_file_info,
+                              raw_file_name_in_zip,
+                              sizeof(raw_file_name_in_zip),
+                              nullptr,
+                              0,
+                              nullptr,
+                              0) != UNZ_OK) {
       LOG(ERROR) << "Failed to read file info";
-      unzClose(zip_file);
       return false;
     }
 
@@ -270,9 +317,8 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
         }
       }
 
-      if (unzOpenCurrentFile(zip_file) != UNZ_OK) {
+      if (!zip_file.OpenCurrent()) {
         LOG(ERROR) << "Failed to open file";
-        unzClose(zip_file);
         return false;
       }
 
@@ -280,16 +326,14 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
         FILE *out = fopen(raw_file_name_in_zip, "wb");
         if (!out) {
           LOG(ERROR) << "Failed to open destination ";
-          unzCloseCurrentFile(zip_file);
           return false;
         }
 
         int ret = UNZ_OK;
         do {
-          ret = unzReadCurrentFile(zip_file, read_buffer, kZipBufSize);
+          ret = unzReadCurrentFile(zip_file.Get(), read_buffer, kZipBufSize);
           if (ret < 0) {
             LOG(ERROR) << "Failed to read data: " << ret;
-            unzCloseCurrentFile(zip_file);
             return false;
           } else {
             fwrite(read_buffer, sizeof(char), ret, out);
@@ -298,18 +342,18 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
 
         fclose(out);
       }
+
+      zip_file.CloseCurrent();
     }
 
     if ((i+1) < info.number_entry) {
-      if (unzGoToNextFile(zip_file) != UNZ_OK) {
+      if (unzGoToNextFile(zip_file.Get()) != UNZ_OK) {
         LOG(ERROR) << "Failed to read next file";
-        unzCloseCurrentFile(zip_file);
         return false;
       }
     }
   }
 
-  unzClose(zip_file);
   return true;
 }
 
