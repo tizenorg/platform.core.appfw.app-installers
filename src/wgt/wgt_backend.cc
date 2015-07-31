@@ -32,6 +32,7 @@
 #include "wgt/step/step_check_settings_level.h"
 #include "wgt/step/step_encrypt_resources.h"
 #include "wgt/step/step_parse.h"
+#include "wgt/step/step_remove_encryption_data.h"
 #include "wgt/step/step_rds_parse.h"
 #include "wgt/step/step_rds_modify.h"
 #include "wgt/step/step_wgt_create_icons.h"
@@ -101,6 +102,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::filesystem::StepRemoveFiles>();
       installer.AddStep<ci::filesystem::StepRemoveIcons>();
       installer.AddStep<ci::security::StepRevokeSecurity>();
+      installer.AddStep<wgt::encrypt::StepRemoveEncryptionData>();
       break;
     }
     case ci::PkgMgrInterface::Type::Reinstall: {
