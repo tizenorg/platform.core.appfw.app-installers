@@ -5,6 +5,7 @@ SET(SRCS
   step/step_create_symbolic_link.cc
   step/step_encrypt_resources.cc
   step/step_parse.cc
+  step/step_remove_encryption_data.cc
   step/step_rds_parse.cc
   step/step_rds_modify.cc
   step/step_wgt_resource_directory.cc
