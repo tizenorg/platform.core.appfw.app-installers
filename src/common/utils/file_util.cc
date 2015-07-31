@@ -7,14 +7,19 @@
 #include <unzip.h>
 #include <zlib.h>
 
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <algorithm>
 #include <string>
+#include <vector>
 
 #include "common/utils/byte_size_literals.h"
 #include "common/utils/logging.h"
 
+namespace ba = boost::algorithm;
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
 
@@ -247,15 +252,13 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
       bf::path filename_in_zip_path(raw_file_name_in_zip);
 
       // prevent "directory climbing" attack
-      bs::error_code error;
-      if (bf::canonical(filename_in_zip_path, tmp_dir,
-                        error).string().find(bf::canonical(tmp_dir).string())
-          != 0) {
-        LOG(ERROR) << "Relative path of file in widget is malformed";
-        return false;
-      }
-      if (error) {
-        LOG(ERROR) << "Failed to get canonical form of relative path in widget";
+      std::vector<std::string> segments;
+      ba::split(segments, filename_in_zip_path.string(), ba::is_any_of("/\\"));
+      if (std::any_of(segments.begin(), segments.end(),
+                      [](const std::string& segment) {
+                        return segment == "..";
+                      })) {
+        LOG(ERROR) << "Relative path in widget in malformed";
         return false;
       }
 
