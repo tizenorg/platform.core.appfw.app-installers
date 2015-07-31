@@ -204,6 +204,19 @@ boost::filesystem::path GenerateTmpDir(const bf::path &app_path) {
   return install_tmp_dir;
 }
 
+bf::path NormalizePath(const bf::path &path) {
+  bf::path absPath = bf::absolute(path);
+  bf::path result;
+  for (bf::path::iterator it = absPath.begin(); it != absPath.end(); it++) {
+    if (*it == "..") {
+      result = result.parent_path();
+    } else {
+      result /= *it;
+    }
+  }
+  return result;
+}
+
 bool ExtractToTmpDir(const char* zip_path,
                      const boost::filesystem::path& tmp_dir) {
   return ExtractToTmpDir(zip_path, tmp_dir, "");
@@ -247,15 +260,9 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
       bf::path filename_in_zip_path(raw_file_name_in_zip);
 
       // prevent "directory climbing" attack
-      bs::error_code error;
-      if (bf::canonical(filename_in_zip_path, tmp_dir,
-                        error).string().find(bf::canonical(tmp_dir).string())
-          != 0) {
+      if (NormalizePath(tmp_dir/filename_in_zip_path).string().find(
+          bf::absolute(tmp_dir).string()) != 0) {
         LOG(ERROR) << "Relative path of file in widget is malformed";
-        return false;
-      }
-      if (error) {
-        LOG(ERROR) << "Failed to get canonical form of relative path in widget";
         return false;
       }
 
