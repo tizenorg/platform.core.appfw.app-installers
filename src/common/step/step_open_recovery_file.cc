@@ -4,6 +4,8 @@
 
 #include "common/step/step_open_recovery_file.h"
 
+#include <cassert>
+
 #include "common/recovery_file.h"
 
 namespace common_installer {
