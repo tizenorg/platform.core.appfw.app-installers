@@ -75,8 +75,8 @@ int AppInstaller::Run() {
       }
     } while (it-- != itStart);
   } else {
-    while (it-- != itStart) {
-      if ((*it)->clean() != Step::Status::OK) {
+    for (auto& step : steps_) {
+      if (step->clean() != Step::Status::OK) {
         LOG(ERROR) << "Error during clean operation";
         ret = -3;
         break;

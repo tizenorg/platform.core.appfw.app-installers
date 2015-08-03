@@ -24,7 +24,7 @@ class StepConfigure : public Step {
   using Step::Step;
 
   Status process() override;
-  Status clean() override { return Status::OK; }
+  Status clean() override;
   Status undo() override { return Status::OK; }
   Status precheck() override;
  private:

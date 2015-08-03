@@ -252,6 +252,17 @@ boost::filesystem::path GenerateTmpDir(const bf::path &app_path) {
   return install_tmp_dir;
 }
 
+boost::filesystem::path GenerateTemporaryPath(
+    const boost::filesystem::path& path) {
+  bf::path pattern = path;
+  pattern += "-%%%%%%";
+  bf::path tmp_path;
+  do {
+    tmp_path = boost::filesystem::unique_path(pattern);
+  } while (boost::filesystem::exists(tmp_path));
+  return tmp_path;
+}
+
 bool ExtractToTmpDir(const char* zip_path,
                      const boost::filesystem::path& tmp_dir) {
   return ExtractToTmpDir(zip_path, tmp_dir, "");

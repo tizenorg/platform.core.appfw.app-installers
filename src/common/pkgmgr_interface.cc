@@ -54,20 +54,22 @@ PkgMgrInterface::~PkgMgrInterface() {
     pkgmgr_installer_free(pi_);
 }
 
-PkgMgrInterface::Type PkgMgrInterface::GetRequestType() const {
+RequestType PkgMgrInterface::GetRequestType() const {
   switch (pkgmgr_installer_get_request_type(pi_)) {
     case PKGMGR_REQ_INSTALL:
       if (!is_app_installed_) {
-        return PkgMgrInterface::Type::Install;
+        return RequestType::Install;
       } else {
-        return PkgMgrInterface::Type::Update;
+        return RequestType::Update;
       }
     case PKGMGR_REQ_UNINSTALL:
-      return PkgMgrInterface::Type::Uninstall;
+      return RequestType::Uninstall;
     case PKGMGR_REQ_REINSTALL:
-      return PkgMgrInterface::Type::Reinstall;
+      return RequestType::Reinstall;
+    case PKGMGR_REQ_RECOVER:
+      return RequestType::Recovery;
     default:
-      return PkgMgrInterface::Type::Unknown;
+      return RequestType::Unknown;
   }
 }
 
