@@ -31,6 +31,7 @@ SET(SRCS
   step/step_parse.cc
   step/step_remove_icons.cc
   step/step_remove_files.cc
+  step/step_remove_temporary_directory.cc
   step/step_revoke_security.cc
   step/step_register_security.cc
   step/step_unregister_app.cc
