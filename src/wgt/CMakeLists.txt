@@ -4,6 +4,7 @@ SET(SRCS
   step/step_check_settings_level.cc
   step/step_create_symbolic_link.cc
   step/step_parse.cc
+  step/step_parse_recovery.cc
   step/step_rds_parse.cc
   step/step_rds_modify.cc
   step/step_wgt_create_icons.cc
