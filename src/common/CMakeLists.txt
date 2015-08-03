@@ -5,6 +5,7 @@ SET(SRCS
   pkgmgr_interface.cc
   pkgmgr_registration.cc
   pkgmgr_signal.cc
+  recovery_file.cc
   security_registration.cc
   step/step_backup_icons.cc
   step/step_backup_manifest.cc
@@ -17,8 +18,10 @@ SET(SRCS
   step/step_copy_storage_directories.cc
   step/step_create_storage_directories.cc
   step/step_generate_xml.cc
+  step/step_recovery.cc
   step/step_register_app.cc
   step/step_old_manifest.cc
+  step/step_open_recovery_file.cc
   step/step_parse.cc
   step/step_remove_icons.cc
   step/step_remove_files.cc

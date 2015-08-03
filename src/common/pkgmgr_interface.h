@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "common/app_query_interface.h"
+#include "common/request_type.h"
 #include "common/utils/macros.h"
 #include "common/utils/logging.h"
 
@@ -25,19 +26,9 @@ typedef std::shared_ptr<PkgMgrInterface> PkgMgrPtr;
  */
 class PkgMgrInterface {
  public:
-  /** Request type received from pkgmgr_installer
-   */
-  enum class Type {
-    Unknown,
-    Install,
-    Update,
-    Uninstall,
-    Reinstall
-  };
-
   /** Returns Request type passed from pkgmgr_installer
    */
-  PkgMgrInterface::Type GetRequestType() const;
+  RequestType GetRequestType() const;
 
   /** Returns Request info passed from pkgmgr_installer
    */

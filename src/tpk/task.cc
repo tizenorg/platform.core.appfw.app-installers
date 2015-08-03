@@ -69,17 +69,21 @@ bool Task::Init(int argc, char** argv) {
 bool Task::Run() {
   int ret = 0;
   switch (ci::PkgMgrInterface::Instance()->GetRequestType()) {
-    case ci::PkgMgrInterface::Type::Install:
+    case ci::RequestType::Install:
       ret = Install();
       break;
-    case ci::PkgMgrInterface::Type::Update:
+    case ci::RequestType::Update:
       ret = Update();
       break;
-    case ci::PkgMgrInterface::Type::Uninstall:
+    case ci::RequestType::Uninstall:
       ret = Uninstall();
       break;
-    case ci::PkgMgrInterface::Type::Reinstall:
+    case ci::RequestType::Reinstall:
       ret = Reinstall();
+      break;
+    case ci::RequestType::Recovery:
+      // TODO(t.iwanek): recovery mode invocation...
+      ret = EINVAL;
       break;
     default:
       break;

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "common/pkgmgr_interface.h"
+#include "common/request_type.h"
 #include "common/utils/file_util.h"
 
 namespace common_installer {
@@ -22,22 +23,26 @@ Step::Status StepConfigure::process() {
     return Status::ERROR;
 
   switch (pkgmgr->GetRequestType()) {
-    case PkgMgrInterface::Type::Install:
+    case RequestType::Install:
       context_->file_path.set(pkgmgr->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       break;
-    case PkgMgrInterface::Type::Update:
+    case RequestType::Update:
       context_->file_path.set(pkgmgr->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       break;
-    case PkgMgrInterface::Type::Uninstall:
+    case RequestType::Uninstall:
       context_->pkgid.set(pkgmgr->GetRequestInfo());
       context_->file_path.set(kStrEmpty);
       break;
-    case PkgMgrInterface::Type::Reinstall:
+    case RequestType::Reinstall:
       context_->unpacked_dir_path.set(pkgmgr->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       context_->file_path.set(kStrEmpty);
+      break;
+    case RequestType::Recovery:
+      context_->file_path.set(pkgmgr->GetRequestInfo());
+      context_->pkgid.set(kStrEmpty);
       break;
     default:
       // TODO(p.sikorski): should return unsupported, and display error
@@ -45,6 +50,25 @@ Step::Status StepConfigure::process() {
           "Only installation, update and uninstallation is now supported";
       return Status::ERROR;
       break;
+  }
+
+  // Record recovery file for update and installation modes
+  if (pkgmgr->GetRequestType() == RequestType::Install ||
+      pkgmgr->GetRequestType() == RequestType::Update) {
+    std::unique_ptr<recovery::RecoveryFile> recovery_file =
+        recovery::RecoveryFile::CreateRecoveryFileForPath(
+            GenerateTemporaryPath(
+                context_->root_application_path.get() / "recovery"));
+    if (!recovery_file) {
+      LOG(ERROR) << "Failed to create recovery file";
+      return Status::ERROR;
+    }
+    recovery_file->set_type(pkgmgr->GetRequestType());
+    if (!recovery_file->WriteAndCommitFileContent()) {
+      LOG(ERROR) << "Failed to write recovery file";
+      return Status::ERROR;
+    }
+    context_->recovery_info.set(RecoveryInfo(std::move(recovery_file)));
   }
 
   return Status::OK;
@@ -55,6 +79,13 @@ Step::Status StepConfigure::precheck() {
     LOG(ERROR) << "App-installer should not run with superuser!";
     return Status::ERROR;
   }
+  return Status::OK;
+}
+
+Step::Status StepConfigure::clean() {
+  // Clean up operations should not be covered by recovery
+  // as backup information is being lost during clean up
+  context_->recovery_info.get().recovery_file.reset();
   return Status::OK;
 }
 

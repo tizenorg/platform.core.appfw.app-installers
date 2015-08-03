@@ -5,6 +5,8 @@
 #ifndef COMMON_UTILS_PROPERTY_H_
 #define COMMON_UTILS_PROPERTY_H_
 
+#include <memory>
+
 /** Template class for defining smart attributes.
  *
  *  Property should be used when, given attribute needs to have pure
@@ -16,9 +18,11 @@ class Property {
  public:
   Property() {}
   Property(const Type &val): value_(val) { } // NOLINT
+  Property(Type &&val): value_(std::move(val)) { } // NOLINT
   const Type& get() const { return value_; }
   Type& get() { return value_; }
   void set(const Type &val) { value_ = val; }
+  void set(Type &&val) { value_ = std::move(val); }
  private:
   Type value_;
 };

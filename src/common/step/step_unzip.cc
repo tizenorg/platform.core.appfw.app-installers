@@ -82,6 +82,12 @@ Step::Status StepUnzip::process() {
   bf::path tmp_dir =
       GenerateTmpDir(context_->root_application_path.get());
 
+  // write unpacked directory for recovery file
+  if (context_->recovery_info.get().recovery_file) {
+    context_->recovery_info.get().recovery_file->set_unpacked_dir(tmp_dir);
+    context_->recovery_info.get().recovery_file->WriteAndCommitFileContent();
+  }
+
   if (!CreateDir(tmp_dir)) {
     LOG(ERROR) << "Failed to create temp directory: " << tmp_dir;
     return Step::Status::ERROR;

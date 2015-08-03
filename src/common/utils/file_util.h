@@ -24,6 +24,9 @@ int64_t GetUnpackedPackageSize(const boost::filesystem::path& path);
 
 boost::filesystem::path GenerateTmpDir(const boost::filesystem::path& app_path);
 
+boost::filesystem::path GenerateTemporaryPath(
+    const boost::filesystem::path& path);
+
 bool ExtractToTmpDir(const char* zip_path,
                      const boost::filesystem::path& tmp_dir);
 
