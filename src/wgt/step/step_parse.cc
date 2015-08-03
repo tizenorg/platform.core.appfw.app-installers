@@ -293,7 +293,13 @@ common_installer::Step::Status StepParse::process() {
   const std::string& required_api_version = info->required_version();
 
   context_->config_data.get().required_api_version.set(required_api_version);
-  context_->pkgid.set(std::string(manifest->package));
+  context_->pkgid.set(manifest->package);
+
+  // write pkgid for recovery file
+  if (context_->recovery_info.get().recovery_file) {
+    context_->recovery_info.get().recovery_file->set_pkgid(manifest->package);
+    context_->recovery_info.get().recovery_file->WriteAndCommitFileContent();
+  }
 
   std::shared_ptr<const PermissionsInfo> perm_info =
       std::static_pointer_cast<const PermissionsInfo>(

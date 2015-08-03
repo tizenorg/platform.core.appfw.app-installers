@@ -17,6 +17,8 @@
 #include <memory>
 #include <string>
 
+#include "common/recovery_file.h"
+#include "common/request_type.h"
 #include "common/utils/property.h"
 
 namespace common_installer {
@@ -36,6 +38,16 @@ class BackendData {
 class CertificateInfo {
  public:
   Property<ValidationCore::CertificatePtr> author_certificate;
+};
+
+class RecoveryInfo {
+ public:
+  RecoveryInfo() { }
+  explicit RecoveryInfo(std::unique_ptr<recovery::RecoveryFile> rf)
+      : recovery_file(std::move(rf)) {
+  }
+
+  std::unique_ptr<recovery::RecoveryFile> recovery_file;
 };
 
 enum class PrivilegeLevel : int {
@@ -104,6 +116,9 @@ class ContextInstaller {
 
   // certificate information
   Property<CertificateInfo> certificate_info;
+
+  // information for recovery
+  Property<RecoveryInfo> recovery_info;
 };
 
 boost::filesystem::path GetBackupPathForPackagePath(

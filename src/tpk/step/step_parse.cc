@@ -150,6 +150,14 @@ bool StepParse::SetContextByManifestParser(XmlTree* tree) {
   context_->config_data.get().required_api_version.set(
       manifest->attr("api-version"));
   context_->pkgid.set(manifest->attr("package"));
+
+  // write pkgid for recovery file
+  if (context_->recovery_info.get().recovery_file) {
+    context_->recovery_info.get().recovery_file->set_pkgid(
+        manifest->attr("package"));
+    context_->recovery_info.get().recovery_file->WriteAndCommitFileContent();
+  }
+
   context_->manifest_data.set(static_cast<manifest_x*>(
       calloc(1, sizeof(manifest_x))));
 

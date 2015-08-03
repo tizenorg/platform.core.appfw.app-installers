@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
   wgt::WgtAppQueryInterface query_interface;
   int result = ci::PkgMgrInterface::Init(argc, argv, &query_interface);
   if (result) {
-    LOG(ERROR) << "Cannot connect to PkgMgrInstaller";
+    LOG(ERROR) << "Options cannot be parsed by PkgMgrInstaller";
     return -result;
   }
   ci::PkgMgrPtr pkgmgr = ci::PkgMgrInterface::Instance();
@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
   ci::AppInstaller installer("wgt");
   /* treat the request */
   switch (pkgmgr->GetRequestType()) {
-    case ci::PkgMgrInterface::Type::Install : {
+    case ci::RequestType::Install : {
       installer.AddStep<ci::configuration::StepConfigure>();
       installer.AddStep<ci::filesystem::StepUnzip>();
       installer.AddStep<wgt::parse::StepParse>();
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::security::StepRegisterSecurity>();
       break;
     }
-    case ci::PkgMgrInterface::Type::Update: {
+    case ci::RequestType::Update: {
       installer.AddStep<ci::configuration::StepConfigure>();
       installer.AddStep<ci::filesystem::StepUnzip>();
       installer.AddStep<wgt::parse::StepParse>();
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::pkgmgr::StepUpdateApplication>();
       break;
     }
-    case ci::PkgMgrInterface::Type::Uninstall: {
+    case ci::RequestType::Uninstall: {
       installer.AddStep<ci::configuration::StepConfigure>();
       installer.AddStep<ci::parse::StepParse>();
       installer.AddStep<ci::backup::StepBackupManifest>();
@@ -100,16 +100,19 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::security::StepRevokeSecurity>();
       break;
     }
-    case ci::PkgMgrInterface::Type::Reinstall: {
+    case ci::RequestType::Reinstall: {
       installer.AddStep<ci::configuration::StepConfigure>();
       installer.AddStep<wgt::parse::StepParse>();
       installer.AddStep<ci::backup::StepOldManifest>();
       installer.AddStep<wgt::rds::StepRDSParse>();
       installer.AddStep<wgt::rds::StepRDSModify>();
       installer.AddStep<ci::security::StepUpdateSecurity>();
-
-    break;
-  }
+      break;
+    }
+    case ci::RequestType::Recovery: {
+      // TODO(t.iwanek): recovery mode invocation...
+      return EINVAL;
+    }
     default: {
       // unsupported operation
       return EINVAL;
