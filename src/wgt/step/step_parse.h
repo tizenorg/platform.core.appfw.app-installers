@@ -30,6 +30,12 @@ class StepParse : public common_installer::Step {
   Status undo() override { return Status::OK; }
   Status precheck() override { return Status::OK; }
 
+ protected:
+  virtual bool LocateConfigFile();
+  bool Check(const boost::filesystem::path& widget_path);
+
+  boost::filesystem::path config_;
+
  private:
   std::set<std::string> ExtractPrivileges(
       std::shared_ptr<const PermissionsInfo> perm_info) const;
@@ -45,8 +51,6 @@ class StepParse : public common_installer::Step {
   bool FillManifestX(manifest_x* manifest);
 
   std::unique_ptr<wgt::parse::WidgetConfigParser> parser_;
-  boost::filesystem::path config_;
-  bool Check(const boost::filesystem::path& widget_path);
 
   SCOPE_LOG_TAG(Parse)
 };
