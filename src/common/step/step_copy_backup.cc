@@ -28,7 +28,7 @@ Step::Status StepCopyBackup::precheck() {
     return Step::Status::INVALID_VALUE;
   }
 
-  // set application path
+  // set package path
   context_->pkg_path.set(
       context_->root_application_path.get() / context_->pkgid.get());
   install_path_ = context_->pkg_path.get();
