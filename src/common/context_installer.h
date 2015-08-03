@@ -26,8 +26,6 @@ class ConfigData {
   ConfigData() {}
   /** version pointed in <application> tag*/
   Property<std::string> required_api_version;
-  /** version pointed int <widget> tag*/
-  Property<std::string> required_tizen_version;
 };
 
 class BackendData {

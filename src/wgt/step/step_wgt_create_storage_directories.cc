@@ -27,10 +27,10 @@ common_installer::Step::Status StepWgtCreateStorageDirectories::process() {
   if (!PrivateDir())
     return Status::ERROR;
 
-  char rel_version =
-      context_->config_data.get().required_tizen_version.get().at(0);
+  char version =
+      context_->config_data.get().required_api_version.get().at(0);
 
-  if ((rel_version-'0') < 3) {
+  if ((version-'0') < 3) {
     LOG(DEBUG) << "Shared directory preparation for tizen 2.x";
     if (!ShareDir())
       return Status::ERROR;

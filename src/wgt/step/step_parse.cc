@@ -134,7 +134,6 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
 }
 
 bool StepParse::FillApplicationInfo(manifest_x* manifest) {
-  std::string api_version;
   std::shared_ptr<const TizenApplicationInfo> app_info =
       std::static_pointer_cast<const TizenApplicationInfo>(
           parser_->GetManifestData(app_keys::kTizenApplicationKey));
@@ -150,7 +149,6 @@ bool StepParse::FillApplicationInfo(manifest_x* manifest) {
   manifest->uiapplication->icon =
       reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
 
-  api_version = app_info->required_version();
   manifest->uiapplication->appid = strdup(app_info->id().c_str());
   manifest->uiapplication->type = strdup("webapp");
 
@@ -291,11 +289,10 @@ common_installer::Step::Status StepParse::process() {
   if (short_name_set.begin() != short_name_set.end())
     short_name = short_name_set.begin()->second;
 
-  const std::string& tizen_version = wgt_info->version();
+  const std::string& package_version = wgt_info->version();
   const std::string& required_api_version = info->required_version();
 
   context_->config_data.get().required_api_version.set(required_api_version);
-  context_->config_data.get().required_tizen_version.set(tizen_version);
   context_->pkgid.set(std::string(manifest->package));
 
   std::shared_ptr<const PermissionsInfo> perm_info =
@@ -323,7 +320,7 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "  id          = " <<  info->id();
   LOG(DEBUG) << "  name        = " <<  name;
   LOG(DEBUG) << "  short_name  = " <<  short_name;
-  LOG(DEBUG) << "  tizen_version     = " <<  tizen_version;
+  LOG(DEBUG) << "  aplication version     = " <<  package_version;
   LOG(DEBUG) << "  icon        = " <<  manifest->uiapplication->icon->name;
   LOG(DEBUG) << "  api_version = " <<  info->required_version();
   LOG(DEBUG) << "  privileges -[";
