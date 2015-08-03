@@ -246,8 +246,12 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
   return true;
 }
 
+bool StepParse::LocateConfigFile() {
+  return StepParse::Check(context_->unpacked_dir_path.get());
+}
+
 common_installer::Step::Status StepParse::process() {
-  if (!StepParse::Check(context_->unpacked_dir_path.get())) {
+  if (!LocateConfigFile()) {
     LOG(ERROR) << "No config.xml";
     return common_installer::Step::Status::ERROR;
   }

@@ -6,6 +6,7 @@ SET(SRCS
   step/step_encrypt_resources.cc
   step/step_parse.cc
   step/step_remove_encryption_data.cc
+  step/step_parse_recovery.cc
   step/step_rds_parse.cc
   step/step_rds_modify.cc
   step/step_wgt_create_icons.cc
