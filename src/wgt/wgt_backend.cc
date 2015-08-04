@@ -14,10 +14,18 @@
 #include "common/step/step_copy_backup.h"
 #include "common/step/step_copy_storage_directories.h"
 #include "common/step/step_generate_xml.h"
+#include "common/step/step_open_recovery_file.h"
 #include "common/step/step_parse.h"
 #include "common/step/step_register_app.h"
+#include "common/step/step_recover_application.h"
+#include "common/step/step_recover_files.h"
+#include "common/step/step_recover_icons.h"
+#include "common/step/step_recover_manifest.h"
+#include "common/step/step_recover_security.h"
+#include "common/step/step_recover_storage_directories.h"
 #include "common/step/step_remove_icons.h"
 #include "common/step/step_remove_files.h"
+#include "common/step/step_remove_temporary_directory.h"
 #include "common/step/step_revoke_security.h"
 #include "common/step/step_register_security.h"
 #include "common/step/step_old_manifest.h"
@@ -33,6 +41,7 @@
 #include "wgt/step/step_encrypt_resources.h"
 #include "wgt/step/step_parse.h"
 #include "wgt/step/step_remove_encryption_data.h"
+#include "wgt/step/step_parse_recovery.h"
 #include "wgt/step/step_rds_parse.h"
 #include "wgt/step/step_rds_modify.h"
 #include "wgt/step/step_wgt_create_icons.h"
@@ -115,8 +124,17 @@ int main(int argc, char** argv) {
       break;
     }
     case ci::RequestType::Recovery: {
-      // TODO(t.iwanek): recovery mode invocation...
-      return EINVAL;
+      installer.AddStep<ci::configuration::StepConfigure>();
+      installer.AddStep<ci::recovery::StepOpenRecoveryFile>();
+      installer.AddStep<wgt::parse::StepParseRecovery>();
+      installer.AddStep<ci::pkgmgr::StepRecoverApplication>();
+      installer.AddStep<ci::filesystem::StepRemoveTemporaryDirectory>();
+      installer.AddStep<ci::filesystem::StepRecoverIcons>();
+      installer.AddStep<ci::filesystem::StepRecoverManifest>();
+      installer.AddStep<ci::filesystem::StepRecoverStorageDirectories>();
+      installer.AddStep<ci::filesystem::StepRecoverFiles>();
+      installer.AddStep<ci::security::StepRecoverSecurity>();
+      break;
     }
     default: {
       // unsupported operation
