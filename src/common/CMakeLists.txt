@@ -22,6 +22,7 @@ SET(SRCS
   step/step_recover_files.cc
   step/step_recover_icons.cc
   step/step_recover_manifest.cc
+  step/step_recover_storage_directories.cc
   step/step_recovery.cc
   step/step_register_app.cc
   step/step_old_manifest.cc
