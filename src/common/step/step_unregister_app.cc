@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/system/error_code.hpp>
 #include <pkgmgr_installer.h>
 #include <vcore/Certificate.h>
 
@@ -18,6 +19,7 @@
 namespace common_installer {
 namespace pkgmgr {
 
+namespace bs = boost::system;
 namespace fs = boost::filesystem;
 
 Step::Status StepUnregisterApplication::precheck() {
@@ -79,6 +81,10 @@ Step::Status StepUnregisterApplication::process() {
     LOG(ERROR) << "Failed to unregister package into database";
     return Status::ERROR;
   }
+
+  // remove manifest file
+  bs::error_code error;
+  fs::remove(context_->xml_path.get(), error);
 
   LOG(DEBUG) << "Successfully unregister the application";
 
