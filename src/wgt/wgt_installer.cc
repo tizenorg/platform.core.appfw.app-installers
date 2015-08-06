@@ -51,12 +51,12 @@ namespace ci = common_installer;
 
 namespace wgt {
 
-WgtInstaller::WgtInstaller() : AppInstaller("wgt") {
-  ci::PkgMgrPtr pkgmgr = ci::PkgMgrInterface::Instance();
+WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
+    : AppInstaller("wgt", pkgrmgr) {
   /* treat the request */
-  switch (pkgmgr->GetRequestType()) {
+  switch (pkgmgr_->GetRequestType()) {
     case ci::RequestType::Install : {
-      AddStep<ci::configuration::StepConfigure>();
+      AddStep<ci::configuration::StepConfigure>(pkgmgr_);
       AddStep<ci::filesystem::StepUnzip>();
       AddStep<wgt::parse::StepParse>();
       AddStep<ci::security::StepCheckSignature>();
@@ -72,7 +72,7 @@ WgtInstaller::WgtInstaller() : AppInstaller("wgt") {
       break;
     }
     case ci::RequestType::Update: {
-      AddStep<ci::configuration::StepConfigure>();
+      AddStep<ci::configuration::StepConfigure>(pkgmgr_);
       AddStep<ci::filesystem::StepUnzip>();
       AddStep<wgt::parse::StepParse>();
       AddStep<ci::security::StepCheckSignature>();
@@ -92,7 +92,7 @@ WgtInstaller::WgtInstaller() : AppInstaller("wgt") {
       break;
     }
     case ci::RequestType::Uninstall: {
-      AddStep<ci::configuration::StepConfigure>();
+      AddStep<ci::configuration::StepConfigure>(pkgmgr_);
       AddStep<ci::parse::StepParse>();
       AddStep<ci::backup::StepBackupManifest>();
       AddStep<ci::pkgmgr::StepUnregisterApplication>();
@@ -103,7 +103,7 @@ WgtInstaller::WgtInstaller() : AppInstaller("wgt") {
       break;
     }
     case ci::RequestType::Reinstall: {
-      AddStep<ci::configuration::StepConfigure>();
+      AddStep<ci::configuration::StepConfigure>(pkgmgr_);
       AddStep<wgt::parse::StepParse>();
       AddStep<ci::backup::StepOldManifest>();
       AddStep<wgt::rds::StepRDSParse>();
@@ -112,7 +112,7 @@ WgtInstaller::WgtInstaller() : AppInstaller("wgt") {
       break;
     }
     case ci::RequestType::Recovery: {
-      AddStep<ci::configuration::StepConfigure>();
+      AddStep<ci::configuration::StepConfigure>(pkgmgr_);
       AddStep<ci::recovery::StepOpenRecoveryFile>();
       AddStep<wgt::parse::StepParseRecovery>();
       AddStep<ci::pkgmgr::StepRecoverApplication>();

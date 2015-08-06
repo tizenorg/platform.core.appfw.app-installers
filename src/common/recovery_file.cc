@@ -72,11 +72,13 @@ RecoveryFile::RecoveryFile(const bf::path& path, bool load)
       return;
     }
   } else {
-    type_ = PkgMgrInterface::Instance()->GetRequestType();
-    if (!WriteAndCommitFileContent()) {
+    // create file
+    FILE* handle = fopen(path.c_str(), "w");
+    if (!handle) {
       path_.clear();
       return;
     }
+    fclose(handle);
     LOG(DEBUG) << "Recovery file " << path_ << " created";
   }
 }

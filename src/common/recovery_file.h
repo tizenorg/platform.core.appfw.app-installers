@@ -10,7 +10,6 @@
 #include <cstdio>
 #include <string>
 
-#include "common/pkgmgr_interface.h"
 #include "common/request_type.h"
 
 namespace common_installer {

@@ -4,7 +4,6 @@
 #include "test/mock_pkgmgr_installer.h"
 #else
 #include "common/app_installer.h"
-#include "common/pkgmgr_interface.h"
 #include "common/step/step_configure.h"
 #include "common/step/step_backup_icons.h"
 #include "common/step/step_backup_manifest.h"
@@ -56,9 +55,9 @@ Task::Task() {
 
 
 bool Task::Init(int argc, char** argv) {
-  int result = ci::PkgMgrInterface::Init(argc, argv);
-  if (result != 0) {
-    LOG(ERROR) << "Cannot connect to PkgMgrInstaller";
+  pkgmgr_ = ci::PkgMgrInterface::Create(argc, argv);
+  if (!pkgmgr_) {
+    LOG(ERROR) << "Options of pkgmgr installer cannot be parsed";
     return false;
   }
   return true;
@@ -66,38 +65,28 @@ bool Task::Init(int argc, char** argv) {
 
 
 bool Task::Run() {
-  int ret = 0;
-  switch (ci::PkgMgrInterface::Instance()->GetRequestType()) {
+  switch (pkgmgr_->GetRequestType()) {
     case ci::RequestType::Install:
-      ret = Install();
-      break;
+      return Install();
     case ci::RequestType::Update:
-      ret = Update();
-      break;
+      return Update();
     case ci::RequestType::Uninstall:
-      ret = Uninstall();
-      break;
+      return Uninstall();
     case ci::RequestType::Reinstall:
-      ret = Reinstall();
-      break;
+      return Reinstall();
     case ci::RequestType::Recovery:
       // TODO(t.iwanek): recovery mode invocation...
-      ret = EINVAL;
-      break;
+      return false;
     default:
       break;
   }
-  if (ret != 0) {
-    LOG(ERROR) << "Got error from AppInstaler: error code " << ret;
-    return false;
-  }
-  return true;
+  return false;
 }
 
-int Task::Install() {
-  ci::AppInstaller ai(kPkgType);
+bool Task::Install() {
+  ci::AppInstaller ai(kPkgType, pkgmgr_);
 
-  ai.AddStep<ci::configuration::StepConfigure>();
+  ai.AddStep<ci::configuration::StepConfigure>(pkgmgr_);
   ai.AddStep<ci::filesystem::StepUnzip>();
   ai.AddStep<tpk::parse::StepParse>();
   ai.AddStep<ci::security::StepCheckSignature>();
@@ -109,13 +98,13 @@ int Task::Install() {
   ai.AddStep<tpk::filesystem::StepCopyManifestXml>();
   ai.AddStep<ci::pkgmgr::StepRegisterApplication>();
 
-  return ai.Run();
+  return ai.Run() == ci::AppInstaller::Result::OK;
 }
 
-int Task::Update() {
-  ci::AppInstaller ai(kPkgType);
+bool Task::Update() {
+  ci::AppInstaller ai(kPkgType, pkgmgr_);
 
-  ai.AddStep<ci::configuration::StepConfigure>();
+  ai.AddStep<ci::configuration::StepConfigure>(pkgmgr_);
   ai.AddStep<ci::filesystem::StepUnzip>();
   ai.AddStep<tpk::parse::StepParse>();
   ai.AddStep<ci::security::StepCheckSignature>();
@@ -131,13 +120,13 @@ int Task::Update() {
   ai.AddStep<tpk::filesystem::StepCopyManifestXml>();
   ai.AddStep<ci::pkgmgr::StepUpdateApplication>();
 
-  return ai.Run();
+  return ai.Run() == ci::AppInstaller::Result::OK;
 }
 
-int Task::Uninstall() {
-  ci::AppInstaller ai(kPkgType);
+bool Task::Uninstall() {
+  ci::AppInstaller ai(kPkgType, pkgmgr_);
 
-  ai.AddStep<ci::configuration::StepConfigure>();
+  ai.AddStep<ci::configuration::StepConfigure>(pkgmgr_);
   ai.AddStep<ci::parse::StepParse>();
   ai.AddStep<ci::backup::StepBackupManifest>();
   ai.AddStep<ci::pkgmgr::StepUnregisterApplication>();
@@ -145,11 +134,11 @@ int Task::Uninstall() {
   ai.AddStep<ci::filesystem::StepRemoveIcons>();
   ai.AddStep<ci::security::StepRevokeSecurity>();
 
-  return ai.Run();
+  return ai.Run() == ci::AppInstaller::Result::OK;
 }
 
-int Task::Reinstall() {
-  return 0;
+bool Task::Reinstall() {
+  return false;
 }
 
 }  // namespace tpk
