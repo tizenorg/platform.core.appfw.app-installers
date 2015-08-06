@@ -24,6 +24,7 @@ class AppInstaller {
     ERROR,
     CLEANUP_ERROR,
     UNDO_ERROR,
+    UNKNOWN
   };
 
   explicit AppInstaller(const char* package_type, PkgMgrPtr pkgmgr);
