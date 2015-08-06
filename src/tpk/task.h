@@ -6,6 +6,8 @@
 #include "test/mock_pkgmgr_installer.h"
 #endif
 
+#include "common/pkgmgr_interface.h"
+
 namespace tpk {
 
 class Task {
@@ -16,10 +18,12 @@ class Task {
   bool Run();
 
  private:
-  int Install();
-  int Update();
-  int Uninstall();
-  int Reinstall();
+  bool Install();
+  bool Update();
+  bool Uninstall();
+  bool Reinstall();
+
+  common_installer::PkgMgrPtr pkgmgr_;
 };  //  class Task
 
 }  //  namespace tpk

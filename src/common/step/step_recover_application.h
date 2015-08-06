@@ -7,6 +7,7 @@
 
 #include "common/context_installer.h"
 #include "common/step/step_recovery.h"
+#include "common/utils/logging.h"
 
 namespace common_installer {
 namespace pkgmgr {

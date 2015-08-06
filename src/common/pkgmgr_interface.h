@@ -34,18 +34,9 @@ class PkgMgrInterface {
    */
   const char *GetRequestInfo() const;
 
-  /** Returns instance of PkgrMgr (Singleton pattern).
-   *
-   *  However, Init method has to be called first (otherwise, this Instance
-   *  returns nullptr).
-   *
-   *  @see PkgMgr::Init(int argc, char** argv)
+  /** Creates PkgMgrInterface.
    */
-  static PkgMgrPtr Instance();
-
-  /** Initialize PkgMgrInterface.
-   */
-  static int Init(int argc, char** argv,
+  static PkgMgrPtr Create(int argc, char** argv,
         AppQueryInterface* interface = nullptr);
 
   /** Get Raw pointer to pkgmgr_installer object
@@ -68,7 +59,6 @@ class PkgMgrInterface {
   pkgmgr_installer* pi_;
   bool is_app_installed_;
   AppQueryInterface* query_interface_;
-  static PkgMgrPtr instance_;
 
   SCOPE_LOG_TAG(PkgMgrInterface)
   DISALLOW_COPY_AND_ASSIGN(PkgMgrInterface);

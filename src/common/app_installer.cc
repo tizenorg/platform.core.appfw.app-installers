@@ -19,9 +19,9 @@ const unsigned kProgressRange = 100;
 
 namespace common_installer {
 
-AppInstaller::AppInstaller(const char* package_type)
-    : context_(new ContextInstaller()) {
-  PkgMgrPtr pkgmgr = PkgMgrInterface::Instance();
+AppInstaller::AppInstaller(const char* package_type, PkgMgrPtr pkgmgr)
+    : pkgmgr_(pkgmgr),
+      context_(new ContextInstaller()) {
   pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi()));
 
   // TODO(p.sikorski) below property is only used in AppInstaller.
@@ -32,13 +32,13 @@ AppInstaller::AppInstaller(const char* package_type)
 AppInstaller::~AppInstaller() {
 }
 
-int AppInstaller::Run() {
+AppInstaller::Result AppInstaller::Run() {
   std::list<std::unique_ptr<Step>>::iterator it(steps_.begin());
   std::list<std::unique_ptr<Step>>::iterator itStart(steps_.begin());
   std::list<std::unique_ptr<Step>>::iterator itEnd(steps_.end());
 
   Step::Status process_status = Step::Status::OK;
-  int ret = 0;
+  Result ret = Result::OK;
   unsigned total_steps = steps_.size();
   unsigned current_step = 1;
 
@@ -56,7 +56,7 @@ int AppInstaller::Run() {
 
     if (process_status != Step::Status::OK) {
       LOG(ERROR) << "Error during processing";
-      ret = -1;
+      ret = Result::ERROR;
       break;
     }
 
@@ -71,14 +71,14 @@ int AppInstaller::Run() {
     do {
       if ((*it)->undo() != Step::Status::OK) {
         LOG(ERROR) << "Error during undo operation";
-        ret = -2;
+        ret = Result::UNDO_ERROR;
       }
     } while (it-- != itStart);
   } else {
     for (auto& step : steps_) {
       if (step->clean() != Step::Status::OK) {
         LOG(ERROR) << "Error during clean operation";
-        ret = -3;
+        ret = Result::CLEANUP_ERROR;
         break;
       }
     }

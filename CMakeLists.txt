@@ -23,6 +23,7 @@ SET(CMAKE_CXX_FLAGS_CCOV       "-O0 -std=c++11 -g --coverage")
 
 # Targets
 SET(TARGET_LIBNAME_COMMON "common-installer")
+SET(TARGET_LIBNAME_WGT "wgt-installer")
 SET(TARGET_WGT_BACKEND "wgt-backend")
 SET(TARGET_TPK_BACKEND "tpk-backend")
 

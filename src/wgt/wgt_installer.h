@@ -18,7 +18,7 @@ namespace wgt {
  */
 class WgtInstaller : public common_installer::AppInstaller {
  public:
-  WgtInstaller();
+  explicit WgtInstaller(common_installer::PkgMgrPtr pkgrmgr);
 };
 
 }  // namespace wgt

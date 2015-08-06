@@ -10,22 +10,14 @@
 
 namespace common_installer {
 
-PkgMgrPtr PkgMgrInterface::instance_;
+PkgMgrPtr PkgMgrInterface::Create(int argc, char** argv,
+                                  AppQueryInterface* interface) {
+  PkgMgrPtr instance(new PkgMgrInterface(interface));
+  int result = instance->InitInternal(argc, argv);
+  if (result != 0)
+    return nullptr;
 
-PkgMgrPtr PkgMgrInterface::Instance() {
-  return instance_;
-}
-
-int PkgMgrInterface::Init(int argc, char** argv, AppQueryInterface* interface) {
-  if (instance_)
-    return 0;
-
-  PkgMgrPtr tmp(new PkgMgrInterface(interface));
-  int result = tmp->InitInternal(argc, argv);
-
-  instance_ = tmp;
-
-  return result;
+  return instance;
 }
 
 int PkgMgrInterface::InitInternal(int argc, char** argv) {

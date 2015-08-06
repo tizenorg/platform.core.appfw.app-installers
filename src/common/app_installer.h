@@ -9,6 +9,7 @@
 #include <list>
 #include <memory>
 
+#include "common/pkgmgr_interface.h"
 #include "common/pkgmgr_signal.h"
 #include "common/step/step.h"
 #include "common/utils/logging.h"
@@ -18,19 +19,31 @@ namespace common_installer {
 
 class AppInstaller {
  public:
-  explicit AppInstaller(const char* package_type);
+  enum class Result {
+    OK,
+    ERROR,
+    CLEANUP_ERROR,
+    UNDO_ERROR,
+  };
+
+  explicit AppInstaller(const char* package_type, PkgMgrPtr pkgmgr);
   virtual ~AppInstaller();
 
   // Adds new step to installer by specified type
   // Type of template parameter is used to create requested step class instance.
   // Context of installer is passed to step in this method
   // and is not being exposed outside installer.
-  template<class StepT>
-  void AddStep() {
-    steps_.push_back(std::unique_ptr<Step>(new StepT(context_.get())));
+  // Step arguments are deduced and forwarded to constructor
+  template<class StepT, class... Args>
+  void AddStep(Args&&... args) {
+    steps_.push_back(std::unique_ptr<Step>(
+        new StepT(context_.get(), std::forward<Args>(args)...)));
   }
 
-  int Run();
+  Result Run();
+
+ protected:
+  PkgMgrPtr pkgmgr_;
 
  private:
   std::list<std::unique_ptr<Step>> steps_;
