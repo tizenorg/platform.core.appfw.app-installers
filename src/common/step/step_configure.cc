@@ -7,7 +7,6 @@
 #include <tzplatform_config.h>
 #include <string>
 
-#include "common/pkgmgr_interface.h"
 #include "common/request_type.h"
 #include "common/utils/file_util.h"
 
@@ -16,32 +15,35 @@ namespace configuration {
 
 const char *kStrEmpty = "";
 
-Step::Status StepConfigure::process() {
-  PkgMgrPtr pkgmgr = PkgMgrInterface::Instance();
+StepConfigure::StepConfigure(ContextInstaller* context, PkgMgrPtr pkgmgr)
+    : Step(context),
+      pkgmgr_(pkgmgr) {
+}
 
+Step::Status StepConfigure::process() {
   if (!SetupRootAppDirectory())
     return Status::ERROR;
 
-  switch (pkgmgr->GetRequestType()) {
+  switch (pkgmgr_->GetRequestType()) {
     case RequestType::Install:
-      context_->file_path.set(pkgmgr->GetRequestInfo());
+      context_->file_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       break;
     case RequestType::Update:
-      context_->file_path.set(pkgmgr->GetRequestInfo());
+      context_->file_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       break;
     case RequestType::Uninstall:
-      context_->pkgid.set(pkgmgr->GetRequestInfo());
+      context_->pkgid.set(pkgmgr_->GetRequestInfo());
       context_->file_path.set(kStrEmpty);
       break;
     case RequestType::Reinstall:
-      context_->unpacked_dir_path.set(pkgmgr->GetRequestInfo());
+      context_->unpacked_dir_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       context_->file_path.set(kStrEmpty);
       break;
     case RequestType::Recovery:
-      context_->file_path.set(pkgmgr->GetRequestInfo());
+      context_->file_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       break;
     default:
@@ -53,8 +55,8 @@ Step::Status StepConfigure::process() {
   }
 
   // Record recovery file for update and installation modes
-  if (pkgmgr->GetRequestType() == RequestType::Install ||
-      pkgmgr->GetRequestType() == RequestType::Update) {
+  if (pkgmgr_->GetRequestType() == RequestType::Install ||
+      pkgmgr_->GetRequestType() == RequestType::Update) {
     std::unique_ptr<recovery::RecoveryFile> recovery_file =
         recovery::RecoveryFile::CreateRecoveryFileForPath(
             GenerateTemporaryPath(
@@ -63,7 +65,7 @@ Step::Status StepConfigure::process() {
       LOG(ERROR) << "Failed to create recovery file";
       return Status::ERROR;
     }
-    recovery_file->set_type(pkgmgr->GetRequestType());
+    recovery_file->set_type(pkgmgr_->GetRequestType());
     if (!recovery_file->WriteAndCommitFileContent()) {
       LOG(ERROR) << "Failed to write recovery file";
       return Status::ERROR;

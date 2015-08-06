@@ -7,6 +7,7 @@
 
 #include "common/context_installer.h"
 
+#include "common/pkgmgr_interface.h"
 #include "common/step/step.h"
 #include "common/utils/logging.h"
 
@@ -21,7 +22,7 @@ namespace configuration {
  */
 class StepConfigure : public Step {
  public:
-  using Step::Step;
+  StepConfigure(ContextInstaller* context, PkgMgrPtr pkgmgr);
 
   Status process() override;
   Status clean() override;
@@ -29,6 +30,8 @@ class StepConfigure : public Step {
   Status precheck() override;
  private:
   bool SetupRootAppDirectory();
+
+  PkgMgrPtr pkgmgr_;
 
   SCOPE_LOG_TAG(Configure)
 };
