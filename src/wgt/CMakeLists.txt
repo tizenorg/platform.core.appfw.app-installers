@@ -15,6 +15,7 @@ SET(SRCS
   step/step_wgt_resource_directory.cc
   wgt_app_query_interface.cc
   wgt_backend.cc
+  wgt_installer.cc
 )
 
 IF(WRT_LAUNCHER)
