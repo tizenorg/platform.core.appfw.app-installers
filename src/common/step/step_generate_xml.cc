@@ -304,10 +304,12 @@ Step::Status StepGenerateXml::process() {
   return Status::OK;
 }
 
-Step::Status  StepGenerateXml::undo() {
+Step::Status StepGenerateXml::undo() {
+  bs::error_code error;
   if (fs::exists(icon_path_))
-    fs::remove_all(icon_path_);
-
+    fs::remove_all(icon_path_, error);
+  if (fs::exists(context_->xml_path.get()))
+    fs::remove_all(context_->xml_path.get(), error);
   return Status::OK;
 }
 
