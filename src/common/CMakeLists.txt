@@ -1,6 +1,7 @@
 # Target - sources
 SET(SRCS
   app_installer.cc
+  backup_paths.cc
   context_installer.cc
   pkgmgr_interface.cc
   pkgmgr_registration.cc

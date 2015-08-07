@@ -9,6 +9,7 @@
 
 #include <cstring>
 
+#include "common/backup_paths.h"
 #include "common/utils/clist_helpers.h"
 #include "common/utils/file_util.h"
 
@@ -36,8 +37,7 @@ Step::Status StepRemoveIcons::process() {
       / fs::path(ui->appid);
     app_icon += fs::path(".png");
     if (fs::exists(app_icon)) {
-      fs::path backup_icon_file = app_icon;
-      backup_icon_file += ".bck";
+      fs::path backup_icon_file = GetBackupPathForIconFile(app_icon);
       if (!MoveFile(app_icon, backup_icon_file)) {
         LOG(ERROR) << "Failed to create backup for icon: " << app_icon;
         return Status::ERROR;

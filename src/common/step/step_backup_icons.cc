@@ -9,6 +9,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/system/error_code.hpp>
 
+#include "common/backup_paths.h"
 #include "common/utils/file_util.h"
 
 namespace bf = boost::filesystem;
@@ -25,8 +26,7 @@ Step::Status StepBackupIcons::process() {
     bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
       / bf::path(ui->appid);
     app_icon += ".png";
-    bf::path icon_backup = app_icon;
-    icon_backup += ".bck";
+    bf::path icon_backup = GetBackupPathForIconFile(app_icon);
     if (bf::exists(app_icon))
         icons_.emplace_back(app_icon, icon_backup);
   }

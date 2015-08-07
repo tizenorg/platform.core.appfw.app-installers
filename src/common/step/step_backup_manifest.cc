@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <string>
 
+#include "common/backup_paths.h"
 #include "common/utils/file_util.h"
 #include "common/utils/logging.h"
 
@@ -33,8 +34,8 @@ Step::Status StepBackupManifest::precheck() {
 
 Step::Status StepBackupManifest::process() {
   // set backup file path
-  bf::path backup_xml_path = context_->xml_path.get();
-  backup_xml_path += ".bck";
+  bf::path backup_xml_path =
+      GetBackupPathForManifestFile(context_->xml_path.get());
   context_->backup_xml_path.set(backup_xml_path);
   bs::error_code error;
   bf::copy(context_->xml_path.get(), context_->backup_xml_path.get(), error);

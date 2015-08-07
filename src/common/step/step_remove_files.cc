@@ -6,6 +6,7 @@
 
 #include <boost/system/error_code.hpp>
 
+#include "common/backup_paths.h"
 #include "common/utils/file_util.h"
 
 namespace common_installer {
