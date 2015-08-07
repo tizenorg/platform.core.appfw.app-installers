@@ -8,6 +8,7 @@
 #include <boost/system/error_code.hpp>
 #include <pkgmgr-info.h>
 
+#include "common/backup_paths.h"
 #include "common/utils/clist_helpers.h"
 #include "common/utils/file_util.h"
 
@@ -60,8 +61,7 @@ bool StepRecoverIcons::TryGatherIcons() {
     bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
       / bf::path(ui->appid);
     app_icon += ".png";
-    bf::path icon_backup = app_icon;
-    icon_backup += ".bck";
+    bf::path icon_backup = GetBackupPathForIconFile(app_icon);
     if (bf::exists(icon_backup) || bf::exists(app_icon))
         icons_.emplace_back(app_icon, icon_backup);
   }

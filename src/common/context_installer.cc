@@ -7,9 +7,9 @@
 #include <unistd.h>
 #include <cstdlib>
 
-namespace common_installer {
-
 namespace fs = boost::filesystem;
+
+namespace common_installer {
 
 bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
                    PrivilegeLevel allowed_level) {
@@ -45,13 +45,6 @@ ContextInstaller::~ContextInstaller() {
     pkgmgr_parser_free_manifest_xml(old_manifest_data.get());
   if (backend_data.get())
     delete backend_data.get();
-}
-
-boost::filesystem::path GetBackupPathForPackagePath(
-    const boost::filesystem::path& pkg_path) {
-  fs::path backup_path = pkg_path;
-  backup_path += ".bck";
-  return backup_path;
 }
 
 }  // namespace common_installer

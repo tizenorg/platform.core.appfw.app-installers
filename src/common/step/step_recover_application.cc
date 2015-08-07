@@ -6,6 +6,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "common/backup_paths.h"
 #include "common/pkgmgr_registration.h"
 
 namespace bf = boost::filesystem;
@@ -47,8 +48,7 @@ bool StepRecoverApplication::SetXmlPaths() {
       / context_->pkgid.get();
   xml_path += ".xml";
   context_->xml_path.set(xml_path);
-  xml_path += ".bck";
-  context_->backup_xml_path.set(xml_path);
+  context_->backup_xml_path.set(GetBackupPathForManifestFile(xml_path));
   return true;
 }
 
