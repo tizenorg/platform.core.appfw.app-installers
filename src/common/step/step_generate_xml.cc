@@ -5,6 +5,7 @@
 
 #include "common/step/step_generate_xml.h"
 
+#include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
@@ -79,18 +80,16 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
     }
   }
 
-  // the icon is renamed to <appid.png>
-  icon_path_ = fs::path(getIconPath(context_->uid.get()));
-  CreateDir(icon_path_);
-  fs::path icon = fs::path(app->appid) += fs::path(".png");
-
+  // icon is renamed to <appid.png>
   if (app->icon->name) {
-    fs::path app_icon = fs::path(context_->pkg_path.get())
-      / fs::path(app->appid)
-      / fs::path(app->icon->name);
+    fs::path app_icon = context_->pkg_path.get() / app->icon->name;
+    fs::path icon = app->appid;
+    if (app_icon.has_extension())
+      icon += app_icon.extension();
+    else
+      icon += fs::path(".png");
+
     if (fs::exists(app_icon)) {
-      fs::copy_file(app_icon, icon_path_ /= icon,
-                        fs::copy_option::overwrite_if_exists);
       xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
                                           "%s", BAD_CAST icon.c_str());
     }
@@ -306,8 +305,6 @@ Step::Status StepGenerateXml::process() {
 
 Step::Status StepGenerateXml::undo() {
   bs::error_code error;
-  if (fs::exists(icon_path_))
-    fs::remove_all(icon_path_, error);
   if (fs::exists(context_->xml_path.get()))
     fs::remove_all(context_->xml_path.get(), error);
   return Status::OK;

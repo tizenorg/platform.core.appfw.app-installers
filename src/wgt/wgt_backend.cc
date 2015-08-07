@@ -33,6 +33,7 @@
 #include "wgt/step/step_parse.h"
 #include "wgt/step/step_rds_parse.h"
 #include "wgt/step/step_rds_modify.h"
+#include "wgt/step/step_wgt_create_icons.h"
 #include "wgt/step/step_wgt_create_storage_directories.h"
 #include "wgt/step/step_wgt_copy_storage_directories.h"
 #include "wgt/step/step_wgt_resource_directory.h"
@@ -63,6 +64,7 @@ int main(int argc, char** argv) {
       installer.AddStep<wgt::filesystem::StepWgtCreateStorageDirectories>();
       installer.AddStep<ci::filesystem::StepCreateStorageDirectories>();
       installer.AddStep<wgt::filesystem::StepCreateSymbolicLink>();
+      installer.AddStep<wgt::filesystem::StepWgtCreateIcons>();
       installer.AddStep<ci::pkgmgr::StepGenerateXml>();
       installer.AddStep<ci::pkgmgr::StepRegisterApplication>();
       installer.AddStep<ci::security::StepRegisterSecurity>();
@@ -82,6 +84,7 @@ int main(int argc, char** argv) {
       installer.AddStep<ci::backup::StepCopyBackup>();
       installer.AddStep<wgt::filesystem::StepWgtCopyStorageDirectories>();
       installer.AddStep<wgt::filesystem::StepCreateSymbolicLink>();
+      installer.AddStep<wgt::filesystem::StepWgtCreateIcons>();
       installer.AddStep<ci::security::StepUpdateSecurity>();
       installer.AddStep<ci::pkgmgr::StepGenerateXml>();
       installer.AddStep<ci::pkgmgr::StepUpdateApplication>();

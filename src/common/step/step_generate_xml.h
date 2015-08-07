@@ -6,8 +6,6 @@
 #ifndef  COMMON_STEP_STEP_GENERATE_XML_H_
 #define  COMMON_STEP_STEP_GENERATE_XML_H_
 
-
-#include <boost/filesystem/path.hpp>
 #include <libxml/xmlwriter.h>
 
 #include "common/context_installer.h"
@@ -32,8 +30,6 @@ class StepGenerateXml : public Step {
   // structures contain common elements
   template <typename T>
   Step::Status GenerateApplicationCommonXml(T* app, xmlTextWriterPtr writer);
-
-  boost::filesystem::path icon_path_;
 
   SCOPE_LOG_TAG(GenerateXML)
 };

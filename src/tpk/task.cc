@@ -8,6 +8,7 @@
 #include "common/step/step_configure.h"
 #include "common/step/step_backup_icons.h"
 #include "common/step/step_backup_manifest.h"
+#include "common/step/step_create_icons.h"
 #include "common/step/step_copy.h"
 #include "common/step/step_copy_backup.h"
 #include "common/step/step_copy_storage_directories.h"
@@ -101,6 +102,7 @@ int Task::Install() {
   ai.AddStep<ci::filesystem::StepCopy>();
   ai.AddStep<ci::filesystem::StepCreateStorageDirectories>();
   ai.AddStep<tpk::filesystem::StepCreateSymbolicLink>();
+  ai.AddStep<ci::filesystem::StepCreateIcons>();
   ai.AddStep<ci::security::StepRegisterSecurity>();
   ai.AddStep<tpk::filesystem::StepCopyManifestXml>();
   ai.AddStep<ci::pkgmgr::StepRegisterApplication>();
@@ -122,6 +124,7 @@ int Task::Update() {
   ai.AddStep<ci::backup::StepCopyBackup>();
   ai.AddStep<ci::filesystem::StepCopyStorageDirectories>();
   ai.AddStep<tpk::filesystem::StepCreateSymbolicLink>();
+  ai.AddStep<ci::filesystem::StepCreateIcons>();
   ai.AddStep<ci::security::StepUpdateSecurity>();
   ai.AddStep<tpk::filesystem::StepCopyManifestXml>();
   ai.AddStep<ci::pkgmgr::StepUpdateApplication>();
