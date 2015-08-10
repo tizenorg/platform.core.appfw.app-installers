@@ -58,35 +58,6 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
       LOG(ERROR) << "Permission change failure";
       return false;
     }
-
-    // Icon path
-    // Make an Icon symlink, if the icon exists
-    if (app->icon && app->icon->name) {
-      // Check if the icon file actually exists
-      fs::path src_icon_path = fs::path(context->pkg_path.get())
-          / fs::path(app->icon->name);
-      if (fs::exists(src_icon_path)) {
-        // copy icon to the destination dir
-        fs::path dest_icon_dir = fs::path(getIconPath(context->uid.get()));
-        fs::path dest_icon_filename = fs::path(app->appid) +=
-            fs::path(app->icon->name).extension();
-        if (!common_installer::CreateDir(dest_icon_dir)) {
-          LOG(ERROR) << "Directory creation failure: " << dest_icon_dir;
-          return false;
-        }
-        fs::path dest_icon_path = dest_icon_dir;
-        dest_icon_path /= dest_icon_filename;
-        LOG(INFO) << "Creating symlink " << dest_icon_path << " pointing " <<
-            src_icon_path;
-        fs::create_symlink(src_icon_path, dest_icon_path, boost_error);
-        if (boost_error) {
-          LOG(ERROR) << "Symlink creation failure: " << dest_icon_path;
-          return false;
-        }
-      } else {
-        LOG(WARNING) << "No icon file found in the package: " << src_icon_path;
-      }
-    }
   }
   return true;
 }

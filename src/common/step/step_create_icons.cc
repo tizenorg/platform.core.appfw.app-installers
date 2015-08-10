@@ -35,18 +35,20 @@ Step::Status StepCreateIcons::process() {
     // icons should be localized
     if (ui->icon && ui->icon->name) {
       bf::path source = GetIconRoot() / ui->icon->name;
-      bf::path destination = icons_directory / ui->appid;
-      if (destination.has_extension())
-        destination += source.extension();
-      else
-        destination += ".png";
-      bs::error_code error;
-      bf::copy_file(source, destination, error);
-      if (error) {
-        LOG(ERROR) << "Cannot create package icon: " << destination;
-        return Status::ERROR;
+      if (bf::exists(source)) {
+        bf::path destination = icons_directory / ui->appid;
+        if (destination.has_extension())
+          destination += source.extension();
+        else
+          destination += ".png";
+        bs::error_code error;
+        bf::copy_file(source, destination, error);
+        if (error) {
+          LOG(ERROR) << "Cannot create package icon: " << destination;
+          return Status::ERROR;
+        }
+        icons_.push_back(destination);
       }
-      icons_.push_back(destination);
     }
   }
   LOG(DEBUG) << "Icon files created";
