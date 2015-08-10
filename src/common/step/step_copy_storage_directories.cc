@@ -70,14 +70,14 @@ common_installer::Step::Status StepCopyStorageDirectories::undo() {
                       backup_path_,
                       kDataLocation)) {
     LOG(ERROR) << "Failed to restore private directory for widget in update";
-//    return Status::ERROR; // undo cannot fail...
+    // undo() should not fail then continue
   }
 
   if (!MoveAppStorage(context_->pkg_path.get(),
                       backup_path_,
                       kSharedLocation)) {
     LOG(ERROR) << "Failed to restore shared directory for widget in update";
-//    return Status::ERROR; // undo cannot fail...
+    // undo() should not fail then continue
   }
 
   return Status::OK;

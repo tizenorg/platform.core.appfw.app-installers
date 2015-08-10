@@ -2,11 +2,14 @@
 #ifndef TPK_TASK_H_
 #define TPK_TASK_H_
 
+#include <memory>
+
 #ifdef HOSTTEST
 #include "test/mock_pkgmgr_installer.h"
 #endif
 
 #include "common/pkgmgr_interface.h"
+#include "tpk/tpk_app_query_interface.h"
 
 namespace tpk {
 
@@ -24,6 +27,7 @@ class Task {
   bool Reinstall();
 
   common_installer::PkgMgrPtr pkgmgr_;
+  std::unique_ptr<TpkAppQueryInterface> query_interface_;
 };  //  class Task
 
 }  //  namespace tpk
