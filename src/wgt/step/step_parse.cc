@@ -57,6 +57,12 @@ namespace parse {
 namespace app_keys = wgt::application_widget_keys;
 namespace manifest_keys = wgt::application_manifest_keys;
 
+StepParse::StepParse(common_installer::ContextInstaller* context,
+                     WidgetConfigParser::Flags flags)
+    : Step(context),
+      flags_(flags) {
+}
+
 std::set<std::string> StepParse::ExtractPrivileges(
     std::shared_ptr<const PermissionsInfo> perm_info) const {
   return perm_info->GetAPIPermissions();
@@ -256,7 +262,7 @@ common_installer::Step::Status StepParse::process() {
     return common_installer::Step::Status::ERROR;
   }
 
-  parser_.reset(new wgt::parse::WidgetConfigParser());
+  parser_.reset(new wgt::parse::WidgetConfigParser(flags_));
   if (!parser_->ParseManifest(config_)) {
     LOG(ERROR) << "[Parse] Parse failed. " <<  parser_->GetErrorMessage();
     return common_installer::Step::Status::ERROR;

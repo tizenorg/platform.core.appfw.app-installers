@@ -23,7 +23,8 @@ namespace parse {
 
 class StepParse : public common_installer::Step {
  public:
-  using Step::Step;
+  explicit StepParse(common_installer::ContextInstaller* context,
+      WidgetConfigParser::Flags flags = WidgetConfigParser::NONE);
 
   Status process() override;
   Status clean() override { return Status::OK; }
@@ -51,6 +52,7 @@ class StepParse : public common_installer::Step {
   bool FillManifestX(manifest_x* manifest);
 
   std::unique_ptr<wgt::parse::WidgetConfigParser> parser_;
+  WidgetConfigParser::Flags flags_;
 
   SCOPE_LOG_TAG(Parse)
 };
