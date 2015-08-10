@@ -4,6 +4,8 @@
 
 #include "wgt/wgt_installer.h"
 
+#include <manifest_handlers/widget_config_parser.h>
+
 #include "common/pkgmgr_interface.h"
 #include "common/step/step_configure.h"
 #include "common/step/step_backup_manifest.h"
@@ -58,7 +60,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
     case ci::RequestType::Install : {
       AddStep<ci::configuration::StepConfigure>(pkgmgr_);
       AddStep<ci::filesystem::StepUnzip>();
-      AddStep<wgt::parse::StepParse>();
+      AddStep<wgt::parse::StepParse>(true);
       AddStep<ci::security::StepCheckSignature>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
       AddStep<wgt::filesystem::StepWgtResourceDirectory>();
@@ -74,7 +76,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
     case ci::RequestType::Update: {
       AddStep<ci::configuration::StepConfigure>(pkgmgr_);
       AddStep<ci::filesystem::StepUnzip>();
-      AddStep<wgt::parse::StepParse>();
+      AddStep<wgt::parse::StepParse>(true);
       AddStep<ci::security::StepCheckSignature>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
       AddStep<ci::security::StepCheckOldCertificate>();
@@ -104,7 +106,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
     }
     case ci::RequestType::Reinstall: {
       AddStep<ci::configuration::StepConfigure>(pkgmgr_);
-      AddStep<wgt::parse::StepParse>();
+      AddStep<wgt::parse::StepParse>(false);
       AddStep<ci::backup::StepOldManifest>();
       AddStep<wgt::rds::StepRDSParse>();
       AddStep<wgt::rds::StepRDSModify>();
