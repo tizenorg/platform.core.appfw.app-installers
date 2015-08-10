@@ -4,6 +4,8 @@
 
 #include "wgt/wgt_installer.h"
 
+#include <manifest_handlers/widget_config_parser.h>
+
 #include "common/pkgmgr_interface.h"
 #include "common/step/step_configure.h"
 #include "common/step/step_backup_manifest.h"
@@ -105,7 +107,8 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
     }
     case ci::RequestType::Reinstall: {
       AddStep<ci::configuration::StepConfigure>(pkgmgr_);
-      AddStep<wgt::parse::StepParse>();
+      AddStep<wgt::parse::StepParse>(
+          wgt::parse::WidgetConfigParser::IGNORE_FS_ERRORS);
       AddStep<ci::backup::StepOldManifest>();
       AddStep<wgt::rds::StepRDSParse>();
       AddStep<wgt::rds::StepRDSModify>();
