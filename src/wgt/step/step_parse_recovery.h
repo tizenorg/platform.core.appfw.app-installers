@@ -24,7 +24,7 @@ namespace parse {
  */
 class StepParseRecovery : public StepParse {
  public:
-  using StepParse::StepParse;
+  StepParseRecovery(common_installer::ContextInstaller* context);
 
   Status process() override;
   Status precheck() override;

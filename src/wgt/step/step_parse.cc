@@ -57,6 +57,12 @@ namespace parse {
 namespace app_keys = wgt::application_widget_keys;
 namespace manifest_keys = wgt::application_manifest_keys;
 
+StepParse::StepParse(common_installer::ContextInstaller* context,
+                     bool check_start_file)
+    : Step(context),
+      check_start_file_(check_start_file) {
+}
+
 std::set<std::string> StepParse::ExtractPrivileges(
     std::shared_ptr<const PermissionsInfo> perm_info) const {
   return perm_info->GetAPIPermissions();
@@ -260,6 +266,12 @@ common_installer::Step::Status StepParse::process() {
   if (!parser_->ParseManifest(config_)) {
     LOG(ERROR) << "[Parse] Parse failed. " <<  parser_->GetErrorMessage();
     return common_installer::Step::Status::ERROR;
+  }
+  if (check_start_file_) {
+    if (!parser_->HasValidStartFile()) {
+      LOG(ERROR) << "No valid start file" <<  parser_->GetErrorMessage();
+      return common_installer::Step::Status::ERROR;
+    }
   }
 
   const manifest_x* manifest = context_->manifest_data.get();
