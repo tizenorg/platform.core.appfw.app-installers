@@ -1,8 +1,8 @@
 // Copyright (c) 2015 Samsung Electronics Co., Ltd All Rights Reserved
-// Use of this source code is governed by an apache 2.0 license that can be
+// Use of this source code is governed by an apache-2.0 license that can be
 // found in the LICENSE file.
 
-#include "wgt/wgt_app_query_interface.h"
+#include "tpk/tpk_app_query_interface.h"
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -11,24 +11,23 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
 
-#include <manifest_handlers/application_manifest_constants.h>
-#include <manifest_handlers/tizen_application_handler.h>
-#include <manifest_handlers/widget_handler.h>
-#include <manifest_parser/manifest_parser.h>
-
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "common/pkgmgr_registration.h"
 #include "common/utils/file_util.h"
 #include "common/utils/logging.h"
+#include "tpk/tpk_app_query_interface.h"
+#include "tpk/xml_parser/xml_parser.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
 namespace ci = common_installer;
+namespace xp = xml_parser;
 
 namespace {
+
+const char kManifestFileName[] = "tizen-manifest.xml";
 
 std::string GetInstallationPackagePath(int argc, char** argv) {
   std::string path;
@@ -50,41 +49,37 @@ std::string GetPkgIdFromPath(const std::string& path) {
   if (code)
     return {};
   if (!common_installer::ExtractToTmpDir(path.c_str(), tmp_path,
-      "config.xml")) {
+      kManifestFileName)) {
     bf::remove_all(tmp_path, code);
     return {};
   }
-  bf::path config_path = tmp_path / "config.xml";
-  std::vector<parser::ManifestHandler*> handlers = {
-    new wgt::parse::WidgetHandler(),
-    new wgt::parse::TizenApplicationHandler()
-  };
-  std::unique_ptr<parser::ManifestHandlerRegistry> registry(
-      new parser::ManifestHandlerRegistry(handlers));
-  std::unique_ptr<parser::ManifestParser> parser(
-      new parser::ManifestParser(std::move(registry)));
-  if (!parser->ParseManifest(config_path)) {
+  bf::path manifest_path = tmp_path / kManifestFileName;
+  if (!bf::exists(manifest_path)) {
     bf::remove_all(tmp_path, code);
     return {};
   }
-  auto info = std::static_pointer_cast<const wgt::parse::TizenApplicationInfo>(
-      parser->GetManifestData(
-          wgt::application_widget_keys::kTizenApplicationKey));
-  if (!info) {
+  xp::XmlParser parser;
+  std::unique_ptr<xp::XmlTree> tree(parser.ParseAndGetNewTree(
+      manifest_path.c_str()));
+  if (!tree) {
     bf::remove_all(tmp_path, code);
     return {};
   }
-  std::string pkg_id = info->package();
-
+  xp::XmlElement* manifest = tree->GetRootElement();
+  if (!manifest) {
+    bf::remove_all(tmp_path, code);
+    return {};
+  }
+  std::string pkg_id = manifest->attr("package");
   bf::remove_all(tmp_path, code);
   return pkg_id;
 }
 
 }  // namespace
 
-namespace wgt {
+namespace tpk {
 
-bool WgtAppQueryInterface::IsAppInstalledByArgv(int argc, char** argv) {
+bool TpkAppQueryInterface::IsAppInstalledByArgv(int argc, char** argv) {
   std::string path = GetInstallationPackagePath(argc, argv);
   if (path.empty()) {
     // not the installaton
@@ -96,4 +91,5 @@ bool WgtAppQueryInterface::IsAppInstalledByArgv(int argc, char** argv) {
   return ci::IsPackageInstalled(pkg_id);
 }
 
-}  // namespace wgt
+}  // namespace tpk
+

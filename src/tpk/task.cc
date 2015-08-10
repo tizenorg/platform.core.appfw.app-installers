@@ -11,8 +11,6 @@
 #include "common/step/step_create_icons.h"
 #include "common/step/step_copy.h"
 #include "common/step/step_copy_backup.h"
-#include "common/step/step_copy_storage_directories.h"
-#include "common/step/step_create_storage_directories.h"
 #include "common/step/step_check_old_certificate.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_old_manifest.h"
@@ -58,7 +56,8 @@ Task::Task() {
 
 
 bool Task::Init(int argc, char** argv) {
-  int result = ci::PkgMgrInterface::Init(argc, argv);
+  query_interface_.reset(new TpkAppQueryInterface());
+  int result = ci::PkgMgrInterface::Init(argc, argv, query_interface_.get());
   if (result != 0) {
     LOG(ERROR) << "Cannot connect to PkgMgrInstaller";
     return false;
@@ -104,7 +103,7 @@ int Task::Install() {
   ai.AddStep<tpk::parse::StepParse>();
   ai.AddStep<ci::security::StepCheckSignature>();
   ai.AddStep<ci::filesystem::StepCopy>();
-  ai.AddStep<ci::filesystem::StepCreateStorageDirectories>();
+  // TODO(t.iwanek): handle storage directories
   ai.AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   ai.AddStep<ci::filesystem::StepCreateIcons>();
   ai.AddStep<ci::security::StepRegisterSecurity>();
@@ -126,7 +125,7 @@ int Task::Update() {
   ai.AddStep<ci::backup::StepBackupManifest>();
   ai.AddStep<ci::backup::StepBackupIcons>();
   ai.AddStep<ci::backup::StepCopyBackup>();
-  ai.AddStep<ci::filesystem::StepCopyStorageDirectories>();
+  // TODO(t.iwanek): handle storage directories
   ai.AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   ai.AddStep<ci::filesystem::StepCreateIcons>();
   ai.AddStep<ci::security::StepUpdateSecurity>();

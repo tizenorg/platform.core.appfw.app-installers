@@ -10,6 +10,7 @@ SET(SRCS
     step/step_parse.cc
     step/step_create_symbolic_link.cc
     step/step_copy_manifest_xml.cc
+    tpk_app_query_interface.cc
     xml_parser/xml_parser.cc
 )
 ADD_EXECUTABLE(${TARGET_TPK} ${SRCS})

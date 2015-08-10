@@ -154,4 +154,15 @@ std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
   return old_author_certificate;
 }
 
+bool IsPackageInstalled(const std::string& pkg_id) {
+  pkgmgrinfo_pkginfo_h handle;
+  int ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), getuid(),
+                                               &handle);
+  if (ret != PMINFO_R_OK)
+    return false;
+  pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
+  return true;
+}
+
+
 }  // namespace common_installer
