@@ -16,6 +16,11 @@ const char kResWgtPath[] = "res/wgt";
 namespace wgt {
 namespace parse {
 
+StepParseRecovery::StepParseRecovery(
+    common_installer::ContextInstaller* context)
+    : StepParse(context, false) {
+}
+
 common_installer::Step::Status StepParseRecovery::process() {
   (void) StepParse::process();
   return Status::OK;
