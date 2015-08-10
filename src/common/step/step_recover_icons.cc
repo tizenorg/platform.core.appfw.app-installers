@@ -60,7 +60,10 @@ bool StepRecoverIcons::TryGatherIcons() {
   for (; ui != nullptr; ui = ui->next) {
     bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
       / bf::path(ui->appid);
-    app_icon += ".png";
+    if (ui->icon && ui->icon->name)
+      app_icon += bf::path(ui->icon->name).extension();
+    else
+      app_icon += ".png";
     bf::path icon_backup = GetBackupPathForIconFile(app_icon);
     if (bf::exists(icon_backup) || bf::exists(app_icon))
         icons_.emplace_back(app_icon, icon_backup);
