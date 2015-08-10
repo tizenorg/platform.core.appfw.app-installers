@@ -8,10 +8,9 @@
 #include "common/step/step_backup_icons.h"
 #include "common/step/step_backup_manifest.h"
 #include "common/step/step_create_icons.h"
+#include "common/step/step_create_storage_directories.h"
 #include "common/step/step_copy.h"
 #include "common/step/step_copy_backup.h"
-#include "common/step/step_copy_storage_directories.h"
-#include "common/step/step_create_storage_directories.h"
 #include "common/step/step_check_old_certificate.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_old_manifest.h"
@@ -42,27 +41,21 @@ const char kPkgType[] = "tpk";
 
 namespace tpk {
 
-/* Constructor
- */
 Task::Task() {
 }
 
-
-/* Destructor
- */
-::tpk::Task::~Task() {
+Task::~Task() {
 }
 
-
 bool Task::Init(int argc, char** argv) {
-  pkgmgr_ = ci::PkgMgrInterface::Create(argc, argv);
+  query_interface_.reset(new TpkAppQueryInterface());
+  pkgmgr_ = ci::PkgMgrInterface::Create(argc, argv, query_interface_.get());
   if (!pkgmgr_) {
-    LOG(ERROR) << "Options of pkgmgr installer cannot be parsed";
+    LOG(ERROR) << "Cannot connect to PkgMgrInstaller";
     return false;
   }
   return true;
 }
-
 
 bool Task::Run() {
   switch (pkgmgr_->GetRequestType()) {
@@ -113,7 +106,8 @@ bool Task::Update() {
   ai.AddStep<ci::backup::StepBackupManifest>();
   ai.AddStep<ci::backup::StepBackupIcons>();
   ai.AddStep<ci::backup::StepCopyBackup>();
-  ai.AddStep<ci::filesystem::StepCopyStorageDirectories>();
+  ai.AddStep<ci::filesystem::StepCreateStorageDirectories>();
+  // TODO(t.iwanek): handle coping storage directories
   ai.AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   ai.AddStep<ci::filesystem::StepCreateIcons>();
   ai.AddStep<ci::security::StepUpdateSecurity>();
