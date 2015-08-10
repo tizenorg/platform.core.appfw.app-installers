@@ -164,8 +164,7 @@ bool StepRDSModify::PerformBackup(std::string relative_path,
   if (backup_temp_dir_.empty())
     return false;
   if (operation == Operation::DELETE || operation == Operation::MODIFY) {
-    bf::path app_path = context_->pkg_path.get() /
-        context_->manifest_data.get()->mainapp_id;;
+    bf::path app_path = context_->pkg_path.get() / "res" / "wgt";
     bf::path source_path = app_path  / relative_path;
     if (bf::is_directory(source_path)) {
       if (!cu::CreateDir(backup_temp_dir_ / relative_path)) {
@@ -182,7 +181,8 @@ bool StepRDSModify::PerformBackup(std::string relative_path,
       }
       bf::copy_file(source_path, tmp_dest_path, error);
       if (error) {
-        LOG(ERROR) << "unable to backup file " << error.message();
+        LOG(ERROR) << "unable to backup file: "
+                   << source_path << " : " << error.message();
         return false;
       }
     }
