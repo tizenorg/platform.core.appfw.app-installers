@@ -132,9 +132,9 @@ bool Task::Uninstall() {
   ai.AddStep<ci::parse::StepParse>();
   ai.AddStep<ci::backup::StepBackupManifest>();
   ai.AddStep<ci::pkgmgr::StepUnregisterApplication>();
+  ai.AddStep<ci::security::StepRevokeSecurity>();
   ai.AddStep<ci::filesystem::StepRemoveFiles>();
   ai.AddStep<ci::filesystem::StepRemoveIcons>();
-  ai.AddStep<ci::security::StepRevokeSecurity>();
 
   return ai.Run() == ci::AppInstaller::Result::OK;
 }
