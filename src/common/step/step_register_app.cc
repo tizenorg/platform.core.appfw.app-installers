@@ -46,8 +46,12 @@ Step::Status StepRegisterApplication::process() {
 }
 
 Step::Status StepRegisterApplication::undo() {
-  UnregisterAppInPkgmgr(context_->xml_path.get(), context_->pkgid.get(),
-                        context_->uid.get());
+  if (!UnregisterAppInPkgmgr(context_->xml_path.get(), context_->pkgid.get(),
+                           context_->uid.get())) {
+    LOG(ERROR) << "Application couldn't be unregistered";
+    return Status::ERROR;
+  }
+
   LOG(INFO) << "Successfuly clean database";
   return Status::OK;
 }

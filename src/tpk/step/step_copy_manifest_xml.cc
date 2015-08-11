@@ -178,7 +178,10 @@ Status StepCopyManifestXml::undo() {
   // Revert old xml file if exists
   bf::path old_dest_xml_path = _getOldDestXmlPath(*dest_xml_path_);
   if (bf::exists(old_dest_xml_path)) {
-    common_installer::MoveFile(old_dest_xml_path, *dest_xml_path_);
+    if (!common_installer::MoveFile(old_dest_xml_path, *dest_xml_path_)) {
+      LOG(ERROR) << "Cannot revert old xml file: " << old_dest_xml_path;
+      return Status::ERROR;
+    }
   }
 
   return Status::OK;
