@@ -66,21 +66,22 @@ common_installer::Step::Status StepCopyStorageDirectories::process() {
 }
 
 common_installer::Step::Status StepCopyStorageDirectories::undo() {
+  common_installer::Step::Status ret = Status::OK;
   if (!MoveAppStorage(context_->pkg_path.get(),
                       backup_path_,
                       kDataLocation)) {
-    LOG(ERROR) << "Failed to restore private directory for widget in update";
-//    return Status::ERROR; // undo cannot fail...
+    LOG(ERROR) << "Failed to restore private directory for package in update";
+    ret = Status::ERROR;
   }
 
   if (!MoveAppStorage(context_->pkg_path.get(),
                       backup_path_,
                       kSharedLocation)) {
-    LOG(ERROR) << "Failed to restore shared directory for widget in update";
-//    return Status::ERROR; // undo cannot fail...
+    LOG(ERROR) << "Failed to restore shared directory for package in update";
+    ret = Status::ERROR;
   }
 
-  return Status::OK;
+  return ret;
 }
 
 }  // namespace filesystem

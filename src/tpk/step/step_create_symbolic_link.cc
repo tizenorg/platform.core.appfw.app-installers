@@ -109,10 +109,18 @@ Status StepCreateSymbolicLink::undo() {
   manifest_x* m = context_->manifest_data.get();
   uiapplication_x *uiapp = m->uiapplication;
   serviceapplication_x *svcapp = m->serviceapplication;
-  if (!RemoveSymLink(uiapp, context_)) return Status::ERROR;
-  if (!RemoveSymLink(svcapp, context_)) return Status::ERROR;
 
-  return Status::OK;
+  Step::Status ret = Status::OK;
+  if (!RemoveSymLink(uiapp, context_)) {
+    LOG(ERROR) << "Cannot remove Symboliclink for uiapp";
+    ret = Status::ERROR;
+  }
+  if (!RemoveSymLink(svcapp, context_)) {
+    LOG(ERROR) << "Cannot remove Symboliclink for svcapp";
+    ret = Status::ERROR;
+  }
+
+  return ret;
 }
 
 }  // namespace filesystem

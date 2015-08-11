@@ -63,16 +63,18 @@ Step::Status StepRemoveIcons::clean() {
 }
 
 Step::Status StepRemoveIcons::undo() {
+  Step::Status ret = Status::OK;
   if (!backups_.empty()) {
     LOG(DEBUG) << "Restoring icons files...";
     for (auto& pair : backups_) {
       if (!MoveFile(pair.first, pair.second)) {
         LOG(ERROR) << "Failed to restore: " << pair.second;
         // We need to try to restore all icons anyway...
+        ret = Status::ERROR;
       }
     }
   }
-  return Status::OK;
+  return ret;
 }
 }  // namespace filesystem
 }  // namespace common_installer
