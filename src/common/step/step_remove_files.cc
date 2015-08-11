@@ -57,7 +57,7 @@ Step::Status StepRemoveFiles::undo() {
     LOG(DEBUG) << "Restoring directory: " << context_->pkg_path.get();
     if (!MoveDir(backup_path, context_->pkg_path.get())) {
       LOG(ERROR) << "Cannot restore widget files";
-      return Status::OK;
+      return Status::ERROR;
     }
   }
 

@@ -97,8 +97,7 @@ Step::Status StepUnregisterApplication::undo() {
                            context_->certificate_info.get(),
                            context_->uid.get())) {
     LOG(ERROR) << "Failed to restore the app registration in pkgmgr";
-    // Continue to revert...
-    return Step::Status::OK;
+    return Step::Status::ERROR;
   }
 
   LOG(INFO) << "Successfully restored the app registration in pkgmgr";

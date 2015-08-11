@@ -53,7 +53,7 @@ Step::Status StepBackupIcons::undo() {
   for (auto& pair : icons_) {
     if (!MoveFile(pair.second, pair.first)) {
       LOG(ERROR) << "Cannot revert icon from backup: " << pair.first;
-      // undo cannot fail, so no break
+      return Status::ERROR;
     }
   }
   LOG(DEBUG) << "Icons reverted from backup";

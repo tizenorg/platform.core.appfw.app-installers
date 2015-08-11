@@ -70,7 +70,7 @@ int AppInstaller::Run() {
     LOG(ERROR) << "Failure occurs";
     do {
       if ((*it)->undo() != Step::Status::OK) {
-        LOG(ERROR) << "Error during undo operation";
+        LOG(ERROR) << "Error during undo operation, but continuing...!";
         ret = -2;
       }
     } while (it-- != itStart);
