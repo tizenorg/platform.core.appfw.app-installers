@@ -341,12 +341,14 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
     // icon
     SetChildren(&(p->icon), tree, el, "icon",
         [&](XmlElement *el, icon_x* p){
-      p->text = string_strdup(el->content());
+      // TODO(t.iwanek): icons are located in shared/res/ so preppending it.
+      // it should not be set in manifest_x probably but added elsewhere.
+      p->text = string_strdup(std::string("shared/res/") + el->content());
       // NOTE: name is an attribute, but the xml writer uses it as text.
       // This must be fixed in whole app-installer modules, including wgt.
       // Current implementation is just for compatibility.
       // p->name = string_strdup(el->attr("name"));
-      p->name = string_strdup(el->content());
+      p->name = string_strdup(std::string("shared/res/") + el->content());
     });
 
     // label
