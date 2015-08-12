@@ -64,7 +64,6 @@ WgtInstaller::WgtInstaller() : AppInstaller("wgt") {
       AddStep<wgt::filesystem::StepWgtResourceDirectory>();
       AddStep<ci::filesystem::StepCopy>();
       AddStep<wgt::filesystem::StepWgtCreateStorageDirectories>();
-      AddStep<ci::filesystem::StepCreateStorageDirectories>();
       AddStep<wgt::filesystem::StepCreateSymbolicLink>();
       AddStep<wgt::filesystem::StepWgtCreateIcons>();
       AddStep<ci::pkgmgr::StepGenerateXml>();
