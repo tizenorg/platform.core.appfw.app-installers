@@ -36,7 +36,7 @@ ENDFOREACH(test)
 # GTEST_MAIN_LIBRARIES is needed.
 target_link_libraries(signature_unittest PUBLIC ${TARGET_LIBNAME_COMMON} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(xml_parser_unittest PUBLIC ${TARGET_LIBNAME_PARSER} ${GTEST_MAIN_LIBRARIES})
-target_link_libraries(smoke_test PRIVATE ${TARGET_LIBNAME_WGT})
+target_link_libraries(smoke_test PRIVATE ${TARGET_LIBNAME_WGT} ${TARGET_LIBNAME_TPK})
 
 FOREACH(test ${TESTS})
   INSTALL(TARGETS ${test} DESTINATION ${BINDIR}/${DESTINATION_DIR})

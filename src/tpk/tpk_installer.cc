@@ -108,9 +108,9 @@ void TpkInstaller::UninstallSteps() {
   AddStep<ci::parse::StepParse>();
   AddStep<ci::backup::StepBackupManifest>();
   AddStep<ci::pkgmgr::StepUnregisterApplication>();
+  AddStep<ci::security::StepRevokeSecurity>();
   AddStep<ci::filesystem::StepRemoveFiles>();
   AddStep<ci::filesystem::StepRemoveIcons>();
-  AddStep<ci::security::StepRevokeSecurity>();
 }
 
 void TpkInstaller::ReinstallSteps() {
