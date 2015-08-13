@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <string>
 
-#include "common/request_type.h"
+#include "common/request.h"
 
 namespace common_installer {
 

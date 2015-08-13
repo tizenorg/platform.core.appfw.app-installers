@@ -7,6 +7,7 @@ SET(SRCS
   pkgmgr_registration.cc
   pkgmgr_signal.cc
   recovery_file.cc
+  request.cc
   security_registration.cc
   step/step_backup_icons.cc
   step/step_backup_manifest.cc

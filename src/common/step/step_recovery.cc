@@ -4,7 +4,7 @@
 
 #include "common/step/step_recovery.h"
 
-#include "common/request_type.h"
+#include "common/request.h"
 #include "common/utils/logging.h"
 
 namespace common_installer {

@@ -30,6 +30,7 @@ class StepConfigure : public Step {
   Status precheck() override;
  private:
   bool SetupRootAppDirectory();
+  void SetupRequestMode();
 
   PkgMgrPtr pkgmgr_;
 

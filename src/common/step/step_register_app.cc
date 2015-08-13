@@ -34,9 +34,10 @@ Step::Status StepRegisterApplication::precheck() {
 
 Step::Status StepRegisterApplication::process() {
   if (!RegisterAppInPkgmgr(context_->xml_path.get(),
-                           context_->pkgid.get().c_str(),
+                           context_->pkgid.get(),
                            context_->certificate_info.get(),
-                           context_->uid.get())) {
+                           context_->uid.get(),
+                           context_->request_mode.get())) {
     LOG(ERROR) << "Failed to register the app";
     return Step::Status::ERROR;
   }
@@ -46,8 +47,10 @@ Step::Status StepRegisterApplication::process() {
 }
 
 Step::Status StepRegisterApplication::undo() {
-  if (!UnregisterAppInPkgmgr(context_->xml_path.get(), context_->pkgid.get(),
-                           context_->uid.get())) {
+  if (!UnregisterAppInPkgmgr(context_->xml_path.get(),
+                             context_->pkgid.get(),
+                             context_->uid.get(),
+                             context_->request_mode.get())) {
     LOG(ERROR) << "Application couldn't be unregistered";
     return Status::ERROR;
   }
