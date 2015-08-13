@@ -7,7 +7,7 @@
 #include <tzplatform_config.h>
 #include <string>
 
-#include "common/request_type.h"
+#include "common/request.h"
 #include "common/utils/file_util.h"
 
 namespace common_installer {
@@ -21,6 +21,8 @@ StepConfigure::StepConfigure(ContextInstaller* context, PkgMgrPtr pkgmgr)
 }
 
 Step::Status StepConfigure::process() {
+  SetupRequestMode();
+
   if (!SetupRootAppDirectory())
     return Status::ERROR;
 
@@ -93,10 +95,7 @@ Step::Status StepConfigure::clean() {
 
 bool StepConfigure::SetupRootAppDirectory() {
   if (context_->root_application_path.get().empty()) {
-    std::string root_app_path =
-        context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
-          ? tzplatform_getenv(TZ_USER_APP)
-          : tzplatform_getenv(TZ_SYS_RW_APP);
+    std::string root_app_path = GetRootAppPath();
     if (root_app_path.empty())
       return false;
 
@@ -113,6 +112,10 @@ bool StepConfigure::SetupRootAppDirectory() {
     }
   }
   return true;
+}
+
+void StepConfigure::SetupRequestMode() {
+  context_->request_mode.set(GetRequestMode());
 }
 
 }  // namespace configuration

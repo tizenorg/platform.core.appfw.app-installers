@@ -2,8 +2,8 @@
 // Use of this source code is governed by an apache-2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef COMMON_REQUEST_TYPE_H_
-#define COMMON_REQUEST_TYPE_H_
+#ifndef COMMON_REQUEST_H_
+#define COMMON_REQUEST_H_
 
 namespace common_installer {
 
@@ -17,7 +17,19 @@ enum class RequestType : int {
   Recovery
 };
 
+/** Request mode (USER vs GLOBAL) */
+enum class RequestMode : int {
+  USER,
+  GLOBAL
+};
+
+/** Get mode for current request (GLOBAL/USER) */
+RequestMode GetRequestMode();
+
+/** Get apps root path for current request (GLOBAL/USER) */
+const char *GetRootAppPath();
+
 }  // namespace common_installer
 
-#endif  // COMMON_REQUEST_TYPE_H_
+#endif  // COMMON_REQUEST_H_
 

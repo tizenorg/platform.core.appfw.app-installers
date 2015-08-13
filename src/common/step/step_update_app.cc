@@ -34,8 +34,10 @@ Step::Status StepUpdateApplication::precheck() {
 
 Step::Status StepUpdateApplication::process() {
   if (!UpgradeAppInPkgmgr(context_->xml_path.get(),
-      context_->pkgid.get(), context_->certificate_info.get(),
-      context_->uid.get())) {
+                          context_->pkgid.get(),
+                          context_->certificate_info.get(),
+                          context_->uid.get(),
+                          context_->request_mode.get())) {
     LOG(ERROR) << "Cannot upgrade manifest for application";
     return Status::ERROR;
   }
@@ -63,8 +65,9 @@ Step::Status StepUpdateApplication::undo() {
   }
 
   if (!UpgradeAppInPkgmgr(context_->backup_xml_path.get(),
-      context_->pkgid.get(), certificate_info,
-      context_->uid.get())) {
+                          context_->pkgid.get(), certificate_info,
+                          context_->uid.get(),
+                          context_->request_mode.get())) {
     LOG(ERROR) << "Cannot revert manifest for application";
     return Status::ERROR;
   }

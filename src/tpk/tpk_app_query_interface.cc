@@ -15,6 +15,7 @@
 #include <string>
 
 #include "common/pkgmgr_registration.h"
+#include "common/request.h"
 #include "common/utils/file_util.h"
 #include "common/utils/logging.h"
 #include "tpk/xml_parser/xml_parser.h"
@@ -87,7 +88,7 @@ bool TpkAppQueryInterface::IsAppInstalledByArgv(int argc, char** argv) {
   std::string pkg_id = GetPkgIdFromPath(path);
   if (pkg_id.empty())
     return false;
-  return ci::IsPackageInstalled(pkg_id, getuid());
+  return ci::IsPackageInstalled(pkg_id, ci::GetRequestMode());
 }
 
 }  // namespace tpk
