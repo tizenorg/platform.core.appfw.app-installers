@@ -48,6 +48,8 @@ class StepParse : public common_installer::Step {
   bool FillAppControl(manifest_x* manifest);
   bool FillPrivileges(manifest_x* manifest);
   bool FillMetadata(manifest_x* manifest);
+  bool FillExtraManifestInfo(manifest_x* manifest);
+  bool FillAccounts(manifest_x* manifest);
   bool FillManifestX(manifest_x* manifest);
 
   std::unique_ptr<wgt::parse::WidgetConfigParser> parser_;

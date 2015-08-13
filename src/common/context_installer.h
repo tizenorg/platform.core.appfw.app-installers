@@ -16,12 +16,44 @@
 
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "common/recovery_file.h"
 #include "common/request_type.h"
 #include "common/utils/property.h"
 
 namespace common_installer {
+
+// TODO(t.iwanek): this structure should be unified for manifest handlers of
+// wgt and tpk packages
+struct SingleAccountInfo {
+  bool multiple_account_support;
+  std::vector<std::pair<std::string, std::string>> names;
+  std::vector<std::pair<std::string, std::string>> icon_paths;
+  std::vector<std::string> capabilities;
+  std::string appid;
+};
+
+class AccountInfo {
+ public:
+  AccountInfo() {}
+  const std::vector<SingleAccountInfo>& accounts() const {
+    return accounts_;
+  }
+  void set_account(const SingleAccountInfo& single_account) {
+    accounts_.push_back(single_account);
+  }
+ private:
+  std::vector<SingleAccountInfo> accounts_;
+};
+
+class ExtraManifestData {
+ public:
+  ExtraManifestData() {}
+
+  Property<AccountInfo> account_info;
+};
 
 class ConfigData {
  public:
@@ -77,6 +109,9 @@ class ContextInstaller {
 
   //  manifest information used to generate xml file
   Property<manifest_x*> manifest_data;
+
+  // Pkgmgr-parser plugins data
+  Property<ExtraManifestData> manifest_plugins_data;
 
   //  manifest information used to revert an update
   Property<manifest_x*> old_manifest_data;

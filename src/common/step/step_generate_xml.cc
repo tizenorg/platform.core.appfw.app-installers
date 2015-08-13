@@ -287,6 +287,52 @@ Step::Status StepGenerateXml::process() {
     xmlTextWriterEndElement(writer);
   }
 
+  const auto& accounts =
+      context_->manifest_plugins_data.get().account_info.get().accounts();
+  if (!accounts.empty()) {
+    xmlTextWriterStartElement(writer, BAD_CAST "account");
+    // add account info
+    for (auto& account : accounts) {
+      xmlTextWriterStartElement(writer, BAD_CAST "account-provider");
+
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "appid",
+                                  BAD_CAST account.appid.c_str());
+
+      if (account.multiple_account_support)
+        xmlTextWriterWriteAttribute(writer,
+                                    BAD_CAST "multiple-accounts-support",
+                                    BAD_CAST "true");
+      for (auto& icon_pair : account.icon_paths) {
+        xmlTextWriterStartElement(writer, BAD_CAST "icon");
+        if (icon_pair.first == "AccountSmall")
+          xmlTextWriterWriteAttribute(writer, BAD_CAST "section",
+                                      BAD_CAST "account-small");
+        else
+          xmlTextWriterWriteAttribute(writer, BAD_CAST "section",
+                                      BAD_CAST "account");
+        xmlTextWriterWriteString(writer, BAD_CAST icon_pair.second.c_str());
+        xmlTextWriterEndElement(writer);
+      }
+
+      for (auto& name_pair : account.names) {
+        xmlTextWriterStartElement(writer, BAD_CAST "label");
+        if (!name_pair.first.empty())
+          xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                      BAD_CAST name_pair.second.c_str());
+        xmlTextWriterWriteString(writer, BAD_CAST name_pair.first.c_str());
+        xmlTextWriterEndElement(writer);
+      }
+
+      for (auto& capability : account.capabilities) {
+        xmlTextWriterWriteFormatElement(writer, BAD_CAST "capability",
+          "%s", BAD_CAST capability.c_str());
+      }
+
+      xmlTextWriterEndElement(writer);
+    }
+    xmlTextWriterEndElement(writer);
+  }
+
   xmlTextWriterEndElement(writer);
 
   xmlTextWriterEndDocument(writer);
