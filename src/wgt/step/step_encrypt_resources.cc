@@ -56,6 +56,7 @@ common_installer::Step::Status StepEncryptResources::process() {
     LOG(DEBUG) << "no encryption";
     return common_installer::Step::Status::OK;
   }
+  LOG(DEBUG) << "Encrypting";
 
   if (!Encrypt(input_)) {
     LOG(ERROR) << "Error during encryption";
@@ -125,11 +126,14 @@ bool StepEncryptResources::EncryptFile(const bf::path &src) {
   unsigned char* encrypted_data = nullptr;
   size_t enc_data_len = 0;
   // TODO(p.sikorski) check if it is Preloaded
-  int is_preloaded = 0;
+  wae_app_type_e enc_type =
+      context_->uid.get() == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+          WAE_DOWNLOADED_GLOBAL_APP : WAE_DOWNLOADED_NORMAL_APP;
+
 
   int ret = wae_encrypt_web_application(
               context_->pkgid.get().c_str(),
-              is_preloaded,
+              enc_type,
               reinterpret_cast<const unsigned char*>(input_buffer),
               length,
               &encrypted_data,
