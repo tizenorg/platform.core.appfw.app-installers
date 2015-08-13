@@ -15,6 +15,7 @@ using xml_parser::XmlParser;
 using xml_parser::XmlTree;
 using xml_parser::XmlElement;
 
+namespace ci = common_installer;
 
 namespace tpk {
 
@@ -368,6 +369,50 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
     });
   });
 
+  // account
+  ci::AccountInfo& account_info =
+      context_->manifest_plugins_data.get().account_info.get();
+  for (auto& account : tree->Children(el, "account")) {
+    for (auto& account_provider : tree->Children(account, "account-provider")) {
+      ci::SingleAccountInfo account;
+      account.appid = account_provider->attr("appid");
+      if (account.appid.empty()) {
+        LOG(ERROR) << "Failed to get appid of account-provider";
+        return false;
+      }
+      if (account_provider->attr("multiple-accounts-support") == "true") {
+        account.multiple_account_support = true;
+      } else if (account_provider->attr("multiple-accounts-support")
+                 == "false") {
+        account.multiple_account_support = false;
+      } else {
+        LOG(ERROR) << "Invalid value of multiple-accounts-support";
+        return false;
+      }
+
+      for (auto& icon : tree->Children(account_provider, "icon")) {
+        std::string section = icon->attr("section");
+        std::string icon_path = icon->content();
+        if (section != "account" && section != "account-small") {
+          LOG(ERROR) << "Invalid value of section of account-provider";
+          return false;
+        }
+        account.icon_paths.emplace_back(section, icon_path);
+      }
+
+      for (auto& name : tree->Children(account_provider, "label")) {
+        std::string lang = name->attr("xml:lang");
+        std::string label = name->content();
+        account.names.emplace_back(label, lang);
+      }
+
+      for (auto& cap : tree->Children(account_provider, "capability")) {
+        std::string capability = cap->content();
+        account.capabilities.push_back(capability);
+      }
+      account_info.set_account(account);
+    }
+  }
 
   return true;
 }
