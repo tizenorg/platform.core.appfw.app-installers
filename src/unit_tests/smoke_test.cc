@@ -20,6 +20,7 @@
 #include "common/backup_paths.h"
 #include "common/pkgmgr_interface.h"
 #include "common/pkgmgr_registration.h"
+#include "common/request.h"
 #include "common/step/step_fail.h"
 #include "tpk/tpk_app_query_interface.h"
 #include "tpk/tpk_installer.h"
@@ -65,8 +66,7 @@ class StepCrash : public ci::Step {
 };
 
 void RemoveAllRecoveryFiles() {
-  bf::path root_path = getuid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
-      ? tzplatform_getenv(TZ_USER_APP) : tzplatform_getenv(TZ_SYS_RW_APP);
+  bf::path root_path = ci::GetRootAppPath();
   for (auto& dir_entry : boost::make_iterator_range(
          bf::directory_iterator(root_path), bf::directory_iterator())) {
     if (bf::is_regular_file(dir_entry)) {
@@ -79,8 +79,7 @@ void RemoveAllRecoveryFiles() {
 }
 
 bf::path FindRecoveryFile() {
-  bf::path root_path = getuid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
-      ? tzplatform_getenv(TZ_USER_APP) : tzplatform_getenv(TZ_SYS_RW_APP);
+  bf::path root_path = ci::GetRootAppPath();
   for (auto& dir_entry : boost::make_iterator_range(
          bf::directory_iterator(root_path), bf::directory_iterator())) {
     if (bf::is_regular_file(dir_entry)) {
@@ -95,8 +94,7 @@ bf::path FindRecoveryFile() {
 bool ValidateFileContentInPackage(const std::string& pkgid,
                                   const std::string& relative,
                                   const std::string& expected) {
-  bf::path root_path = getuid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
-      ? tzplatform_getenv(TZ_USER_APP) : tzplatform_getenv(TZ_SYS_RW_APP);
+  bf::path root_path = ci::GetRootAppPath();
   bf::path file_path = root_path / pkgid / relative;
   if (!bf::exists(file_path)) {
     LOG(ERROR) << file_path << " doesn't exist";
@@ -118,8 +116,7 @@ bool ValidateFileContentInPackage(const std::string& pkgid,
 
 void ValidatePackageFS(const std::string& pkgid, const std::string& appid,
                        PackageType type) {
-  bf::path root_path = getuid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
-      ? tzplatform_getenv(TZ_USER_APP) : tzplatform_getenv(TZ_SYS_RW_APP);
+  bf::path root_path = ci::GetRootAppPath();
   bf::path package_path = root_path / pkgid;
   bf::path binary_path = package_path / "bin" / appid;
   bf::path data_path = package_path / "data";
@@ -153,8 +150,7 @@ void ValidatePackageFS(const std::string& pkgid, const std::string& appid,
 }
 
 void PackageCheckCleanup(const std::string& pkgid, const std::string& appid) {
-  bf::path root_path = getuid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
-      ? tzplatform_getenv(TZ_USER_APP) : tzplatform_getenv(TZ_SYS_RW_APP);
+  bf::path root_path = ci::GetRootAppPath();
   bf::path package_path = root_path / pkgid;
   ASSERT_FALSE(bf::exists(package_path));
 
@@ -175,13 +171,13 @@ void PackageCheckCleanup(const std::string& pkgid, const std::string& appid) {
 
 void ValidatePackage(const std::string& pkgid, const std::string& appid,
                      PackageType type) {
-  ASSERT_TRUE(ci::IsPackageInstalled(pkgid, getuid()));
+  ASSERT_TRUE(ci::IsPackageInstalled(pkgid, ci::GetRequestMode()));
   ValidatePackageFS(pkgid, appid, type);
 }
 
 void CheckPackageNonExistance(const std::string& pkgid,
                               const std::string& appid) {
-  ASSERT_FALSE(ci::IsPackageInstalled(pkgid, getuid()));
+  ASSERT_FALSE(ci::IsPackageInstalled(pkgid, ci::GetRequestMode()));
   PackageCheckCleanup(pkgid, appid);
 }
 
@@ -386,8 +382,7 @@ TEST_F(SmokeTest, RDSMode) {
   ValidatePackage(pkgid, appid, PackageType::WGT);
 
   // Check delta modifications
-  bf::path root_path = getuid() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
-      ? tzplatform_getenv(TZ_USER_APP) : tzplatform_getenv(TZ_SYS_RW_APP);
+  bf::path root_path = ci::GetRootAppPath();
   ASSERT_FALSE(bf::exists(root_path / pkgid / "res" / "wgt" / "DELETED"));
   ASSERT_TRUE(bf::exists(root_path / pkgid / "res" / "wgt" / "ADDED"));
   ValidateFileContentInPackage(pkgid, "res/wgt/MODIFIED", "2\n");

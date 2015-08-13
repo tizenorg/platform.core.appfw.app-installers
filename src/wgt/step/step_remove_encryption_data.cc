@@ -14,7 +14,7 @@ namespace encrypt {
 
 common_installer::Step::Status StepRemoveEncryptionData::process() {
   wae_app_type_e enc_type =
-      context_->uid.get() == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+      context_->request_mode.get() == common_installer::RequestMode::GLOBAL ?
           WAE_DOWNLOADED_GLOBAL_APP : WAE_DOWNLOADED_NORMAL_APP;
 
   // There is no check, if application was encrypted or not

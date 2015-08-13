@@ -58,8 +58,10 @@ namespace common_installer {
 
 bool RegisterAppInPkgmgr(const bf::path& xml_path,
                          const std::string& pkgid,
-                         const CertificateInfo& cert_info, uid_t uid) {
-  int ret = uid != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+                         const CertificateInfo& cert_info,
+                         uid_t uid,
+                         RequestMode request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
       pkgmgr_parser_parse_usr_manifest_for_installation(
           xml_path.c_str(), uid, const_cast<char* const*>(kAppinstTags)) :
       pkgmgr_parser_parse_manifest_for_installation(
@@ -81,8 +83,9 @@ bool RegisterAppInPkgmgr(const bf::path& xml_path,
 }
 
 bool UpgradeAppInPkgmgr(const bf::path& xml_path, const std::string& pkgid,
-                        const CertificateInfo& cert_info, uid_t uid) {
-  int ret = uid != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+                        const CertificateInfo& cert_info, uid_t uid,
+                        RequestMode request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
        pkgmgr_parser_parse_usr_manifest_for_upgrade(
            xml_path.string().c_str(), uid,
            const_cast<char* const*>(kAppinstTags)) :
@@ -106,8 +109,10 @@ bool UpgradeAppInPkgmgr(const bf::path& xml_path, const std::string& pkgid,
 }
 
 bool UnregisterAppInPkgmgr(const bf::path& xml_path,
-                           const std::string& pkgid, uid_t uid) {
-  int ret = uid != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+                           const std::string& pkgid,
+                           uid_t uid,
+                           RequestMode request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
       pkgmgr_parser_parse_usr_manifest_for_uninstallation(
           xml_path.string().c_str(), uid,
           const_cast<char* const*>(kAppinstTags)) :
@@ -155,7 +160,7 @@ std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
   return old_author_certificate;
 }
 
-bool IsPackageInstalled(const std::string& pkg_id, uid_t uid) {
+bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode) {
   pkgmgrinfo_pkginfo_h handle;
   int ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), getuid(),
                                                &handle);
@@ -167,8 +172,7 @@ bool IsPackageInstalled(const std::string& pkg_id, uid_t uid) {
     pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
     return false;
   }
-  bool global_user = uid == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER);
-  if (!global_user && is_global) {
+  if (request_mode != RequestMode::GLOBAL && is_global) {
     pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
     return false;
   }

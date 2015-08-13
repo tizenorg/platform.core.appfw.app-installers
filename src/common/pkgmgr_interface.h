@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "common/app_query_interface.h"
-#include "common/request_type.h"
+#include "common/request.h"
 #include "common/utils/macros.h"
 #include "common/utils/logging.h"
 

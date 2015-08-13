@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "common/recovery_file.h"
-#include "common/request_type.h"
+#include "common/request.h"
 #include "common/utils/property.h"
 
 namespace common_installer {
@@ -144,6 +144,9 @@ class ContextInstaller {
 
   // information for recovery
   Property<RecoveryInfo> recovery_info;
+
+  // user type of request (GLOBAL/USER)
+  Property<RequestMode> request_mode;
 };
 
 }  // namespace common_installer
