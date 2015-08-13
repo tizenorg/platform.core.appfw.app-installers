@@ -17,12 +17,18 @@ namespace common_installer {
 
 bool RegisterAppInPkgmgr(const boost::filesystem::path& xml_path,
                          const std::string& pkgid,
-                         const CertificateInfo& cert_info, uid_t uid);
+                         const CertificateInfo& cert_info,
+                         uid_t uid,
+                         const RequestMode& request_mode);
 bool UpgradeAppInPkgmgr(const boost::filesystem::path& xml_path,
                         const std::string& pkgid,
-                        const CertificateInfo& cert_info, uid_t uid);
+                        const CertificateInfo& cert_info,
+                        uid_t uid,
+                        const RequestMode& request_mode);
 bool UnregisterAppInPkgmgr(const boost::filesystem::path& xml_path,
-                           const std::string& pkgid, uid_t uid);
+                           const std::string& pkgid,
+                           uid_t uid,
+                           const RequestMode& request_mode);
 std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
                                               uid_t uid);
 

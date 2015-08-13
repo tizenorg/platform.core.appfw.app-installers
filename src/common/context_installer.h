@@ -61,6 +61,11 @@ bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
                    PrivilegeLevel allowed_level);
 const char* PrivilegeLevelToString(PrivilegeLevel level);
 
+enum class RequestMode : int {
+  USER,
+  GLOBAL
+};
+
 // TODO(p.sikorski@samsung.com) this class should be divided into:
 //  Base Context class
 //  CtxInstall class that inherits from Context
@@ -119,6 +124,9 @@ class ContextInstaller {
 
   // information for recovery
   Property<RecoveryInfo> recovery_info;
+
+  // user type of request (GLOBAL/USER)
+  Property<RequestMode> request_mode;
 };
 
 }  // namespace common_installer

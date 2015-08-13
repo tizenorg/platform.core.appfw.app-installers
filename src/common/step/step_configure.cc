@@ -19,6 +19,8 @@ const char *kStrEmpty = "";
 Step::Status StepConfigure::process() {
   PkgMgrPtr pkgmgr = PkgMgrInterface::Instance();
 
+  SetupRequestMode();
+
   if (!SetupRootAppDirectory())
     return Status::ERROR;
 
@@ -92,7 +94,7 @@ Step::Status StepConfigure::clean() {
 bool StepConfigure::SetupRootAppDirectory() {
   if (context_->root_application_path.get().empty()) {
     std::string root_app_path =
-        context_->uid.get() != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)
+        context_->request_mode.get() != RequestMode::GLOBAL
           ? tzplatform_getenv(TZ_USER_APP)
           : tzplatform_getenv(TZ_SYS_RW_APP);
     if (root_app_path.empty())
@@ -111,6 +113,13 @@ bool StepConfigure::SetupRootAppDirectory() {
     }
   }
   return true;
+}
+
+void StepConfigure::SetupRequestMode() {
+  RequestMode mode =
+      context_->uid.get() == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+          RequestMode::GLOBAL : RequestMode::USER;
+  context_->request_mode.set(mode);
 }
 
 }  // namespace configuration

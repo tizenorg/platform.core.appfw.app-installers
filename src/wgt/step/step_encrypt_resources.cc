@@ -127,7 +127,7 @@ bool StepEncryptResources::EncryptFile(const bf::path &src) {
   size_t enc_data_len = 0;
   // TODO(p.sikorski) check if it is Preloaded
   wae_app_type_e enc_type =
-      context_->uid.get() == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+      context_->request_mode.get() == common_installer::RequestMode::GLOBAL ?
           WAE_DOWNLOADED_GLOBAL_APP : WAE_DOWNLOADED_NORMAL_APP;
 
 

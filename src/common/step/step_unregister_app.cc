@@ -76,8 +76,10 @@ Step::Status StepUnregisterApplication::process() {
     return Status::ERROR;
   }
 
-  if (!UnregisterAppInPkgmgr(context_->xml_path.get(), context_->pkgid.get(),
-                             context_->uid.get())) {
+  if (!UnregisterAppInPkgmgr(context_->xml_path.get(),
+                             context_->pkgid.get(),
+                             context_->uid.get(),
+                             context_->request_mode.get())) {
     LOG(ERROR) << "Failed to unregister package into database";
     return Status::ERROR;
   }
@@ -93,9 +95,10 @@ Step::Status StepUnregisterApplication::process() {
 
 Step::Status StepUnregisterApplication::undo() {
   if (!RegisterAppInPkgmgr(context_->backup_xml_path.get(),
-                           context_->pkgid.get().c_str(),
+                           context_->pkgid.get(),
                            context_->certificate_info.get(),
-                           context_->uid.get())) {
+                           context_->uid.get(),
+                           context_->request_mode.get())) {
     LOG(ERROR) << "Failed to restore the app registration in pkgmgr";
     return Step::Status::ERROR;
   }

@@ -29,6 +29,7 @@ class StepConfigure : public Step {
   Status precheck() override;
  private:
   bool SetupRootAppDirectory();
+  void SetupRequestMode();
 
   SCOPE_LOG_TAG(Configure)
 };

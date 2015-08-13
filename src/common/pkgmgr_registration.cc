@@ -57,8 +57,10 @@ namespace common_installer {
 
 bool RegisterAppInPkgmgr(const bf::path& xml_path,
                          const std::string& pkgid,
-                         const CertificateInfo& cert_info, uid_t uid) {
-  int ret = uid != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+                         const CertificateInfo& cert_info,
+                         uid_t uid,
+                         const RequestMode& request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
       pkgmgr_parser_parse_usr_manifest_for_installation(
           xml_path.c_str(), uid, const_cast<char* const*>(kAppinstTags)) :
       pkgmgr_parser_parse_manifest_for_installation(
@@ -80,8 +82,9 @@ bool RegisterAppInPkgmgr(const bf::path& xml_path,
 }
 
 bool UpgradeAppInPkgmgr(const bf::path& xml_path, const std::string& pkgid,
-                        const CertificateInfo& cert_info, uid_t uid) {
-  int ret = uid != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+                        const CertificateInfo& cert_info, uid_t uid,
+                        const RequestMode& request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
        pkgmgr_parser_parse_usr_manifest_for_upgrade(
            xml_path.string().c_str(), uid,
            const_cast<char* const*>(kAppinstTags)) :
@@ -105,8 +108,10 @@ bool UpgradeAppInPkgmgr(const bf::path& xml_path, const std::string& pkgid,
 }
 
 bool UnregisterAppInPkgmgr(const bf::path& xml_path,
-                           const std::string& pkgid, uid_t uid) {
-  int ret = uid != tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ?
+                           const std::string& pkgid,
+                           uid_t uid,
+                           const RequestMode& request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
       pkgmgr_parser_parse_usr_manifest_for_uninstallation(
           xml_path.string().c_str(), uid,
           const_cast<char* const*>(kAppinstTags)) :
