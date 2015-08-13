@@ -5,6 +5,7 @@
 
 #include "wgt/step/step_parse.h"
 
+#include <manifest_handlers/account_handler.h>
 #include <manifest_handlers/app_control_handler.h>
 #include <manifest_handlers/application_icons_handler.h>
 #include <manifest_handlers/application_manifest_constants.h>
@@ -230,6 +231,31 @@ bool StepParse::FillMetadata(manifest_x* manifest) {
   return true;
 }
 
+bool StepParse::FillAccounts(manifest_x* manifest) {
+  std::shared_ptr<const AccountInfo> account_info =
+      std::static_pointer_cast<const AccountInfo>(parser_->GetManifestData(
+          app_keys::kAccountKey));
+  if (!account_info)
+    return true;
+  common_installer::AccountInfo info;
+  for (auto& account : account_info->accounts()) {
+    common_installer::SingleAccountInfo single_info;
+    single_info.capabilities = account.capabilities;
+    single_info.icon_paths = account.icon_paths;
+    single_info.multiple_account_support = account.multiple_account_support;
+    single_info.names = account.names;
+    // wgt can contain only one app so this assumes mainapp_id is valid here
+    single_info.appid = manifest->mainapp_id;
+    info.set_account(single_info);
+  }
+  context_->manifest_plugins_data.get().account_info.set(info);
+  return true;
+}
+
+bool StepParse::FillPkgmgrPluginInfo(manifest_x* manifest) {
+  return FillAccounts(manifest);
+}
+
 bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillIconPaths(manifest))
     return false;
@@ -242,6 +268,8 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillAppControl(manifest))
     return false;
   if (!FillMetadata(manifest))
+    return false;
+  if (!FillPkgmgrPluginInfo(manifest))
     return false;
   return true;
 }
