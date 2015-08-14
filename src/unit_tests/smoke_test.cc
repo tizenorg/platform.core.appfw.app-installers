@@ -495,6 +495,37 @@ TEST_F(SmokeTest, DeinstallationMode_Tpk) {
   CheckPackageNonExistance(pkgid, appid);
 }
 
+TEST_F(SmokeTest, RecoveryMode_Tpk_Installation) {
+  bf::path path = "/usr/share/app-installers-ut/test_samples/smoke/RecoveryMode_Tpk_Installation.tpk";  // NOLINT
+  ASSERT_DEATH(Install(path, PackageType::TPK, RequestResult::CRASH), ".*");
+
+  std::string pkgid = "smokeapp15";
+  std::string appid = "smokeapp15.RecoveryModeTpkInstallation";
+  bf::path recovery_file = FindRecoveryFile();
+  ASSERT_FALSE(recovery_file.empty());
+  ASSERT_EQ(Recover(recovery_file, PackageType::TPK),
+            ci::AppInstaller::Result::OK);
+  CheckPackageNonExistance(pkgid, appid);
+}
+
+TEST_F(SmokeTest, RecoveryMode_Tpk_Update) {
+  bf::path path_old = "/usr/share/app-installers-ut/test_samples/smoke/RecoveryMode_Tpk_Update.tpk";  // NOLINT
+  bf::path path_new = "/usr/share/app-installers-ut/test_samples/smoke/RecoveryMode_Tpk_Update_2.tpk";  // NOLINT
+  RemoveAllRecoveryFiles();
+  ASSERT_DEATH(Update(path_old, path_new, PackageType::TPK,
+                      RequestResult::CRASH), ".*");
+
+  std::string pkgid = "smokeapp16";
+  std::string appid = "smokeapp16.RecoveryModeTpkUpdate";
+  bf::path recovery_file = FindRecoveryFile();
+  ASSERT_FALSE(recovery_file.empty());
+  ASSERT_EQ(Recover(recovery_file, PackageType::TPK),
+            ci::AppInstaller::Result::OK);
+  ValidatePackage(pkgid, appid, PackageType::TPK);
+
+  ASSERT_TRUE(ValidateFileContentInPackage(pkgid, "VERSION", "1\n"));
+}
+
 }  // namespace common_installer
 
 int main(int argc,  char** argv) {
