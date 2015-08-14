@@ -28,6 +28,7 @@ class TpkInstaller : public common_installer::AppInstaller {
   void UpdateSteps();
   void UninstallSteps();
   void ReinstallSteps();
+  void RecoverySteps();
 
   SCOPE_LOG_TAG(TpkInstaller)
 };
