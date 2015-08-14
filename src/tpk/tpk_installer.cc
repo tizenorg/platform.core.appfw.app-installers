@@ -12,11 +12,19 @@
 #include "common/step/step_fail.h"
 #include "common/step/step_generate_xml.h"
 #include "common/step/step_old_manifest.h"
+#include "common/step/step_open_recovery_file.h"
 #include "common/step/step_parse.h"
+#include "common/step/step_recover_application.h"
+#include "common/step/step_recover_files.h"
+#include "common/step/step_recover_icons.h"
+#include "common/step/step_recover_manifest.h"
+#include "common/step/step_recover_security.h"
+#include "common/step/step_recover_storage_directories.h"
 #include "common/step/step_register_app.h"
 #include "common/step/step_remove_icons.h"
 #include "common/step/step_remove_files.h"
 #include "common/step/step_revoke_security.h"
+#include "common/step/step_remove_temporary_directory.h"
 #include "common/step/step_register_security.h"
 #include "common/step/step_check_signature.h"
 #include "common/step/step_unregister_app.h"
@@ -27,6 +35,7 @@
 #include "tpk/step/step_copy_manifest_xml.h"
 #include "tpk/step/step_create_symbolic_link.h"
 #include "tpk/step/step_parse.h"
+#include "tpk/step/step_parse_recovery.h"
 
 namespace ci = common_installer;
 
@@ -61,8 +70,7 @@ void TpkInstaller::Prepare() {
       ReinstallSteps();
       break;
     case ci::RequestType::Recovery:
-      AddStep<ci::configuration::StepFail>();
-      // TODO(t.iwanek): recovery mode invocation...
+      RecoverySteps();
       break;
     default:
       AddStep<ci::configuration::StepFail>();
@@ -115,6 +123,19 @@ void TpkInstaller::UninstallSteps() {
 
 void TpkInstaller::ReinstallSteps() {
   AddStep<ci::configuration::StepFail>();
+}
+
+void TpkInstaller::RecoverySteps() {
+  AddStep<ci::configuration::StepConfigure>(pkgmgr_);
+  AddStep<ci::recovery::StepOpenRecoveryFile>();
+  AddStep<tpk::parse::StepParseRecovery>();
+  AddStep<ci::pkgmgr::StepRecoverApplication>();
+  AddStep<ci::filesystem::StepRemoveTemporaryDirectory>();
+  AddStep<ci::filesystem::StepRecoverIcons>();
+  AddStep<ci::filesystem::StepRecoverManifest>();
+  AddStep<ci::filesystem::StepRecoverStorageDirectories>();
+  AddStep<ci::filesystem::StepRecoverFiles>();
+  AddStep<ci::security::StepRecoverSecurity>();
 }
 
 }  // namespace tpk

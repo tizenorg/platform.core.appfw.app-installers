@@ -7,7 +7,6 @@
 #include <vector>
 #include "common/context_installer.h"
 #include "common/step/step.h"
-#include "common/utils/logging.h"
 
 using std::vector;
 using std::string;
@@ -15,6 +14,7 @@ using xml_parser::XmlParser;
 using xml_parser::XmlTree;
 using xml_parser::XmlElement;
 
+namespace bf = boost::filesystem;
 namespace ci = common_installer;
 
 namespace tpk {
@@ -93,18 +93,23 @@ Status StepParse::precheck() {
   return Step::Status::OK;
 }
 
+bf::path StepParse::LocateConfigFile() const {
+  boost::filesystem::path path(context_->unpacked_dir_path.get());
+  path /= kManifestFileName;
+  return path;
+}
+
 /* process()
  * Parse tizen-manifest.xml and get the data from it
  * Store the data into the context_
  */
 Status StepParse::process() {
-  boost::filesystem::path mPath(context_->unpacked_dir_path.get());
-  mPath /= kManifestFileName;
+  bf::path m_path = LocateConfigFile();
 
-  LOG(INFO) << "Parse " << mPath.c_str();
+  LOG(INFO) << "Parse " << m_path.c_str();
 
   XmlParser parser;
-  std::unique_ptr<XmlTree> tree(parser.ParseAndGetNewTree(mPath.c_str()));
+  std::unique_ptr<XmlTree> tree(parser.ParseAndGetNewTree(m_path.c_str()));
   if (tree == nullptr) {
     LOG(ERROR) << "Failure on parsing xml";
     return Status::ERROR;
