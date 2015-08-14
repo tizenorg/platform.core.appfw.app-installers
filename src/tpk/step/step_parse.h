@@ -18,6 +18,9 @@ class StepParse : public common_installer::Step {
   Status undo()     override { return Status::OK; };
   Status precheck() override;
 
+ protected:
+  virtual boost::filesystem::path LocateConfigFile() const;
+
  private:
   bool SetContextByManifestParser(xml_parser::XmlTree* tree);
   bool SetPkgInfoManifest(manifest_x* m,
@@ -25,7 +28,7 @@ class StepParse : public common_installer::Step {
   bool SetPkgInfoChildren(manifest_x *m,
       xml_parser::XmlTree *tree, xml_parser::XmlElement* manifest);
 
-  SCOPE_LOG_TAG(StepParse)
+  SCOPE_LOG_TAG(Parse)
 };
 
 }  // namespace parse
