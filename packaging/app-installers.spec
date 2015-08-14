@@ -3,8 +3,8 @@
 
 Name:           app-installers
 Summary:        Application installers
-Version:        1.0
-Release:        2
+Version:        1.1
+Release:        1
 Group:          Application Framework/Package Management
 License:        Apache-2.0
 Source0:        %{name}-%{version}.tar.gz
@@ -103,3 +103,7 @@ ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %files tests
 %{_bindir}/app-installers-ut/*
 %{_datadir}/app-installers-ut/*
+
+%changelog
+* Fri Aug 14 2015 Pawel Sikorski <p.sikorski@samsung.com> 1.1-1
+- Initial rpm changelog; Recovery (WGT) mode added, warngings cleanup; undo() can return ERROR
