@@ -18,6 +18,7 @@
 
 #include "common/backup_paths.h"
 #include "common/pkgmgr_interface.h"
+#include "common/pkgmgr_registration.h"
 #include "common/step/step_fail.h"
 #include "wgt/wgt_app_query_interface.h"
 #include "wgt/wgt_installer.h"
@@ -81,16 +82,6 @@ bf::path FindRecoveryFile() {
     }
   }
   return {};
-}
-
-bool IsPackageInstalled(const std::string& pkg_id) {
-  pkgmgrinfo_pkginfo_h handle;
-  int ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), getuid(),
-                                               &handle);
-  if (ret != PMINFO_R_OK)
-    return false;
-  pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
-  return true;
 }
 
 bool ValidateFileContentInPackage(const std::string& pkgid,
@@ -176,13 +167,13 @@ void PackageCheckCleanup(const std::string& pkgid, const std::string& appid) {
 
 void ValidatePackage(const std::string& pkgid, const std::string& appid,
                      PackageType type) {
-  ASSERT_TRUE(IsPackageInstalled(pkgid));
+  ASSERT_TRUE(ci::IsPackageInstalled(pkgid, getuid()));
   ValidatePackageFS(pkgid, appid, type);
 }
 
 void CheckPackageNonExistance(const std::string& pkgid,
                               const std::string& appid) {
-  ASSERT_FALSE(IsPackageInstalled(pkgid));
+  ASSERT_FALSE(ci::IsPackageInstalled(pkgid, getuid()));
   PackageCheckCleanup(pkgid, appid);
 }
 
