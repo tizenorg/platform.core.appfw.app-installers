@@ -6,6 +6,7 @@
 
 #include <pkgmgr_installer.h>
 #include <tzplatform_config.h>
+#include <unistd.h>
 
 #include "common/utils/logging.h"
 
@@ -154,12 +155,24 @@ std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
   return old_author_certificate;
 }
 
-bool IsPackageInstalled(const std::string& pkg_id) {
+bool IsPackageInstalled(const std::string& pkg_id, uid_t uid) {
   pkgmgrinfo_pkginfo_h handle;
   int ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), getuid(),
                                                &handle);
   if (ret != PMINFO_R_OK)
     return false;
+  bool is_global = false;
+  if (pkgmgrinfo_pkginfo_is_for_all_users(handle, &is_global) != PMINFO_R_OK) {
+    LOG(ERROR) << "pkgmgrinfo_pkginfo_is_for_all_users failed";
+    pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
+    return false;
+  }
+  bool global_user = uid == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER);
+  if (!global_user && is_global) {
+    pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
+    return false;
+  }
+
   pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
   return true;
 }

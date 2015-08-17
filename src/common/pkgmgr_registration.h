@@ -25,7 +25,7 @@ bool UnregisterAppInPkgmgr(const boost::filesystem::path& xml_path,
                            const std::string& pkgid, uid_t uid);
 std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
                                               uid_t uid);
-bool IsPackageInstalled(const std::string& pkg_id);
+bool IsPackageInstalled(const std::string& pkg_id, uid_t uid);
 
 }  // namespace common_installer
 

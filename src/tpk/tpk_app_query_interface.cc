@@ -87,7 +87,7 @@ bool TpkAppQueryInterface::IsAppInstalledByArgv(int argc, char** argv) {
   std::string pkg_id = GetPkgIdFromPath(path);
   if (pkg_id.empty())
     return false;
-  return ci::IsPackageInstalled(pkg_id);
+  return ci::IsPackageInstalled(pkg_id, getuid());
 }
 
 }  // namespace tpk
