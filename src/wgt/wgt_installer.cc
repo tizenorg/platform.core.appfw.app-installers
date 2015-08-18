@@ -11,9 +11,11 @@
 #include "common/step/step_backup_manifest.h"
 #include "common/step/step_backup_icons.h"
 #include "common/step/step_copy.h"
+#include "common/step/step_copy_2sd.h"
 #include "common/step/step_copy_backup.h"
 #include "common/step/step_copy_storage_directories.h"
 #include "common/step/step_fail.h"
+#include "common/step/step_install_sd.h"
 #include "common/step/step_kill_apps.h"
 #include "common/step/step_open_recovery_file.h"
 #include "common/step/step_parse.h"
@@ -21,12 +23,12 @@
 #include "common/step/step_register_app.h"
 #include "common/step/step_recover_application.h"
 #include "common/step/step_recover_files.h"
+#include "common/step/step_remove_files_sd.h"
 #include "common/step/step_recover_icons.h"
 #include "common/step/step_recover_manifest.h"
 #include "common/step/step_recover_security.h"
 #include "common/step/step_recover_storage_directories.h"
 #include "common/step/step_remove_icons.h"
-#include "common/step/step_remove_files.h"
 #include "common/step/step_remove_temporary_directory.h"
 #include "common/step/step_revoke_security.h"
 #include "common/step/step_register_security.h"
@@ -72,13 +74,14 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<wgt::encrypt::StepEncryptResources>();
       AddStep<wgt::filesystem::StepWgtResourceDirectory>();
       AddStep<ci::security::StepRollbackInstallationSecurity>();
-      AddStep<ci::filesystem::StepCopy>();
+      AddStep<ci::filesystem::StepCopy2SD>();
       AddStep<wgt::filesystem::StepWgtCreateStorageDirectories>();
       AddStep<wgt::filesystem::StepCreateSymbolicLink>();
       AddStep<wgt::filesystem::StepWgtCreateIcons>();
       AddStep<wgt::pkgmgr::StepGenerateXml>();
       AddStep<ci::pkgmgr::StepRegisterApplication>();
       AddStep<ci::security::StepRegisterSecurity>();
+      AddStep<ci::filesystem::StepInstallSD>();
       break;
     }
     case ci::RequestType::Update: {
@@ -95,6 +98,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::backup::StepBackupManifest>();
       AddStep<ci::backup::StepBackupIcons>();
       AddStep<ci::backup::StepCopyBackup>();
+      // TODO(a.niznik): Add external update.
       AddStep<wgt::filesystem::StepWgtCopyStorageDirectories>();
       AddStep<wgt::filesystem::StepCreateSymbolicLink>();
       AddStep<wgt::filesystem::StepWgtCreateIcons>();
@@ -110,7 +114,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::backup::StepBackupManifest>();
       AddStep<ci::pkgmgr::StepUnregisterApplication>();
       AddStep<ci::security::StepRollbackDeinstallationSecurity>();
-      AddStep<ci::filesystem::StepRemoveFiles>();
+      AddStep<ci::filesystem::StepRemoveFilesSD>();
       AddStep<ci::filesystem::StepRemoveIcons>();
       AddStep<wgt::encrypt::StepRemoveEncryptionData>();
       AddStep<ci::security::StepRevokeSecurity>();
