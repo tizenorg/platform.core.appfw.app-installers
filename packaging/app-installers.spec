@@ -31,6 +31,7 @@ BuildRequires:  pkgconfig(manifest-parser)
 BuildRequires:  pkgconfig(manifest-handlers)
 BuildRequires:  pkgconfig(capi-security-privilege-manager)
 BuildRequires:  pkgconfig(libwebappenc)
+BuildRequires:  pkgconfig(app2sd)
 
 Requires: ca-certificates-tizen
 Requires: libtzplatform-config
