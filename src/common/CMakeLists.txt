@@ -44,6 +44,7 @@ SET(SRCS
   step/step_update_security.cc
   utils/file_util.cc
   utils/string_util.cc
+  wgt_external_storage.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})
@@ -63,6 +64,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   ZLIB_DEPS
   PRIVILEGE_CHECKER_DEPS
   Boost
+  APP2SD_DEPS
 )
 
 # Extra
