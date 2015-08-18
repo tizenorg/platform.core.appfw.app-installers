@@ -3,7 +3,7 @@
 
 Name:           app-installers
 Summary:        Application installers
-Version:        1.2
+Version:        1.3
 Release:        1
 Group:          Application Framework/Package Management
 License:        Apache-2.0
@@ -105,6 +105,11 @@ ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %{_datadir}/app-installers-ut/*
 
 %changelog
+* Tue Aug 18 2015 Pawel Sikorski <p.sikorski@samsung.com> 1.3-1
+- TPK installer exposed and TPK smoke tests added; smoke tests cleanup;
+- preserving icons extensions in backup; fix deinstallation rollback
+- SMACK label changed
+
 * Fri Aug 14 2015 Pawel Sikorski <p.sikorski@samsung.com> 1.2-1
 - Account info added to manifest.xml during installation; Smoke tests added; TPK update detection
 
