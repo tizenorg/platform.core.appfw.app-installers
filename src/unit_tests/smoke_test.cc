@@ -15,6 +15,7 @@
 
 #include <array>
 #include <cstdio>
+#include <cstdlib>
 
 #include "common/backup_paths.h"
 #include "common/pkgmgr_interface.h"
@@ -276,7 +277,36 @@ ci::AppInstaller::Result Recover(const bf::path& recovery_file,
 
 namespace wgt {
 
-// TODO(t.iwanek): before tests cleanup...
+class SmokeEnvironment : public testing::Environment {
+ public:
+  SmokeEnvironment(const bf::path& home) : home_(home) {
+  }
+  void SetUp() override {
+    bs::error_code error;
+    bf::remove_all(home_ / ".applications.bck", error);
+    bf::remove_all(home_ / "apps_rw.bck", error);
+    if (bf::exists(home_ / "apps_rw")) {
+      bf::rename(home_ / "apps_rw", home_ / "apps_rw.bck", error);
+      assert(!error);
+    }
+    if (bf::exists(home_ / ".applications")) {
+      bf::rename(home_ / ".applications", home_ / ".applications.bck", error);
+      assert(!error);
+    }
+  }
+  void TearDown() override {
+    bs::error_code error;
+    bf::remove_all(home_ / ".applications", error);
+    bf::remove_all(home_ / "apps_rw", error);
+    if (bf::exists(home_ / "apps_rw.bck"))
+      bf::rename(home_ / "apps_rw.bck", home_ / "apps_rw", error);
+    if (bf::exists(home_ / ".applications.bck"))
+      bf::rename(home_ / ".applications.bck", home_ / ".applications", error);
+  }
+ private:
+  bf::path home_;
+};
+
 class SmokeTest : public testing::Test {
 };
 
@@ -394,3 +424,14 @@ TEST_F(SmokeTest, DeinstallationMode_Rollback) {
 }
 
 }  // namespace wgt
+
+int main(int argc,  char** argv) {
+  testing::InitGoogleTest(&argc, argv);
+  const char* directory = getenv("HOME");
+  if (!directory) {
+    LOG(ERROR) << "Cannot get $HOME value";
+    return 1;
+  }
+  testing::AddGlobalTestEnvironment(new wgt::SmokeEnvironment(directory));
+  return RUN_ALL_TESTS();
+}
