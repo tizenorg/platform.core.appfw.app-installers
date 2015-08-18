@@ -37,6 +37,7 @@
 
 #include "wgt/step/step_create_symbolic_link.h"
 #include "wgt/step/step_check_settings_level.h"
+#include "wgt/step/step_wgt_copy2SD.h"
 #include "wgt/step/step_parse.h"
 #include "wgt/step/step_parse_recovery.h"
 #include "wgt/step/step_remove_encryption_data.h"
@@ -62,6 +63,7 @@ WgtInstaller::WgtInstaller() : AppInstaller("wgt") {
       AddStep<ci::security::StepCheckSignature>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
       AddStep<wgt::filesystem::StepWgtResourceDirectory>();
+      AddStep<wgt::filesystem::StepWgtCopy2SD>();
       AddStep<ci::filesystem::StepCopy>();
       AddStep<wgt::filesystem::StepWgtCreateStorageDirectories>();
       AddStep<ci::filesystem::StepCreateStorageDirectories>();
