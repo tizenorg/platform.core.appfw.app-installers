@@ -15,6 +15,7 @@
 
 #include <array>
 #include <cstdio>
+#include <cstdlib>
 
 #include "common/backup_paths.h"
 #include "common/pkgmgr_interface.h"
@@ -30,6 +31,11 @@ namespace bs = boost::system;
 namespace ci = common_installer;
 
 namespace {
+
+const char kApplicationDir[] = ".applications";
+const char kApplicationDirBackup[] = ".applications.bck";
+const char KUserAppsDir[] = "apps_rw";
+const char KUserAppsDirBackup[] = "apps_rw.bck";
 
 enum class RequestResult {
   NORMAL,
@@ -276,7 +282,37 @@ ci::AppInstaller::Result Recover(const bf::path& recovery_file,
 
 namespace wgt {
 
-// TODO(t.iwanek): before tests cleanup...
+class SmokeEnvironment : public testing::Environment {
+ public:
+  explicit SmokeEnvironment(const bf::path& home) : home_(home) {
+  }
+  void SetUp() override {
+    bs::error_code error;
+    bf::remove_all(home_ / kApplicationDirBackup, error);
+    bf::remove_all(home_ / KUserAppsDirBackup, error);
+    if (bf::exists(home_ / KUserAppsDir)) {
+      bf::rename(home_ / KUserAppsDir, home_ / KUserAppsDirBackup, error);
+      assert(!error);
+    }
+    if (bf::exists(home_ / kApplicationDir)) {
+      bf::rename(home_ / kApplicationDir, home_ / kApplicationDirBackup, error);
+      assert(!error);
+    }
+  }
+  void TearDown() override {
+    bs::error_code error;
+    bf::remove_all(home_ / kApplicationDir, error);
+    bf::remove_all(home_ / KUserAppsDir, error);
+    if (bf::exists(home_ / KUserAppsDirBackup))
+      bf::rename(home_ / KUserAppsDirBackup, home_ / KUserAppsDir, error);
+    if (bf::exists(home_ / kApplicationDirBackup))
+      bf::rename(home_ / kApplicationDirBackup, home_ / kApplicationDir, error);
+  }
+
+ private:
+  bf::path home_;
+};
+
 class SmokeTest : public testing::Test {
 };
 
@@ -394,3 +430,14 @@ TEST_F(SmokeTest, DeinstallationMode_Rollback) {
 }
 
 }  // namespace wgt
+
+int main(int argc,  char** argv) {
+  testing::InitGoogleTest(&argc, argv);
+  const char* directory = getenv("HOME");
+  if (!directory) {
+    LOG(ERROR) << "Cannot get $HOME value";
+    return 1;
+  }
+  testing::AddGlobalTestEnvironment(new wgt::SmokeEnvironment(directory));
+  return RUN_ALL_TESTS();
+}
