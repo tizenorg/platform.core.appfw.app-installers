@@ -147,6 +147,9 @@ class ContextInstaller {
 
   // user type of request (GLOBAL/USER)
   Property<RequestMode> request_mode;
+
+  // external storage preinstallation status
+  Property<bool> preinstall;
 };
 
 }  // namespace common_installer

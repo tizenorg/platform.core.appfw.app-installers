@@ -17,10 +17,12 @@ SET(SRCS
   step/step_check_signature.cc
   step/step_configure.cc
   step/step_copy.cc
+  step/step_copy_2sd.cc
   step/step_copy_backup.cc
   step/step_copy_storage_directories.cc
   step/step_create_storage_directories.cc
   step/step_fail.cc
+  step/step_install_sd.cc
   step/step_kill_apps.cc
   step/step_recover_application.cc
   step/step_recover_files.cc
@@ -36,6 +38,7 @@ SET(SRCS
   step/step_privilege_compatibility.cc
   step/step_remove_icons.cc
   step/step_remove_files.cc
+  step/step_remove_files_sd.cc
   step/step_remove_temporary_directory.cc
   step/step_revoke_security.cc
   step/step_register_security.cc
@@ -46,6 +49,7 @@ SET(SRCS
   step/step_update_security.cc
   utils/file_util.cc
   utils/string_util.cc
+  external_storage.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})
@@ -66,6 +70,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   PRIVILEGE_CHECKER_DEPS
   APPMANAGER_DEPS
   Boost
+  APP2SD_DEPS
 )
 
 # Extra
