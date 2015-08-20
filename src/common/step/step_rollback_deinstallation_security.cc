@@ -1,8 +1,8 @@
 // Copyright (c) 2015 Samsung Electronics Co., Ltd All Rights Reserved
-// Use of this source code is governed by a apache 2.0 license that can be
+// Use of this source code is governed by an apache-2.0 license that can be
 // found in the LICENSE file.
 
-#include "common/step/step_register_security.h"
+#include "common/step/step_rollback_deinstallation_security.h"
 
 #include <boost/filesystem.hpp>
 
@@ -11,23 +11,11 @@
 namespace common_installer {
 namespace security {
 
-Step::Status StepRegisterSecurity::precheck() {
-  if (context_->pkg_path.get().empty()) {
-    LOG(ERROR) << "pkg_path attribute is empty";
-    return Step::Status::INVALID_VALUE;
-  }
-  if (!boost::filesystem::exists(context_->pkg_path.get())) {
-    LOG(ERROR) << "pkg_path ("
-               << context_->pkg_path.get()
-               << ") path does not exist";
-    return Step::Status::INVALID_VALUE;
-  }
-
+Step::Status StepRollbackDeinstallationSecurity::precheck() {
   if (context_->pkgid.get().empty()) {
     LOG(ERROR) << "pkgid attribute is empty";
     return Step::Status::INVALID_VALUE;
   }
-
   if (!context_->manifest_data.get()) {
     LOG(ERROR) << "manifest_data attribute is empty";
     return Step::Status::INVALID_VALUE;
@@ -36,10 +24,12 @@ Step::Status StepRegisterSecurity::precheck() {
   return Step::Status::OK;
 }
 
-Step::Status StepRegisterSecurity::process() {
+Step::Status StepRollbackDeinstallationSecurity::undo() {
   if (!RegisterSecurityContextForApps(
       context_->pkgid.get(), context_->pkg_path.get(),
       context_->manifest_data.get())) {
+    LOG(ERROR) << "Failure on re-installing security context for app "
+               << context_->pkgid.get();
     return Status::ERROR;
   }
   LOG(DEBUG) << "Security context installed";
@@ -48,3 +38,4 @@ Step::Status StepRegisterSecurity::process() {
 
 }  // namespace security
 }  // namespace common_installer
+

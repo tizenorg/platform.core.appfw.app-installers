@@ -1,8 +1,8 @@
 // Copyright (c) 2015 Samsung Electronics Co., Ltd All Rights Reserved
-// Use of this source code is governed by a apache 2.0 license that can be
+// Use of this source code is governed by an apache-2.0 license that can be
 // found in the LICENSE file.
 
-#include "common/step/step_revoke_security.h"
+#include "common/step/step_rollback_installation_security.h"
 
 #include <boost/filesystem.hpp>
 
@@ -11,7 +11,7 @@
 namespace common_installer {
 namespace security {
 
-Step::Status StepRevokeSecurity::precheck() {
+Step::Status StepRollbackInstallationSecurity::precheck() {
   if (context_->pkgid.get().empty()) {
     LOG(ERROR) << "pkgid attribute is empty";
     return Step::Status::INVALID_VALUE;
@@ -24,11 +24,9 @@ Step::Status StepRevokeSecurity::precheck() {
   return Step::Status::OK;
 }
 
-Step::Status StepRevokeSecurity::clean() {
+Step::Status StepRollbackInstallationSecurity::undo() {
   if (!UnregisterSecurityContextForApps(
       context_->pkgid.get(), context_->manifest_data.get())) {
-    LOG(ERROR) << "Failure on unregistering security context for app "
-               << context_->pkgid.get();
     return Status::ERROR;
   }
   LOG(DEBUG) << "Security context uninstalled";
