@@ -55,13 +55,6 @@ class ExtraManifestData {
   Property<AccountInfo> account_info;
 };
 
-class ConfigData {
- public:
-  ConfigData() {}
-  /** version pointed in <application> tag*/
-  Property<std::string> required_api_version;
-};
-
 class BackendData {
  public:
   virtual ~BackendData() { }
@@ -136,9 +129,6 @@ class ContextInstaller {
 
   // uid of the user that request the operation
   Property<uid_t> uid;
-
-  // data from config.xml
-  Property<ConfigData> config_data;
 
   // path for the applications root directory
   Property<boost::filesystem::path> root_application_path;
