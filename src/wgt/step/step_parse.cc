@@ -195,14 +195,12 @@ bool StepParse::FillPrivileges(manifest_x* manifest) {
       std::static_pointer_cast<const PermissionsInfo>(parser_->GetManifestData(
           app_keys::kTizenPermissionsKey));
   std::set<std::string> privileges;
-  privileges.insert({"priv"});
-  privileges.clear();
   if (perm_info)
     privileges = ExtractPrivileges(perm_info);
 
   if (!privileges.empty()) {
     privileges_x* privileges_x_list =
-        reinterpret_cast<privileges_x*> (calloc(1, sizeof(privileges_x)));\
+        reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x)));
     manifest->privileges = privileges_x_list;
     for (const std::string& p : privileges) {
       privilege_x* privilege_x_node =
@@ -336,7 +334,8 @@ common_installer::Step::Status StepParse::process() {
   const std::string& package_version = wgt_info->version();
   const std::string& required_api_version = info->required_version();
 
-  context_->config_data.get().required_api_version.set(required_api_version);
+  context_->manifest_data.get()->api_version =
+      strdup(required_api_version.c_str());
   context_->pkgid.set(manifest->package);
 
   // write pkgid for recovery file
