@@ -26,6 +26,7 @@
 #include "common/step/step_revoke_security.h"
 #include "common/step/step_remove_temporary_directory.h"
 #include "common/step/step_register_security.h"
+#include "common/step/step_rollback_security.h"
 #include "common/step/step_check_signature.h"
 #include "common/step/step_unregister_app.h"
 #include "common/step/step_unzip.h"
@@ -116,9 +117,10 @@ void TpkInstaller::UninstallSteps() {
   AddStep<ci::parse::StepParse>();
   AddStep<ci::backup::StepBackupManifest>();
   AddStep<ci::pkgmgr::StepUnregisterApplication>();
-  AddStep<ci::security::StepRevokeSecurity>();
+  AddStep<ci::security::StepRollbackSecurity>();
   AddStep<ci::filesystem::StepRemoveFiles>();
   AddStep<ci::filesystem::StepRemoveIcons>();
+  AddStep<ci::security::StepRevokeSecurity>();
 }
 
 void TpkInstaller::ReinstallSteps() {
