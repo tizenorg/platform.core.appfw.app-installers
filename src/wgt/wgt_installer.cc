@@ -16,6 +16,7 @@
 #include "common/step/step_fail.h"
 #include "common/step/step_open_recovery_file.h"
 #include "common/step/step_parse.h"
+#include "common/step/step_privilege_compatibility.h"
 #include "common/step/step_register_app.h"
 #include "common/step/step_recover_application.h"
 #include "common/step/step_recover_files.h"
@@ -65,6 +66,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::filesystem::StepUnzip>();
       AddStep<wgt::parse::StepParse>(true);
       AddStep<ci::security::StepCheckSignature>();
+      AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
       AddStep<wgt::encrypt::StepEncryptResources>();
       AddStep<wgt::filesystem::StepWgtResourceDirectory>();
@@ -83,6 +85,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::filesystem::StepUnzip>();
       AddStep<wgt::parse::StepParse>(true);
       AddStep<ci::security::StepCheckSignature>();
+      AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
       AddStep<ci::security::StepCheckOldCertificate>();
       AddStep<wgt::filesystem::StepWgtResourceDirectory>();

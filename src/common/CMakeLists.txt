@@ -31,6 +31,7 @@ SET(SRCS
   step/step_old_manifest.cc
   step/step_open_recovery_file.cc
   step/step_parse.cc
+  step/step_privilege_compatibility.cc
   step/step_remove_icons.cc
   step/step_remove_files.cc
   step/step_remove_temporary_directory.cc

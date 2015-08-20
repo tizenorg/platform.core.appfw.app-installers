@@ -16,6 +16,21 @@
     if (list) {                                                                \
       LISTHEAD(list, node);                                                    \
     }                                                                          \
-  } while (0)                                                                  \
+  } while (false)                                                              \
+
+/*
+ * Calculates size of C style list from any of its point
+ */
+#define PKGMGR_LIST_LEN(list)                                                  \
+  [list]() {                                                                   \
+    size_t size = 0;                                                           \
+    auto node = list;                                                          \
+    PKGMGR_LIST_MOVE_NODE_TO_HEAD(list, node);                                 \
+    while (node) {                                                             \
+      node = node->next;                                                       \
+      ++size;                                                                  \
+    }                                                                          \
+    return size;                                                               \
+  }()                                                                          \
 
 #endif  // COMMON_UTILS_CLIST_HELPERS_H_

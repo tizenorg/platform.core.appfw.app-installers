@@ -13,6 +13,7 @@
 #include "common/step/step_old_manifest.h"
 #include "common/step/step_open_recovery_file.h"
 #include "common/step/step_parse.h"
+#include "common/step/step_privilege_compatibility.h"
 #include "common/step/step_recover_application.h"
 #include "common/step/step_recover_files.h"
 #include "common/step/step_recover_icons.h"
@@ -84,6 +85,7 @@ void TpkInstaller::InstallSteps() {
   AddStep<ci::filesystem::StepUnzip>();
   AddStep<tpk::parse::StepParse>();
   AddStep<ci::security::StepCheckSignature>();
+  AddStep<ci::security::StepPrivilegeCompatibility>();
   AddStep<ci::security::StepRollbackInstallationSecurity>();
   AddStep<ci::filesystem::StepCopy>();
   AddStep<ci::filesystem::StepCreateStorageDirectories>();
@@ -99,6 +101,7 @@ void TpkInstaller::UpdateSteps() {
   AddStep<ci::filesystem::StepUnzip>();
   AddStep<tpk::parse::StepParse>();
   AddStep<ci::security::StepCheckSignature>();
+  AddStep<ci::security::StepPrivilegeCompatibility>();
   AddStep<ci::security::StepCheckOldCertificate>();
   AddStep<ci::backup::StepOldManifest>();
   AddStep<ci::backup::StepBackupManifest>();

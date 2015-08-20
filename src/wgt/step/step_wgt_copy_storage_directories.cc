@@ -27,8 +27,7 @@ namespace wgt {
 namespace filesystem {
 
 common_installer::Step::Status StepWgtCopyStorageDirectories::process() {
-  int version =
-      context_->config_data.get().required_api_version.get().at(0) - '0';
+  int version = context_->manifest_data.get()->api_version[0] - '0';
   if (version < 3) {
     LOG(DEBUG) << "Shared directory coping for tizen 2.x";
     return StepCopyStorageDirectories::process();
@@ -43,8 +42,7 @@ common_installer::Step::Status StepWgtCopyStorageDirectories::process() {
 }
 
 common_installer::Step::Status StepWgtCopyStorageDirectories::undo() {
-  int version =
-      context_->config_data.get().required_api_version.get().at(0) - '0';
+  int version = context_->manifest_data.get()->api_version[0] - '0';
   if (version < 3) {
     LOG(DEBUG) << "Shared directory coping for tizen 2.x";
     return StepCopyStorageDirectories::undo();

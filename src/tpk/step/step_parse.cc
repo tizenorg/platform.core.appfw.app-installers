@@ -2,9 +2,11 @@
 #include "tpk/step/step_parse.h"
 
 #include <boost/filesystem.hpp>
+
 #include <memory>
 #include <string>
 #include <vector>
+
 #include "common/context_installer.h"
 #include "common/step/step.h"
 
@@ -135,7 +137,7 @@ bool StepParse::SetContextByManifestParser(XmlTree* tree) {
 
   LOG(DEBUG) << "Getting manifest xml data";
   LOG(DEBUG) << "manifest: xmlns='" << manifest->attr("xmlns") <<
-                "' api_version='" << manifest->attr("api_version") <<
+                "' api-version='" << manifest->attr("api-version") <<
                 "' package='" << manifest->attr("package") <<
                 "' versionr='" << manifest->attr("version") << "'";
 
@@ -156,8 +158,6 @@ bool StepParse::SetContextByManifestParser(XmlTree* tree) {
   }
 
   // set context_
-  context_->config_data.get().required_api_version.set(
-      manifest->attr("api-version"));
   context_->pkgid.set(manifest->attr("package"));
 
   // write pkgid for recovery file
@@ -194,6 +194,7 @@ bool StepParse::SetPkgInfoManifest(manifest_x* m,
   m->type = strdup("tpk");
   m->version = string_strdup(manifest->attr("version"));
   m->installlocation = string_strdup(manifest->attr("install-location"));
+  m->api_version = string_strdup(manifest->attr("api-version"));
 
   // Choose main app among ui-application or service-application
   // NOTE: main app must have appid attribute
