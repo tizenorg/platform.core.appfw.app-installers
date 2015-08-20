@@ -12,13 +12,15 @@ namespace common_installer {
 namespace security {
 
 // Step that is used during uninstallation
+// Security rules are revoked on cleanup as until that point we need to keep
+// package files present for rollback
 class StepRevokeSecurity : public Step {
  public:
   using Step::Step;
 
-  Status process() override;
-  Status undo() override;
-  Status clean() override { return Status::OK; }
+  Status process() override { return Status::OK; }
+  Status undo() override { return Status::OK; }
+  Status clean() override;
   Status precheck() override;
 
   SCOPE_LOG_TAG(RevokeSecurity)
