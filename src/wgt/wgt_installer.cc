@@ -98,10 +98,10 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::parse::StepParse>();
       AddStep<ci::backup::StepBackupManifest>();
       AddStep<ci::pkgmgr::StepUnregisterApplication>();
-      AddStep<ci::security::StepRevokeSecurity>();
       AddStep<ci::filesystem::StepRemoveFiles>();
       AddStep<ci::filesystem::StepRemoveIcons>();
       AddStep<wgt::encrypt::StepRemoveEncryptionData>();
+      AddStep<ci::security::StepRevokeSecurity>();
       break;
     }
     case ci::RequestType::Reinstall: {
