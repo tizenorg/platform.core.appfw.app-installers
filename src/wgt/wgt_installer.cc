@@ -29,6 +29,7 @@
 #include "common/step/step_remove_temporary_directory.h"
 #include "common/step/step_revoke_security.h"
 #include "common/step/step_register_security.h"
+#include "common/step/step_rollback_security.h"
 #include "common/step/step_old_manifest.h"
 #include "common/step/step_check_signature.h"
 #include "common/step/step_unregister_app.h"
@@ -98,10 +99,11 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::parse::StepParse>();
       AddStep<ci::backup::StepBackupManifest>();
       AddStep<ci::pkgmgr::StepUnregisterApplication>();
-      AddStep<ci::security::StepRevokeSecurity>();
+      AddStep<ci::security::StepRollbackSecurity>();
       AddStep<ci::filesystem::StepRemoveFiles>();
       AddStep<ci::filesystem::StepRemoveIcons>();
       AddStep<wgt::encrypt::StepRemoveEncryptionData>();
+      AddStep<ci::security::StepRevokeSecurity>();
       break;
     }
     case ci::RequestType::Reinstall: {
