@@ -1,428 +1,458 @@
-/* Copyright 2015 Samsung Electronics, license APACHE-2.0, see LICENSE file */
+// Copyright (c) 2015 Samsung Electronics Co., Ltd All Rights Reserved
+// Use of this source code is governed by an apache 2.0 license that can be
+// found in the LICENSE file.
+
 #include "tpk/step/step_parse.h"
 
-#include <boost/filesystem.hpp>
+#include <tpk_manifest_handlers/account_handler.h>
+#include <tpk_manifest_handlers/application_manifest_constants.h>
+#include <tpk_manifest_handlers/author_handler.h>
+#include <tpk_manifest_handlers/description_handler.h>
+#include <tpk_manifest_handlers/package_handler.h>
+#include <tpk_manifest_handlers/privileges_handler.h>
+#include <tpk_manifest_handlers/service_application_handler.h>
+#include <tpk_manifest_handlers/ui_application_handler.h>
+#include <manifest_parser/manifest_constants.h>
 
+#include <pkgmgr/pkgmgr_parser.h>
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
+#include "common/app_installer.h"
 #include "common/context_installer.h"
 #include "common/step/step.h"
-
-using std::vector;
-using std::string;
-using xml_parser::XmlParser;
-using xml_parser::XmlTree;
-using xml_parser::XmlElement;
-
-namespace bf = boost::filesystem;
-namespace ci = common_installer;
+#include "utils/clist_helpers.h"
 
 namespace tpk {
-
 namespace parse {
 
-namespace {
-  const char kManifestFileName[] = "tizen-manifest.xml";
+namespace app_keys = tpk::application_keys;
+namespace bf = boost::filesystem;
+namespace manifest_keys = tpk::manifest_keys;
 
-  XmlElement* Get1stChild(XmlTree *tree,
-      XmlElement* parent, const string element_name) {
-    vector<XmlElement*> v = tree->Children(parent, element_name);
-    if (v.size() < 1) {
-      LOG(DEBUG) << element_name << " is not found as a child of " <<
-          parent->name();
-      return nullptr;
-    }
-    return v[0];  // Always return only the 1st child
-  }
-
-  const char* string_strdup(const string &s) {
-    static const string nullstr = XmlElement::null_string();
-    if (s == XmlElement::null_string()) {
-      return nullptr;
-    }
-    return strdup(s.c_str());
-  }
-
-  // Set child element's data structure, based on given parent and
-  // children name.
-  // setter's arguments
-  //     T*: Child data structure's pointer
-  //     L: setter function(XmlElement* element, T* child_struct)
-  //     tree: tree pointer
-  //     parent: parent XmlElement object
-  //     childName: child name
-  //     setter : child element setter (lambda function)
-  template <typename T, typename L>
-    bool SetChildren(T** listptr, XmlTree* tree, XmlElement* parent,
-        const char* childName, L setter) {
-      vector<XmlElement*> v = tree->Children(parent, childName);
-      for (auto& el : v) {
-        T* p = static_cast<T*>(calloc(1, sizeof(T)));
-        setter(el, p);
-        LISTADD(*listptr, p);
-      }
-      return true;
-    }
-
-}  // namespace
-
-/* short namespace/class name */
-typedef common_installer::Step::Status Status;
-using boost::filesystem::path;
-
-Status StepParse::precheck() {
+common_installer::Step::Status StepParse::precheck() {
   if (context_->unpacked_dir_path.get().empty()) {
-      LOG(ERROR) << "unpacked_dir_path attribute is empty";
-      return Step::Status::INVALID_VALUE;
+    LOG(ERROR) << "unpacked_dir_path attribute is empty";
+    return common_installer::Step::Status::INVALID_VALUE;
   }
   if (!boost::filesystem::exists(context_->unpacked_dir_path.get())) {
     LOG(ERROR) << "unpacked_dir_path ("
                << context_->unpacked_dir_path.get()
                << ") path does not exist";
-    return Step::Status::INVALID_VALUE;
+    return common_installer::Step::Status::INVALID_VALUE;
   }
 
   boost::filesystem::path tmp(context_->unpacked_dir_path.get());
-  tmp /= kManifestFileName;
+  tmp /= manifest_keys::kManifestFileName;
 
   if (!boost::filesystem::exists(tmp)) {
-    LOG(ERROR) << kManifestFileName << " not found from the package";
-    return Step::Status::INVALID_VALUE;
+    LOG(ERROR) << manifest_keys::kManifestFileName
+               << " not found from the package";
+    return common_installer::Step::Status::INVALID_VALUE;
   }
 
-  return Step::Status::OK;
+  return common_installer::Step::Status::OK;
 }
 
+// Locating tizen-manifest.xml file
+bool StepParse::LocateConfigFile() {
+  boost::filesystem::path manifest = context_->unpacked_dir_path.get();
+  manifest /= manifest_keys::kManifestFileName;
+
+  LOG(DEBUG) << "tizen_manifest.xml path: " << manifest;
+
+  if (!boost::filesystem::exists(manifest))
+    return false;
+
+  path_ = manifest;
+  return true;
+}
+
+// Function neded by step_recovery
 bf::path StepParse::LocateConfigFile() const {
   boost::filesystem::path path(context_->unpacked_dir_path.get());
-  path /= kManifestFileName;
+  path /= manifest_keys::kManifestFileName;
   return path;
 }
 
-/* process()
- * Parse tizen-manifest.xml and get the data from it
- * Store the data into the context_
- */
-Status StepParse::process() {
-  bf::path m_path = LocateConfigFile();
-
-  LOG(INFO) << "Parse " << m_path.c_str();
-
-  XmlParser parser;
-  std::unique_ptr<XmlTree> tree(parser.ParseAndGetNewTree(m_path.c_str()));
-  if (tree == nullptr) {
-    LOG(ERROR) << "Failure on parsing xml";
-    return Status::ERROR;
+// package info
+bool StepParse::FillPackageInfo(manifest_x* manifest) {
+  std::shared_ptr<const PackageInfo> app_info =
+      std::static_pointer_cast<const PackageInfo>(
+          parser_->GetManifestData(manifest_keys::kManifestKey));
+  if (!app_info) {
+    LOG(ERROR) << "Application info manifest data has not been found.";
+    return false;
   }
-  if (!SetContextByManifestParser(tree.get())) {
-    return Status::ERROR;
+
+  std::shared_ptr<const UIApplicationInfoList> ui_application_list =
+      std::static_pointer_cast<const UIApplicationInfoList>(
+          parser_->GetManifestData(app_keys::kUIApplicationKey));
+  std::shared_ptr<const ServiceApplicationInfoList> service_application_list =
+      std::static_pointer_cast<const ServiceApplicationInfoList>(
+          parser_->GetManifestData(app_keys::kServiceApplicationKey));
+
+  // mandatory check
+  if (!ui_application_list && !service_application_list) {
+    LOG(ERROR) << "UI Application or Service Application "
+                  "are mandatory and has not been found.";
+    return false;
   }
-  return Status::OK;
+
+  manifest->package = strdup(app_info->package().c_str());
+  manifest->type = strdup("tpk");
+  manifest->version = strdup(app_info->version().c_str());
+  manifest->installlocation = strdup(app_info->install_location().c_str());
+  manifest->api_version = strdup(app_info->api_version().c_str());
+
+  if (ui_application_list) {
+    manifest->mainapp_id =
+        strdup(ui_application_list->items[0].ui_info.appid().c_str());
+  } else {
+    manifest->mainapp_id =
+        strdup(service_application_list->items[0].sa_info.appid().c_str());
+  }
+  return true;
 }
 
-/* Read manifest xml, and set up context_ object
- */
-bool StepParse::SetContextByManifestParser(XmlTree* tree) {
-  // Get required elements
-  XmlElement* manifest,
-      * ui_application, * service_application, * label;
+// author
+bool StepParse::FillAuthorInfo(manifest_x* manifest) {
+  std::shared_ptr<const AuthorInfo> author_info =
+      std::static_pointer_cast<const AuthorInfo>(
+          parser_->GetManifestData(app_keys::kAuthorKey));
 
-  // manifest
-  if (nullptr == (manifest = tree->GetRootElement())) {
-    LOG(ERROR) << "No mandatory manifest element in xml";
+  if (!author_info) {
+    LOG(ERROR) << "Author data has not been found.";
     return false;
   }
 
-  LOG(DEBUG) << "Getting manifest xml data";
-  LOG(DEBUG) << "manifest: xmlns='" << manifest->attr("xmlns") <<
-                "' api-version='" << manifest->attr("api-version") <<
-                "' package='" << manifest->attr("package") <<
-                "' versionr='" << manifest->attr("version") << "'";
+  author_x* author = reinterpret_cast<author_x*>(calloc(1, sizeof(author_x)));
+  author->text = strdup(author_info->name().c_str());
+  author->email = strdup(author_info->email().c_str());
+  author->href = strdup(author_info->href().c_str());
+  LISTADD(manifest->author, author);
+  return true;
+}
 
-  // At least one of ui_application or service_application must be given
-  ui_application = Get1stChild(tree, manifest, "ui-application");
-  service_application = Get1stChild(tree, manifest, "service-application");
-  if (nullptr == ui_application && nullptr == service_application) {
-    LOG(ERROR) << "Neither <ui-application> nor <service-application>" <<
-        " element is found in manifest xml";
-    return false;
-  }
-  // label must be given
-  label = ui_application ? Get1stChild(tree, ui_application, "label") :
-      Get1stChild(tree, service_application, "label");
-  if (nullptr == label) {
-    LOG(ERROR) << "No mandatory <label> element in manifest xml";
+// description
+bool StepParse::FillDescription(manifest_x* manifest) {
+  std::shared_ptr<const DescriptionInfo> description_info =
+      std::static_pointer_cast<const DescriptionInfo>(
+          parser_->GetManifestData(app_keys::kDescriptionKey));
+
+  if (!description_info) {
+    LOG(ERROR) << "Description data has not been found.";
     return false;
   }
 
-  // set context_
-  context_->pkgid.set(manifest->attr("package"));
+  description_x* description = reinterpret_cast<description_x*>
+      (calloc(1, sizeof(description_x)));
+  description->text = strdup(description_info->description().c_str());
+  description->lang = strdup(description_info->xml_lang().c_str());
+  LISTADD(manifest->description, description);
+  return true;
+}
+
+// privileges
+bool StepParse::FillPrivileges(manifest_x* manifest) {
+  std::shared_ptr<const PrivilegesInfo> perm_info =
+      std::static_pointer_cast<const PrivilegesInfo>(parser_->GetManifestData(
+          app_keys::kPrivilegeKey));
+  std::set<std::string> privileges;
+
+  if (perm_info) {
+    privileges = perm_info->GetPrivileges();
+  }
+
+  if (!privileges.empty()) {
+    privileges_x* privileges_x_list =
+        reinterpret_cast<privileges_x*> (calloc(1, sizeof(privileges_x)));
+    manifest->privileges = privileges_x_list;
+    for (const std::string& p : privileges) {
+      privilege_x* privilege_x_node =
+          reinterpret_cast<privilege_x*> (calloc(1, sizeof(privilege_x)));
+      privilege_x_node->text = strdup(p.c_str());
+      LISTADD(manifest->privileges->privilege, privilege_x_node);
+    }
+  }
+  return true;
+}
+
+// service application
+bool StepParse::FillServiceApplication(manifest_x* manifest) {
+  std::shared_ptr<const ServiceApplicationInfoList> service_application_list =
+      std::static_pointer_cast<const ServiceApplicationInfoList>(
+          parser_->GetManifestData(app_keys::kServiceApplicationKey));
+
+  if (!service_application_list) {
+    LOG(ERROR) << "Service Application data has not been found.";
+    return false;
+  }
+
+  for (const auto& application : service_application_list->items) {
+    serviceapplication_x* service_app =
+                          static_cast<serviceapplication_x*>
+                          (calloc(1, sizeof(serviceapplication_x)));
+    service_app->appid = strdup(application.sa_info.appid().c_str());
+    service_app->autorestart =
+        strdup(application.sa_info.auto_restart().c_str());
+    service_app->exec = strdup(application.sa_info.exec().c_str());
+    service_app->onboot = strdup(application.sa_info.on_boot().c_str());
+    service_app->type = strdup(application.sa_info.type().c_str());
+    LISTADD(manifest->serviceapplication, service_app);
+
+    if (!FillAppControl(manifest->uiapplication->appcontrol,
+                        application.app_control))
+      return false;
+    if (!FillDataControl(manifest->uiapplication->datacontrol,
+                         application.data_control))
+      return false;
+    if (!FillApplicationIconPaths(manifest->uiapplication->icon,
+                                  application.app_icons))
+      return false;
+    if (!FillLabel(manifest->uiapplication->label,
+                   application.label))
+      return false;
+    if (!FillMetadata(manifest->uiapplication->metadata,
+                      application.meta_data))
+      return false;
+  }
+  return true;
+}
+
+// ui application
+bool StepParse::FillUIApplication(manifest_x* manifest) {
+  std::shared_ptr<const UIApplicationInfoList> ui_application_list =
+      std::static_pointer_cast<const UIApplicationInfoList>(
+          parser_->GetManifestData(app_keys::kUIApplicationKey));
+
+  if (!ui_application_list) {
+    LOG(ERROR) << "UI Application data has not been found.";
+    return false;
+  }
+
+  for (const auto& application : ui_application_list->items) {
+    uiapplication_x* ui_app =
+                       static_cast<uiapplication_x*>
+                       (calloc(1, sizeof(uiapplication_x)));
+    ui_app->appid = strdup(application.ui_info.appid().c_str());
+    ui_app->exec = strdup(application.ui_info.exec().c_str());
+    ui_app->multiple = strdup(application.ui_info.multiple().c_str());
+    ui_app->nodisplay = strdup(application.ui_info.nodisplay().c_str());
+    ui_app->taskmanage = strdup(application.ui_info.taskmanage().c_str());
+    ui_app->type = strdup(application.ui_info.type().c_str());
+    LISTADD(manifest->uiapplication, ui_app);
+
+    if (!FillAppControl(manifest->serviceapplication->appcontrol,
+                        application.app_control))
+      return false;
+    if (!FillDataControl(manifest->serviceapplication->datacontrol,
+                         application.data_control))
+      return false;
+    if (!FillApplicationIconPaths(manifest->serviceapplication->icon,
+                                  application.app_icons))
+      return false;
+    if (!FillLabel(manifest->serviceapplication->label,
+                   application.label))
+      return false;
+    if (!FillMetadata(manifest->serviceapplication->metadata,
+                      application.meta_data))
+      return false;
+  }
+  return true;
+}
+
+// app_control
+template <typename T1, typename T2>
+bool StepParse::FillAppControl(T1* manifest, const T2& app_control_list) {
+  if (!app_control_list.empty()) {
+    LOG(ERROR) << "App Control data has not been found.";
+    return false;
+  }
+
+  for (const auto& control : app_control_list) {
+    appcontrol_x* app_control =
+          static_cast<appcontrol_x*>(calloc(1, sizeof(appcontrol_x)));
+    app_control->operation = strdup(control.operation().c_str());
+    app_control->mime = strdup(control.mime().c_str());
+    app_control->uri = strdup(control.uri().c_str());
+    LISTADD(manifest, app_control);
+  }
+  return true;
+}
+
+// datacontrol
+template <typename T1, typename T2>
+bool StepParse::FillDataControl(T1* manifest, const T2& data_control_list) {
+  if (!data_control_list.empty()) {
+    LOG(ERROR) << "Data Control has not been found.";
+    return false;
+  }
+
+  for (const auto& control : data_control_list) {
+    datacontrol_x* data_control =
+          static_cast<datacontrol_x*>(calloc(1, sizeof(datacontrol_x)));
+    data_control->access = strdup(control.access().c_str());
+    data_control->providerid = strdup(control.providerid().c_str());
+    data_control->type = strdup(control.type().c_str());
+    LISTADD(manifest, data_control);
+  }
+  return true;
+}
+
+// icon
+template <typename T1, typename T2>
+bool StepParse::FillApplicationIconPaths(T1* manifest, const T2& icons_info) {
+  if (!icons_info.exists()) {
+    LOG(ERROR) << "Application icon has not been found.";
+    return false;
+  }
+
+  for (auto& application_icon : icons_info.icons()) {
+    icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
+    // NOTE: name is an attribute, but the xml writer uses it as text.
+    // This must be fixed in whole app-installer modules, including wgt.
+    // Current implementation is just for compatibility.
+    icon->text = strdup(application_icon.path().c_str());
+    icon->name = strdup(application_icon.path().c_str());
+    LISTADD(manifest, icon);
+  }
+  return true;
+}
+
+// label
+template <typename T1, typename T2>
+bool StepParse::FillLabel(T1* manifest, const T2& label_list) {
+  if (!label_list.empty()) {
+    LOG(ERROR) << "Label data has not been found.";
+    return false;
+  }
+
+  for (const auto& control : label_list) {
+    label_x* label =
+          static_cast<label_x*>(calloc(1, sizeof(label_x)));
+    // NOTE: name is an attribute, but the xml writer uses it as text.
+    // This must be fixed in whole app-installer modules, including wgt.
+    // Current implementation is just for compatibility.
+    label->text = strdup(control.text().c_str());
+    label->name = strdup(control.name().c_str());
+    label->lang = strdup(control.xml_lang().c_str());
+    LISTADD(manifest, label);
+  }
+  return true;
+}
+
+// metadata
+template <typename T1, typename T2>
+bool StepParse::FillMetadata(T1* manifest, const T2& meta_data_list) {
+  if (!meta_data_list.empty()) {
+    LOG(ERROR) << "Metadata has not been found.";
+    return false;
+  }
+
+  for (auto& meta : meta_data_list) {
+    metadata_x* metadata =
+        static_cast<metadata_x*>(calloc(1, sizeof(metadata_x)));
+    metadata->key = strdup(meta.key().c_str());
+    metadata->value = strdup(meta.val().c_str());
+    LISTADD(manifest, metadata);
+  }
+  return true;
+}
+
+// account
+bool StepParse::FillAccounts(void) {
+  std::shared_ptr<const AccountInfo> account_info =
+      std::static_pointer_cast<const AccountInfo>(parser_->GetManifestData(
+          app_keys::kAccountKey));
+  if (!account_info) {
+    LOG(ERROR) << "Account Info has not been found.";
+    return false;
+  }
+
+  common_installer::AccountInfo info;
+  for (auto& account : account_info->accounts()) {
+    common_installer::SingleAccountInfo single_info;
+    single_info.capabilities = account.capabilities;
+    single_info.icon_paths = account.icon_paths;
+    single_info.multiple_account_support = account.multiple_account_support;
+    single_info.names = account.labels;
+    // appid has the same value as package
+    single_info.appid =  account.app_id;
+    info.set_account(single_info);
+  }
+  context_->manifest_plugins_data.get().account_info.set(info);
+  return true;
+}
+
+bool StepParse::FillManifestX(manifest_x* manifest) {
+  if (!FillPackageInfo(manifest))
+    return false;
+  if (!FillServiceApplication(manifest) && !FillUIApplication(manifest))
+    return false;
+  FillPrivileges(manifest);
+  FillAccounts();
+  return true;
+}
+
+common_installer::Step::Status StepParse::process() {
+  if (!LocateConfigFile()) {
+    LOG(ERROR) << "No tizen_manifest.xml";
+    return common_installer::Step::Status::ERROR;
+  }
+  parser_.reset(new tpk::parse::TPKConfigParser());
+  if (!parser_->ParseManifest(path_)) {
+    LOG(ERROR) << "[Parse] Parse failed. " <<  parser_->GetErrorMessage();
+    return common_installer::Step::Status::ERROR;
+  }
+
+  const manifest_x* manifest = context_->manifest_data.get();
+  if (!FillManifestX(const_cast<manifest_x*>(manifest))) {
+    LOG(ERROR) << "[Parse] Storing manifest_x failed. "
+               <<  parser_->GetErrorMessage();
+    return common_installer::Step::Status::ERROR;
+  }
+
+  // Copy data from ManifestData to ContextInstaller
+  std::shared_ptr<const PackageInfo> info =
+      std::static_pointer_cast<const PackageInfo>(
+          parser_->GetManifestData(
+              manifest_keys::kManifestKey));
+
+  context_->pkgid.set(manifest->package);
 
   // write pkgid for recovery file
   if (context_->recovery_info.get().recovery_file) {
-    context_->recovery_info.get().recovery_file->set_pkgid(
-        manifest->attr("package"));
+    context_->recovery_info.get().recovery_file->set_pkgid(manifest->package);
     context_->recovery_info.get().recovery_file->WriteAndCommitFileContent();
   }
 
-  context_->manifest_data.set(static_cast<manifest_x*>(
-      calloc(1, sizeof(manifest_x))));
+  std::shared_ptr<const PrivilegesInfo> perm_info =
+      std::static_pointer_cast<const PrivilegesInfo>(
+          parser_->GetManifestData(
+              application_keys::kPrivilegeKey));
+  parser::PrivilegesSet privileges;
+  if (perm_info)
+    privileges = perm_info->GetPrivileges();
 
-  // set context_->manifest_data()
-  return SetPkgInfoManifest(context_->manifest_data.get(), tree, manifest);
-}
-
-
-bool StepParse::SetPkgInfoManifest(manifest_x* m,
-    XmlTree* tree,
-    XmlElement* manifest) {
-
-  // Get required elements
-  XmlElement* ui_application = Get1stChild(tree, manifest, "ui-application");
-  XmlElement* service_application = Get1stChild(tree, manifest,
-      "service-application");
-  if (!(ui_application || service_application)) {   // mandatory check
-    LOG(ERROR) << "Neither <ui-application> nor <service-application>" <<
-        " element is found in manifest xml";
-    return false;
+  LOG(DEBUG) << " Read data -[ ";
+  LOG(DEBUG) << "App package: " << info->package();
+  LOG(DEBUG) << "  aplication version     = " <<  info->version();
+  LOG(DEBUG) << "  api_version = " <<  info->api_version();
+  LOG(DEBUG) << "  privileges -[";
+  for (const auto& p : privileges) {
+    LOG(DEBUG) << "    " << p;
   }
+  LOG(DEBUG) << "  ]-";
+  LOG(DEBUG) << "]-";
 
-  // manifest's attribute
-  m->package = string_strdup(manifest->attr("package"));
-  m->type = strdup("tpk");
-  m->version = string_strdup(manifest->attr("version"));
-  m->installlocation = string_strdup(manifest->attr("install-location"));
-  m->api_version = string_strdup(manifest->attr("api-version"));
-
-  // Choose main app among ui-application or service-application
-  // NOTE: main app must have appid attribute
-  XmlElement* main_app = ui_application ? ui_application : service_application;
-  m->mainapp_id = string_strdup(main_app->attr("appid"));
-
-  // manifest' attribute from children's values
-  XmlElement* label = Get1stChild(tree, main_app, "label");
-  if (label) {
-    m->label =  static_cast<label_x*>(calloc(1, sizeof(label_x)));
-    m->label->name = string_strdup(label->content());
-  }
-
-  // Set children elements
-  return SetPkgInfoChildren(m, tree, manifest);
-}
-
-// Read and fill struct hierarchy
-// The spec of tizen-manifest is referred from Tizen 2.2.1 header.
-bool StepParse::SetPkgInfoChildren(manifest_x* m,
-    XmlTree* tree, XmlElement* manifest) {
-  manifest_x* p = m;
-  XmlElement* el = manifest;
-
-  // author
-  SetChildren(&(p->author), tree, el, "author",
-      [&](XmlElement *el, author_x* p){
-    p->email = string_strdup(el->attr("email"));
-    p->href = string_strdup(el->attr("href"));
-    p->text = string_strdup(el->content());
-    // p->lang = string_strdup(el->attr("xml:lang")); // NOTE: not in spec
-  });
-
-  // description
-  SetChildren(&(p->description), tree, el, "description",
-      [&](XmlElement *el, description_x* p){
-    // p->name = string_strdup(el->attr("name"));  // NOTE: not in spec
-    p->text = string_strdup(el->content());
-    p->lang = string_strdup(el->attr("xml:lang"));  // NOTE: not in spec
-  });
-
-  // privileges
-  SetChildren(&(p->privileges), tree, el, "privileges",
-      [&](XmlElement *el, privileges_x* p){
-    // privilge
-    SetChildren(&(p->privilege), tree, el, "privilege",
-      [&](XmlElement *el, privilege_x* p){
-        p->text = string_strdup(el->content());
-        LOG(DEBUG) << "Add a privilege: " << p->text;
-    });
-  });
-
-  // service-application
-  SetChildren(&(p->serviceapplication), tree, el, "service-application",
-      [&](XmlElement *el, serviceapplication_x* p){
-    p->appid = string_strdup(el->attr("appid"));
-    p->autorestart = string_strdup(el->attr("auto-restart"));
-    p->exec = string_strdup(el->attr("exec"));
-    p->onboot = string_strdup(el->attr("on-boot"));
-    p->type = string_strdup(el->attr("type"));
-
-    // FIXME: temporary fix to avoid build break
-    // app-control
-    SetChildren(&(p->appcontrol), tree, el, "app-control",
-        [&](XmlElement *el, appcontrol_x* p){
-      vector<XmlElement*> v = tree->Children(el, "operation");
-      if (!v.empty())
-        p->operation = string_strdup(v.front()->attr("name"));
-      v = tree->Children(el, "uri");
-      if (!v.empty())
-        p->uri = string_strdup(v.front()->attr("name"));
-      v = tree->Children(el, "mime");
-      if (!v.empty())
-        p->mime = string_strdup(v.front()->attr("name"));
-    });
-
-    // datacontrol
-    SetChildren(&(p->datacontrol), tree, el, "datacontrol",
-        [&](XmlElement *el, datacontrol_x* p){
-      p->access = string_strdup(el->attr("access"));
-      p->providerid = string_strdup(el->attr("providerid"));
-      p->type = string_strdup(el->attr("type"));
-    });
-
-    // icon
-    SetChildren(&(p->icon), tree, el, "icon",
-        [&](XmlElement *el, icon_x* p) {  // NOLINT
-      p->text = string_strdup(el->content());
-      // NOTE: name is an attribute, but the xml writer uses it as text.
-      // This must be fixed in whole app-installer modules, including wgt.
-      // Current implementation is just for compatibility.
-      // p->name = string_strdup(el->attr("name"));
-      p->name = string_strdup(el->content());
-    });
-
-    // label
-    SetChildren(&(p->label), tree, el, "label",
-        [&](XmlElement *el, label_x* p) {
-      // NOTE: name is an attribute, but the xml writer uses it as text.
-      // This must be fixed in whole app-installer modules, including wgt.
-      // Current implementation is just for compatibility.
-      // p->name = string_strdup(el->attr("name"));
-      p->text = string_strdup(el->content());
-      p->name = string_strdup(el->content());
-      p->lang = string_strdup(el->attr("xml:lang"));
-    });
-
-    // metadata
-    SetChildren(&(p->metadata), tree, el, "metadata",
-        [&](XmlElement *el, metadata_x* p){
-      p->key = string_strdup(el->attr("key"));
-      p->value = string_strdup(el->attr("value"));
-    });
-  });
-
-  // ui-application
-  SetChildren(&(p->uiapplication), tree, el, "ui-application",
-      [&](XmlElement *el, uiapplication_x* p){
-    p->appid = string_strdup(el->attr("appid"));
-    p->exec = string_strdup(el->attr("exec"));
-    p->multiple = string_strdup(el->attr("multiple"));
-    p->nodisplay = string_strdup(el->attr("nodisplay"));
-    p->taskmanage = string_strdup(el->attr("taskmanage"));
-    p->type = string_strdup(el->attr("type"));
-    // NOTE: onboot and auto-restart are in spec, but not in uiapplication_x
-
-    // FIXME: temporary fix to avoid build break
-    // app-control
-    SetChildren(&(p->appcontrol), tree, el, "app-control",
-        [&](XmlElement *el, appcontrol_x* p){
-      vector<XmlElement*> v = tree->Children(el, "operation");
-      if (!v.empty())
-        p->operation = string_strdup(v.front()->attr("name"));
-      v = tree->Children(el, "uri");
-      if (!v.empty())
-        p->uri = string_strdup(v.front()->attr("name"));
-      v = tree->Children(el, "mime");
-      if (!v.empty())
-        p->mime = string_strdup(v.front()->attr("name"));
-    });
-
-    // datacontrol
-    SetChildren(&(p->datacontrol), tree, el, "datacontrol",
-        [&](XmlElement *el, datacontrol_x* p){
-      p->access = string_strdup(el->attr("access"));
-      p->providerid = string_strdup(el->attr("providerid"));
-      p->type = string_strdup(el->attr("type"));
-    });
-
-    // icon
-    SetChildren(&(p->icon), tree, el, "icon",
-        [&](XmlElement *el, icon_x* p){
-      // TODO(t.iwanek): icons are located in shared/res/ so preppending it.
-      // it should not be set in manifest_x probably but added elsewhere.
-      p->text = string_strdup(std::string("shared/res/") + el->content());
-      // NOTE: name is an attribute, but the xml writer uses it as text.
-      // This must be fixed in whole app-installer modules, including wgt.
-      // Current implementation is just for compatibility.
-      // p->name = string_strdup(el->attr("name"));
-      p->name = string_strdup(std::string("shared/res/") + el->content());
-    });
-
-    // label
-    SetChildren(&(p->label), tree, el, "label",
-        [&](XmlElement *el, label_x* p){
-      // NOTE: name is an attribute, but the xml writer uses it as text.
-      // This must be fixed in whole app-installer modules, including wgt.
-      // Current implementation is just for compatibility.
-      // p->name = string_strdup(el->attr("name"));
-      p->text = string_strdup(el->content());
-      p->name = string_strdup(el->content());
-      p->lang = string_strdup(el->attr("xml:lang"));
-    });
-
-    // metadata
-    SetChildren(&(p->metadata), tree, el, "metadata",
-        [&](XmlElement *el, metadata_x* p){
-      p->key = string_strdup(el->attr("key"));
-      p->value = string_strdup(el->attr("value"));
-    });
-  });
-
-  // account
-  ci::AccountInfo& account_info =
-      context_->manifest_plugins_data.get().account_info.get();
-  for (auto& account : tree->Children(el, "account")) {
-    for (auto& account_provider : tree->Children(account, "account-provider")) {
-      ci::SingleAccountInfo account;
-      account.appid = account_provider->attr("appid");
-      if (account.appid.empty()) {
-        LOG(ERROR) << "Failed to get appid of account-provider";
-        return false;
-      }
-      if (account_provider->attr("multiple-accounts-support") == "true") {
-        account.multiple_account_support = true;
-      } else if (account_provider->attr("multiple-accounts-support")
-                 == "false") {
-        account.multiple_account_support = false;
-      } else {
-        LOG(ERROR) << "Invalid value of multiple-accounts-support";
-        return false;
-      }
-
-      for (auto& icon : tree->Children(account_provider, "icon")) {
-        std::string section = icon->attr("section");
-        std::string icon_path = icon->content();
-        if (section != "account" && section != "account-small") {
-          LOG(ERROR) << "Invalid value of section of account-provider";
-          return false;
-        }
-        account.icon_paths.emplace_back(section, icon_path);
-      }
-
-      for (auto& name : tree->Children(account_provider, "label")) {
-        std::string lang = name->attr("xml:lang");
-        std::string label = name->content();
-        account.names.emplace_back(label, lang);
-      }
-
-      for (auto& cap : tree->Children(account_provider, "capability")) {
-        std::string capability = cap->content();
-        account.capabilities.push_back(capability);
-      }
-      account_info.set_account(account);
-    }
-  }
-
-  return true;
+  return common_installer::Step::Status::OK;
 }
 
 }  // namespace parse
