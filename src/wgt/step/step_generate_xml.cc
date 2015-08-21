@@ -3,7 +3,7 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "common/step/step_generate_xml.h"
+#include "wgt/step/step_generate_xml.h"
 
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
@@ -24,7 +24,7 @@
 namespace bs = boost::system;
 namespace fs = boost::filesystem;
 
-namespace common_installer {
+namespace wgt {
 namespace pkgmgr {
 
 static void _writeUIApplicationAttributes(
@@ -44,7 +44,7 @@ static void _writeServiceApplicationAttributes(
 }
 
 template <typename T>
-Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
+common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
     xmlTextWriterPtr writer) {
   // common appributes among uiapplication_x and serviceapplication_x
   xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST app->appid);
@@ -142,7 +142,7 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
   return Step::Status::OK;
 }
 
-Step::Status StepGenerateXml::precheck() {
+common_installer::Step::Status StepGenerateXml::precheck() {
   if (!context_->manifest_data.get()) {
     LOG(ERROR) << "manifest_data attribute is empty";
     return Step::Status::INVALID_VALUE;
@@ -162,7 +162,7 @@ Step::Status StepGenerateXml::precheck() {
   return Step::Status::OK;
 }
 
-Step::Status StepGenerateXml::process() {
+common_installer::Step::Status StepGenerateXml::process() {
   fs::path xml_path = fs::path(getUserManifestPath(context_->uid.get()))
       / fs::path(context_->pkgid.get());
   xml_path += ".xml";
@@ -350,7 +350,7 @@ Step::Status StepGenerateXml::process() {
   return Status::OK;
 }
 
-Step::Status StepGenerateXml::undo() {
+common_installer::Step::Status StepGenerateXml::undo() {
   bs::error_code error;
   if (fs::exists(context_->xml_path.get()))
     fs::remove_all(context_->xml_path.get(), error);
@@ -358,4 +358,4 @@ Step::Status StepGenerateXml::undo() {
 }
 
 }  // namespace pkgmgr
-}  // namespace common_installer
+}  // namespace wgt
