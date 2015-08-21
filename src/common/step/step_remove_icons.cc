@@ -29,18 +29,26 @@ Step::Status StepRemoveIcons::precheck() {
 }
 
 Step::Status StepRemoveIcons::process() {
+  LOG(ERROR) << "hereeeeeeee";
   uiapplication_x* ui = nullptr;
   PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->uiapplication,
                                 ui);
+  if (!context_->manifest_data.get())
+    LOG(ERROR) << "is emptyyyy";
   for (; ui != nullptr; ui = ui->next) {
+    LOG(ERROR) << "entered loop";
     fs::path app_icon = fs::path(getIconPath(context_->uid.get()))
       / fs::path(ui->appid);
-    if (ui->icon && ui->icon->name)
-      app_icon += fs::path(ui->icon->name).extension();
+    LOG(ERROR) << "app icon path " << app_icon.native();
+    if (ui->icon && ui->icon->text)
+      app_icon += fs::path(ui->icon->text).extension();
     else
       app_icon += ".png";
+    LOG(ERROR) << "here app icon path new is " << app_icon.native();
     if (fs::exists(app_icon)) {
+      LOG(ERROR) << "im here";
       fs::path backup_icon_file = GetBackupPathForIconFile(app_icon);
+      LOG(ERROR) <<  "hereeee" << backup_icon_file;
       if (!MoveFile(app_icon, backup_icon_file)) {
         LOG(ERROR) << "Failed to create backup for icon: " << app_icon;
         return Status::ERROR;
