@@ -14,7 +14,6 @@
 #include <manifest_handlers/setting_handler.h>
 #include <manifest_handlers/tizen_application_handler.h>
 #include <manifest_handlers/widget_handler.h>
-#include <manifest_parser/manifest_constants.h>
 
 #include <pkgmgr/pkgmgr_parser.h>
 
@@ -56,7 +55,6 @@ namespace wgt {
 namespace parse {
 
 namespace app_keys = wgt::application_widget_keys;
-namespace manifest_keys = wgt::application_manifest_keys;
 
 StepParse::StepParse(common_installer::ContextInstaller* context,
                      bool check_start_file)
@@ -79,7 +77,7 @@ const std::string& StepParse::GetPackageVersion(
 bool StepParse::FillIconPaths(manifest_x* manifest) {
   std::shared_ptr<const ApplicationIconsInfo> icons_info =
       std::static_pointer_cast<const ApplicationIconsInfo>(
-          parser_->GetManifestData(manifest_keys::kIconsKey));
+          parser_->GetManifestData(app_keys::kIconsKey));
   if (icons_info.get()) {
     for (auto& application_icon : icons_info->icons()) {
       icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
@@ -93,7 +91,7 @@ bool StepParse::FillIconPaths(manifest_x* manifest) {
 bool StepParse::FillWidgetInfo(manifest_x* manifest) {
   std::shared_ptr<const WidgetInfo> wgt_info =
       std::static_pointer_cast<const WidgetInfo>(parser_->GetManifestData(
-          parser::kWidgetKey));
+          app_keys::kWidgetKey));
   if (!wgt_info.get()) {
     LOG(ERROR) << "Widget info manifest data has not been found.";
     return false;
