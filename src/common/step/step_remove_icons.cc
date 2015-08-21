@@ -35,8 +35,8 @@ Step::Status StepRemoveIcons::process() {
   for (; ui != nullptr; ui = ui->next) {
     fs::path app_icon = fs::path(getIconPath(context_->uid.get()))
       / fs::path(ui->appid);
-    if (ui->icon && ui->icon->name)
-      app_icon += fs::path(ui->icon->name).extension();
+    if (ui->icon && ui->icon->text)
+      app_icon += fs::path(ui->icon->text).extension();
     else
       app_icon += ".png";
     if (fs::exists(app_icon)) {

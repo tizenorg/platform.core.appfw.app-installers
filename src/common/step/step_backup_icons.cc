@@ -25,8 +25,8 @@ Step::Status StepBackupIcons::process() {
   for (; ui != nullptr; ui = ui->next) {
     bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
         / bf::path(ui->appid);
-    if (ui->icon && ui->icon->name)
-      app_icon += bf::path(ui->icon->name).extension();
+    if (ui->icon && ui->icon->text)
+      app_icon += bf::path(ui->icon->text).extension();
     else
       app_icon += ".png";
     bf::path icon_backup = GetBackupPathForIconFile(app_icon);

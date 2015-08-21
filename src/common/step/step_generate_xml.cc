@@ -81,9 +81,9 @@ Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
   }
 
   // icon is renamed to <appid.png>
-  if (app->icon->name) {
+  if (app->icon->text) {
     fs::path app_icon = context_->pkg_path.get() / "res/wgt" /
-        app->icon->name;
+        app->icon->text;
     fs::path icon = app->appid;
     if (app_icon.has_extension())
       icon += app_icon.extension();

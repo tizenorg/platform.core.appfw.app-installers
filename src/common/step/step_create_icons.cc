@@ -33,8 +33,8 @@ Step::Status StepCreateIcons::process() {
   for (; ui; ui = ui->next) {
     // TODO(t.iwanek): this is ignoring icon locale as well as other steps
     // icons should be localized
-    if (ui->icon && ui->icon->name) {
-      bf::path source = GetIconRoot() / ui->icon->name;
+    if (ui->icon && ui->icon->text) {
+      bf::path source = GetIconRoot() / ui->icon->text;
       if (bf::exists(source)) {
         bf::path destination = icons_directory / ui->appid;
         if (destination.has_extension())
