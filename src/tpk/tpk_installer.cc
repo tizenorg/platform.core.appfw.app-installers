@@ -10,7 +10,6 @@
 #include "common/step/step_copy_backup.h"
 #include "common/step/step_check_old_certificate.h"
 #include "common/step/step_fail.h"
-#include "common/step/step_generate_xml.h"
 #include "common/step/step_old_manifest.h"
 #include "common/step/step_open_recovery_file.h"
 #include "common/step/step_parse.h"
