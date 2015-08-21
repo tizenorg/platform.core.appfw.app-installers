@@ -83,7 +83,7 @@ bool StepParse::FillIconPaths(manifest_x* manifest) {
   if (icons_info.get()) {
     for (auto& application_icon : icons_info->icons()) {
       icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
-      icon->name = strdup(application_icon.path().c_str());
+      icon->text = strdup(application_icon.path().c_str());
       LISTADD(manifest->icon, icon);
     }
   }
@@ -162,7 +162,7 @@ bool StepParse::FillApplicationInfo(manifest_x* manifest) {
   if (manifest->icon) {
     icon_x* icon = nullptr;
     LISTHEAD(manifest->icon, icon);
-    manifest->uiapplication->icon->name = strdup(icon->name);
+    manifest->uiapplication->icon->text = strdup(icon->text);
   }
   manifest->uiapplication->next = nullptr;
 
@@ -371,7 +371,7 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "  name        = " <<  name;
   LOG(DEBUG) << "  short_name  = " <<  short_name;
   LOG(DEBUG) << "  aplication version     = " <<  package_version;
-  LOG(DEBUG) << "  icon        = " <<  manifest->uiapplication->icon->name;
+  LOG(DEBUG) << "  icon        = " <<  manifest->uiapplication->icon->text;
   LOG(DEBUG) << "  api_version = " <<  info->required_version();
   LOG(DEBUG) << "  privileges -[";
   for (const auto& p : permissions) {
