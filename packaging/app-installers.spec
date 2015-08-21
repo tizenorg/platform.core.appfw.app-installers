@@ -10,6 +10,7 @@ License:        Apache-2.0
 Source0:        %{name}-%{version}.tar.gz
 Source1001:     wgt-backend.manifest
 Source1002:     tpk-backend.manifest
+Source1003:     app-installers-tests.manifest
 
 BuildRequires:  boost-devel
 BuildRequires:  cmake
@@ -64,6 +65,7 @@ Unit tests for al modules of app-installers
 
 cp %{SOURCE1001} .
 cp %{SOURCE1002} .
+cp %{SOURCE1003} .
 
 %build
 #Variable for setting symlink to runtime
@@ -101,6 +103,7 @@ ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %{_bindir}/tpk-backend
 
 %files tests
+%manifest app-installers-tests.manifest
 %{_bindir}/app-installers-ut/*
 %{_datadir}/app-installers-ut/*
 
