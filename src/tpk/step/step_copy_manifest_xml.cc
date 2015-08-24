@@ -70,6 +70,8 @@ namespace {
         boost::regex_constants::ECMAScript);
     boost::regex manifest_type_replace_pattern("<manifest ",
         boost::regex_constants::ECMAScript);
+    boost::regex icon_replace_pattern("(?<=<icon>).*(?=<\/icon>)",
+        boost::regex_constants::perl);
 
     boost::smatch m;
 
@@ -79,12 +81,22 @@ namespace {
 
       try {
         // Find (ui|service)-application element, and get appid
+        if (boost::regex_search(line, m, icon_replace_pattern)) {
+          bf::path match_result(m[0].str());
+          bf::path extension = match_result.extension();
+          result = boost::regex_replace(line,
+              icon_replace_pattern,
+              std::string(context_->manifest_data.get()->mainapp_id
+                          + extension.native()));
+        }
+        // Find (ui|service)-application element, and get appid
         if (boost::regex_search(line, m, appid_pattern)) {
           pkg_path /= bf::path("bin");
 
           result = boost::regex_replace(line, appid_exec_replace_pattern,
               std::string("exec=\"") + pkg_path.string() +
               std::string("/$1\""));
+
 
         } else if (boost::regex_search(line, m, manifest_pattern)) {
           // Check if the 'type=' attribute is not given
