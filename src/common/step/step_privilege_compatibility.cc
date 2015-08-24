@@ -31,7 +31,8 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
   privileges_x *privileges = nullptr;
   PKGMGR_LIST_MOVE_NODE_TO_HEAD(m->privileges, privileges);
   for (; privileges; privileges = privileges->next) {
-    size += PKGMGR_LIST_LEN(privileges);
+    privilege_x* privilege = privileges->privilege;
+    size += PKGMGR_LIST_LEN(privilege);
   }
 
   // prepare input structure
