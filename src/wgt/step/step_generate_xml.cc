@@ -44,8 +44,8 @@ static void _writeServiceApplicationAttributes(
 }
 
 template <typename T>
-common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(T* app,
-    xmlTextWriterPtr writer) {
+common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
+    T* app, xmlTextWriterPtr writer) {
   // common appributes among uiapplication_x and serviceapplication_x
   xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST app->appid);
 
