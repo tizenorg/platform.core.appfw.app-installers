@@ -52,6 +52,7 @@
 #include "wgt/step/step_wgt_create_icons.h"
 #include "wgt/step/step_wgt_create_storage_directories.h"
 #include "wgt/step/step_wgt_copy_storage_directories.h"
+#include "wgt/step/step_wgt_remove_files_from_sd.h"
 #include "wgt/step/step_wgt_resource_directory.h"
 
 namespace ci = common_installer;
@@ -108,7 +109,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::backup::StepBackupManifest>();
       AddStep<ci::pkgmgr::StepUnregisterApplication>();
       AddStep<ci::security::StepRollbackDeinstallationSecurity>();
-      AddStep<ci::filesystem::StepRemoveFiles>();
+      AddStep<wgt::filesystem::StepWgtRemoveFilesFromSD>();
       AddStep<ci::filesystem::StepRemoveIcons>();
       AddStep<wgt::encrypt::StepRemoveEncryptionData>();
       AddStep<ci::security::StepRevokeSecurity>();
