@@ -99,8 +99,9 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     LOG(DEBUG) << "Icon was not found in package";
   }
 
-  for (appcontrol_x* appc = app->appcontrol; appc != nullptr;
-      appc = appc->next) {
+  appcontrol_x* appc = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(app->appcontrol, appc);
+  for (; appc != nullptr; appc = appc->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
     if (appc->operation) {
@@ -257,16 +258,19 @@ common_installer::Step::Status StepGenerateXml::process() {
   }
 
   // add ui-application element per ui application
-  for (uiapplication_x* ui = context_->manifest_data.get()->uiapplication;
-      ui != nullptr; ui = ui->next) {
+  uiapplication_x* ui = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->uiapplication,
+                                ui);
+  for (; ui; ui = ui->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
     GenerateApplicationCommonXml(ui, writer);
     xmlTextWriterEndElement(writer);
   }
   // add service-application element per service application
-  for (serviceapplication_x* svc =
-       context_->manifest_data.get()->serviceapplication;
-       svc != nullptr; svc = svc->next) {
+  serviceapplication_x* svc = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(
+      context_->manifest_data.get()->serviceapplication, svc);
+  for (; svc; svc = svc->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "service-application");
     GenerateApplicationCommonXml(svc, writer);
     xmlTextWriterEndElement(writer);
