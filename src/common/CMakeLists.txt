@@ -22,6 +22,7 @@ SET(SRCS
   step/step_create_storage_directories.cc
   step/step_fail.cc
   step/step_kill_apps.cc
+  step/step_generate_xml.cc
   step/step_recover_application.cc
   step/step_recover_files.cc
   step/step_recover_icons.cc
