@@ -3,7 +3,7 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "wgt/step/step_generate_xml.h"
+#include "common/step/step_generate_xml.h"
 
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
@@ -24,7 +24,7 @@
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
 
-namespace wgt {
+namespace common_installer {
 namespace pkgmgr {
 
 static void _writeUIApplicationAttributes(
@@ -81,7 +81,7 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
   }
 
   // icon is renamed to <appid.png>
-  if (app->icon->text) {
+  if (app->icon && app->icon->text) {
     bf::path app_icon = context_->pkg_path.get() / "res/wgt" /
         app->icon->text;
     bf::path icon = app->appid;
@@ -201,11 +201,10 @@ common_installer::Step::Status StepGenerateXml::process() {
       BAD_CAST context_->manifest_data.get()->type);
   xmlTextWriterWriteAttribute(writer, BAD_CAST "version",
       BAD_CAST context_->manifest_data.get()->version);
+  xmlTextWriterWriteAttribute(writer, BAD_CAST "api-version",
+      BAD_CAST context_->manifest_data.get()->api_version);
 
-  if (!context_->manifest_data.get()->label) {
-    xmlTextWriterWriteFormatElement(writer, BAD_CAST "label",
-        "%s", BAD_CAST "");
-  } else {
+  if (context_->manifest_data.get()->label) {
     label_x* label = nullptr;
     LISTHEAD(context_->manifest_data.get()->label, label);
     for (; label; label = label->next) {
@@ -219,10 +218,7 @@ common_installer::Step::Status StepGenerateXml::process() {
     }
   }
 
-  if (!context_->manifest_data.get()->author) {
-    xmlTextWriterWriteFormatElement(writer, BAD_CAST "author",
-        "%s", BAD_CAST "");
-  } else {
+  if (context_->manifest_data.get()->author) {
     author_x* author = nullptr;
     LISTHEAD(context_->manifest_data.get()->author, author);
     for (; author; author = author->next) {
@@ -240,10 +236,7 @@ common_installer::Step::Status StepGenerateXml::process() {
     }
   }
 
-  if (!context_->manifest_data.get()->description) {
-    xmlTextWriterWriteFormatElement(writer, BAD_CAST "description",
-        "%s", BAD_CAST "");
-  } else {
+  if (context_->manifest_data.get()->description) {
     description_x* description = nullptr;
     LISTHEAD(context_->manifest_data.get()->description, description);
     for (; description; description = description->next) {
@@ -263,6 +256,9 @@ common_installer::Step::Status StepGenerateXml::process() {
                                 ui);
   for (; ui; ui = ui->next) {
     xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
+    if (ui->nodisplay)
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "nodisplay",
+          BAD_CAST ui->nodisplay);
     GenerateApplicationCommonXml(ui, writer);
     xmlTextWriterEndElement(writer);
   }
@@ -303,6 +299,10 @@ common_installer::Step::Status StepGenerateXml::process() {
       xmlTextWriterWriteAttribute(writer, BAD_CAST "appid",
                                   BAD_CAST account.appid.c_str());
 
+      if (!account.providerid.empty())
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "providerid",
+                                    BAD_CAST account.providerid.c_str());
+
       if (account.multiple_account_support)
         xmlTextWriterWriteAttribute(writer,
                                     BAD_CAST "multiple-accounts-support",
@@ -321,7 +321,7 @@ common_installer::Step::Status StepGenerateXml::process() {
 
       for (auto& name_pair : account.names) {
         xmlTextWriterStartElement(writer, BAD_CAST "label");
-        if (!name_pair.first.empty())
+        if (!name_pair.second.empty())
           xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
                                       BAD_CAST name_pair.second.c_str());
         xmlTextWriterWriteString(writer, BAD_CAST name_pair.first.c_str());
@@ -362,4 +362,4 @@ common_installer::Step::Status StepGenerateXml::undo() {
 }
 
 }  // namespace pkgmgr
-}  // namespace wgt
+}  // namespace common_installer
