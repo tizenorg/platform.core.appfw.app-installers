@@ -15,6 +15,7 @@
 #include "common/step/step_copy_storage_directories.h"
 #include "common/step/step_fail.h"
 #include "common/step/step_kill_apps.h"
+#include "common/step/step_generate_xml.h"
 #include "common/step/step_open_recovery_file.h"
 #include "common/step/step_parse.h"
 #include "common/step/step_privilege_compatibility.h"
@@ -43,7 +44,6 @@
 #include "wgt/step/step_create_symbolic_link.h"
 #include "wgt/step/step_check_settings_level.h"
 #include "wgt/step/step_encrypt_resources.h"
-#include "wgt/step/step_generate_xml.h"
 #include "wgt/step/step_parse.h"
 #include "wgt/step/step_parse_recovery.h"
 #include "wgt/step/step_remove_encryption_data.h"
@@ -76,7 +76,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<wgt::filesystem::StepWgtCreateStorageDirectories>();
       AddStep<wgt::filesystem::StepCreateSymbolicLink>();
       AddStep<wgt::filesystem::StepWgtCreateIcons>();
-      AddStep<wgt::pkgmgr::StepGenerateXml>();
+      AddStep<ci::pkgmgr::StepGenerateXml>();
       AddStep<ci::pkgmgr::StepRegisterApplication>();
       AddStep<ci::security::StepRegisterSecurity>();
       break;
@@ -99,7 +99,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<wgt::filesystem::StepCreateSymbolicLink>();
       AddStep<wgt::filesystem::StepWgtCreateIcons>();
       AddStep<ci::security::StepUpdateSecurity>();
-      AddStep<wgt::pkgmgr::StepGenerateXml>();
+      AddStep<ci::pkgmgr::StepGenerateXml>();
       AddStep<ci::pkgmgr::StepUpdateApplication>();
       break;
     }
