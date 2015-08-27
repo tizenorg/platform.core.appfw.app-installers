@@ -11,6 +11,7 @@
 #include "common/step/step_check_old_certificate.h"
 #include "common/step/step_fail.h"
 #include "common/step/step_kill_apps.h"
+#include "common/step/step_generate_xml.h"
 #include "common/step/step_old_manifest.h"
 #include "common/step/step_open_recovery_file.h"
 #include "common/step/step_parse.h"
@@ -35,7 +36,6 @@
 #include "common/step/step_update_app.h"
 #include "common/step/step_update_security.h"
 #include "common/utils/logging.h"
-#include "tpk/step/step_copy_manifest_xml.h"
 #include "tpk/step/step_create_symbolic_link.h"
 #include "tpk/step/step_parse.h"
 #include "tpk/step/step_parse_recovery.h"
@@ -93,7 +93,7 @@ void TpkInstaller::InstallSteps() {
   AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   AddStep<ci::filesystem::StepCreateIcons>();
   AddStep<ci::security::StepRegisterSecurity>();
-  AddStep<tpk::filesystem::StepCopyManifestXml>();
+  AddStep<ci::pkgmgr::StepGenerateXml>();
   AddStep<ci::pkgmgr::StepRegisterApplication>();
 }
 
@@ -114,7 +114,7 @@ void TpkInstaller::UpdateSteps() {
   AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   AddStep<ci::filesystem::StepCreateIcons>();
   AddStep<ci::security::StepUpdateSecurity>();
-  AddStep<tpk::filesystem::StepCopyManifestXml>();
+  AddStep<ci::pkgmgr::StepGenerateXml>();
   AddStep<ci::pkgmgr::StepUpdateApplication>();
 }
 
