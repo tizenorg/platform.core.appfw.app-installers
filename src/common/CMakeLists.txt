@@ -21,6 +21,7 @@ SET(SRCS
   step/step_copy_storage_directories.cc
   step/step_create_storage_directories.cc
   step/step_fail.cc
+  step/step_kill_apps.cc
   step/step_recover_application.cc
   step/step_recover_files.cc
   step/step_recover_icons.cc
@@ -63,6 +64,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   MINIZIP_DEPS
   ZLIB_DEPS
   PRIVILEGE_CHECKER_DEPS
+  APPMANAGER_DEPS
   Boost
 )
 
