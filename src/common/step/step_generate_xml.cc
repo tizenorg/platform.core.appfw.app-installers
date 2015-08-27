@@ -3,7 +3,7 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "wgt/step/step_generate_xml.h"
+#include "common/step/step_generate_xml.h"
 
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
@@ -24,7 +24,7 @@
 namespace bs = boost::system;
 namespace fs = boost::filesystem;
 
-namespace wgt {
+namespace common_installer {
 namespace pkgmgr {
 
 static void _writeUIApplicationAttributes(
@@ -362,4 +362,4 @@ common_installer::Step::Status StepGenerateXml::undo() {
 }
 
 }  // namespace pkgmgr
-}  // namespace wgt
+}  // namespace common_installer

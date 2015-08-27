@@ -4,7 +4,6 @@ SET(SRCS
   step/step_check_settings_level.cc
   step/step_create_symbolic_link.cc
   step/step_encrypt_resources.cc
-  step/step_generate_xml.cc
   step/step_parse.cc
   step/step_remove_encryption_data.cc
   step/step_parse_recovery.cc

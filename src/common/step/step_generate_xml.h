@@ -3,8 +3,8 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef  WGT_STEP_STEP_GENERATE_XML_H_
-#define  WGT_STEP_STEP_GENERATE_XML_H_
+#ifndef  COMMON_STEP_STEP_GENERATE_XML_H_
+#define  COMMON_STEP_STEP_GENERATE_XML_H_
 
 #include <libxml/xmlwriter.h>
 
@@ -12,7 +12,7 @@
 #include "common/step/step.h"
 #include "common/utils/logging.h"
 
-namespace wgt {
+namespace common_installer {
 namespace pkgmgr {
 
 class StepGenerateXml : public common_installer::Step {
@@ -35,6 +35,6 @@ class StepGenerateXml : public common_installer::Step {
 };
 
 }  // namespace pkgmgr
-}  // namespace wgt
+}  // namespace common_installer
 
-#endif  // WGT_STEP_STEP_GENERATE_XML_H_
+#endif  // COMMON_STEP_STEP_GENERATE_XML_H_

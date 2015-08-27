@@ -233,7 +233,9 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
       [&](XmlElement *el, description_x* p){
     // p->name = string_strdup(el->attr("name"));  // NOTE: not in spec
     p->text = string_strdup(el->content());
-    p->lang = string_strdup(el->attr("xml:lang"));  // NOTE: not in spec
+    auto lang = el->attr("xml:lang");
+    if (!lang.empty())
+      p->lang = string_strdup(lang);  // NOTE: not in spec
   });
 
   // privileges
@@ -299,7 +301,9 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
       // p->name = string_strdup(el->attr("name"));
       p->text = string_strdup(el->content());
       p->name = string_strdup(el->content());
-      p->lang = string_strdup(el->attr("xml:lang"));
+      auto lang = el->attr("xml:lang");
+      if (!lang.empty())
+        p->lang = string_strdup(lang);
     });
 
     // metadata
@@ -366,7 +370,9 @@ bool StepParse::SetPkgInfoChildren(manifest_x* m,
       // p->name = string_strdup(el->attr("name"));
       p->text = string_strdup(el->content());
       p->name = string_strdup(el->content());
-      p->lang = string_strdup(el->attr("xml:lang"));
+      auto lang = el->attr("xml:lang");
+      if (!lang.empty())
+        p->lang = string_strdup(lang);
     });
 
     // metadata
