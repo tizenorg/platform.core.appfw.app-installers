@@ -10,6 +10,7 @@
 #include "common/step/step_copy_backup.h"
 #include "common/step/step_check_old_certificate.h"
 #include "common/step/step_fail.h"
+#include "common/step/step_kill_apps.h"
 #include "common/step/step_old_manifest.h"
 #include "common/step/step_open_recovery_file.h"
 #include "common/step/step_parse.h"
@@ -104,6 +105,7 @@ void TpkInstaller::UpdateSteps() {
   AddStep<ci::security::StepPrivilegeCompatibility>();
   AddStep<ci::security::StepCheckOldCertificate>();
   AddStep<ci::backup::StepOldManifest>();
+  AddStep<ci::pkgmgr::StepKillApps>();
   AddStep<ci::backup::StepBackupManifest>();
   AddStep<ci::backup::StepBackupIcons>();
   AddStep<ci::backup::StepCopyBackup>();
@@ -119,6 +121,7 @@ void TpkInstaller::UpdateSteps() {
 void TpkInstaller::UninstallSteps() {
   AddStep<ci::configuration::StepConfigure>(pkgmgr_);
   AddStep<ci::parse::StepParse>();
+  AddStep<ci::pkgmgr::StepKillApps>();
   AddStep<ci::backup::StepBackupManifest>();
   AddStep<ci::pkgmgr::StepUnregisterApplication>();
   AddStep<ci::security::StepRollbackDeinstallationSecurity>();
