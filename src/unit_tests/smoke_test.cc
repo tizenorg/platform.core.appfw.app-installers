@@ -291,7 +291,7 @@ ci::AppInstaller::Result Reinstall(const bf::path& path,
 ci::AppInstaller::Result Recover(const bf::path& recovery_file,
                                  PackageType type,
                                  RequestResult mode = RequestResult::NORMAL) {
-  const char* argv[] = {"", "-e", recovery_file.c_str()};
+  const char* argv[] = {"", "-b", recovery_file.c_str()};
   std::unique_ptr<ci::AppQueryInterface> query_interface =
       CreateQueryInterface(type);
   auto pkgmgr =
