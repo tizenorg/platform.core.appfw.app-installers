@@ -138,6 +138,11 @@ void ValidatePackageFS(const std::string& pkgid, const std::string& appid,
     bf::path config_path = widget_root_path / "config.xml";
     ASSERT_TRUE(bf::exists(widget_root_path));
     ASSERT_TRUE(bf::exists(config_path));
+
+    bf::path private_tmp_path = package_path / "tmp";
+    bf::path cache_path = package_path / "cache";
+    ASSERT_TRUE(bf::exists(private_tmp_path));
+    ASSERT_TRUE(bf::exists(cache_path));
   }
 
   // backups should not exist
