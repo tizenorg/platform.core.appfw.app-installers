@@ -20,6 +20,7 @@ const char kSharedLocation[] = "shared";
 const char kSharedDataLocation[] = "shared/data";
 const char kSharedTrustedLocation[] = "shared/trusted";
 const char kResWgtSubPath[] = "res/wgt";
+const char kTemporaryData[] = "tmp";
 
 }  // namespace
 
@@ -27,6 +28,10 @@ namespace wgt {
 namespace filesystem {
 
 common_installer::Step::Status StepWgtCopyStorageDirectories::process() {
+  Status status = CreatePrivateDir();
+  if (status != Status::OK)
+    return Status::ERROR;
+
   int version = context_->manifest_data.get()->api_version[0] - '0';
   if (version < 3) {
     LOG(DEBUG) << "Shared directory coping for tizen 2.x";
@@ -34,7 +39,7 @@ common_installer::Step::Status StepWgtCopyStorageDirectories::process() {
   }
 
   LOG(DEBUG) << "Shared directory coping for tizen 3.x";
-  Status status = CopySharedDirectory();
+  status = CopySharedDirectory();
   if (status != Status::OK)
     return status;
 
@@ -144,6 +149,18 @@ StepWgtCopyStorageDirectories::CopyDataDirectory() {
                       context_->pkg_path.get(),
                       kDataLocation)) {
     LOG(ERROR) << "Failed to restore private directory for widget in update";
+    return Status::ERROR;
+  }
+  return Status::OK;
+}
+
+common_installer::Step::Status
+StepWgtCopyStorageDirectories::CreatePrivateDir() {
+  bs::error_code error_code;
+  bf::path tmp_path = context_->pkg_path.get() / kTemporaryData;
+  bf::create_directory(tmp_path, error_code);
+  if (error_code) {
+    LOG(ERROR) << "Failed to create private temporary directory for package";
     return Status::ERROR;
   }
   return Status::OK;
