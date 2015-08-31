@@ -4,7 +4,10 @@
 
 #include "common/security_registration.h"
 
+#include <boost/filesystem/operations.hpp>
 #include <security-manager.h>
+
+#include <map>
 
 #include "common/utils/clist_helpers.h"
 #include "common/utils/logging.h"
@@ -12,6 +15,17 @@
 namespace bf = boost::filesystem;
 
 namespace {
+
+const std::map<const char*, app_install_path_type> kSecurityPolicyTypes = {
+  {"/", SECURITY_MANAGER_PATH_RO},
+  {"bin/", SECURITY_MANAGER_PATH_RO},
+  {"data/", SECURITY_MANAGER_PATH_PRIVATE},
+  {"cache/", SECURITY_MANAGER_PATH_PRIVATE},
+  {"lib/", SECURITY_MANAGER_PATH_RO},
+  {"res/", SECURITY_MANAGER_PATH_RO},
+  {"shared/", SECURITY_MANAGER_PATH_PUBLIC_RO},
+  {"tmp/", SECURITY_MANAGER_PATH_PRIVATE}
+};
 
 bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     const boost::filesystem::path& path, manifest_x* manifest,
@@ -34,10 +48,15 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
   }
 
   if (!path.empty()) {
-    error = security_manager_app_inst_req_add_path(req, path.string().c_str(),
-        SECURITY_MANAGER_PATH_PRIVATE);
-    if (error != SECURITY_MANAGER_SUCCESS) {
-      return false;
+    for (auto& policy : kSecurityPolicyTypes) {
+      bf::path subpath = path / policy.first;
+      if (bf::exists(subpath)) {
+        error = security_manager_app_inst_req_add_path(req, subpath.c_str(),
+                                                       policy.second);
+        if (error != SECURITY_MANAGER_SUCCESS) {
+          return false;
+        }
+      }
     }
   }
 
