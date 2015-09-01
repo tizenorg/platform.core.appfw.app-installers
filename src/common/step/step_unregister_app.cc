@@ -20,7 +20,7 @@ namespace common_installer {
 namespace pkgmgr {
 
 namespace bs = boost::system;
-namespace fs = boost::filesystem;
+namespace bf = boost::filesystem;
 
 Step::Status StepUnregisterApplication::precheck() {
   if (context_->pkgid.get().empty()) {
@@ -86,7 +86,7 @@ Step::Status StepUnregisterApplication::process() {
 
   // remove manifest file
   bs::error_code error;
-  fs::remove(context_->xml_path.get(), error);
+  bf::remove(context_->xml_path.get(), error);
 
   LOG(DEBUG) << "Successfully unregister the application";
 

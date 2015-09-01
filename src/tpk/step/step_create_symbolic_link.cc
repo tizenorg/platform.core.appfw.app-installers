@@ -16,7 +16,7 @@
 namespace tpk {
 namespace filesystem {
 
-namespace fs = boost::filesystem;
+namespace bf = boost::filesystem;
 using common_installer::ContextInstaller;
 typedef common_installer::Step::Status Status;
 
@@ -27,8 +27,8 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
   boost::system::error_code boost_error;
 
   for (; app != nullptr; app=app->next) {
-    fs::path bindir = context->pkg_path.get() /
-        fs::path("bin");
+    bf::path bindir = context->pkg_path.get() /
+        bf::path("bin");
     LOG(INFO) << "Creating dir: " << bindir;
     if (!common_installer::CreateDir(bindir)) {
       LOG(ERROR) << "Directory creation failure: " << bindir;
@@ -37,21 +37,21 @@ bool CreateSymLink(T *app, ContextInstaller* context) {
 
     // Exec path
     // Make a symlink with the name of appid, pointing exec file
-    fs::path symlink_path = bindir / fs::path(app->appid);
+    bf::path symlink_path = bindir / bf::path(app->appid);
     LOG(INFO) << "Creating symlink " << symlink_path << " pointing " <<
         app->exec;
-    fs::create_symlink(fs::path(app->exec), symlink_path, boost_error);
+    bf::create_symlink(bf::path(app->exec), symlink_path, boost_error);
     if (boost_error) {
       LOG(ERROR) << "Symlink creation failure: " << symlink_path;
       return false;
     }
 
     // Give an execution permission to the original executable
-    fs::path exec_path = bindir / fs::path(app->exec);
+    bf::path exec_path = bindir / bf::path(app->exec);
     LOG(INFO) << "Giving exec permission to " << exec_path;
-    fs::permissions(exec_path, fs::owner_all |
-        fs::group_read | fs::group_exe |
-        fs::others_read | fs::others_exe, boost_error);
+    bf::permissions(exec_path, bf::owner_all |
+        bf::group_read | bf::group_exe |
+        bf::others_read | bf::others_exe, boost_error);
     if (boost_error) {
       LOG(ERROR) << "Permission change failure";
       return false;
@@ -67,8 +67,8 @@ bool RemoveSymLink(T *app, ContextInstaller* context) {
    * So we don't remove the bin/ directory.
    */
   for (; app != nullptr; app=app->next) {
-    fs::path exec_path = fs::path(context->pkg_path.get()) / fs::path("bin");
-    fs::remove_all(exec_path / fs::path(app->appid));
+    bf::path exec_path = bf::path(context->pkg_path.get()) / bf::path("bin");
+    bf::remove_all(exec_path / bf::path(app->appid));
   }
   return true;
 }

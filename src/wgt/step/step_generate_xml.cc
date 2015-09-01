@@ -22,7 +22,7 @@
 #include "common/utils/file_util.h"
 
 namespace bs = boost::system;
-namespace fs = boost::filesystem;
+namespace bf = boost::filesystem;
 
 namespace wgt {
 namespace pkgmgr {
@@ -50,8 +50,8 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
   xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST app->appid);
 
   // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-  fs::path exec_path = context_->pkg_path.get()
-      / fs::path("bin") / fs::path(app->appid);
+  bf::path exec_path = context_->pkg_path.get()
+      / bf::path("bin") / bf::path(app->appid);
   xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
                               BAD_CAST exec_path.string().c_str());
   if (app->type)
@@ -82,15 +82,15 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
 
   // icon is renamed to <appid.png>
   if (app->icon->text) {
-    fs::path app_icon = context_->pkg_path.get() / "res/wgt" /
+    bf::path app_icon = context_->pkg_path.get() / "res/wgt" /
         app->icon->text;
-    fs::path icon = app->appid;
+    bf::path icon = app->appid;
     if (app_icon.has_extension())
       icon += app_icon.extension();
     else
-      icon += fs::path(".png");
+      icon += bf::path(".png");
 
-    if (fs::exists(app_icon)) {
+    if (bf::exists(app_icon)) {
       xmlTextWriterWriteFormatElement(writer, BAD_CAST "icon",
                                           "%s", BAD_CAST icon.c_str());
     }
@@ -164,13 +164,13 @@ common_installer::Step::Status StepGenerateXml::precheck() {
 }
 
 common_installer::Step::Status StepGenerateXml::process() {
-  fs::path xml_path = fs::path(getUserManifestPath(context_->uid.get()))
-      / fs::path(context_->pkgid.get());
+  bf::path xml_path = bf::path(getUserManifestPath(context_->uid.get()))
+      / bf::path(context_->pkgid.get());
   xml_path += ".xml";
   context_->xml_path.set(xml_path.string());
 
   bs::error_code error;
-  if (!fs::exists(xml_path.parent_path(), error)) {
+  if (!bf::exists(xml_path.parent_path(), error)) {
     if (!common_installer::CreateDir(xml_path.parent_path())) {
       LOG(ERROR) <<
           "Directory for manifest xml is missing and cannot be created";
@@ -356,8 +356,8 @@ common_installer::Step::Status StepGenerateXml::process() {
 
 common_installer::Step::Status StepGenerateXml::undo() {
   bs::error_code error;
-  if (fs::exists(context_->xml_path.get()))
-    fs::remove_all(context_->xml_path.get(), error);
+  if (bf::exists(context_->xml_path.get()))
+    bf::remove_all(context_->xml_path.get(), error);
   return Status::OK;
 }
 

@@ -17,7 +17,7 @@ namespace common_installer {
 namespace filesystem {
 
 namespace bs = boost::system;
-namespace fs = boost::filesystem;
+namespace bf = boost::filesystem;
 
 Step::Status StepRemoveIcons::precheck() {
   if (!context_->manifest_data.get()) {
@@ -33,14 +33,14 @@ Step::Status StepRemoveIcons::process() {
   PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->uiapplication,
                                 ui);
   for (; ui != nullptr; ui = ui->next) {
-    fs::path app_icon = fs::path(getIconPath(context_->uid.get()))
-      / fs::path(ui->appid);
+    bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
+      / bf::path(ui->appid);
     if (ui->icon && ui->icon->text)
-      app_icon += fs::path(ui->icon->text).extension();
+      app_icon += bf::path(ui->icon->text).extension();
     else
       app_icon += ".png";
-    if (fs::exists(app_icon)) {
-      fs::path backup_icon_file = GetBackupPathForIconFile(app_icon);
+    if (bf::exists(app_icon)) {
+      bf::path backup_icon_file = GetBackupPathForIconFile(app_icon);
       if (!MoveFile(app_icon, backup_icon_file)) {
         LOG(ERROR) << "Failed to create backup for icon: " << app_icon;
         return Status::ERROR;
@@ -56,7 +56,7 @@ Step::Status StepRemoveIcons::clean() {
   if (!backups_.empty()) {
     LOG(DEBUG) << "Clean up icons files...";
     for (auto& pair : backups_) {
-      fs::remove(pair.first, error);
+      bf::remove(pair.first, error);
       if (error) {
         LOG(WARNING) << "Failed to remove: " << pair.first;
       }

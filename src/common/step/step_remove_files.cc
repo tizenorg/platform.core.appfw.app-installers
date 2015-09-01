@@ -13,7 +13,7 @@ namespace common_installer {
 namespace filesystem {
 
 namespace bs = boost::system;
-namespace fs = boost::filesystem;
+namespace bf = boost::filesystem;
 
 Step::Status StepRemoveFiles::precheck() {
   if (!context_->manifest_data.get()) {
@@ -25,7 +25,7 @@ Step::Status StepRemoveFiles::precheck() {
   // to remove the files
   if (context_->pkg_path.get().empty())
     LOG(ERROR) << "pkg_path attribute is empty";
-  else if (!fs::exists(context_->pkg_path.get()))
+  else if (!bf::exists(context_->pkg_path.get()))
     LOG(ERROR) << "pkg_path ("
                << context_->pkg_path.get()
                << ") path does not exist";
@@ -35,7 +35,7 @@ Step::Status StepRemoveFiles::precheck() {
 }
 
 Step::Status StepRemoveFiles::process() {
-  fs::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
+  bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
   if (!MoveDir(context_->pkg_path.get(), backup_path)) {
     LOG(ERROR) << "Cannot remove widget files from its location";
     return Status::ERROR;
@@ -46,14 +46,14 @@ Step::Status StepRemoveFiles::process() {
 
 Step::Status StepRemoveFiles::clean() {
   bs::error_code error;
-  fs::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
-  fs::remove_all(backup_path, error);
+  bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
+  bf::remove_all(backup_path, error);
   return Status::OK;
 }
 
 Step::Status StepRemoveFiles::undo() {
-  fs::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
-  if (fs::exists(backup_path)) {
+  bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
+  if (bf::exists(backup_path)) {
     LOG(DEBUG) << "Restoring directory: " << context_->pkg_path.get();
     if (!MoveDir(backup_path, context_->pkg_path.get())) {
       LOG(ERROR) << "Cannot restore widget files";

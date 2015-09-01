@@ -19,7 +19,7 @@
 namespace wgt {
 namespace filesystem {
 
-namespace fs = boost::filesystem;
+namespace bf = boost::filesystem;
 
 common_installer::Step::Status StepCreateSymbolicLink::process() {
   assert(context_->manifest_data.get());
@@ -35,14 +35,14 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
   // add ui-application element per ui application
   for (; ui != nullptr; ui = ui->next) {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path =
+    bf::path exec_path =
         context_->pkg_path.get()
-            / fs::path("bin");
+            / bf::path("bin");
     common_installer::CreateDir(exec_path);
 
-    exec_path /= fs::path(ui->appid);
+    exec_path /= bf::path(ui->appid);
 
-    fs::create_symlink(fs::path(WRT_LAUNCHER), exec_path, error);
+    bf::create_symlink(bf::path(WRT_LAUNCHER), exec_path, error);
     if (error) {
       LOG(ERROR) << "Failed to set symbolic link "
         << boost::system::system_error(error).what();
@@ -51,12 +51,12 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
   }
   for (; svc != nullptr; svc = svc->next) {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    fs::path exec_path = context_->pkg_path.get() / fs::path("bin");
+    bf::path exec_path = context_->pkg_path.get() / bf::path("bin");
     common_installer::CreateDir(exec_path);
 
-    exec_path /= fs::path(svc->appid);
+    exec_path /= bf::path(svc->appid);
 
-    fs::create_symlink(fs::path(WRT_LAUNCHER), exec_path, error);
+    bf::create_symlink(bf::path(WRT_LAUNCHER), exec_path, error);
     if (error) {
       LOG(ERROR) << "Failed to set symbolic link "
         << boost::system::system_error(error).what();
@@ -73,14 +73,14 @@ common_installer::Step::Status StepCreateSymbolicLink::undo() {
   serviceapplication_x* svc = context_->manifest_data.get()->serviceapplication;
 
   for (; ui != nullptr; ui = ui->next) {
-    fs::path exec_path = context_->pkg_path.get() / fs::path("bin");
-    if (fs::exists(exec_path))
-      fs::remove_all(exec_path);
+    bf::path exec_path = context_->pkg_path.get() / bf::path("bin");
+    if (bf::exists(exec_path))
+      bf::remove_all(exec_path);
   }
   for (; svc != nullptr; svc = svc->next) {
-    fs::path exec_path = context_->pkg_path.get() / fs::path("bin");
-    if (fs::exists(exec_path))
-      fs::remove_all(exec_path);
+    bf::path exec_path = context_->pkg_path.get() / bf::path("bin");
+    if (bf::exists(exec_path))
+      bf::remove_all(exec_path);
   }
   return Status::OK;
 }

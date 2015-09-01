@@ -19,11 +19,11 @@
 namespace common_installer {
 namespace parse {
 
-namespace fs = boost::filesystem;
+namespace bf = boost::filesystem;
 
 Step::Status StepParse::process() {
-  fs::path xml_path = fs::path(getUserManifestPath(context_->uid.get()))
-      / fs::path(context_->pkgid.get());
+  bf::path xml_path = bf::path(getUserManifestPath(context_->uid.get()))
+      / bf::path(context_->pkgid.get());
   xml_path += ".xml";
 
   context_->xml_path.set(xml_path.string());

@@ -8,8 +8,6 @@
 #include <unistd.h>
 #include <cstdlib>
 
-namespace fs = boost::filesystem;
-
 namespace common_installer {
 
 bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,

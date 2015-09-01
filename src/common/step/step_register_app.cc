@@ -14,8 +14,6 @@
 namespace common_installer {
 namespace pkgmgr {
 
-namespace fs = boost::filesystem;
-
 Step::Status StepRegisterApplication::precheck() {
   if (context_->xml_path.get().empty()) {
     LOG(ERROR) << "xml_path attribute is empty";
