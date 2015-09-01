@@ -79,8 +79,7 @@ Step::Status StepUnzip::precheck() {
 }
 
 Step::Status StepUnzip::process() {
-  bf::path tmp_dir =
-      GenerateTmpDir(context_->root_application_path.get());
+  bf::path tmp_dir = GenerateTmpDir(context_->root_application_path.get());
 
   // write unpacked directory for recovery file
   if (context_->recovery_info.get().recovery_file) {
@@ -99,6 +98,8 @@ Step::Status StepUnzip::process() {
   if (required_size == -1) {
     LOG(ERROR) << "Couldn't get uncompressed size for package: "
                << context_->file_path.get();
+    bs::error_code error;
+    bf::remove_all(tmp_dir, error);
     return Step::Status::ERROR;
   }
 
@@ -106,18 +107,23 @@ Step::Status StepUnzip::process() {
 
   if (!CheckFreeSpaceAtPath(required_size, tmp_dir)) {
     LOG(ERROR) << "There is not enough space to unpack application files";
+    bs::error_code error;
+    bf::remove_all(tmp_dir, error);
     return Step::Status::OUT_OF_SPACE;
   }
 
   if (!CheckFreeSpaceAtPath(required_size,
       bf::path(context_->root_application_path.get()))) {
     LOG(ERROR) << "There is not enough space to install application files";
+    bs::error_code error;
+    bf::remove_all(tmp_dir, error);
     return Step::Status::OUT_OF_SPACE;
   }
 
-  if (!ExtractToTmpDir(context_->file_path.get().string().c_str(),
-      tmp_dir)) {
+  if (!ExtractToTmpDir(context_->file_path.get().string().c_str(), tmp_dir)) {
     LOG(ERROR) << "Failed to process unpack step";
+    bs::error_code error;
+    bf::remove_all(tmp_dir, error);
     return Step::Status::ERROR;
   }
   context_->unpacked_dir_path.set(tmp_dir);
