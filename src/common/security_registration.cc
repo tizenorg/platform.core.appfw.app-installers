@@ -35,7 +35,7 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
 
   if (!path.empty()) {
     error = security_manager_app_inst_req_add_path(req, path.string().c_str(),
-        SECURITY_MANAGER_PATH_PRIVATE);
+        SECURITY_MANAGER_PATH_RW);
     if (error != SECURITY_MANAGER_SUCCESS) {
       return false;
     }
