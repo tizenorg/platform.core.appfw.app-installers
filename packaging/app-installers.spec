@@ -84,13 +84,18 @@ mkdir -p %{buildroot}/etc/package-manager/backend
 ln -s %{_bindir}/wgt-backend %{buildroot}%{_sysconfdir}/package-manager/backend/wgt
 ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/tpk
 
-%post -p /sbin/ldconfig
+%post
+chown root:users %{_bindir}/pkgdir_maker
+chmod 4750 %{_bindir}/pkgdir_maker
+chmod 0700 %{_bindir}/pkgdir_maker_impl.sh
 
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_libdir}/libcommon-installer.so*
+%{_bindir}/pkgdir_maker_impl.sh
+%{_bindir}/pkgdir_maker
 %license LICENSE
 
 %files -n wgt-backend
