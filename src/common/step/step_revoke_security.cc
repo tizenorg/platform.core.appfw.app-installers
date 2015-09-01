@@ -25,8 +25,7 @@ Step::Status StepRevokeSecurity::precheck() {
 }
 
 Step::Status StepRevokeSecurity::clean() {
-  if (!UnregisterSecurityContextForApps(
-      context_->pkgid.get(), context_->manifest_data.get())) {
+  if (!UnregisterSecurityContext(context_->pkgid.get())) {
     LOG(ERROR) << "Failure on unregistering security context for app "
                << context_->pkgid.get();
     return Status::ERROR;
