@@ -37,7 +37,7 @@ Step::Status StepCreateIcons::process() {
       bf::path source = GetIconRoot() / ui->icon->text;
       if (bf::exists(source)) {
         bf::path destination = icons_directory / ui->appid;
-        if (destination.has_extension())
+        if (source.has_extension())
           destination += source.extension();
         else
           destination += ".png";
