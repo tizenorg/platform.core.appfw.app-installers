@@ -29,22 +29,28 @@ const std::vector<std::pair<const char*,
   {"tmp/", SECURITY_MANAGER_PATH_RW}
 };
 
-bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
+bool PrepareRequest(const std::string& pkg_id,
     const boost::filesystem::path& path, manifest_x* manifest,
     app_inst_req* req) {
-  if (app_id.empty() || pkg_id.empty()) {
-    LOG(ERROR) << "Appid or pkgid is empty. Both values must be set";
+  if (pkg_id.empty()) {
+    LOG(ERROR) << "Pkgid is empty. Both values must be set";
     return false;
   }
 
-  int error = security_manager_app_inst_req_set_app_id(req,
-      app_id.c_str());
+  int error = security_manager_app_inst_req_set_pkg_id(req,
+      pkg_id.c_str());
   if (error != SECURITY_MANAGER_SUCCESS) {
     return false;
   }
 
-  error = security_manager_app_inst_req_set_pkg_id(req,
-      pkg_id.c_str());
+  // TODO(t.iwanek): due to the fact that we are registering package not an
+  // applications, appid passing was removed from execution path and we make
+  // an appid for security-manager to pass any. Either way, we do not know which
+  // app id to pass. This funcation call should be removed at all when security
+  // manager request will not force to pass app id.
+  std::string fake_app_id = pkg_id + "." + pkg_id;
+  error = security_manager_app_inst_req_set_app_id(req,
+      fake_app_id.c_str());
   if (error != SECURITY_MANAGER_SUCCESS) {
     return false;
   }
@@ -76,8 +82,13 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
   return true;
 }
 
-bool RegisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id, const boost::filesystem::path& path,
+}  // namespace
+
+namespace common_installer {
+
+bool RegisterSecurityContext(
+    const std::string& pkg_id,
+    const boost::filesystem::path& path,
     manifest_x* manifest) {
   app_inst_req* req;
 
@@ -89,7 +100,7 @@ bool RegisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, path, manifest, req)) {
+  if (!PrepareRequest(pkg_id, path, manifest, req)) {
       LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
       security_manager_app_inst_req_free(req);
       return false;
@@ -108,8 +119,7 @@ bool RegisterSecurityContext(const std::string& app_id,
 }
 
 
-bool UnregisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id) {
+bool UnregisterSecurityContext(const std::string& pkg_id) {
   app_inst_req* req;
 
   int error = security_manager_app_inst_req_new(&req);
@@ -119,7 +129,7 @@ bool UnregisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, bf::path(), nullptr, req)) {
+  if (!PrepareRequest(pkg_id, bf::path(), nullptr, req)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
@@ -134,63 +144,6 @@ bool UnregisterSecurityContext(const std::string& app_id,
   }
 
   security_manager_app_inst_req_free(req);
-  return true;
-}
-
-}  // namespace
-
-namespace common_installer {
-
-bool RegisterSecurityContextForApps(
-    const std::string& pkg_id, const boost::filesystem::path& path,
-    manifest_x* manifest) {
-  for (uiapplication_x* ui = manifest->uiapplication;
-      ui != nullptr; ui = ui->next) {
-    if (!ui->appid) {
-      return false;
-    }
-    if (!RegisterSecurityContext(ui->appid, pkg_id,
-        path, manifest)) {
-      return false;
-    }
-  }
-
-  for (serviceapplication_x* svc =
-      manifest->serviceapplication;
-      svc != nullptr; svc = svc->next) {
-    if (!svc->appid) {
-      return false;
-    }
-    if (!RegisterSecurityContext(svc->appid, pkg_id,
-        path, manifest)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool UnregisterSecurityContextForApps(
-    const std::string& pkg_id, manifest_x* manifest) {
-  for (uiapplication_x* ui = manifest->uiapplication;
-      ui != nullptr; ui = ui->next) {
-    if (!ui->appid) {
-      return false;
-    }
-    if (!UnregisterSecurityContext(ui->appid, pkg_id)) {
-      return false;
-    }
-  }
-
-  for (serviceapplication_x* svc =
-      manifest->serviceapplication;
-      svc != nullptr; svc = svc->next) {
-    if (!svc->appid) {
-      return false;
-    }
-    if (!UnregisterSecurityContext(svc->appid, pkg_id)) {
-      return false;
-    }
-  }
   return true;
 }
 
