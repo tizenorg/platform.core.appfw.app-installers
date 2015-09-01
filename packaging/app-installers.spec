@@ -3,7 +3,7 @@
 
 Name:           app-installers
 Summary:        Application installers
-Version:        1.7
+Version:        1.8
 Release:        1
 Group:          Application Framework/Package Management
 License:        Apache-2.0
@@ -109,6 +109,11 @@ ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 %{_datadir}/app-installers-ut/*
 
 %changelog
+* Tue Sep 01 2015 Pawel Sikorski <p.sikorski@samsung.com> 1.8-1
+- manifest-parser alignement; icons fixes; boost namespace cleanup
+- package directories update (security policy, tmp and cache dirs)
+- apps killing during update/deinstallation
+
 * Thu Aug 27 2015 Pawel Sikorski <p.sikorski@samsung.com> 1.7-1
 - fixes: privileges list length, manifest generation, icon for tpk
 - RequestMode introduction
