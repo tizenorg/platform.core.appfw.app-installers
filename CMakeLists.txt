@@ -27,6 +27,7 @@ SET(TARGET_LIBNAME_WGT "wgt-installer")
 SET(TARGET_LIBNAME_TPK "tpk-installer")
 SET(TARGET_WGT_BACKEND "wgt-backend")
 SET(TARGET_TPK_BACKEND "tpk-backend")
+SET(TARGET_PKGDIR_MAKER "pkgdir_maker.py")
 
 ADD_DEFINITIONS("-Wall")
 ADD_DEFINITIONS("-Wextra")
