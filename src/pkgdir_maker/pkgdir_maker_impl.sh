@@ -129,7 +129,7 @@ function createPkgDir
   local usergroup=$3
   local parentdir=$4
 
-  LOG INFO "Create package directory into ${parentdir}"
+  LOG INFO "Create package directory ${pkgid} into ${parentdir}"
   for dirname in "${DIRS[@]}"; do
     getDirInfo $dirname $pkgid $username $usergroup
     local dirinfo=( "${return_getDirInfo[@]}" )
@@ -243,7 +243,7 @@ function deleteDirs
 
 
 ### Option processing
-_valid_option_list=( "--create" "--delete" "--pkgid=" "--verbose" "--help" )
+_valid_option_list=( "--create" "--delete" "--pkgid=" "--verbose" "--allglobalpkgs" "--help" )
 for option in $@
 do
     found_option=0
@@ -270,19 +270,30 @@ if test -n "${OPTION_help}"; then
   echo -e "Usage:"
   echo -e "    `basename $0` --create --pkgid=<pkgid>    : Create package dirs"
   echo -e "    `basename $0` --delete --pkgid=<pkgid>    : Delete package dirs"
+  echo -e "    `basename $0` --create --allglobalpkgs    : Create package dirs for all global packages"
   exit 0
 fi
 if [[ -n "${OPTION_create}" && -n "${OPTION_delete}" ]]; then
   LOG ERROR "--create and --delete cannot be used together"
 fi
-if [[ ! -n "${OPTION_pkgid}" ]]; then
+if [[ ! -n "${OPTION_pkgid}" && ! -n "${OPTION_allglobalpkgs}" ]]; then
   LOG ERROR "pkgid is not given"
 fi
 
 
 ### main
 if [[ -n "${OPTION_create}" ]]; then
-  createDirs ${OPTION_pkgid}
+  if [[ -n "${OPTION_allglobalpkgs}" ]]; then
+    ls /usr/share/packages/*.xml | while read xmlfile;
+    do
+      pkgid=`cat $xmlfile | grep -aPzo '<manifest..*?>' | grep -Pzo 'package="..*?"' | sed -e 's/package="\(..*\)"/\1/'`
+      if [[ -n "${pkgid}" ]]; then
+        createDirs ${pkgid}
+      fi
+    done
+  else
+    createDirs ${OPTION_pkgid}
+  fi
 elif [[ -n "${OPTION_delete}" ]]; then
   deleteDirs ${OPTION_pkgid}
 fi
