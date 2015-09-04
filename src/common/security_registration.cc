@@ -19,7 +19,7 @@ namespace {
 
 const std::vector<std::pair<const char*,
                             app_install_path_type>> kSecurityPolicies = {
-  {"/", SECURITY_MANAGER_PATH_RO},
+  {"/", SECURITY_MANAGER_PATH_PUBLIC_RO},
   {"bin/", SECURITY_MANAGER_PATH_RO},
   {"data/", SECURITY_MANAGER_PATH_RW},
   {"cache/", SECURITY_MANAGER_PATH_RW},
