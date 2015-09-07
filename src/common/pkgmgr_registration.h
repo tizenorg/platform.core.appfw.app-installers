@@ -93,6 +93,19 @@ bool QueryAppidsForPkgId(const std::string& pkg_id,
                          std::vector<std::string>* result, uid_t uid);
 
 /**
+ * \brief Adapter interface for external PkgMgr module used for getting
+ *        list of privileges for given package
+ *
+ * \param pkg_id id of package
+ * \param result result - privileges
+ * \param uid user id
+ *
+ * \return true if success
+ */
+bool QueryPrivilegesForPkgId(const std::string& pkg_id,
+                             std::vector<std::string>* result, uid_t uid);
+
+/**
  * \brief Adapter interface for external PkgMgr module used for checking
  *        if given package is installed/registered
  *
