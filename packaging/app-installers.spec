@@ -11,6 +11,7 @@ Source0:        %{name}-%{version}.tar.gz
 Source1001:     wgt-backend.manifest
 Source1002:     tpk-backend.manifest
 Source1003:     app-installers-tests.manifest
+Source1004:     app-installers.manifest
 
 BuildRequires:  boost-devel
 BuildRequires:  cmake
@@ -67,6 +68,7 @@ Unit tests for al modules of app-installers
 cp %{SOURCE1001} .
 cp %{SOURCE1002} .
 cp %{SOURCE1003} .
+cp %{SOURCE1004} .
 
 %build
 #Variable for setting symlink to runtime
@@ -85,17 +87,17 @@ ln -s %{_bindir}/wgt-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/tpk
 
 %post
-chown root:users %{_bindir}/pkgdir_maker
-chmod 4750 %{_bindir}/pkgdir_maker
-chmod 0700 %{_bindir}/pkgdir_maker_impl.sh
+ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
+rm %{_bindir}/pkgdir_maker
 
 %files
 %defattr(-,root,root)
 %{_libdir}/libcommon-installer.so*
-%{_bindir}/pkgdir_maker_impl.sh
-%{_bindir}/pkgdir_maker
+%attr(4750,root,users) %{_bindir}/pkgdir-tool
+%manifest app-installers.manifest
 %license LICENSE
 
 %files -n wgt-backend
