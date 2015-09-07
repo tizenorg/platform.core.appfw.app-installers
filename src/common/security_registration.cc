@@ -31,7 +31,8 @@ const std::vector<std::pair<const char*,
 };
 
 bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
-    const boost::filesystem::path& path, manifest_x* manifest,
+    const boost::filesystem::path& path,
+    const std::vector<std::string>& privileges,
     app_inst_req* req) {
   if (app_id.empty() || pkg_id.empty()) {
     LOG(ERROR) << "Appid or pkgid is empty. Both values must be set";
@@ -63,32 +64,22 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     }
   }
 
-  if (manifest) {
-    std::vector<std::string> priv_vec;
-
-    privileges_x *privileges = nullptr;
-    PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->privileges, privileges);
-    for (; privileges != nullptr; privileges = privileges->next) {
-      privilege_x* priv = nullptr;
-      PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges->privilege, priv);
-      for (; priv != nullptr; priv = priv->next) {
-        priv_vec.push_back(priv->text);
-      }
-    }
-
-    // privileges should be sorted.
-    std::sort(priv_vec.begin(), priv_vec.end());
-    for (auto& priv : priv_vec) {
-      security_manager_app_inst_req_add_privilege(req, priv.c_str());
-    }
+  std::vector<std::string> priv_vec(privileges);
+  // privileges should be sorted.
+  std::sort(priv_vec.begin(), priv_vec.end());
+  for (auto& priv : priv_vec) {
+    security_manager_app_inst_req_add_privilege(req, priv.c_str());
   }
-
   return true;
 }
 
+}  // namespace
+
+namespace common_installer {
+
 bool RegisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, const boost::filesystem::path& path,
-    manifest_x* manifest) {
+    const std::vector<std::string>& privileges) {
   app_inst_req* req;
 
   int error = security_manager_app_inst_req_new(&req);
@@ -99,7 +90,7 @@ bool RegisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, path, manifest, req)) {
+  if (!PrepareRequest(app_id, pkg_id, path, privileges, req)) {
       LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
       security_manager_app_inst_req_free(req);
       return false;
@@ -117,7 +108,6 @@ bool RegisterSecurityContext(const std::string& app_id,
   return true;
 }
 
-
 bool UnregisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id) {
   app_inst_req* req;
@@ -129,7 +119,7 @@ bool UnregisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, bf::path(), nullptr, req)) {
+  if (!PrepareRequest(app_id, pkg_id, bf::path(), {}, req)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
@@ -147,27 +137,34 @@ bool UnregisterSecurityContext(const std::string& app_id,
   return true;
 }
 
-}  // namespace
-
-namespace common_installer {
-
-bool RegisterSecurityContextForApps(
+bool RegisterSecurityContextForManifest(
     const std::string& pkg_id, const boost::filesystem::path& path,
     manifest_x* manifest) {
+  std::vector<std::string> priv_vec;
+  privileges_x *privileges = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->privileges, privileges);
+  for (; privileges != nullptr; privileges = privileges->next) {
+    privilege_x* priv = nullptr;
+    PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges->privilege, priv);
+    for (; priv != nullptr; priv = priv->next) {
+      priv_vec.push_back(priv->text);
+    }
+  }
   for (application_x* app = manifest->application;
       app != nullptr; app = app->next) {
     if (!app->appid) {
       return false;
     }
     if (!RegisterSecurityContext(app->appid, pkg_id,
-        path, manifest)) {
+        path, priv_vec)) {
       return false;
     }
   }
+
   return true;
 }
 
-bool UnregisterSecurityContextForApps(
+bool UnregisterSecurityContextForManifest(
     const std::string& pkg_id, manifest_x* manifest) {
   for (application_x* app = manifest->application;
       app != nullptr; app = app->next) {
