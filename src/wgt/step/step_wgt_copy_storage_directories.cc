@@ -21,8 +21,6 @@ const char kSharedDataLocation[] = "shared/data";
 const char kSharedTrustedLocation[] = "shared/trusted";
 const char kResWgtSubPath[] = "res/wgt";
 const char kTemporaryData[] = "tmp";
-const char kCacheDir[] = "cache";
-
 }  // namespace
 
 namespace wgt {
@@ -32,9 +30,8 @@ common_installer::Step::Status StepWgtCopyStorageDirectories::process() {
   Status status = CreatePrivateTmpDir();
   if (status != Status::OK)
     return status;
-  status = CreateCacheDir();
-  if (status != Status::OK)
-    return status;
+  if (!CacheDir())
+    return Status::ERROR;
 
   int version = context_->manifest_data.get()->api_version[0] - '0';
   if (version < 3) {
@@ -165,18 +162,6 @@ StepWgtCopyStorageDirectories::CreatePrivateTmpDir() {
   bf::create_directory(tmp_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create private temporary directory for package";
-    return Status::ERROR;
-  }
-  return Status::OK;
-}
-
-common_installer::Step::Status
-StepWgtCopyStorageDirectories::CreateCacheDir() {
-  bs::error_code error_code;
-  bf::path cache_path = context_->pkg_path.get() / kCacheDir;
-  bf::create_directory(cache_path, error_code);
-  if (error_code) {
-    LOG(ERROR) << "Failed to create cache directory for package";
     return Status::ERROR;
   }
   return Status::OK;
