@@ -62,6 +62,13 @@ int PkgmgrForeachAppCallback(const pkgmgrinfo_appinfo_h handle,
   return PMINFO_R_OK;
 }
 
+int PkgmgrForeachPrivilegeCallback(const char* privilege_name,
+                                   void* user_data) {
+  auto* data = static_cast<std::vector<std::string>*>(user_data);
+  data->emplace_back(privilege_name);
+  return PMINFO_R_OK;
+}
+
 }  // anonymous namespace
 
 namespace common_installer {
@@ -227,6 +234,20 @@ bool QueryAppidsForPkgId(const std::string& pkg_id,
 
   bool ret = pkgmgrinfo_appinfo_get_usr_list(package_info, PMINFO_ALL_APP,
       &PkgmgrForeachAppCallback, result, uid) == PMINFO_R_OK;
+  pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
+  return ret;
+}
+
+bool QueryPrivilegesForPkgId(const std::string& pkg_id,
+                             std::vector<std::string>* result, uid_t uid) {
+  pkgmgrinfo_pkginfo_h package_info;
+  if (pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), uid, &package_info)
+      != PMINFO_R_OK) {
+    return false;
+  }
+
+  bool ret = pkgmgrinfo_pkginfo_foreach_privilege(package_info,
+      &PkgmgrForeachPrivilegeCallback, result) == PMINFO_R_OK;
   pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
   return ret;
 }
