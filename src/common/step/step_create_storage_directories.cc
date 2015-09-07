@@ -13,6 +13,7 @@ namespace bs = boost::system;
 
 namespace {
 
+const char kCache[] = "cache";
 const char kData[] = "data";
 const char kShared[] = "shared";
 const char kSharedData[] = "data";
@@ -27,6 +28,8 @@ common_installer::Step::Status StepCreateStorageDirectories::process() {
   if (!ShareDir())
     return Status::ERROR;
   if (!PrivateDir())
+    return Status::ERROR;
+  if (!CacheDir())
     return Status::ERROR;
 
   return Status::OK;
@@ -70,9 +73,27 @@ bool StepCreateStorageDirectories::SubShareDir() {
 bool StepCreateStorageDirectories::PrivateDir() {
   bs::error_code error_code;
   bf::path data_path = context_->pkg_path.get() / kData;
+
+  // compatibility for old tpk packages
+  if (bf::exists(data_path)) {
+    LOG(DEBUG) << "Data directory already exists";
+    return true;
+  }
+
   bf::create_directory(data_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create private directory for package";
+    return false;
+  }
+  return true;
+}
+
+bool StepCreateStorageDirectories::CacheDir() {
+  bs::error_code error_code;
+  bf::path cache_path = context_->pkg_path.get() / kCache;
+  bf::create_directory(cache_path, error_code);
+  if (error_code) {
+    LOG(ERROR) << "Failed to create cache directory for package";
     return false;
   }
   return true;
