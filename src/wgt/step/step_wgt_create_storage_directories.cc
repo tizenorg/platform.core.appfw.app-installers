@@ -18,7 +18,6 @@ namespace {
 const char kSharedLocation[] = "shared";
 const char kResWgtSubPath[] = "res/wgt";
 const char kTemporaryData[] = "tmp";
-const char kCacheDir[] = "cache";
 
 }  // namespace
 
@@ -47,7 +46,7 @@ common_installer::Step::Status StepWgtCreateStorageDirectories::process() {
   if (!CreatePrivateTmpDir())
     return Status::ERROR;
 
-  if (!CreateCacheDir())
+  if (!CacheDir())
     return Status::ERROR;
 
   return Status::OK;
@@ -94,17 +93,6 @@ bool StepWgtCreateStorageDirectories::CreatePrivateTmpDir() {
   bf::create_directory(tmp_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create private temporary directory for package";
-    return false;
-  }
-  return true;
-}
-
-bool StepWgtCreateStorageDirectories::CreateCacheDir() {
-  bs::error_code error_code;
-  bf::path cache_path = context_->pkg_path.get() / kCacheDir;
-  bf::create_directory(cache_path, error_code);
-  if (error_code) {
-    LOG(ERROR) << "Failed to create cache directory for package";
     return false;
   }
   return true;
