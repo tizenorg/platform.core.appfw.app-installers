@@ -32,7 +32,6 @@ class StepWgtCopyStorageDirectories
   void UndoSharedDirectory();
   void UndoDataDirectory();
   Status CreatePrivateTmpDir();
-  Status CreateCacheDir();
 
   SCOPE_LOG_TAG(CopyWgtStorageDirectories)
 };

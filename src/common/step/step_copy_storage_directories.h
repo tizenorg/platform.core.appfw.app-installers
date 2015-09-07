@@ -26,9 +26,8 @@ class StepCopyStorageDirectories : public common_installer::Step {
   bool MoveAppStorage(const boost::filesystem::path& in_src,
                       const boost::filesystem::path& in_dst,
                       const char *key);
-
+  bool CacheDir();
   boost::filesystem::path backup_path_;
-
   SCOPE_LOG_TAG(CopyStorageDirectories)
 };
 
