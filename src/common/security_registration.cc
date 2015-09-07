@@ -31,7 +31,8 @@ const std::vector<std::pair<const char*,
 };
 
 bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
-    const boost::filesystem::path& path, manifest_x* manifest,
+    const boost::filesystem::path& path,
+    const std::vector<std::string>& privileges,
     app_inst_req* req) {
   if (app_id.empty() || pkg_id.empty()) {
     LOG(ERROR) << "Appid or pkgid is empty. Both values must be set";
@@ -63,18 +64,19 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     }
   }
 
-  if (manifest) {
-    for (const char* priv : GListRange<char*>(manifest->privileges)) {
-      security_manager_app_inst_req_add_privilege(req, priv);
-    }
+  for (auto& priv : privileges) {
+    security_manager_app_inst_req_add_privilege(req, priv.c_str());
   }
-
   return true;
 }
 
+}  // namespace
+
+namespace common_installer {
+
 bool RegisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, const boost::filesystem::path& path,
-    manifest_x* manifest) {
+    const std::vector<std::string>& privileges) {
   app_inst_req* req;
 
   int error = security_manager_app_inst_req_new(&req);
@@ -85,7 +87,7 @@ bool RegisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, path, manifest, req)) {
+  if (!PrepareRequest(app_id, pkg_id, path, privileges, req)) {
       LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
       security_manager_app_inst_req_free(req);
       return false;
@@ -103,7 +105,6 @@ bool RegisterSecurityContext(const std::string& app_id,
   return true;
 }
 
-
 bool UnregisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id) {
   app_inst_req* req;
@@ -115,7 +116,7 @@ bool UnregisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, bf::path(), nullptr, req)) {
+  if (!PrepareRequest(app_id, pkg_id, bf::path(), {}, req)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
@@ -133,26 +134,26 @@ bool UnregisterSecurityContext(const std::string& app_id,
   return true;
 }
 
-}  // namespace
-
-namespace common_installer {
-
-bool RegisterSecurityContextForApps(
+bool RegisterSecurityContextForManifest(
     const std::string& pkg_id, const boost::filesystem::path& path,
     manifest_x* manifest) {
+  std::vector<std::string> priv_vec;
+  for (const char* priv : GListRange<char*>(manifest->privileges)) {
+    priv_vec.emplace_back(priv);
+  }
   for (application_x* app : GListRange<application_x*>(manifest->application)) {
     if (!app->appid) {
       return false;
     }
     if (!RegisterSecurityContext(app->appid, pkg_id,
-        path, manifest)) {
+        path, priv_vec)) {
       return false;
     }
   }
   return true;
 }
 
-bool UnregisterSecurityContextForApps(
+bool UnregisterSecurityContextForManifest(
     const std::string& pkg_id, manifest_x* manifest) {
   for (application_x* app : GListRange<application_x*>(manifest->application)) {
     if (!app->appid) {
