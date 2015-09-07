@@ -70,6 +70,13 @@ bool StepCreateStorageDirectories::SubShareDir() {
 bool StepCreateStorageDirectories::PrivateDir() {
   bs::error_code error_code;
   bf::path data_path = context_->pkg_path.get() / kData;
+
+  // compatibility for old tpk packages
+  if (bf::exists(data_path)) {
+    LOG(DEBUG) << "Data directory already exist";
+    return true;
+  }
+
   bf::create_directory(data_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create private directory for package";
