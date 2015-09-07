@@ -87,18 +87,17 @@ ln -s %{_bindir}/wgt-backend %{buildroot}%{_sysconfdir}/package-manager/backend/
 ln -s %{_bindir}/tpk-backend %{buildroot}%{_sysconfdir}/package-manager/backend/tpk
 
 %post
-chown root:users %{_bindir}/pkgdir_maker
-chmod 4750 %{_bindir}/pkgdir_maker
-chmod 0700 %{_bindir}/pkgdir_maker_impl.sh
+ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
+[ $1 == 0 ] && rm %{_bindir}/pkgdir_maker
 
 %files
 %defattr(-,root,root)
 %manifest app-installers.manifest
 %{_libdir}/libcommon-installer.so*
-%{_bindir}/pkgdir_maker_impl.sh
-%{_bindir}/pkgdir_maker
+%attr(6750,root,users) %{_bindir}/pkgdir-tool
 %license LICENSE
 
 %files -n wgt-backend

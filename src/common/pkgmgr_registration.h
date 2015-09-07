@@ -34,6 +34,8 @@ std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
                                               uid_t uid);
 bool QueryAppidsForPkgId(const std::string& pkg_id,
                          std::vector<std::string>* result, uid_t uid);
+bool QueryPrivilegesForPkgId(const std::string& pkg_id,
+                             std::vector<std::string>* result, uid_t uid);
 bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode);
 
 }  // namespace common_installer

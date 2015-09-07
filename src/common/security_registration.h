@@ -15,9 +15,14 @@
 
 namespace common_installer {
 
-bool RegisterSecurityContextForApps(const std::string& pkg_id,
+bool RegisterSecurityContext(const std::string& app_id,
+    const std::string& pkg_id, const boost::filesystem::path& path,
+    const std::vector<std::string>& privileges);
+bool UnregisterSecurityContext(const std::string& app_id,
+    const std::string& pkg_id);
+bool RegisterSecurityContextForManifest(const std::string& pkg_id,
     const boost::filesystem::path& path, manifest_x* manifest);
-bool UnregisterSecurityContextForApps(const std::string& pkg_id,
+bool UnregisterSecurityContextForManifest(const std::string& pkg_id,
     manifest_x* manifest);
 
 }  // namespace common_installer
