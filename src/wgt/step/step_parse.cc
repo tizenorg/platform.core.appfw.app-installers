@@ -196,6 +196,10 @@ bool StepParse::FillPrivileges(manifest_x* manifest) {
   if (perm_info)
     privileges = ExtractPrivileges(perm_info);
 
+  // Add special privilege to add default privileges for web app.
+  // This privilege(webappdefault) is managed in security-manager.
+  privileges.insert("http://tizen.org/privilege/webappdefault");
+
   if (!privileges.empty()) {
     privileges_x* privileges_x_list =
         reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x)));
