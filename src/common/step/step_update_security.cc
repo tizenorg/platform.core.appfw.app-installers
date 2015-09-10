@@ -11,8 +11,8 @@ namespace security {
 
 Step::Status StepUpdateSecurity::process() {
   if (!RegisterSecurityContextForApps(
-      context_->pkgid.get(), context_->pkg_path.get(),
-      context_->manifest_data.get())) {
+      context_->pkgid.get(), context_->pkg_type.get(),
+      context_->pkg_path.get(), context_->manifest_data.get())) {
     return Status::ERROR;
   }
   LOG(DEBUG) << "Security context updated";
@@ -21,8 +21,8 @@ Step::Status StepUpdateSecurity::process() {
 
 Step::Status StepUpdateSecurity::undo() {
   if (!RegisterSecurityContextForApps(
-      context_->pkgid.get(), context_->pkg_path.get(),
-      context_->old_manifest_data.get())) {
+      context_->pkgid.get(), context_->pkg_type.get(),
+      context_->pkg_path.get(), context_->old_manifest_data.get())) {
     return Status::ERROR;
   }
   LOG(DEBUG) << "Security context reverted";

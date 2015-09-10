@@ -27,7 +27,8 @@ Step::Status StepRecoverSecurity::RecoveryNew() {
   if (!Check())
     return Status::OK;
   UnregisterSecurityContextForApps(
-        context_->pkgid.get(), context_->manifest_data.get());
+        context_->pkgid.get(), context_->pkg_type.get(),
+        context_->manifest_data.get());
   return Status::OK;
 }
 
@@ -37,8 +38,8 @@ Step::Status StepRecoverSecurity::RecoveryUpdate() {
     return Status::ERROR;
   }
   if (!RegisterSecurityContextForApps(
-      context_->pkgid.get(), context_->pkg_path.get(),
-      context_->manifest_data.get())) {
+      context_->pkgid.get(), context_->pkg_type.get(),
+      context_->pkg_path.get(), context_->manifest_data.get())) {
     LOG(ERROR) << "Unsuccessful update";
     return Status::ERROR;
   }

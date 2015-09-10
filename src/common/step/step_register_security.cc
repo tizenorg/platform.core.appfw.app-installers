@@ -38,8 +38,8 @@ Step::Status StepRegisterSecurity::precheck() {
 
 Step::Status StepRegisterSecurity::process() {
   if (!RegisterSecurityContextForApps(
-      context_->pkgid.get(), context_->pkg_path.get(),
-      context_->manifest_data.get())) {
+      context_->pkgid.get(), context_->pkg_type.get(),
+      context_->pkg_path.get(), context_->manifest_data.get())) {
     return Status::ERROR;
   }
   LOG(DEBUG) << "Security context installed";
