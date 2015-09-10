@@ -22,7 +22,8 @@ namespace common_installer {
 AppInstaller::AppInstaller(const char* package_type, PkgMgrPtr pkgmgr)
     : pkgmgr_(pkgmgr),
       context_(new ContextInstaller()) {
-  pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi()));
+  pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi(),
+                             pkgmgr->GetRequestType()));
 
   // TODO(p.sikorski) below property is only used in AppInstaller.
   // maybe it should then be kept in AppInstaller
