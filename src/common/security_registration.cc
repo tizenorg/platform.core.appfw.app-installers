@@ -30,8 +30,8 @@ const std::vector<std::pair<const char*,
 };
 
 bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
-    const boost::filesystem::path& path, manifest_x* manifest,
-    app_inst_req* req) {
+    const std::string& pkg_type, const boost::filesystem::path& path,
+    manifest_x* manifest, app_inst_req* req) {
   if (app_id.empty() || pkg_id.empty()) {
     LOG(ERROR) << "Appid or pkgid is empty. Both values must be set";
     return false;
@@ -73,12 +73,22 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
       }
     }
   }
+
+  // Add special privilege to provide default privileges for webapp.
+  // The privilege(http://tizen.org/privilege/webappdefault) is managed
+  // in security-manager. The security-manager will add default privileges
+  // for webapp to cynara if the privilege is included.
+  if (pkg_type == "wgt") {
+    security_manager_app_inst_req_add_privilege(
+        req, "http://tizen.org/privilege/webappdefault");
+  }
+
   return true;
 }
 
 bool RegisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id, const boost::filesystem::path& path,
-    manifest_x* manifest) {
+    const std::string& pkg_id, const std::string& pkg_type, 
+    const boost::filesystem::path& path, manifest_x* manifest) {
   app_inst_req* req;
 
   int error = security_manager_app_inst_req_new(&req);
@@ -89,7 +99,7 @@ bool RegisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, path, manifest, req)) {
+  if (!PrepareRequest(app_id, pkg_id, pkg_type, path, manifest, req)) {
       LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
       security_manager_app_inst_req_free(req);
       return false;
@@ -109,7 +119,7 @@ bool RegisterSecurityContext(const std::string& app_id,
 
 
 bool UnregisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id) {
+    const std::string& pkg_id, const std::string& pkg_type) {
   app_inst_req* req;
 
   int error = security_manager_app_inst_req_new(&req);
@@ -119,7 +129,7 @@ bool UnregisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, bf::path(), nullptr, req)) {
+  if (!PrepareRequest(app_id, pkg_id, pkg_type, bf::path(), nullptr, req)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
@@ -142,14 +152,14 @@ bool UnregisterSecurityContext(const std::string& app_id,
 namespace common_installer {
 
 bool RegisterSecurityContextForApps(
-    const std::string& pkg_id, const boost::filesystem::path& path,
-    manifest_x* manifest) {
+    const std::string& pkg_id, const std::string& pkg_type,
+    const boost::filesystem::path& path, manifest_x* manifest) {
   for (uiapplication_x* ui = manifest->uiapplication;
       ui != nullptr; ui = ui->next) {
     if (!ui->appid) {
       return false;
     }
-    if (!RegisterSecurityContext(ui->appid, pkg_id,
+    if (!RegisterSecurityContext(ui->appid, pkg_id, pkg_type,
         path, manifest)) {
       return false;
     }
@@ -161,7 +171,7 @@ bool RegisterSecurityContextForApps(
     if (!svc->appid) {
       return false;
     }
-    if (!RegisterSecurityContext(svc->appid, pkg_id,
+    if (!RegisterSecurityContext(svc->appid, pkg_id, pkg_type,
         path, manifest)) {
       return false;
     }
@@ -170,13 +180,14 @@ bool RegisterSecurityContextForApps(
 }
 
 bool UnregisterSecurityContextForApps(
-    const std::string& pkg_id, manifest_x* manifest) {
+    const std::string& pkg_id, const std::string& pkg_type,
+    manifest_x* manifest) {
   for (uiapplication_x* ui = manifest->uiapplication;
       ui != nullptr; ui = ui->next) {
     if (!ui->appid) {
       return false;
     }
-    if (!UnregisterSecurityContext(ui->appid, pkg_id)) {
+    if (!UnregisterSecurityContext(ui->appid, pkg_id, pkg_type)) {
       return false;
     }
   }
@@ -187,7 +198,7 @@ bool UnregisterSecurityContextForApps(
     if (!svc->appid) {
       return false;
     }
-    if (!UnregisterSecurityContext(svc->appid, pkg_id)) {
+    if (!UnregisterSecurityContext(svc->appid, pkg_id, pkg_type)) {
       return false;
     }
   }
