@@ -5,6 +5,7 @@
 #include "common/pkgmgr_signal.h"
 
 #include <cassert>
+#include <map>
 
 #include "common/utils/logging.h"
 
@@ -13,12 +14,27 @@
 // otherwise there is no way to return errorcode
 #define PKGMGR_INSTALLER_ERROR_KEY_STR "error"
 
+namespace {
+
+namespace ci=common_installer;
+
+const std::map<ci::RequestType,const char *> kEventStr = {
+  {ci::RequestType::Install, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
+  {ci::RequestType::Recovery, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
+  {ci::RequestType::Reinstall, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
+  {ci::RequestType::Uninstall, PKGMGR_INSTALLER_UNINSTALL_EVENT_STR},
+  {ci::RequestType::Unknown, PKGMGR_INSTALLER_INSTALL_EVENT_STR},  //not needed
+  {ci::RequestType::Update, PKGMGR_INSTALLER_UPGRADE_EVENT_STR}
+};
+
+}  // namespace
+
 namespace common_installer {
 
 PkgmgrSignal::State PkgmgrSignal::state_ = PkgmgrSignal::State::NOT_SENT;
 
-PkgmgrSignal::PkgmgrSignal(pkgmgr_installer* pi)
-    : pi_(pi) {
+PkgmgrSignal::PkgmgrSignal(pkgmgr_installer* pi, RequestType req_type)
+    : pi_(pi), request_type_(req_type) {
 }
 
 bool PkgmgrSignal::SendStarted(
@@ -27,11 +43,8 @@ bool PkgmgrSignal::SendStarted(
     return false;
   }
 
-  if (!SendSignal(PKGMGR_INSTALLER_START_KEY_STR,
-      (pkgmgr_installer_get_request_type(pi_) != PKGMGR_REQ_UNINSTALL)
-      ? PKGMGR_INSTALLER_INSTALL_EVENT_STR
-      : PKGMGR_INSTALLER_UNINSTALL_EVENT_STR,
-      type, pkgid)) {
+  auto key = kEventStr.find(request_type_);
+  if (!SendSignal(PKGMGR_INSTALLER_START_KEY_STR, key->second, type, pkgid)) {
     return false;
   }
   state_ = State::STARTED;

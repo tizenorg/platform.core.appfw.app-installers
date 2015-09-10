@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "common/request.h"
 #include "common/step/step.h"
 #include "common/utils/macros.h"
 
@@ -25,7 +26,7 @@ class PkgmgrSignal {
     FINISHED
   };
 
-  explicit PkgmgrSignal(pkgmgr_installer* pi);
+  explicit PkgmgrSignal(pkgmgr_installer* pi, RequestType req_type);
 
   bool SendStarted(
       const std::string& type = std::string(),
@@ -51,6 +52,7 @@ class PkgmgrSignal {
 
   pkgmgr_installer* pi_;
   static State state_;
+  RequestType request_type_;
 
   DISALLOW_COPY_AND_ASSIGN(PkgmgrSignal);
 };
