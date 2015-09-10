@@ -16,8 +16,9 @@
 namespace {
 
 const char kPlatformVersion[] = "3.0";
+const char kDefaultPrivilegeForWebApp[] = "http://tizen.org/privilege/webappdefault";
 
-bool TranslatePrivilegesForCompatibility(manifest_x* m) {
+bool TranslatePrivilegesForCompatibility(const std::string& pkg_type, manifest_x* m) {
   if (!m->api_version) {
     LOG(WARNING) << "Skipping privileges mapping because api-version "
                  << "is not specified by package";
@@ -26,9 +27,22 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
   if (strcmp(m->api_version, kPlatformVersion) == 0)
     return true;
 
+  privileges_x *privileges = nullptr;
+
+  if (pkg_type == "wgt") {
+    if (!m->privileges) {
+      m->privileges =
+        reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x*)));
+    }
+    //PKGMGR_LIST_MOVE_NODE_TO_HEAD(m->privileges, privileges);
+    privilege_x* priv =
+      reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x*)));
+    priv->text = strdup(kDefaultPrivilegeForWebApp);
+    LISTADD(m->privileges->privilege, priv);
+  }
+
   // calculate number of privileges
   size_t size = 0;
-  privileges_x *privileges = nullptr;
   PKGMGR_LIST_MOVE_NODE_TO_HEAD(m->privileges, privileges);
   for (; privileges; privileges = privileges->next) {
     privilege_x* priv = privileges->privilege;
@@ -45,6 +59,7 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
     PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges->privilege, priv);
     for (; priv; priv = priv->next) {
       input_privileges[input_size++] = priv->text;
+      LOG(DEBUG) << "privilege: " << priv->text;
     }
   }
 
@@ -57,6 +72,8 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
     LOG(ERROR) << "security_manager_get_privileges_mapping failed";
     return false;
   }
+
+  LOG(DEBUG) << "output_size: " << output_size;
 
   // delete pkgmgr old list
   privileges = nullptr;
@@ -83,6 +100,7 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
     privilege_x* priv =
         reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x)));
     priv->text = strdup(output_privileges[i]);
+    LOG(DEBUG) << "output privilege: " << priv->text;
     LISTADD(m->privileges->privilege, priv);
   }
 
@@ -104,7 +122,8 @@ Step::Status StepPrivilegeCompatibility::precheck() {
 }
 
 Step::Status StepPrivilegeCompatibility::process() {
-  return TranslatePrivilegesForCompatibility(context_->manifest_data.get()) ?
+  return TranslatePrivilegesForCompatibility(context_->pkg_type.get(),
+             context_->manifest_data.get()) ?
       Status::OK : Status::ERROR;
 }
 
