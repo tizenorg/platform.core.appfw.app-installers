@@ -53,6 +53,7 @@
 #include "wgt/step/step_wgt_create_storage_directories.h"
 #include "wgt/step/step_wgt_copy_storage_directories.h"
 #include "wgt/step/step_wgt_resource_directory.h"
+#include "wgt/step/step_add_default_privileges.h"
 
 namespace ci = common_installer;
 
@@ -78,6 +79,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<wgt::filesystem::StepWgtCreateIcons>();
       AddStep<wgt::pkgmgr::StepGenerateXml>();
       AddStep<ci::pkgmgr::StepRegisterApplication>();
+      AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepRegisterSecurity>();
       break;
     }
@@ -98,6 +100,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<wgt::filesystem::StepWgtCopyStorageDirectories>();
       AddStep<wgt::filesystem::StepCreateSymbolicLink>();
       AddStep<wgt::filesystem::StepWgtCreateIcons>();
+      AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepUpdateSecurity>();
       AddStep<wgt::pkgmgr::StepGenerateXml>();
       AddStep<ci::pkgmgr::StepUpdateApplication>();
