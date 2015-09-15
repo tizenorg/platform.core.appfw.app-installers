@@ -135,6 +135,29 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
     author->href = strdup(wgt_info->author_href().c_str());
   LISTADD(manifest->author, author);
 
+  std::shared_ptr<const SettingInfo> settings_info =
+      std::static_pointer_cast<const SettingInfo>(
+          parser_->GetManifestData(
+              wgt::application_widget_keys::kTizenSettingKey));
+  if (settings_info) {
+    switch (settings_info->install_location()) {
+    case wgt::parse::SettingInfo::InstallLocation::AUTO: {
+      manifest->installlocation = strdup("auto");
+      break;
+    }
+    case wgt::parse::SettingInfo::InstallLocation::INTERNAL: {
+      manifest->installlocation = strdup("internal-only");
+      break;
+    }
+    case wgt::parse::SettingInfo::InstallLocation::EXTERNAL: {
+      manifest->installlocation = strdup("prefer-external");
+      break;
+    }
+    }
+  } else {
+    manifest->installlocation = strdup("auto");
+  }
+
   return true;
 }
 
