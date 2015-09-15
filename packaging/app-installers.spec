@@ -8,6 +8,7 @@ Release:        1
 Group:          Application Framework/Package Management
 License:        Apache-2.0
 Source0:        %{name}-%{version}.tar.gz
+Source1000:     app-installers.manifest
 Source1001:     wgt-backend.manifest
 Source1002:     tpk-backend.manifest
 Source1003:     app-installers-tests.manifest
@@ -64,6 +65,7 @@ Unit tests for al modules of app-installers
 %prep
 %setup -q
 
+cp %{SOURCE1000} .
 cp %{SOURCE1001} .
 cp %{SOURCE1002} .
 cp %{SOURCE1003} .
@@ -93,6 +95,7 @@ chmod 0700 %{_bindir}/pkgdir_maker_impl.sh
 
 %files
 %defattr(-,root,root)
+%manifest app-installers.manifest
 %{_libdir}/libcommon-installer.so*
 %{_bindir}/pkgdir_maker_impl.sh
 %{_bindir}/pkgdir_maker
