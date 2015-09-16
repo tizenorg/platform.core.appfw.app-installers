@@ -52,6 +52,16 @@ bool RegisterAuthorCertificate(
   return true;
 }
 
+int PkgmgrForeachAppCallback(const pkgmgrinfo_appinfo_h handle,
+                              void *user_data) {
+  auto* data = static_cast<std::vector<std::string>*>(user_data);
+  char* app_id = nullptr;
+  if (pkgmgrinfo_appinfo_get_appid(handle, &app_id) != PMINFO_R_OK)
+    return PMINFO_R_ERROR;
+  data->emplace_back(app_id);
+  return PMINFO_R_OK;
+}
+
 }  // anonymous namespace
 
 namespace common_installer {
@@ -158,6 +168,21 @@ std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
     old_author_certificate = author_cert;
   pkgmgrinfo_pkginfo_destroy_certinfo(handle);
   return old_author_certificate;
+}
+
+
+bool QueryAppidsForPkgId(const std::string& pkg_id,
+                         std::vector<std::string>* result, uid_t uid) {
+  pkgmgrinfo_pkginfo_h package_info;
+  if (pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), uid, &package_info)
+      != PMINFO_R_OK) {
+    return false;
+  }
+
+  bool ret = pkgmgrinfo_appinfo_get_usr_list(package_info, PMINFO_ALL_APP,
+      &PkgmgrForeachAppCallback, result, uid) == PMINFO_R_OK;
+  pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
+  return ret;
 }
 
 bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode) {

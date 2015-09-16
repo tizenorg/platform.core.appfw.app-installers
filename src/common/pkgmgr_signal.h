@@ -49,6 +49,7 @@ class PkgmgrSignal {
       const std::string& type = std::string(),
       const std::string& pkgid = std::string()) const;
   const char* GetResultKey(Step::Status result) const;
+  bool SendAppids(const std::string& type, const std::string& pkgid) const;
 
   pkgmgr_installer* pi_;
   static State state_;
