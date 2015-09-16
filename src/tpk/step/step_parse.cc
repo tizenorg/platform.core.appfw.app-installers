@@ -21,6 +21,7 @@
 #include <cstring>
 #include <memory>
 #include <set>
+#include <type_traits>
 #include <string>
 #include <vector>
 
@@ -60,7 +61,6 @@ common_installer::Step::Status StepParse::precheck() {
   return common_installer::Step::Status::OK;
 }
 
-// Locating tizen-manifest.xml file
 bool StepParse::LocateConfigFile() {
   boost::filesystem::path manifest = context_->unpacked_dir_path.get();
   manifest /= manifest_keys::kManifestFileName;
@@ -74,14 +74,12 @@ bool StepParse::LocateConfigFile() {
   return true;
 }
 
-// Function neded by step_recovery
 bf::path StepParse::LocateConfigFile() const {
   boost::filesystem::path path(context_->unpacked_dir_path.get());
   path /= manifest_keys::kManifestFileName;
   return path;
 }
 
-// package info
 bool StepParse::FillPackageInfo(manifest_x* manifest) {
   std::shared_ptr<const PackageInfo> app_info =
       std::static_pointer_cast<const PackageInfo>(
@@ -121,7 +119,6 @@ bool StepParse::FillPackageInfo(manifest_x* manifest) {
   return true;
 }
 
-// author
 bool StepParse::FillAuthorInfo(manifest_x* manifest) {
   std::shared_ptr<const AuthorInfo> author_info =
       std::static_pointer_cast<const AuthorInfo>(
@@ -140,7 +137,6 @@ bool StepParse::FillAuthorInfo(manifest_x* manifest) {
   return true;
 }
 
-// description
 bool StepParse::FillDescription(manifest_x* manifest) {
   std::shared_ptr<const DescriptionInfo> description_info =
       std::static_pointer_cast<const DescriptionInfo>(
@@ -159,24 +155,21 @@ bool StepParse::FillDescription(manifest_x* manifest) {
   return true;
 }
 
-// privileges
 bool StepParse::FillPrivileges(manifest_x* manifest) {
   std::shared_ptr<const PrivilegesInfo> perm_info =
       std::static_pointer_cast<const PrivilegesInfo>(parser_->GetManifestData(
-          app_keys::kPrivilegeKey));
-  std::set<std::string> privileges;
+          app_keys::kPrivilegesKey));
+  if (!perm_info)
+    return true;
 
-  if (perm_info) {
-    privileges = perm_info->GetPrivileges();
-  }
-
+  std::set<std::string> privileges = perm_info->GetPrivileges();
   if (!privileges.empty()) {
     privileges_x* privileges_x_list =
-        reinterpret_cast<privileges_x*> (calloc(1, sizeof(privileges_x)));
+        reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x)));
     manifest->privileges = privileges_x_list;
     for (const std::string& p : privileges) {
       privilege_x* privilege_x_node =
-          reinterpret_cast<privilege_x*> (calloc(1, sizeof(privilege_x)));
+          reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x)));
       privilege_x_node->text = strdup(p.c_str());
       LISTADD(manifest->privileges->privilege, privilege_x_node);
     }
@@ -184,16 +177,12 @@ bool StepParse::FillPrivileges(manifest_x* manifest) {
   return true;
 }
 
-// service application
 bool StepParse::FillServiceApplication(manifest_x* manifest) {
   std::shared_ptr<const ServiceApplicationInfoList> service_application_list =
       std::static_pointer_cast<const ServiceApplicationInfoList>(
           parser_->GetManifestData(app_keys::kServiceApplicationKey));
-
-  if (!service_application_list) {
-    LOG(ERROR) << "Service Application data has not been found.";
-    return false;
-  }
+  if (!service_application_list)
+    return true;
 
   for (const auto& application : service_application_list->items) {
     serviceapplication_x* service_app =
@@ -207,35 +196,26 @@ bool StepParse::FillServiceApplication(manifest_x* manifest) {
     service_app->type = strdup(application.sa_info.type().c_str());
     LISTADD(manifest->serviceapplication, service_app);
 
-    if (!FillAppControl(manifest->uiapplication->appcontrol,
-                        application.app_control))
+    if (!FillAppControl(service_app,  application.app_control))
       return false;
-    if (!FillDataControl(manifest->uiapplication->datacontrol,
-                         application.data_control))
+    if (!FillDataControl(service_app, application.data_control))
       return false;
-    if (!FillApplicationIconPaths(manifest->uiapplication->icon,
-                                  application.app_icons))
+    if (!FillApplicationIconPaths(service_app, application.app_icons))
       return false;
-    if (!FillLabel(manifest->uiapplication->label,
-                   application.label))
+    if (!FillLabel(service_app, application.label))
       return false;
-    if (!FillMetadata(manifest->uiapplication->metadata,
-                      application.meta_data))
+    if (!FillMetadata(service_app, application.meta_data))
       return false;
   }
   return true;
 }
 
-// ui application
 bool StepParse::FillUIApplication(manifest_x* manifest) {
   std::shared_ptr<const UIApplicationInfoList> ui_application_list =
       std::static_pointer_cast<const UIApplicationInfoList>(
           parser_->GetManifestData(app_keys::kUIApplicationKey));
-
-  if (!ui_application_list) {
-    LOG(ERROR) << "UI Application data has not been found.";
-    return false;
-  }
+  if (!ui_application_list)
+    return true;
 
   for (const auto& application : ui_application_list->items) {
     uiapplication_x* ui_app =
@@ -249,51 +229,54 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
     ui_app->type = strdup(application.ui_info.type().c_str());
     LISTADD(manifest->uiapplication, ui_app);
 
-    if (!FillAppControl(manifest->serviceapplication->appcontrol,
-                        application.app_control))
+    if (!FillAppControl(ui_app, application.app_control))
       return false;
-    if (!FillDataControl(manifest->serviceapplication->datacontrol,
-                         application.data_control))
+    if (!FillDataControl(ui_app, application.data_control))
       return false;
-    if (!FillApplicationIconPaths(manifest->serviceapplication->icon,
-                                  application.app_icons))
+    if (!FillApplicationIconPaths(ui_app, application.app_icons))
       return false;
-    if (!FillLabel(manifest->serviceapplication->label,
-                   application.label))
+    if (!FillLabel(ui_app, application.label))
       return false;
-    if (!FillMetadata(manifest->serviceapplication->metadata,
-                      application.meta_data))
+    if (!FillMetadata(ui_app, application.meta_data))
       return false;
   }
   return true;
 }
 
-// app_control
 template <typename T1, typename T2>
-bool StepParse::FillAppControl(T1* manifest, const T2& app_control_list) {
-  if (!app_control_list.empty()) {
-    LOG(ERROR) << "App Control data has not been found.";
-    return false;
-  }
+bool StepParse::FillAppControl(T1* app, const T2& app_control_list) {
+  static_assert(
+      std::is_same<typename std::remove_pointer<T1>::type,
+                   uiapplication_x>::value ||
+      std::is_same<typename std::remove_pointer<T1>::type,
+                   serviceapplication_x>::value,
+      "T1 should be uiapplication_x or serviceapplication_x");
+  if (app_control_list.empty())
+    return true;
 
   for (const auto& control : app_control_list) {
     appcontrol_x* app_control =
           static_cast<appcontrol_x*>(calloc(1, sizeof(appcontrol_x)));
     app_control->operation = strdup(control.operation().c_str());
-    app_control->mime = strdup(control.mime().c_str());
-    app_control->uri = strdup(control.uri().c_str());
-    LISTADD(manifest, app_control);
+    if (!control.mime().empty())
+      app_control->mime = strdup(control.mime().c_str());
+    if (!control.uri().empty())
+      app_control->uri = strdup(control.uri().c_str());
+    LISTADD(app->appcontrol, app_control);
   }
   return true;
 }
 
-// datacontrol
 template <typename T1, typename T2>
-bool StepParse::FillDataControl(T1* manifest, const T2& data_control_list) {
-  if (!data_control_list.empty()) {
-    LOG(ERROR) << "Data Control has not been found.";
-    return false;
-  }
+bool StepParse::FillDataControl(T1* app, const T2& data_control_list) {
+  static_assert(
+      std::is_same<typename std::remove_pointer<T1>::type,
+                   uiapplication_x>::value ||
+      std::is_same<typename std::remove_pointer<T1>::type,
+                   serviceapplication_x>::value,
+      "T1 should be uiapplication_x or serviceapplication_x");
+  if (data_control_list.empty())
+    return true;
 
   for (const auto& control : data_control_list) {
     datacontrol_x* data_control =
@@ -301,19 +284,19 @@ bool StepParse::FillDataControl(T1* manifest, const T2& data_control_list) {
     data_control->access = strdup(control.access().c_str());
     data_control->providerid = strdup(control.providerid().c_str());
     data_control->type = strdup(control.type().c_str());
-    LISTADD(manifest, data_control);
+    LISTADD(app->datacontrol, data_control);
   }
   return true;
 }
 
-// icon
 template <typename T1, typename T2>
-bool StepParse::FillApplicationIconPaths(T1* manifest, const T2& icons_info) {
-  if (!icons_info.exists()) {
-    LOG(ERROR) << "Application icon has not been found.";
-    return false;
-  }
-
+bool StepParse::FillApplicationIconPaths(T1* app, const T2& icons_info) {
+  static_assert(
+      std::is_same<typename std::remove_pointer<T1>::type,
+                   uiapplication_x>::value ||
+      std::is_same<typename std::remove_pointer<T1>::type,
+                   serviceapplication_x>::value,
+      "T1 should be uiapplication_x or serviceapplication_x");
   for (auto& application_icon : icons_info.icons()) {
     icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
     // NOTE: name is an attribute, but the xml writer uses it as text.
@@ -321,18 +304,21 @@ bool StepParse::FillApplicationIconPaths(T1* manifest, const T2& icons_info) {
     // Current implementation is just for compatibility.
     icon->text = strdup(application_icon.path().c_str());
     icon->name = strdup(application_icon.path().c_str());
-    LISTADD(manifest, icon);
+    LISTADD(app->icon, icon);
   }
   return true;
 }
 
-// label
 template <typename T1, typename T2>
-bool StepParse::FillLabel(T1* manifest, const T2& label_list) {
-  if (!label_list.empty()) {
-    LOG(ERROR) << "Label data has not been found.";
-    return false;
-  }
+bool StepParse::FillLabel(T1* app, const T2& label_list) {
+  static_assert(
+      std::is_same<typename std::remove_pointer<T1>::type,
+                   uiapplication_x>::value ||
+      std::is_same<typename std::remove_pointer<T1>::type,
+                   serviceapplication_x>::value,
+      "T1 should be uiapplication_x or serviceapplication_x");
+  if (label_list.empty())
+    return true;
 
   for (const auto& control : label_list) {
     label_x* label =
@@ -343,38 +329,38 @@ bool StepParse::FillLabel(T1* manifest, const T2& label_list) {
     label->text = strdup(control.text().c_str());
     label->name = strdup(control.name().c_str());
     label->lang = strdup(control.xml_lang().c_str());
-    LISTADD(manifest, label);
+    LISTADD(app->label, label);
   }
   return true;
 }
 
-// metadata
 template <typename T1, typename T2>
-bool StepParse::FillMetadata(T1* manifest, const T2& meta_data_list) {
-  if (!meta_data_list.empty()) {
-    LOG(ERROR) << "Metadata has not been found.";
-    return false;
-  }
+bool StepParse::FillMetadata(T1* app, const T2& meta_data_list) {
+  static_assert(
+      std::is_same<typename std::remove_pointer<T1>::type,
+                   uiapplication_x>::value ||
+      std::is_same<typename std::remove_pointer<T1>::type,
+                   serviceapplication_x>::value,
+      "T1 should be uiapplication_x or serviceapplication_x");
+  if (meta_data_list.empty())
+    return true;
 
   for (auto& meta : meta_data_list) {
     metadata_x* metadata =
         static_cast<metadata_x*>(calloc(1, sizeof(metadata_x)));
     metadata->key = strdup(meta.key().c_str());
     metadata->value = strdup(meta.val().c_str());
-    LISTADD(manifest, metadata);
+    LISTADD(app->metadata, metadata);
   }
   return true;
 }
 
-// account
-bool StepParse::FillAccounts(void) {
+bool StepParse::FillAccounts() {
   std::shared_ptr<const AccountInfo> account_info =
       std::static_pointer_cast<const AccountInfo>(parser_->GetManifestData(
           app_keys::kAccountKey));
-  if (!account_info) {
-    LOG(ERROR) << "Account Info has not been found.";
-    return false;
-  }
+  if (!account_info)
+    return true;
 
   common_installer::AccountInfo info;
   for (auto& account : account_info->accounts()) {
@@ -385,6 +371,7 @@ bool StepParse::FillAccounts(void) {
     single_info.names = account.labels;
     // appid has the same value as package
     single_info.appid =  account.app_id;
+    single_info.providerid = account.provider_id;
     info.set_account(single_info);
   }
   context_->manifest_plugins_data.get().account_info.set(info);
@@ -394,10 +381,14 @@ bool StepParse::FillAccounts(void) {
 bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillPackageInfo(manifest))
     return false;
-  if (!FillServiceApplication(manifest) && !FillUIApplication(manifest))
+  if (!FillUIApplication(manifest))
     return false;
-  FillPrivileges(manifest);
-  FillAccounts();
+  if (!FillServiceApplication(manifest))
+    return false;
+  if (!FillPrivileges(manifest))
+    return false;
+  if (!FillAccounts())
+    return false;
   return true;
 }
 
@@ -436,7 +427,7 @@ common_installer::Step::Status StepParse::process() {
   std::shared_ptr<const PrivilegesInfo> perm_info =
       std::static_pointer_cast<const PrivilegesInfo>(
           parser_->GetManifestData(
-              application_keys::kPrivilegeKey));
+              application_keys::kPrivilegesKey));
   parser::PrivilegesSet privileges;
   if (perm_info)
     privileges = perm_info->GetPrivileges();
