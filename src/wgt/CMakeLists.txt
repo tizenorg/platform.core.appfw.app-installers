@@ -13,6 +13,7 @@ SET(SRCS
   step/step_wgt_create_storage_directories.cc
   step/step_wgt_copy_storage_directories.cc
   step/step_wgt_resource_directory.cc
+  step/step_add_default_privileges.cc
   wgt_app_query_interface.cc
   wgt_installer.cc
 )
