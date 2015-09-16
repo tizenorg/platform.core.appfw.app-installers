@@ -34,7 +34,8 @@ class StepParse : public common_installer::Step {
 
  protected:
   virtual bool LocateConfigFile();
-  // required by step_recovery
+  // This function is needed by recovery mode to override searching
+  // of configuration file of the package
   virtual boost::filesystem::path LocateConfigFile() const;
   boost::filesystem::path path_;
 
