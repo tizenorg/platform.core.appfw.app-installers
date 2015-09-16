@@ -4,9 +4,14 @@
 
 #include "common/pkgmgr_signal.h"
 
+#include <unistd.h>
+#include <sys/types.h>
+
 #include <cassert>
 #include <map>
+#include <vector>
 
+#include "common/pkgmgr_registration.h"
 #include "common/utils/logging.h"
 
 // Redefine this value as it is not exported by pkgmgr
@@ -16,14 +21,14 @@
 
 namespace {
 
-namespace ci=common_installer;
+namespace ci = common_installer;
 
-const std::map<ci::RequestType,const char *> kEventStr = {
+const std::map<ci::RequestType, const char*> kEventStr = {
   {ci::RequestType::Install, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
   {ci::RequestType::Recovery, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
   {ci::RequestType::Reinstall, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
   {ci::RequestType::Uninstall, PKGMGR_INSTALLER_UNINSTALL_EVENT_STR},
-  {ci::RequestType::Unknown, PKGMGR_INSTALLER_INSTALL_EVENT_STR},  //not needed
+  {ci::RequestType::Unknown, PKGMGR_INSTALLER_INSTALL_EVENT_STR},  // not needed
   {ci::RequestType::Update, PKGMGR_INSTALLER_UPGRADE_EVENT_STR}
 };
 
@@ -47,7 +52,14 @@ bool PkgmgrSignal::SendStarted(
   if (!SendSignal(PKGMGR_INSTALLER_START_KEY_STR, key->second, type, pkgid)) {
     return false;
   }
+
   state_ = State::STARTED;
+
+  // workaround for pkgmgr client to know all appids which are uninstalled
+  if (request_type_ == ci::RequestType::Uninstall)
+    if (!SendAppids(type, pkgid))
+      return false;
+
   return true;
 }
 
@@ -111,6 +123,20 @@ const char* PkgmgrSignal::GetResultKey(Step::Status result) const {
     default:
       return PKGMGR_INSTALLER_FAIL_EVENT_STR;
   }
+}
+
+bool PkgmgrSignal::SendAppids(const std::string& type,
+                              const std::string& pkgid) const {
+  std::vector<std::string> appids;
+  if (!QueryAppidsForPkgId(pkgid, &appids, getuid()))
+    return true;
+  for (auto& appid : appids) {
+    if (!pkgmgr_installer_send_app_uninstall_signal(pi_, type.c_str(),
+                                                    pkgid.c_str(),
+                                                    appid.c_str()))
+      return false;
+  }
+  return true;
 }
 
 }  // namespace common_installer
