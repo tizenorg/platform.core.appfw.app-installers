@@ -34,7 +34,8 @@ class StepParse : public common_installer::Step {
 
  protected:
   virtual bool LocateConfigFile();
-  // required by step_recovery
+  // This function is needed by recovery mode to override searching
+  // of configuration file of the package
   virtual boost::filesystem::path LocateConfigFile() const;
   boost::filesystem::path path_;
 
@@ -55,7 +56,7 @@ class StepParse : public common_installer::Step {
       bool FillLabel(T1* manifest, const T2& label_list);
   template <typename T1, typename T2>
       bool FillMetadata(T1* manifest, const T2& meta_data_list);
-  bool FillAccounts(void);
+  bool FillAccounts();
   bool FillManifestX(manifest_x* manifest);
 
   std::unique_ptr<tpk::parse::TPKConfigParser> parser_;

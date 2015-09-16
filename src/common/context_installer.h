@@ -33,6 +33,7 @@ struct SingleAccountInfo {
   std::vector<std::pair<std::string, std::string>> icon_paths;
   std::vector<std::string> capabilities;
   std::string appid;
+  std::string providerid;
 };
 
 class AccountInfo {
