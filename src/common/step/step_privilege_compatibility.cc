@@ -31,12 +31,17 @@ bool TranslatePrivilegesForCompatibility(const std::string& pkg_type, manifest_x
   if (pkg_type == "wgt") {
     if (!m->privileges) {
       m->privileges =
-        reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x*)));
+        reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x)));
     }
     privilege_x* priv =
-      reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x*)));
+      reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x)));
     priv->text = strdup(kDefaultPrivilegeForWebApp);
     LISTADD(m->privileges->privilege, priv);
+  }
+
+  // No privileges to map
+  if (!m->privileges) {
+    return true;
   }
 
   // calculate number of privileges
