@@ -223,12 +223,12 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
                        (calloc(1, sizeof(uiapplication_x)));
     ui_app->appid = strdup(application.ui_info.appid().c_str());
     ui_app->exec = strdup(application.ui_info.exec().c_str());
+    ui_app->launch_mode = strdup(application.ui_info.launch_mode().c_str());
     ui_app->multiple = strdup(application.ui_info.multiple().c_str());
     ui_app->nodisplay = strdup(application.ui_info.nodisplay().c_str());
     ui_app->taskmanage = strdup(application.ui_info.taskmanage().c_str());
     ui_app->type = strdup(application.ui_info.type().c_str());
     LISTADD(manifest->uiapplication, ui_app);
-
     if (!FillAppControl(ui_app, application.app_control))
       return false;
     if (!FillDataControl(ui_app, application.data_control))
