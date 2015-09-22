@@ -155,6 +155,17 @@ bool StepParse::FillApplicationInfo(manifest_x* manifest) {
       reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
 
   manifest->uiapplication->appid = strdup(app_info->id().c_str());
+  if (app_info) {
+    if (app_info->launch_mode() == "group") {
+      manifest->uiapplication->launch_mode = strdup("group");
+    }
+    if (app_info->launch_mode() == "caller") {
+      manifest->uiapplication->launch_mode = strdup("caller");
+    }
+    if (app_info->launch_mode() == "single") {
+      manifest->uiapplication->launch_mode = strdup("single");
+    }
+  }
   manifest->uiapplication->type = strdup("webapp");
 
   if (manifest->icon) {
