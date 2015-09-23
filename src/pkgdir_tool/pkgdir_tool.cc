@@ -43,8 +43,6 @@ const std::vector<std::pair<const char*, Action>> kEntries = {
   {"data/", Action::COPY_OR_CREATE}  // compatibility -> copy data/ dir for tpk
 };
 
-const char kSkelAppDir[] = "/etc/skel/apps_rw";
-const char kAppsRwLocation[] = "apps_rw";
 const char kPackagePattern[] = "^[0-9a-zA-Z]{10}$";
 const char kWgtType[] = "wgt";
 const char kTpkType[] = "tpk";
@@ -83,25 +81,7 @@ std::vector<std::string> GetAllGlobalApps() {
   return pkgids;
 }
 
-class ScopedUser {
- public:
-  ScopedUser(uid_t uid, gid_t gid) {
-    uid_ = geteuid();
-    gid_ = getegid();
-    assert(seteuid(uid) == 0);
-    assert(setegid(gid) == 0);
-  }
-  ~ScopedUser() {
-    assert(seteuid(uid_) == 0);
-    assert(setegid(gid_) == 0);
-  }
- private:
-  uid_t uid_;
-  gid_t gid_;
-};
-
-bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
-                       uid_t uid, gid_t gid) {
+bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid) {
   bf::path base_dir = app_dir / pkgid;
   if (bf::exists(base_dir)) {
     LOG(DEBUG) << "Directory for user already exist: " << base_dir;
@@ -142,11 +122,6 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
       LOG(ERROR) << "Failed to set permissions for: " << subpath;
       return false;
     }
-    int ret = chown(subpath.c_str(), uid, gid);
-    if (ret != 0) {
-      LOG(ERROR) << "Failed to change owner of: " << subpath;
-      return false;
-    }
 
     // for content
     for (bf::recursive_directory_iterator iter(subpath);
@@ -162,16 +137,10 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
         LOG(ERROR) << "Failed to set permissions for: " << iter->path();
         return false;
       }
-      int ret = chown(iter->path().c_str(), uid, gid);
-      if (ret != 0) {
-        LOG(ERROR) << "Failed to change owner of: " << iter->path();
-        return false;
-      }
     }
   }
 
   // set smack
-  ScopedUser scoped_user(uid, gid);
   if (!pkgid.empty()) {
     if (!common_installer::RegisterSecurityContext(pkgid, base_dir, nullptr)) {
       return false;
@@ -182,33 +151,9 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
 }
 
 bool CreatePerUserDirectories(const std::string& pkgid) {
-  for (bf::directory_iterator it("/home"); it != bf::directory_iterator();
-       ++it) {
-    if (!bf::is_directory(it->path()))
-      continue;
-    std::string user = it->path().filename().string();
-    struct passwd* pwd = getpwnam(user.c_str());  // NOLINT
-    if (!pwd) {
-      LOG(WARNING) << "Failed to get user for home directory: " << user;
-      continue;
-    }
-    LOG(DEBUG) << "Creating directories for user: " << user;
-    if (!CreateDirectories(it->path() / kAppsRwLocation, pkgid, pwd->pw_uid,
-                           pwd->pw_gid))
-      return false;
-  }
-  return true;
-}
-
-bool CreateSkelDirectories(const std::string& pkgid) {
-  bf::path path = bf::path(kSkelAppDir) / pkgid;
-  LOG(DEBUG) << "Creating directories in: " << path;
-  bs::error_code error;
-  bf::create_directories(path, error);
-  if (error) {
-    LOG(ERROR) << "Failed to create directory: " << path;
+  bf::path path(tzplatform_getenv(TZ_USER_APP));
+  if (!CreateDirectories(path, pkgid))
     return false;
-  }
   return true;
 }
 
@@ -224,47 +169,8 @@ bool DeleteDirectories(const bf::path& app_dir, const std::string& pkgid) {
 }
 
 bool DeletePerUserDirectories(const std::string& pkgid) {
-  for (bf::directory_iterator it("/home"); it != bf::directory_iterator();
-       ++it) {
-    if (!bf::is_directory(it->path()))
-      continue;
-    std::string user = it->path().filename().string();
-    struct passwd* pwd = getpwnam(user.c_str());  // NOLINT
-    if (!pwd) {
-      LOG(WARNING) << "Failed to get user for home directory: " << user;
-      continue;
-    }
-    LOG(DEBUG) << "Deleting directories for user: " << user;
-    if (!DeleteDirectories(it->path() / kAppsRwLocation, pkgid))
-      return false;
-  }
-  return true;
-}
-
-bool DeleteSkelDirectories(const std::string& pkgid) {
-  bf::path path = bf::path(kSkelAppDir) / pkgid;
-  LOG(DEBUG) << "Deleting directories in: " << path;
-  bs::error_code error;
-  bf::remove_all(path, error);
-  if (error) {
-    LOG(ERROR) << "Failed to delete directory: " << path;
-    return false;
-  }
-  return true;
-}
-
-bool PerformDirectoryCreation(const std::string& pkgid) {
-  if (!CreatePerUserDirectories(pkgid))
-    return false;
-  if (!CreateSkelDirectories(pkgid))
-    return false;
-  return true;
-}
-
-bool PerformDirectoryDeletion(const std::string& pkgid) {
-  if (!DeletePerUserDirectories(pkgid))
-    return false;
-  if (!DeleteSkelDirectories(pkgid))
+  bf::path path(tzplatform_getenv(TZ_USER_APP));
+  if (!DeleteDirectories(path, pkgid))
     return false;
   return true;
 }
@@ -281,6 +187,12 @@ void ExclusiveOptions(const bpo::variables_map& vm,
 }  // namespace
 
 int main(int argc, char** argv) {
+  uid_t uid = getuid();
+  if (uid == 0 || uid == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
+    LOG(ERROR) << "Binary shouldn't be run for root and tizenglobalapp";
+    return -1;
+  }
+
   bpo::options_description options("Allowed options");
   options.add_options()
       ("create", "create per user diretories for global package")
@@ -319,13 +231,13 @@ int main(int argc, char** argv) {
   if (create_mode) {
     for (auto& package_id : pkgids) {
       LOG(DEBUG) << "Running for package id: " << package_id;
-      if (!PerformDirectoryCreation(package_id))
+      if (!CreatePerUserDirectories(package_id))
         return -1;
     }
   } else if (delete_mode) {
     for (auto& package_id : pkgids) {
       LOG(DEBUG) << "Running for package id: " << package_id;
-      if (!PerformDirectoryDeletion(package_id))
+      if (!DeletePerUserDirectories(package_id))
         return -1;
     }
   }

@@ -96,7 +96,7 @@ ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 %files
 %defattr(-,root,root)
 %{_libdir}/libcommon-installer.so*
-%attr(4750,root,users) %{_bindir}/pkgdir-tool
+%{_bindir}/pkgdir-tool
 %manifest app-installers.manifest
 %license LICENSE
 
