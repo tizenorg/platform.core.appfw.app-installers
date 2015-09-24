@@ -14,11 +14,6 @@
 #include "common/pkgmgr_registration.h"
 #include "common/utils/logging.h"
 
-// Redefine this value as it is not exported by pkgmgr
-// this should probably be in public interface because of
-// otherwise there is no way to return errorcode
-#define PKGMGR_INSTALLER_ERROR_KEY_STR "error"
-
 namespace {
 
 namespace ci = common_installer;
