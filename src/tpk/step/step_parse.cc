@@ -185,16 +185,16 @@ bool StepParse::FillServiceApplication(manifest_x* manifest) {
     return true;
 
   for (const auto& application : service_application_list->items) {
-    serviceapplication_x* service_app =
-                          static_cast<serviceapplication_x*>
-                          (calloc(1, sizeof(serviceapplication_x)));
+    application_x* service_app =
+        static_cast<application_x*>(calloc(1, sizeof(application_x)));
     service_app->appid = strdup(application.sa_info.appid().c_str());
     service_app->autorestart =
         strdup(application.sa_info.auto_restart().c_str());
     service_app->exec = strdup(application.sa_info.exec().c_str());
     service_app->onboot = strdup(application.sa_info.on_boot().c_str());
     service_app->type = strdup(application.sa_info.type().c_str());
-    LISTADD(manifest->serviceapplication, service_app);
+    service_app->component_type = strdup("svcapp");
+    LISTADD(manifest->application, service_app);
 
     if (!FillAppControl(service_app,  application.app_control))
       return false;
@@ -218,16 +218,16 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
     return true;
 
   for (const auto& application : ui_application_list->items) {
-    uiapplication_x* ui_app =
-                       static_cast<uiapplication_x*>
-                       (calloc(1, sizeof(uiapplication_x)));
+    application_x* ui_app =
+        static_cast<application_x*>(calloc(1, sizeof(application_x)));
     ui_app->appid = strdup(application.ui_info.appid().c_str());
     ui_app->exec = strdup(application.ui_info.exec().c_str());
     ui_app->multiple = strdup(application.ui_info.multiple().c_str());
     ui_app->nodisplay = strdup(application.ui_info.nodisplay().c_str());
     ui_app->taskmanage = strdup(application.ui_info.taskmanage().c_str());
     ui_app->type = strdup(application.ui_info.type().c_str());
-    LISTADD(manifest->uiapplication, ui_app);
+    ui_app->component_type = strdup("uiapp");
+    LISTADD(manifest->application, ui_app);
 
     if (!FillAppControl(ui_app, application.app_control))
       return false;
@@ -243,14 +243,8 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
   return true;
 }
 
-template <typename T1, typename T2>
-bool StepParse::FillAppControl(T1* app, const T2& app_control_list) {
-  static_assert(
-      std::is_same<typename std::remove_pointer<T1>::type,
-                   uiapplication_x>::value ||
-      std::is_same<typename std::remove_pointer<T1>::type,
-                   serviceapplication_x>::value,
-      "T1 should be uiapplication_x or serviceapplication_x");
+template <typename T>
+bool StepParse::FillAppControl(application_x* app, const T& app_control_list) {
   if (app_control_list.empty())
     return true;
 
@@ -267,14 +261,9 @@ bool StepParse::FillAppControl(T1* app, const T2& app_control_list) {
   return true;
 }
 
-template <typename T1, typename T2>
-bool StepParse::FillDataControl(T1* app, const T2& data_control_list) {
-  static_assert(
-      std::is_same<typename std::remove_pointer<T1>::type,
-                   uiapplication_x>::value ||
-      std::is_same<typename std::remove_pointer<T1>::type,
-                   serviceapplication_x>::value,
-      "T1 should be uiapplication_x or serviceapplication_x");
+template <typename T>
+bool StepParse::FillDataControl(application_x* app,
+                                const T& data_control_list) {
   if (data_control_list.empty())
     return true;
 
@@ -289,14 +278,9 @@ bool StepParse::FillDataControl(T1* app, const T2& data_control_list) {
   return true;
 }
 
-template <typename T1, typename T2>
-bool StepParse::FillApplicationIconPaths(T1* app, const T2& icons_info) {
-  static_assert(
-      std::is_same<typename std::remove_pointer<T1>::type,
-                   uiapplication_x>::value ||
-      std::is_same<typename std::remove_pointer<T1>::type,
-                   serviceapplication_x>::value,
-      "T1 should be uiapplication_x or serviceapplication_x");
+template <typename T>
+bool StepParse::FillApplicationIconPaths(application_x* app,
+                                         const T& icons_info) {
   for (auto& application_icon : icons_info.icons()) {
     icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
     // NOTE: name is an attribute, but the xml writer uses it as text.
@@ -309,14 +293,8 @@ bool StepParse::FillApplicationIconPaths(T1* app, const T2& icons_info) {
   return true;
 }
 
-template <typename T1, typename T2>
-bool StepParse::FillLabel(T1* app, const T2& label_list) {
-  static_assert(
-      std::is_same<typename std::remove_pointer<T1>::type,
-                   uiapplication_x>::value ||
-      std::is_same<typename std::remove_pointer<T1>::type,
-                   serviceapplication_x>::value,
-      "T1 should be uiapplication_x or serviceapplication_x");
+template <typename T>
+bool StepParse::FillLabel(application_x* app, const T& label_list) {
   if (label_list.empty())
     return true;
 
@@ -334,14 +312,8 @@ bool StepParse::FillLabel(T1* app, const T2& label_list) {
   return true;
 }
 
-template <typename T1, typename T2>
-bool StepParse::FillMetadata(T1* app, const T2& meta_data_list) {
-  static_assert(
-      std::is_same<typename std::remove_pointer<T1>::type,
-                   uiapplication_x>::value ||
-      std::is_same<typename std::remove_pointer<T1>::type,
-                   serviceapplication_x>::value,
-      "T1 should be uiapplication_x or serviceapplication_x");
+template <typename T>
+bool StepParse::FillMetadata(application_x* app, const T& meta_data_list) {
   if (meta_data_list.empty())
     return true;
 

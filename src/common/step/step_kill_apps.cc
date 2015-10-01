@@ -48,19 +48,12 @@ namespace pkgmgr {
 Step::Status StepKillApps::process() {
   manifest_x* old_manifest = context_->old_manifest_data.get() ?
       context_->old_manifest_data.get() : context_->manifest_data.get();
-  uiapplication_x* ui = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(old_manifest->uiapplication, ui);
+  application_x* ui = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(old_manifest->application, ui);
   for (; ui; ui = ui->next) {
     if (!ui->appid)
       continue;
     (void) KillApp(ui->appid);
-  }
-  serviceapplication_x * svc = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(old_manifest->serviceapplication, svc);
-  for (; svc; svc = svc->next) {
-    if (!svc->appid)
-      continue;
-    (void) KillApp(svc->appid);
   }
   return Status::OK;
 }

@@ -154,24 +154,12 @@ namespace common_installer {
 bool RegisterSecurityContextForApps(
     const std::string& pkg_id, const boost::filesystem::path& path,
     manifest_x* manifest) {
-  for (uiapplication_x* ui = manifest->uiapplication;
-      ui != nullptr; ui = ui->next) {
-    if (!ui->appid) {
+  for (application_x* app = manifest->application;
+      app != nullptr; app = app->next) {
+    if (!app->appid) {
       return false;
     }
-    if (!RegisterSecurityContext(ui->appid, pkg_id,
-        path, manifest)) {
-      return false;
-    }
-  }
-
-  for (serviceapplication_x* svc =
-      manifest->serviceapplication;
-      svc != nullptr; svc = svc->next) {
-    if (!svc->appid) {
-      return false;
-    }
-    if (!RegisterSecurityContext(svc->appid, pkg_id,
+    if (!RegisterSecurityContext(app->appid, pkg_id,
         path, manifest)) {
       return false;
     }
@@ -181,23 +169,12 @@ bool RegisterSecurityContextForApps(
 
 bool UnregisterSecurityContextForApps(
     const std::string& pkg_id, manifest_x* manifest) {
-  for (uiapplication_x* ui = manifest->uiapplication;
-      ui != nullptr; ui = ui->next) {
-    if (!ui->appid) {
+  for (application_x* app = manifest->application;
+      app != nullptr; app = app->next) {
+    if (!app->appid) {
       return false;
     }
-    if (!UnregisterSecurityContext(ui->appid, pkg_id)) {
-      return false;
-    }
-  }
-
-  for (serviceapplication_x* svc =
-      manifest->serviceapplication;
-      svc != nullptr; svc = svc->next) {
-    if (!svc->appid) {
-      return false;
-    }
-    if (!UnregisterSecurityContext(svc->appid, pkg_id)) {
+    if (!UnregisterSecurityContext(app->appid, pkg_id)) {
       return false;
     }
   }
