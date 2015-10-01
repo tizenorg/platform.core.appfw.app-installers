@@ -123,7 +123,7 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
     label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
     label->name = strdup(item.second.c_str());
     label->lang = strdup(item.first.c_str());
-    LISTADD(manifest->uiapplication->label, label);
+    LISTADD(manifest->application->label, label);
   }
 
   author_x* author = reinterpret_cast<author_x*>(calloc(1, sizeof(author_x)));
@@ -170,25 +170,20 @@ bool StepParse::FillApplicationInfo(manifest_x* manifest) {
     return false;
   }
   // application data
-  manifest->serviceapplication = nullptr;
-  manifest->uiapplication = reinterpret_cast<uiapplication_x*>
-    (calloc (1, sizeof(uiapplication_x)));
-  manifest->uiapplication->appcontrol = nullptr;
-  manifest->uiapplication->icon =
+  manifest->application = reinterpret_cast<application_x*>
+    (calloc (1, sizeof(application_x)));
+  manifest->application->component_type = strdup("uiapp");
+  manifest->application->icon =
       reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
-
-  manifest->uiapplication->appid = strdup(app_info->id().c_str());
-  manifest->uiapplication->type = strdup("webapp");
-
+  manifest->application->appid = strdup(app_info->id().c_str());
+  manifest->application->type = strdup("webapp");
+  manifest->package = strdup(app_info->package().c_str());
+  manifest->mainapp_id = strdup(app_info->id().c_str());
   if (manifest->icon) {
     icon_x* icon = nullptr;
     LISTHEAD(manifest->icon, icon);
-    manifest->uiapplication->icon->text = strdup(icon->text);
+    manifest->application->icon->text = strdup(icon->text);
   }
-  manifest->uiapplication->next = nullptr;
-
-  manifest->package = strdup(app_info->package().c_str());
-  manifest->mainapp_id = strdup(app_info->id().c_str());
 
   return true;
 }
@@ -205,7 +200,7 @@ bool StepParse::FillAppControl(manifest_x* manifest) {
       app_control->operation = strdup(control.operation().c_str());
       app_control->mime = strdup(control.mime().c_str());
       app_control->uri = strdup(control.uri().c_str());
-      LISTADD(manifest->uiapplication->appcontrol, app_control);
+      LISTADD(manifest->application->appcontrol, app_control);
     }
   }
   return true;
@@ -240,18 +235,11 @@ bool StepParse::FillMetadata(manifest_x* manifest) {
   if (!meta_info)
     return true;
 
-  uiapplication_x* ui_app = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->uiapplication, ui_app);
-  for (; ui_app; ui_app = ui_app->next) {
-    manifest->uiapplication->metadata =
-        GenerateMetadataListX(*meta_info, manifest->uiapplication->metadata);
-  }
-  serviceapplication_x* svc_app = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->serviceapplication, svc_app);
-  for (; svc_app; svc_app = svc_app->next) {
-    manifest->serviceapplication->metadata =
-        GenerateMetadataListX(*meta_info,
-                              manifest->serviceapplication->metadata);
+  application_x* app = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->application, app);
+  for (; app; app = app->next) {
+    manifest->application->metadata =
+        GenerateMetadataListX(*meta_info, manifest->application->metadata);
   }
   return true;
 }
@@ -391,7 +379,7 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "  name        = " <<  name;
   LOG(DEBUG) << "  short_name  = " <<  short_name;
   LOG(DEBUG) << "  aplication version     = " <<  package_version;
-  LOG(DEBUG) << "  icon        = " <<  manifest->uiapplication->icon->text;
+  LOG(DEBUG) << "  icon        = " <<  manifest->application->icon->text;
   LOG(DEBUG) << "  api_version = " <<  info->required_version();
   LOG(DEBUG) << "  privileges -[";
   for (const auto& p : permissions) {

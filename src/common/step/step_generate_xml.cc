@@ -24,17 +24,19 @@
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
 
-namespace common_installer {
-namespace pkgmgr {
+namespace {
 
-static void _writeUIApplicationAttributes(
-    xmlTextWriterPtr writer, uiapplication_x */*app*/) {
-    xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
-        BAD_CAST "true");
+void WriteUIApplicationAttributes(
+    xmlTextWriterPtr writer, application_x *app) {
+  xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
+      BAD_CAST "true");
+  if (app->nodisplay)
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "nodisplay",
+        BAD_CAST app->nodisplay);
 }
 
-static void _writeServiceApplicationAttributes(
-    xmlTextWriterPtr writer, serviceapplication_x *app) {
+void WriteServiceApplicationAttributes(
+    xmlTextWriterPtr writer, application_x *app) {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "auto-restart",
       BAD_CAST(app->autorestart ? app->autorestart : "false"));
   xmlTextWriterWriteAttribute(writer, BAD_CAST "on-boot",
@@ -43,10 +45,13 @@ static void _writeServiceApplicationAttributes(
       BAD_CAST(app->permission_type ? app->permission_type : ""));
 }
 
-template <typename T>
+}  // namespace
+
+namespace common_installer {
+namespace pkgmgr {
+
 common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
-    T* app, xmlTextWriterPtr writer) {
-  // common appributes among uiapplication_x and serviceapplication_x
+    application_x* app, xmlTextWriterPtr writer, bool is_service) {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST app->appid);
 
   // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
@@ -60,12 +65,10 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     xmlTextWriterWriteAttribute(writer, BAD_CAST "type", BAD_CAST "capp");
 
   // app-specific attributes
-  if (std::is_same<T, uiapplication_x>::value)
-    _writeUIApplicationAttributes(
-        writer, reinterpret_cast<uiapplication_x *>(app));
-  if (std::is_same<T, serviceapplication_x>::value)
-    _writeServiceApplicationAttributes(
-        writer, reinterpret_cast<serviceapplication_x *>(app));
+  if (is_service)
+    WriteServiceApplicationAttributes(writer, app);
+  else
+    WriteUIApplicationAttributes(writer, app);
   if (app->label) {
     label_x* label = nullptr;
     LISTHEAD(app->label, label);
@@ -158,10 +161,8 @@ common_installer::Step::Status StepGenerateXml::precheck() {
     LOG(ERROR) << "pkgid attribute is empty";
     return Step::Status::INVALID_VALUE;   }
 
-  if ((!context_->manifest_data.get()->uiapplication) &&
-     (!context_->manifest_data.get()->serviceapplication)) {
-    LOG(ERROR) << "There is neither UI applications nor"
-               << "Services applications described!";
+  if (!context_->manifest_data.get()->application) {
+    LOG(ERROR) << "No application in package";
     return Step::Status::INVALID_VALUE;
   }
   // TODO(p.sikorski) check context_->uid.get()
@@ -256,25 +257,23 @@ common_installer::Step::Status StepGenerateXml::process() {
     }
   }
 
-  // add ui-application element per ui application
-  uiapplication_x* ui = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->uiapplication,
-                                ui);
-  for (; ui; ui = ui->next) {
-    xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
-    if (ui->nodisplay)
-      xmlTextWriterWriteAttribute(writer, BAD_CAST "nodisplay",
-          BAD_CAST ui->nodisplay);
-    GenerateApplicationCommonXml(ui, writer);
-    xmlTextWriterEndElement(writer);
-  }
-  // add service-application element per service application
-  serviceapplication_x* svc = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(
-      context_->manifest_data.get()->serviceapplication, svc);
-  for (; svc; svc = svc->next) {
-    xmlTextWriterStartElement(writer, BAD_CAST "service-application");
-    GenerateApplicationCommonXml(svc, writer);
+  // add application
+  application_x* app = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->application,
+                                app);
+  for (; app; app = app->next) {
+    bool is_service = false;
+    if (strcmp(app->component_type, "uiapp") == 0) {
+      xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
+    } else if (strcmp(app->component_type, "svcapp") == 0) {
+      is_service = true;
+      xmlTextWriterStartElement(writer, BAD_CAST "svc-application");
+    } else {
+      LOG(ERROR) << "Unknown application component_type";
+      xmlFreeTextWriter(writer);
+      return Status::ERROR;
+    }
+    GenerateApplicationCommonXml(app, writer, is_service);
     xmlTextWriterEndElement(writer);
   }
 

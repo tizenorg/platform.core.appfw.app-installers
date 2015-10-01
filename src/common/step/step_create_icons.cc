@@ -27,16 +27,19 @@ Step::Status StepCreateIcons::process() {
     }
   }
 
-  uiapplication_x* ui = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->uiapplication,
-                                ui);
-  for (; ui; ui = ui->next) {
+  application_x* app = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->application,
+                                app);
+  for (; app; app = app->next) {
+    if (strcmp(app->component_type, "uiapp") != 0)
+      continue;
+
     // TODO(t.iwanek): this is ignoring icon locale as well as other steps
     // icons should be localized
-    if (ui->icon && ui->icon->text) {
-      bf::path source = GetIconRoot() / ui->icon->text;
+    if (app->icon && app->icon->text) {
+      bf::path source = GetIconRoot() / app->icon->text;
       if (bf::exists(source)) {
-        bf::path destination = icons_directory / ui->appid;
+        bf::path destination = icons_directory / app->appid;
         if (source.has_extension())
           destination += source.extension();
         else

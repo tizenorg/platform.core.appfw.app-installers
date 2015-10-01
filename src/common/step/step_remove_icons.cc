@@ -29,14 +29,17 @@ Step::Status StepRemoveIcons::precheck() {
 }
 
 Step::Status StepRemoveIcons::process() {
-  uiapplication_x* ui = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->uiapplication,
-                                ui);
-  for (; ui != nullptr; ui = ui->next) {
+  application_x* app = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->application,
+                                app);
+  for (; app != nullptr; app = app->next) {
+    if (strcmp(app->component_type, "uiapp") != 0)
+      continue;
+
     bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
-      / bf::path(ui->appid);
-    if (ui->icon && ui->icon->text)
-      app_icon += bf::path(ui->icon->text).extension();
+      / bf::path(app->appid);
+    if (app->icon && app->icon->text)
+      app_icon += bf::path(app->icon->text).extension();
     else
       app_icon += ".png";
     if (bf::exists(app_icon)) {

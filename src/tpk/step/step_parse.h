@@ -46,16 +46,17 @@ class StepParse : public common_installer::Step {
   bool FillPrivileges(manifest_x* manifest);
   bool FillServiceApplication(manifest_x* manifest);
   bool FillUIApplication(manifest_x* manifest);
-  template <typename T1, typename T2>
-      bool FillAppControl(T1* manifest, const T2& app_control_list);
-  template <typename T1, typename T2> bool
-      FillDataControl(T1* manifest, const T2& data_control_list);
-  template <typename T1, typename T2>
-      bool FillApplicationIconPaths(T1* manifest, const T2& icons_info);
-  template <typename T1, typename T2>
-      bool FillLabel(T1* manifest, const T2& label_list);
-  template <typename T1, typename T2>
-      bool FillMetadata(T1* manifest, const T2& meta_data_list);
+  template <typename T>
+      bool FillAppControl(application_x* manifest, const T& app_control_list);
+  template <typename T>
+      bool FillDataControl(application_x* manifest, const T& data_control_list);
+  template <typename T>
+      bool FillApplicationIconPaths(application_x* manifest,
+                                    const T& icons_info);
+  template <typename T>
+      bool FillLabel(application_x* manifest, const T& label_list);
+  template <typename T>
+      bool FillMetadata(application_x* manifest, const T& meta_data_list);
   bool FillAccounts();
   bool FillManifestX(manifest_x* manifest);
 

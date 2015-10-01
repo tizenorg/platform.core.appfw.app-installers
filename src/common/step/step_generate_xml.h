@@ -25,11 +25,9 @@ class StepGenerateXml : public common_installer::Step {
   Status precheck() override;
 
  private:
-  // This function is used to generate common xml data
-  // for uiapplication_x and applicationservice_x, as these
-  // structures contain common elements
-  template <typename T>
-  Step::Status GenerateApplicationCommonXml(T* app, xmlTextWriterPtr writer);
+  Step::Status GenerateApplicationCommonXml(application_x* app,
+                                            xmlTextWriterPtr writer,
+                                            bool is_service);
 
   SCOPE_LOG_TAG(GenerateXML)
 };
