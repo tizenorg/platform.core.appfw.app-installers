@@ -25,7 +25,8 @@ Step::Status StepRollbackInstallationSecurity::precheck() {
 }
 
 Step::Status StepRollbackInstallationSecurity::undo() {
-  if (!UnregisterSecurityContext(context_->pkgid.get())) {
+  if (!UnregisterSecurityContextForApps(
+      context_->pkgid.get(), context_->manifest_data.get())) {
     return Status::ERROR;
   }
   LOG(DEBUG) << "Security context uninstalled";

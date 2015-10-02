@@ -26,7 +26,8 @@ bool StepRecoverSecurity::Check() {
 Step::Status StepRecoverSecurity::RecoveryNew() {
   if (!Check())
     return Status::OK;
-  UnregisterSecurityContext(context_->pkgid.get());
+  UnregisterSecurityContextForApps(
+        context_->pkgid.get(), context_->manifest_data.get());
   return Status::OK;
 }
 
@@ -35,7 +36,7 @@ Step::Status StepRecoverSecurity::RecoveryUpdate() {
     LOG(ERROR) << "Invalid parameters";
     return Status::ERROR;
   }
-  if (!RegisterSecurityContext(
+  if (!RegisterSecurityContextForApps(
       context_->pkgid.get(), context_->pkg_path.get(),
       context_->manifest_data.get())) {
     LOG(ERROR) << "Unsuccessful update";
