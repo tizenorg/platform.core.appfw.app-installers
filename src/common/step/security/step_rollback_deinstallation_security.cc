@@ -28,8 +28,9 @@ Step::Status StepRollbackDeinstallationSecurity::precheck() {
 Step::Status StepRollbackDeinstallationSecurity::undo() {
   std::string error_message;
   if (!RegisterSecurityContextForManifest(
-      context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
-      &context_->certificate_info.get(), context_->manifest_data.get(),
+      context_->pkgid.get(), context_->package_storage->path(),
+      context_->uid.get(), &context_->certificate_info.get(),
+      context_->manifest_data.get(),
       &error_message)) {
     LOG(ERROR) << "Failure on re-installing security context for app "
                << context_->pkgid.get();
