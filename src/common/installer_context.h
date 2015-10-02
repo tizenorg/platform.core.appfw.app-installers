@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "common/package_storage.h"
 #include "common/pkgmgr_interface.h"
 #include "common/recovery_file.h"
 #include "common/request.h"
@@ -215,9 +216,9 @@ class InstallerContext {
   Property<std::string> pkgid;
 
   /**
-   * \brief package directory path containing app data
+   * \brief package storage interface
    */
-  Property<boost::filesystem::path> pkg_path;
+  std::unique_ptr<PackageStorage> package_storage;
 
   /**
    * \brief file path used for installation or reinstallation process
