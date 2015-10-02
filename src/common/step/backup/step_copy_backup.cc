@@ -13,6 +13,12 @@
 #include "common/backup_paths.h"
 #include "common/utils/file_util.h"
 
+namespace {
+
+const char kExternalMemoryMountPoint[] = ".mmc";
+
+}
+
 namespace common_installer {
 namespace backup {
 
@@ -55,6 +61,9 @@ Step::Status StepCopyBackup::clean() {
   }
   LOG(DEBUG) << "Applications files backup directory removed";
 
+  if (context_->external_storage)
+    context_->external_storage->Commit();
+
   return Status::OK;
 }
 
@@ -63,6 +72,9 @@ Step::Status StepCopyBackup::undo() {
   bs::error_code error;
   LOG(DEBUG) << "Remove tmp dir: " << context_->unpacked_dir_path.get();
   bf::remove_all(context_->unpacked_dir_path.get(), error);  // ignore error
+
+  if (context_->external_storage)
+    context_->external_storage->Abort();
 
   // if backup was created then restore files
   if (bf::exists(backup_path_)) {
@@ -76,9 +88,37 @@ Step::Status StepCopyBackup::undo() {
 }
 
 bool StepCopyBackup::Backup() {
-  if (!MoveDir(context_->pkg_path.get(), backup_path_)) {
-    LOG(ERROR) << "Fail to backup package directory";
-    return false;
+  // create backup directory
+  bs::error_code error;
+  bf::create_directories(backup_path_, error);
+
+  // create copy of old package content skipping the external memory mount point
+  for (bf::directory_iterator iter(context_->pkg_path.get());
+       iter != bf::directory_iterator(); ++iter) {
+    if (iter->path().filename() == kExternalMemoryMountPoint)
+      continue;
+
+    // external storage directories are backed up by app2sd
+    // therefore we skip them
+    if (context_->external_storage) {
+      auto& ext_dirs = context_->external_storage->external_dirs();
+      auto found = std::find(ext_dirs.begin(), ext_dirs.end(),
+                             iter->path().filename());
+      if (found != ext_dirs.end())
+        continue;
+    }
+
+    if (bf::is_directory(iter->path())) {
+      if (!MoveDir(iter->path(), backup_path_ / iter->path().filename())) {
+        LOG(ERROR) << "Fail to backup package directory of: " << iter->path();
+        return false;
+      }
+    } else {
+      if (!MoveFile(iter->path(), backup_path_ / iter->path().filename())) {
+        LOG(ERROR) << "Fail to backup package file of: " << iter->path();
+        return false;
+      }
+    }
   }
   LOG(INFO) << "Old package context saved to: " << backup_path_;
   return true;
@@ -91,7 +131,8 @@ bool StepCopyBackup::NewContent() {
     LOG(ERROR) << "Cannot create package directory";
     return false;
   }
-  if (!MoveDir(context_->unpacked_dir_path.get(), install_path_)) {
+  if (!MoveDir(context_->unpacked_dir_path.get(), install_path_,
+               FSFlag::FS_MERGE_DIRECTORIES)) {
     LOG(ERROR) << "Fail to copy tmp dir: " << context_->unpacked_dir_path.get()
                << " to dst dir: " << install_path_;
     return false;
