@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/step/step.h"
 #include "common/utils/logging.h"
 

@@ -15,7 +15,7 @@ namespace configuration {
 
 const char *kStrEmpty = "";
 
-StepConfigure::StepConfigure(ContextInstaller* context, PkgMgrPtr pkgmgr)
+StepConfigure::StepConfigure(InstallerContext* context, PkgMgrPtr pkgmgr)
     : Step(context),
       pkgmgr_(pkgmgr) {
 }

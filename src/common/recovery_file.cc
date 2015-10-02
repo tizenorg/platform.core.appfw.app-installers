@@ -10,7 +10,7 @@
 #include <array>
 #include <cstring>
 
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/utils/logging.h"
 
 namespace {
