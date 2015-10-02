@@ -284,6 +284,28 @@ int64_t GetUnpackedPackageSize(const bf::path& path) {
   return size;
 }
 
+int64_t GetDirectorySize(const boost::filesystem::path& path) {
+  int64_t block_size = GetBlockSizeForPath(path);
+
+  // if failed to stat path
+  if (block_size == -1)
+    return -1;
+
+  int64_t size = 0;
+  for (bf::recursive_directory_iterator iter(path);
+      iter != bf::recursive_directory_iterator(); ++iter) {
+      struct stat buf;
+      if (lstat(iter->path().c_str(), &buf) == -1) {
+        LOG(ERROR) << "lstat() failed for: " << iter->path();
+        return -1;
+      }
+      size += RoundUpToBlockSizeOf(buf.st_size, block_size);
+  }
+
+  // FIXME: block size for external device may differ...
+  return size;
+}
+
 boost::filesystem::path GenerateTmpDir(const bf::path &app_path) {
   boost::filesystem::path install_tmp_dir;
   boost::filesystem::path tmp_dir(app_path);
