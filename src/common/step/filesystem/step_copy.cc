@@ -78,7 +78,16 @@ Step::Status StepCopy::process() {
   return Status::OK;
 }
 
+Step::Status StepCopy::clean() {
+  if (context_->external_storage)
+    context_->external_storage->Commit();
+  return Status::OK;
+}
+
 Step::Status StepCopy::undo() {
+  if (context_->external_storage)
+    context_->external_storage->Abort();
+
   if (bf::exists(context_->pkg_path.get()))
     bf::remove_all(context_->pkg_path.get());
   return Status::OK;

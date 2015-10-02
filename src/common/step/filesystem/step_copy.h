@@ -31,7 +31,7 @@ class StepCopy : public Step {
    */
   Status process() override;
 
-  Status clean() override { return Status::OK; }
+  Status clean() override;
 
   /**
    * \brief removes files from final package destination
