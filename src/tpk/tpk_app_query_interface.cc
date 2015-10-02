@@ -10,6 +10,9 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
+#include <tpk_manifest_handlers/application_manifest_constants.h>
+#include <tpk_manifest_handlers/package_handler.h>
+#include <tpk_manifest_handlers/tpk_config_parser.h>
 
 #include <memory>
 #include <string>
@@ -18,12 +21,10 @@
 #include "common/request.h"
 #include "common/utils/file_util.h"
 #include "common/utils/logging.h"
-#include "tpk/xml_parser/xml_parser.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
 namespace ci = common_installer;
-namespace xp = xml_parser;
 
 namespace {
 
@@ -58,19 +59,15 @@ std::string GetPkgIdFromPath(const std::string& path) {
     bf::remove_all(tmp_path, code);
     return {};
   }
-  xp::XmlParser parser;
-  std::unique_ptr<xp::XmlTree> tree(parser.ParseAndGetNewTree(
-      manifest_path.c_str()));
-  if (!tree) {
-    bf::remove_all(tmp_path, code);
+
+  tpk::parse::TPKConfigParser parser;
+  if (!parser.ParseManifest(manifest_path))
     return {};
-  }
-  xp::XmlElement* manifest = tree->GetRootElement();
-  if (!manifest) {
-    bf::remove_all(tmp_path, code);
+  auto package_info = std::static_pointer_cast<const tpk::parse::PackageInfo>(
+      parser.GetManifestData(tpk::manifest_keys::kManifestKey));
+  if (!package_info)
     return {};
-  }
-  std::string pkg_id = manifest->attr("package");
+  std::string pkg_id = package_info->package();
   bf::remove_all(tmp_path, code);
   return pkg_id;
 }
