@@ -93,7 +93,6 @@ Step::Status StepConfigure::process() {
           / bf::path(context_->pkgid.get());
       xml_path += ".xml";
       context_->unpacked_dir_path.set(package_directory);
-      context_->pkg_path.set(package_directory);
       context_->xml_path.set(xml_path);
       break;
     }

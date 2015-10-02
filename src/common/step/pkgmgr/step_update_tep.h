@@ -5,12 +5,11 @@
 #ifndef COMMON_STEP_PKGMGR_STEP_UPDATE_TEP_H_
 #define COMMON_STEP_PKGMGR_STEP_UPDATE_TEP_H_
 
+#include <boost/filesystem/path.hpp>
 #include <manifest_parser/utils/logging.h>
 
 #include "common/installer_context.h"
 #include "common/step/step.h"
-
-#include <boost/filesystem/path.hpp>
 
 namespace common_installer {
 namespace pkgmgr {

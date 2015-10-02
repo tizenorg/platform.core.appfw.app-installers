@@ -18,7 +18,7 @@ Step::Status StepBlockCrossUpdate::process() {
   // information about if package was mount-installed should be stored in pkgmgr
   // database
   bool is_mount_installed =
-      bf::exists(GetZipPackageLocation(context_->pkg_path.get(),
+      bf::exists(GetZipPackageLocation(context_->package_storage->path(),
                                        context_->pkgid.get()));
   if (is_mount_installed) {
     if (context_->request_type.get() == RequestType::Reinstall) {
