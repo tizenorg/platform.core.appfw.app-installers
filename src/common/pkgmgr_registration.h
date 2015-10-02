@@ -127,6 +127,17 @@ bool QueryPrivilegesForPkgId(const std::string& pkg_id, uid_t uid,
                              std::vector<std::string>* result);
 
 /**
+ * \brief Adapter interface for external PkgMgr module used for getting
+ *        storage for given package
+ *
+ * \param pkg_id id of package
+ * \param uid user id
+ *
+ * \return storage name of empty if not installed
+ */
+std::string QueryStorageForPkgId(const std::string& pkg_id, uid_t uid);
+
+/**
  * \brief Adapter interface for external PkgMgr module used for checking
  *        if given package is installed/registered
  *

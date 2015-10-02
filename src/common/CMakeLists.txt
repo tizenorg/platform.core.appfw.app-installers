@@ -3,7 +3,9 @@ SET(SRCS
   app_installer.cc
   backup_paths.cc
   installer_context.cc
-  shared_dirs.cc
+  package_storage.cc
+  package_external_storage.cc
+  package_internal_storage.cc
   plugins/plugin_factory.cc
   plugins/plugin_manager.cc
   plugins/plugin_list_parser.cc
@@ -19,12 +21,14 @@ SET(SRCS
   recovery_file.cc
   request.cc
   security_registration.cc
+  shared_dirs.cc
   step/backup/step_backup_icons.cc
   step/backup/step_backup_manifest.cc
   step/backup/step_copy_backup.cc
   step/configuration/step_configure.cc
   step/configuration/step_fail.cc
   step/configuration/step_parse_manifest.cc
+  step/filesystem/step_acquire_package_storage.cc
   step/filesystem/step_clear_data.cc
   step/filesystem/step_copy.cc
   step/filesystem/step_copy_storage_directories.cc
@@ -36,6 +40,7 @@ SET(SRCS
   step/filesystem/step_recover_files.cc
   step/filesystem/step_recover_icons.cc
   step/filesystem/step_recover_manifest.cc
+  step/filesystem/step_recover_package_storage.cc
   step/filesystem/step_recover_storage_directories.cc
   step/filesystem/step_remove_files.cc
   step/filesystem/step_remove_icons.cc
@@ -89,6 +94,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   APPMANAGER_DEPS
   DELTA_MANIFEST_HANDLERS_DEPS
   TPK_MANIFEST_HANDLERS_DEPS
+  APP2SD_DEPS
   Boost
 )
 
