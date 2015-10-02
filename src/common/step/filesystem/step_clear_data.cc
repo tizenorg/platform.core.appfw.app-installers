@@ -30,9 +30,8 @@ Step::Status StepClearData::precheck() {
 
 Step::Status StepClearData::process() {
   Status status = Status::OK;
-  context_->pkg_path.set(
-      context_->root_application_path.get() / context_->pkgid.get());
-  bf::path data_directory = context_->pkg_path.get() / kDataDirectory;
+
+  bf::path data_directory = context_->package_storage->path() / kDataDirectory;
   for (auto iter = bf::directory_iterator(data_directory);
       iter != bf::directory_iterator(); ++iter) {
     bs::error_code error;

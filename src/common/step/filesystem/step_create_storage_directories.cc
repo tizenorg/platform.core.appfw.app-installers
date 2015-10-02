@@ -44,7 +44,7 @@ common_installer::Step::Status StepCreateStorageDirectories::process() {
 
 bool StepCreateStorageDirectories::ShareDir() {
   bs::error_code error_code;
-  bf::path shared_path = context_->pkg_path.get() / kShared;
+  bf::path shared_path = context_->package_storage->path() / kShared;
   bf::create_directory(shared_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create shared directory for package";
@@ -59,7 +59,7 @@ bool StepCreateStorageDirectories::ShareDir() {
 
 bool StepCreateStorageDirectories::SubShareDir() {
   bs::error_code error_code;
-  bf::path shared_path = context_->pkg_path.get() / kShared;
+  bf::path shared_path = context_->package_storage->path() / kShared;
   bf::path shared_trusted_path = shared_path / kSharedTrusted;
   bf::create_directory(shared_trusted_path, error_code);
   if (error_code) {
@@ -86,7 +86,7 @@ bool StepCreateStorageDirectories::SubShareDir() {
 
 bool StepCreateStorageDirectories::PrivateDir() {
   bs::error_code error_code;
-  bf::path data_path = context_->pkg_path.get() / kData;
+  bf::path data_path = context_->package_storage->path() / kData;
 
   // compatibility for old tpk packages
   if (bf::exists(data_path)) {
@@ -104,7 +104,7 @@ bool StepCreateStorageDirectories::PrivateDir() {
 
 bool StepCreateStorageDirectories::CacheDir() {
   bs::error_code error_code;
-  bf::path cache_path = context_->pkg_path.get() / kCache;
+  bf::path cache_path = context_->package_storage->path() / kCache;
   bf::create_directory(cache_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create cache directory for package";
