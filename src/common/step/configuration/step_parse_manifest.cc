@@ -88,10 +88,16 @@ bool StepParseManifest::LocateConfigFile() {
       bf::path backup_path = common_installer::GetBackupPathForPackagePath(
           context_->pkg_path.get()) / kManifestFileName;
       bf::path in_package_path = context_->pkg_path.get() / kManifestFileName;
+      bf::path install_path =
+          bf::path(getUserManifestPath(context_->uid.get(), false))
+              / bf::path(context_->pkgid.get());
+      install_path += ".xml";
       if (bf::exists(backup_path))
         manifest = backup_path;
       else if (bf::exists(in_package_path))
         manifest = in_package_path;
+      else if (bf::exists(install_path))
+        manifest = install_path;
       break;
     }
     case ManifestLocation::INSTALLED: {
@@ -207,6 +213,17 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
       manifest->deviceprofile = g_list_append(manifest->deviceprofile,
                                               strdup(profile.c_str()));
     }
+  }
+
+  // set installed_storage if package is installed
+  // this is internal field in package manager but after reading configuration
+  // we must know it
+  if (manifest_location_ == ManifestLocation::INSTALLED ||
+      manifest_location_ == ManifestLocation::RECOVERY) {
+    std::string storage = QueryStorageForPkgId(manifest->package,
+                                               context_->uid.get());
+    if (!storage.empty())
+      manifest->installed_storage = strdup(storage.c_str());
   }
 
   if (ui_application_list) {

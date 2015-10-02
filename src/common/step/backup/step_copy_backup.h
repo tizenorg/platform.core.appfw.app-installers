@@ -57,6 +57,8 @@ class StepCopyBackup : public Step {
   bool NewContent();
   bool CleanBackupDirectory();
   bool RollbackApplicationDirectory();
+  bool MoveMountPointContent(const boost::filesystem::path& from,
+                   const boost::filesystem::path& to);
 
   boost::filesystem::path install_path_;
   boost::filesystem::path backup_path_;
