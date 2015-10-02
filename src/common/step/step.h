@@ -26,7 +26,7 @@
 #ifndef COMMON_STEP_STEP_H_
 #define COMMON_STEP_STEP_H_
 
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 
 namespace common_installer {
 
@@ -47,7 +47,7 @@ class Step {
   };
 
   /** Standard constructor */
-  explicit Step(ContextInstaller* context) : context_(context) { }
+  explicit Step(InstallerContext* context) : context_(context) { }
 
   /** Virtual "empty" destructor */
   virtual ~Step() { }
@@ -65,7 +65,7 @@ class Step {
   virtual Status precheck() = 0;
 
  protected:
-  ContextInstaller* context_;
+  InstallerContext* context_;
 };
 
 }  // namespace common_installer

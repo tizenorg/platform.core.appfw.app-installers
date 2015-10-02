@@ -2,7 +2,7 @@
 SET(SRCS
   app_installer.cc
   backup_paths.cc
-  context_installer.cc
+  installer_context.cc
   pkgmgr_interface.cc
   pkgmgr_registration.cc
   pkgmgr_signal.cc

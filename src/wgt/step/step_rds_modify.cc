@@ -16,7 +16,7 @@ namespace bf = boost::filesystem;
 namespace bs = boost::system;
 namespace cu = common_installer;
 
-StepRDSModify::StepRDSModify(common_installer::ContextInstaller* context)
+StepRDSModify::StepRDSModify(common_installer::InstallerContext* context)
     : Step(context),
       backend_data_(nullptr) {}
 

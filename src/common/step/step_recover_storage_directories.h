@@ -5,7 +5,7 @@
 #ifndef COMMON_STEP_STEP_RECOVER_STORAGE_DIRECTORIES_H_
 #define COMMON_STEP_STEP_RECOVER_STORAGE_DIRECTORIES_H_
 
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/step/step_recovery.h"
 #include "common/utils/logging.h"
 

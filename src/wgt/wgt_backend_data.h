@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/utils/property.h"
 
 namespace wgt {

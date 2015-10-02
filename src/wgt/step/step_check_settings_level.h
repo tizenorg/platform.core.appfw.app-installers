@@ -6,7 +6,7 @@
 #define WGT_STEP_STEP_CHECK_SETTINGS_LEVEL_H_
 
 #include "common/app_installer.h"
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/step/step.h"
 #include "common/utils/logging.h"
 

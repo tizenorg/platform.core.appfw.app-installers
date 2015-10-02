@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "common/app_installer.h"
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/step/step.h"
 #include "utils/clist_helpers.h"
 
@@ -410,7 +410,7 @@ common_installer::Step::Status StepParse::process() {
     return common_installer::Step::Status::ERROR;
   }
 
-  // Copy data from ManifestData to ContextInstaller
+  // Copy data from ManifestData to InstallerContext
   std::shared_ptr<const PackageInfo> info =
       std::static_pointer_cast<const PackageInfo>(
           parser_->GetManifestData(

@@ -18,7 +18,7 @@ namespace rds {
 
 class StepRDSModify : public common_installer::Step {
  public:
-  explicit StepRDSModify(common_installer::ContextInstaller* context);
+  explicit StepRDSModify(common_installer::InstallerContext* context);
   Status process() override;
   Status clean() override;
   Status undo() override;

@@ -3,8 +3,8 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef COMMON_CONTEXT_INSTALLER_H_
-#define COMMON_CONTEXT_INSTALLER_H_
+#ifndef COMMON_INSTALLER_CONTEXT_H_
+#define COMMON_INSTALLER_CONTEXT_H_
 
 #include <boost/filesystem/path.hpp>
 
@@ -93,10 +93,10 @@ const char* PrivilegeLevelToString(PrivilegeLevel level);
 //  CtxUninstall class that inherits from Context
 //  It is because Uninstallation does not need so many fields.
 //  similarly, installation may not need some of them
-class ContextInstaller {
+class InstallerContext {
  public:
-  ContextInstaller();
-  ~ContextInstaller();
+  InstallerContext();
+  ~InstallerContext();
 
   // package_type
   Property<std::string> pkg_type;
@@ -152,4 +152,4 @@ class ContextInstaller {
 
 }  // namespace common_installer
 
-#endif  // COMMON_CONTEXT_INSTALLER_H_
+#endif  // COMMON_INSTALLER_CONTEXT_H_

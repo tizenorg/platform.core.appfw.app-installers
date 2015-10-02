@@ -48,7 +48,7 @@ class AppInstaller {
 
  private:
   std::list<std::unique_ptr<Step>> steps_;
-  std::unique_ptr<ContextInstaller> context_;
+  std::unique_ptr<InstallerContext> context_;
 
   // data used to send signal
   std::unique_ptr<PkgmgrSignal> pi_;

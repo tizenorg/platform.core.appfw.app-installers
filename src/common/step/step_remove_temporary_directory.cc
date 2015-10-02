@@ -6,7 +6,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/system/error_code.hpp>
 
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 
 namespace common_installer {
 namespace filesystem {

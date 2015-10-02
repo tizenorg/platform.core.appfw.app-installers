@@ -27,7 +27,7 @@
 #include <vector>
 
 #include "common/app_installer.h"
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/step/step.h"
 #include "utils/clist_helpers.h"
 #include "wgt/wgt_backend_data.h"
@@ -56,7 +56,7 @@ namespace parse {
 
 namespace app_keys = wgt::application_widget_keys;
 
-StepParse::StepParse(common_installer::ContextInstaller* context,
+StepParse::StepParse(common_installer::InstallerContext* context,
                      bool check_start_file)
     : Step(context),
       check_start_file_(check_start_file) {
@@ -328,7 +328,7 @@ common_installer::Step::Status StepParse::process() {
     return common_installer::Step::Status::ERROR;
   }
 
-  // Copy data from ManifestData to ContextInstaller
+  // Copy data from ManifestData to InstallerContext
   std::shared_ptr<const TizenApplicationInfo> info =
       std::static_pointer_cast<const TizenApplicationInfo>(
           parser_->GetManifestData(
