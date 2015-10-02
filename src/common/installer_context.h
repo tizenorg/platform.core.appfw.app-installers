@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "common/external_storage.h"
 #include "common/pkgmgr_interface.h"
 #include "common/recovery_file.h"
 #include "common/request.h"
@@ -314,6 +315,11 @@ class InstallerContext {
   * \brief Property of vector of files to delete
   */
   Property<std::vector<std::string>> files_to_delete;
+
+  /**
+   * @brief External Storage object if installing in external
+   */
+  std::unique_ptr<ExternalStorage> external_storage;
 };
 
 }  // namespace common_installer
