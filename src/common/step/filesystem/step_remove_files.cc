@@ -54,6 +54,11 @@ Step::Status StepRemoveFiles::process() {
   bs::error_code error;
   bf::path pkg_path(context_->pkg_path.get());
 
+  // We need to unmount external storage before removing package directory
+  // because mount point is inside
+  if (context_->external_storage)
+    context_->external_storage->Commit();
+
   if (IsPackageInstalled(context_->pkgid.get(), GLOBAL_USER)) {
     for (bf::directory_iterator itr(pkg_path); itr != bf::directory_iterator();
         ++itr) {
