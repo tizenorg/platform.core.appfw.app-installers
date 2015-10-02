@@ -29,7 +29,7 @@ class StepRecoverFiles : public recovery::StepRecovery {
   Status RecoveryUpdate() override;
 
  private:
-  bool SetPackagePath();
+  bool SetPackageStorage();
 
   SCOPE_LOG_TAG(RecoverBackup)
 };
