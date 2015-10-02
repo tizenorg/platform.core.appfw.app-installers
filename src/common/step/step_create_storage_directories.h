@@ -21,7 +21,7 @@ namespace filesystem {
  * * Other methods are empty.
  *
  * CreateStorageDirectories works on below directories:
- * * context_->pkg_path.get(), eg:
+ * * context_->package_storage->path(), eg:
  *   * TZ_SYS_RW/PKGID/<new-dir> (/usr/apps/PKGID/<new-dir>)
  *   * TZ_SER_APPS/PKGID/<new-dir>  (/{HOME}/apps_rw/PKGID/<new-dir>)
  */

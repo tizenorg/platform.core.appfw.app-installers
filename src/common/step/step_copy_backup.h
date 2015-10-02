@@ -53,8 +53,8 @@ class StepCopyBackup : public Step {
   Status precheck() override;
 
  private:
-  bool Backup();
-  bool NewContent();
+  bool CreateBackup();
+  bool CreateNewContent();
   bool CleanBackupDirectory();
   bool RollbackApplicationDirectory();
 

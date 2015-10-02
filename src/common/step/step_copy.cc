@@ -54,12 +54,7 @@ Step::Status StepCopy::precheck() {
 }
 
 Step::Status StepCopy::process() {
-  // set application path
-  context_->pkg_path.set(
-    context_->root_application_path.get() / context_->pkgid.get());
-
-  bf::path install_path = context_->pkg_path.get();
-
+  bf::path install_path = context_->package_storage->path();
   bs::error_code error;
   bf::create_directories(install_path.parent_path(), error);
   if (error) {
@@ -67,20 +62,28 @@ Step::Status StepCopy::process() {
                << install_path.parent_path().string();
     return Step::Status::APP_DIR_ERROR;
   }
+
   if (!MoveDir(context_->unpacked_dir_path.get(), install_path,
                FSFlag::FS_MERGE_DIRECTORIES)) {
     LOG(ERROR) << "Cannot move widget directory to install path, from "
         << context_->unpacked_dir_path.get() << " to " << install_path;
     return Status::APP_DIR_ERROR;
   }
+
   LOG(INFO) << "Successfully move: " << context_->unpacked_dir_path.get()
             << " to: " << install_path << " directory";
   return Status::OK;
 }
 
 Step::Status StepCopy::undo() {
-  if (bf::exists(context_->pkg_path.get()))
-    bf::remove_all(context_->pkg_path.get());
+  bs::error_code error;
+  bf::remove_all(context_->package_storage->path(), error);
+  context_->package_storage->Abort();
+  return error ? Status::ERROR : Status::OK;
+}
+
+Step::Status StepCopy::clean() {
+  context_->package_storage->Commit();
   return Status::OK;
 }
 
