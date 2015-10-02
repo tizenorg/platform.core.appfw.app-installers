@@ -63,14 +63,14 @@ common_installer::Step::Status StepWgtCopyStorageDirectories::undo() {
 }
 
 void StepWgtCopyStorageDirectories::UndoSharedDirectory() {
-  if (!MoveAppStorage(context_->pkg_path.get(),
+  if (!MoveAppStorage(context_->package_storage->path(),
                       backup_path_,
                       kSharedDataLocation)) {
     LOG(ERROR) <<
         "Failed to undo moving of shared/data directory for widget in update";
   }
 
-  if (!MoveAppStorage(context_->pkg_path.get(),
+  if (!MoveAppStorage(context_->package_storage->path(),
                       backup_path_,
                       kSharedTrustedLocation)) {
     LOG(ERROR) << "Failed to undo moving of shared/trusted directory"
@@ -79,7 +79,7 @@ void StepWgtCopyStorageDirectories::UndoSharedDirectory() {
 }
 
 void StepWgtCopyStorageDirectories::UndoDataDirectory() {
-  if (!MoveAppStorage(context_->pkg_path.get(),
+  if (!MoveAppStorage(context_->package_storage->path(),
                       backup_path_,
                       kDataLocation)) {
     LOG(ERROR)
@@ -89,9 +89,10 @@ void StepWgtCopyStorageDirectories::UndoDataDirectory() {
 
 common_installer::Step::Status
 StepWgtCopyStorageDirectories::HandleWgtSharedDirectory() {
-  bf::path res_wgt_path = context_->pkg_path.get() / kResWgtSubPath;
+  bf::path res_wgt_path = context_->package_storage->path() / kResWgtSubPath;
   bf::path shared_source = res_wgt_path / kSharedLocation;
-  bf::path shared_destination = context_->pkg_path.get() / kSharedLocation;
+  bf::path shared_destination =
+      context_->package_storage->path() / kSharedLocation;
 
   // Move shared if exist in wgt
   if (bf::exists(shared_source)) {
@@ -129,7 +130,7 @@ StepWgtCopyStorageDirectories::CopySharedDirectory() {
     return status;
 
   if (!MoveAppStorage(backup_path_,
-                      context_->pkg_path.get(),
+                      context_->package_storage->path(),
                       kSharedDataLocation)) {
     LOG(ERROR) <<
         "Failed to restore shared/data directory for widget in update";
@@ -137,7 +138,7 @@ StepWgtCopyStorageDirectories::CopySharedDirectory() {
   }
 
   if (!MoveAppStorage(backup_path_,
-                      context_->pkg_path.get(),
+                      context_->package_storage->path(),
                       kSharedTrustedLocation)) {
     LOG(ERROR) <<
         "Failed to restore shared/trusted directory for widget in update";
@@ -150,7 +151,7 @@ StepWgtCopyStorageDirectories::CopySharedDirectory() {
 common_installer::Step::Status
 StepWgtCopyStorageDirectories::CopyDataDirectory() {
   if (!MoveAppStorage(backup_path_,
-                      context_->pkg_path.get(),
+                      context_->package_storage->path(),
                       kDataLocation)) {
     LOG(ERROR) << "Failed to restore private directory for widget in update";
     return Status::ERROR;
@@ -161,7 +162,7 @@ StepWgtCopyStorageDirectories::CopyDataDirectory() {
 common_installer::Step::Status
 StepWgtCopyStorageDirectories::CreatePrivateTmpDir() {
   bs::error_code error_code;
-  bf::path tmp_path = context_->pkg_path.get() / kTemporaryData;
+  bf::path tmp_path = context_->package_storage->path() / kTemporaryData;
   bf::create_directory(tmp_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create private temporary directory for package";
@@ -173,7 +174,7 @@ StepWgtCopyStorageDirectories::CreatePrivateTmpDir() {
 common_installer::Step::Status
 StepWgtCopyStorageDirectories::CreateCacheDir() {
   bs::error_code error_code;
-  bf::path cache_path = context_->pkg_path.get() / kCacheDir;
+  bf::path cache_path = context_->package_storage->path() / kCacheDir;
   bf::create_directory(cache_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create cache directory for package";

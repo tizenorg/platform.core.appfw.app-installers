@@ -55,7 +55,7 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
   xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST app->appid);
 
   // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-  bf::path exec_path = context_->pkg_path.get()
+  bf::path exec_path = context_->package_storage->path()
       / bf::path("bin") / bf::path(app->appid);
   xmlTextWriterWriteAttribute(writer, BAD_CAST "exec",
                               BAD_CAST exec_path.string().c_str());
@@ -85,7 +85,7 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
 
   // icon is renamed to <appid.png>
   if (app->icon && app->icon->text) {
-    bf::path app_icon = context_->pkg_path.get();
+    bf::path app_icon = context_->package_storage->path();
     // TODO(t.iwanek): type should not be used here
     if (context_->pkg_type.get() == "wgt") {
       app_icon /= "res/wgt";

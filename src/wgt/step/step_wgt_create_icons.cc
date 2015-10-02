@@ -14,7 +14,7 @@ namespace wgt {
 namespace filesystem {
 
 boost::filesystem::path StepWgtCreateIcons::GetIconRoot() const {
-  return context_->pkg_path.get() / kResWgt;
+  return context_->package_storage->path() / kResWgt;
 }
 
 }  // namespace filesystem

@@ -23,11 +23,11 @@ Step::Status StepRemoveFiles::precheck() {
 
   // Even though, the below checks can fail, StepRemoveFiles should still try
   // to remove the files
-  if (context_->pkg_path.get().empty())
+  if (context_->package_storage->path().empty())
     LOG(ERROR) << "pkg_path attribute is empty";
-  else if (!bf::exists(context_->pkg_path.get()))
+  else if (!bf::exists(context_->package_storage->path()))
     LOG(ERROR) << "pkg_path ("
-               << context_->pkg_path.get()
+               << context_->package_storage->path()
                << ") path does not exist";
   // TODO(p.sikorski) check context_->uid.get()
 
@@ -35,27 +35,30 @@ Step::Status StepRemoveFiles::precheck() {
 }
 
 Step::Status StepRemoveFiles::process() {
-  bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
-  if (!MoveDir(context_->pkg_path.get(), backup_path)) {
+  bf::path backup_path = GetBackupPathForPackagePath(
+      context_->package_storage->path());
+  if (!MoveDir(context_->package_storage->path(), backup_path)) {
     LOG(ERROR) << "Cannot remove widget files from its location";
     return Status::ERROR;
   }
-  LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
+  LOG(DEBUG) << "Removed directory: " << context_->package_storage->path();
   return Status::OK;
 }
 
 Step::Status StepRemoveFiles::clean() {
   bs::error_code error;
-  bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
+  bf::path backup_path = GetBackupPathForPackagePath(
+      context_->package_storage->path());
   bf::remove_all(backup_path, error);
   return Status::OK;
 }
 
 Step::Status StepRemoveFiles::undo() {
-  bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
+  bf::path backup_path = GetBackupPathForPackagePath(
+      context_->package_storage->path());
   if (bf::exists(backup_path)) {
-    LOG(DEBUG) << "Restoring directory: " << context_->pkg_path.get();
-    if (!MoveDir(backup_path, context_->pkg_path.get())) {
+    LOG(DEBUG) << "Restoring directory: " << context_->package_storage->path();
+    if (!MoveDir(backup_path, context_->package_storage->path())) {
       LOG(ERROR) << "Cannot restore widget files";
       return Status::ERROR;
     }

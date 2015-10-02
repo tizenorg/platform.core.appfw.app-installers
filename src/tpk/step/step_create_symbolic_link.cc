@@ -24,8 +24,7 @@ namespace {
 
 bool CreateSymLink(application_x* app, InstallerContext* context) {
   boost::system::error_code boost_error;
-  bf::path bindir = context->pkg_path.get() /
-      bf::path("bin");
+  bf::path bindir = context->package_storage->path() / "bin";
   LOG(DEBUG) << "Creating dir: " << bindir;
   if (!common_installer::CreateDir(bindir)) {
     LOG(ERROR) << "Directory creation failure: " << bindir;
@@ -60,7 +59,7 @@ bool RemoveSymLink(application_x* app, InstallerContext* context) {
   /* NOTE: Unlike WRT app, tpk apps have bin/ directory by default.
    * So we don't remove the bin/ directory.
    */
-  bf::path exec_path = bf::path(context->pkg_path.get()) / bf::path("bin");
+  bf::path exec_path = bf::path(context->package_storage->path()) / "bin";
   bf::remove_all(exec_path / bf::path(app->appid));
   return true;
 }

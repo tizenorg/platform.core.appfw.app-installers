@@ -30,12 +30,14 @@ bool StepRecoverStorageDirectories::MoveAppStorage(
 }
 
 Step::Status StepRecoverStorageDirectories::RecoveryUpdate() {
-  if (!context_->pkg_path.get().empty()) {
+  if (!context_->package_storage->path().empty()) {
     bf::path backup_path = common_installer::GetBackupPathForPackagePath(
-        context_->pkg_path.get());
+        context_->package_storage->path());
     if (!backup_path.empty()) {
-      MoveAppStorage(context_->pkg_path.get(), backup_path, kDataLocation);
-      MoveAppStorage(context_->pkg_path.get(), backup_path, kSharedLocation);
+      MoveAppStorage(context_->package_storage->path(), backup_path,
+                     kDataLocation);
+      MoveAppStorage(context_->package_storage->path(), backup_path,
+                     kSharedLocation);
     }
   }
   return Status::OK;

@@ -19,7 +19,7 @@ class StepCopy : public Step {
   using Step::Step;
 
   Status process() override;
-  Status clean() override { return Status::OK; }
+  Status clean() override;
   Status undo() override;
   Status precheck() override;
 

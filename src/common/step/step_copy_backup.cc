@@ -28,21 +28,28 @@ Step::Status StepCopyBackup::precheck() {
     LOG(ERROR) << "root_application_path attribute is empty";
     return Step::Status::INVALID_VALUE;
   }
-
-  // set package path
-  context_->pkg_path.set(
-      context_->root_application_path.get() / context_->pkgid.get());
-  install_path_ = context_->pkg_path.get();
-  backup_path_ = GetBackupPathForPackagePath(context_->pkg_path.get());
-
   return Status::OK;
 }
 
 Step::Status StepCopyBackup::process() {
-  if (!Backup())
+  // set package storage
+  context_->package_storage =
+      CreatePackageStorage(RequestType::Update,
+                           context_->root_application_path.get(),
+                           context_->pkgid.get(),
+                           context_->unpacked_dir_path.get(),
+                           nullptr);
+  if (!context_->package_storage) {
+    LOG(ERROR) << "Failed to create storage";
+    return Status::ERROR;
+  }
+  install_path_ = context_->package_storage->path();
+  backup_path_ = GetBackupPathForPackagePath(context_->package_storage->path());
+
+  if (!CreateBackup())
     return Status::ERROR;
 
-  if (!NewContent())
+  if (!CreateNewContent())
     return Status::ERROR;
 
   return Status::OK;
@@ -53,8 +60,7 @@ Step::Status StepCopyBackup::clean() {
     LOG(DEBUG) << "Cannot remove backup directory";
     return Status::ERROR;
   }
-  LOG(DEBUG) << "Applications files backup directory removed";
-
+  context_->package_storage->Commit();
   return Status::OK;
 }
 
@@ -72,11 +78,12 @@ Step::Status StepCopyBackup::undo() {
     }
     LOG(DEBUG) << "Application files reverted from backup";
   }
+  context_->package_storage->Abort();
   return Status::OK;
 }
 
-bool StepCopyBackup::Backup() {
-  if (!MoveDir(context_->pkg_path.get(), backup_path_)) {
+bool StepCopyBackup::CreateBackup() {
+  if (!MoveDir(context_->package_storage->path(), backup_path_)) {
     LOG(ERROR) << "Fail to backup package directory";
     return false;
   }
@@ -84,13 +91,7 @@ bool StepCopyBackup::Backup() {
   return true;
 }
 
-bool StepCopyBackup::NewContent() {
-  bs::error_code error;
-  bf::create_directories(install_path_.parent_path(), error);
-  if (error) {
-    LOG(ERROR) << "Cannot create package directory";
-    return false;
-  }
+bool StepCopyBackup::CreateNewContent() {
   if (!MoveDir(context_->unpacked_dir_path.get(), install_path_)) {
     LOG(ERROR) << "Fail to copy tmp dir: " << context_->unpacked_dir_path.get()
                << " to dst dir: " << install_path_;
@@ -115,14 +116,14 @@ bool StepCopyBackup::CleanBackupDirectory() {
 
 bool StepCopyBackup::RollbackApplicationDirectory() {
   bs::error_code error;
-  if (bf::exists(context_->pkg_path.get())) {
-    bf::remove_all(context_->pkg_path.get(), error);
+  if (bf::exists(context_->package_storage->path())) {
+    bf::remove_all(context_->package_storage->path(), error);
     if (error) {
       return false;
     }
   }
 
-  if (!MoveDir(backup_path_, context_->pkg_path.get())) {
+  if (!MoveDir(backup_path_, context_->package_storage->path())) {
     return false;
   }
 

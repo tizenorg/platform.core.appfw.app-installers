@@ -55,7 +55,7 @@ common_installer::Step::Status StepWgtCreateStorageDirectories::process() {
 
 bool StepWgtCreateStorageDirectories::ShareDirFor2x() {
   bs::error_code error_code;
-  bf::path shared_path = context_->pkg_path.get() / kSharedLocation;
+  bf::path shared_path = context_->package_storage->path() / kSharedLocation;
   bf::create_directory(shared_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create shared directory for widget";
@@ -65,13 +65,13 @@ bool StepWgtCreateStorageDirectories::ShareDirFor2x() {
 }
 
 bool StepWgtCreateStorageDirectories::ShareDirFor3x() {
-  bf::path res_wgt_path = context_->pkg_path.get() / kResWgtSubPath;
+  bf::path res_wgt_path = context_->package_storage->path() / kResWgtSubPath;
   if (!bf::exists(res_wgt_path / kSharedLocation)) {
     if (!ShareDir())
       return false;
   } else {
     bf::path src = res_wgt_path / kSharedLocation;
-    bf::path dst = context_->pkg_path.get() / kSharedLocation;
+    bf::path dst = context_->package_storage->path() / kSharedLocation;
     if (!common_installer::MoveDir(src, dst)) {
       LOG(ERROR) << "Failed to move shared data from res/wgt to shared";
       return false;
@@ -90,7 +90,7 @@ bool StepWgtCreateStorageDirectories::ShareDirFor3x() {
 
 bool StepWgtCreateStorageDirectories::CreatePrivateTmpDir() {
   bs::error_code error_code;
-  bf::path tmp_path = context_->pkg_path.get() / kTemporaryData;
+  bf::path tmp_path = context_->package_storage->path() / kTemporaryData;
   bf::create_directory(tmp_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create private temporary directory for package";
@@ -101,7 +101,7 @@ bool StepWgtCreateStorageDirectories::CreatePrivateTmpDir() {
 
 bool StepWgtCreateStorageDirectories::CreateCacheDir() {
   bs::error_code error_code;
-  bf::path cache_path = context_->pkg_path.get() / kCacheDir;
+  bf::path cache_path = context_->package_storage->path() / kCacheDir;
   bf::create_directory(cache_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create cache directory for package";

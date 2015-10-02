@@ -12,9 +12,9 @@ namespace common_installer {
 namespace security {
 
 bool StepRecoverSecurity::Check() {
-  if (context_->pkg_path.get().empty())
+  if (context_->package_storage->path().empty())
     return false;
-  if (!boost::filesystem::exists(context_->pkg_path.get()))
+  if (!boost::filesystem::exists(context_->package_storage->path()))
     return false;
   if (context_->pkgid.get().empty())
     return false;
@@ -37,7 +37,7 @@ Step::Status StepRecoverSecurity::RecoveryUpdate() {
     return Status::ERROR;
   }
   if (!RegisterSecurityContextForApps(
-      context_->pkgid.get(), context_->pkg_path.get(),
+      context_->pkgid.get(), context_->package_storage->path(),
       context_->manifest_data.get())) {
     LOG(ERROR) << "Unsuccessful update";
     return Status::ERROR;

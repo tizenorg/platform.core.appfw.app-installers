@@ -3,6 +3,9 @@ SET(SRCS
   app_installer.cc
   backup_paths.cc
   installer_context.cc
+  package_storage.cc
+  package_external_storage.cc
+  package_internal_storage.cc
   pkgmgr_interface.cc
   pkgmgr_registration.cc
   pkgmgr_signal.cc
@@ -66,6 +69,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   ZLIB_DEPS
   PRIVILEGE_CHECKER_DEPS
   APPMANAGER_DEPS
+  APP2SD_DEPS
   Boost
 )
 

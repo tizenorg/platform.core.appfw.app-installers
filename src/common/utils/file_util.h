@@ -12,10 +12,12 @@ namespace common_installer {
 bool CreateDir(const boost::filesystem::path& path);
 
 bool CopyDir(const boost::filesystem::path& src,
-             const boost::filesystem::path& dst);
+             const boost::filesystem::path& dst,
+             bool merge_directories = false);
 
 bool MoveDir(const boost::filesystem::path& src,
-             const boost::filesystem::path& dst);
+             const boost::filesystem::path& dst,
+             bool merge_directories = false);
 
 bool MoveFile(const boost::filesystem::path& src,
               const boost::filesystem::path& dst);
@@ -33,6 +35,8 @@ bool ExtractToTmpDir(const char* zip_path,
 bool ExtractToTmpDir(const char* zip_path,
                      const boost::filesystem::path& tmp_dir,
                      const std::string& filter_prefix);
+// Gets size in bytes, -1 if error
+int GetSize(const boost::filesystem::path& path);
 
 }  // namespace common_installer
 

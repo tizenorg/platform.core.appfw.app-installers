@@ -6,6 +6,8 @@
 
 #include "common/backup_paths.h"
 #include "common/installer_context.h"
+#include "common/package_storage.h"
+#include "common/request.h"
 
 namespace {
 
@@ -39,14 +41,22 @@ common_installer::Step::Status StepParseRecovery::precheck() {
 }
 
 bool StepParseRecovery::LocateConfigFile() {
-  context_->pkg_path.set(
-      context_->root_application_path.get() / context_->pkgid.get());
+  // set package storage
+  context_->package_storage =
+      CreatePackageStorage(common_installer::RequestType::Recovery,
+                           context_->root_application_path.get(),
+                           context_->pkgid.get(),
+                           "", nullptr);
+  if (!context_->package_storage) {
+    LOG(ERROR) << "Failed to create storage";
+    return false;
+  }
 
   if (Check(common_installer::GetBackupPathForPackagePath(
-      context_->pkg_path.get()) / kResWgtPath))
+      context_->package_storage->path()) / kResWgtPath))
     return true;
 
-  if (Check(context_->pkg_path.get() / kResWgtPath))
+  if (Check(context_->package_storage->path() / kResWgtPath))
     return true;
 
   return false;

@@ -56,12 +56,19 @@ Step::Status StepCopy::precheck() {
 }
 
 Step::Status StepCopy::process() {
-  // set application path
-  context_->pkg_path.set(
-    context_->root_application_path.get() / context_->pkgid.get());
+  // set package storage
+  context_->package_storage =
+      CreatePackageStorage(RequestType::Install,
+                           context_->root_application_path.get(),
+                           context_->pkgid.get(),
+                           context_->unpacked_dir_path.get(),
+                           context_->manifest_data.get()->installlocation);
+  if (!context_->package_storage) {
+    LOG(ERROR) << "Failed to create storage";
+    return Status::ERROR;
+  }
 
-  bf::path install_path = context_->pkg_path.get();
-
+  bf::path install_path = context_->package_storage->path();
   bs::error_code error;
   bf::create_directories(install_path.parent_path(), error);
   if (error) {
@@ -72,6 +79,8 @@ Step::Status StepCopy::process() {
   if (!MoveDir(context_->unpacked_dir_path.get(), install_path)) {
     LOG(ERROR) << "Cannot move widget directory to install path";
     return Status::ERROR;
+
+    // TODO(t.iwanek): then copy...
   }
 
   LOG(INFO) << "Successfully move: " << context_->unpacked_dir_path.get()
@@ -80,8 +89,14 @@ Step::Status StepCopy::process() {
 }
 
 Step::Status StepCopy::undo() {
-  if (bf::exists(context_->pkg_path.get()))
-    bf::remove_all(context_->pkg_path.get());
+  bs::error_code error;
+  bf::remove_all(context_->package_storage->path(), error);
+  context_->package_storage->Abort();
+  return error ? Status::ERROR : Status::OK;
+}
+
+Step::Status StepCopy::clean() {
+  context_->package_storage->Commit();
   return Status::OK;
 }
 

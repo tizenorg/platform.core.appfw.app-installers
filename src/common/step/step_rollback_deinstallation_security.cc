@@ -26,7 +26,7 @@ Step::Status StepRollbackDeinstallationSecurity::precheck() {
 
 Step::Status StepRollbackDeinstallationSecurity::undo() {
   if (!RegisterSecurityContextForApps(
-      context_->pkgid.get(), context_->pkg_path.get(),
+      context_->pkgid.get(), context_->package_storage->path(),
       context_->manifest_data.get())) {
     LOG(ERROR) << "Failure on re-installing security context for app "
                << context_->pkgid.get();

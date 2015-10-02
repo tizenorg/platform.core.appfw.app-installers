@@ -35,8 +35,8 @@ bool StepCopyStorageDirectories::MoveAppStorage(
 }
 
 common_installer::Step::Status StepCopyStorageDirectories::precheck() {
-  backup_path_ =
-      common_installer::GetBackupPathForPackagePath(context_->pkg_path.get());
+  backup_path_ = common_installer::GetBackupPathForPackagePath(
+      context_->package_storage->path());
 
   bs::error_code error_code;
   if (!bf::exists(backup_path_, error_code)) {
@@ -49,14 +49,14 @@ common_installer::Step::Status StepCopyStorageDirectories::precheck() {
 
 common_installer::Step::Status StepCopyStorageDirectories::process() {
   if (!MoveAppStorage(backup_path_,
-                      context_->pkg_path.get(),
+                      context_->package_storage->path(),
                       kDataLocation)) {
     LOG(ERROR) << "Failed to restore private directory for widget in update";
     return Status::ERROR;
   }
 
   if (!MoveAppStorage(backup_path_,
-                      context_->pkg_path.get(),
+                      context_->package_storage->path(),
                       kSharedLocation)) {
     LOG(ERROR) << "Failed to restore shared directory for widget in update";
     return Status::ERROR;
@@ -67,14 +67,14 @@ common_installer::Step::Status StepCopyStorageDirectories::process() {
 
 common_installer::Step::Status StepCopyStorageDirectories::undo() {
   common_installer::Step::Status ret = Status::OK;
-  if (!MoveAppStorage(context_->pkg_path.get(),
+  if (!MoveAppStorage(context_->package_storage->path(),
                       backup_path_,
                       kDataLocation)) {
     LOG(ERROR) << "Failed to restore private directory for package in update";
     ret = Status::ERROR;
   }
 
-  if (!MoveAppStorage(context_->pkg_path.get(),
+  if (!MoveAppStorage(context_->package_storage->path(),
                       backup_path_,
                       kSharedLocation)) {
     LOG(ERROR) << "Failed to restore shared directory for package in update";

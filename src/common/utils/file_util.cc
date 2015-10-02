@@ -4,6 +4,7 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <unzip.h>
 #include <zlib.h>
 
@@ -112,7 +113,7 @@ bool CreateDir(const bf::path& path) {
   return true;
 }
 
-bool CopyDir(const bf::path& src, const bf::path& dst) {
+bool CopyDir(const bf::path& src, const bf::path& dst, bool merge_directories) {
   try {
     // Check whether the function call is valid
     if (!bf::exists(src) || !bf::is_directory(src)) {
@@ -121,17 +122,20 @@ bool CopyDir(const bf::path& src, const bf::path& dst) {
       return false;
     }
     if (bf::exists(dst)) {
-      LOG(ERROR) << "Destination directory " << dst.string()
-                 << " already exists.";
-      return false;
-    }
-    // Create the destination directory
-    if (!CreateDir(dst)) {
-      LOG(ERROR) << "Unable to create destination directory" << dst.string();
-      return false;
+      if (!merge_directories) {
+        LOG(ERROR) << "Destination directory " << dst.string()
+                   << " already exists.";
+        return false;
+      }
+    } else {
+      if (!CreateDir(dst)) {
+        LOG(ERROR) << "Unable to create destination directory" << dst.string();
+        return false;
+      }
     }
   } catch (const bf::filesystem_error& error) {
-      LOG(ERROR) << error.what();
+    LOG(ERROR) << error.what();
+    return false;
   }
 
   // Iterate through the source directory
@@ -141,33 +145,30 @@ bool CopyDir(const bf::path& src, const bf::path& dst) {
     try {
       bf::path current(file->path());
       if (bf::is_directory(current)) {
-        // Found directory: Recursion
         if (!CopyDir(current, dst / current.filename())) {
           return false;
         }
       } else if (bf::is_symlink(current)) {
-        // Found symlink
         bf::copy_symlink(current, dst / current.filename());
       } else {
-        // Found file: Copy
         bf::copy_file(current, dst / current.filename());
       }
     } catch (const bf::filesystem_error& error) {
-        LOG(ERROR) << error.what();
+      LOG(ERROR) << error.what();
+      return false;
     }
   }
   return true;
 }
 
-bool MoveDir(const bf::path& src, const bf::path& dst) {
-  if (bf::exists(dst))
-    return false;
+bool MoveDir(const bf::path& src, const bf::path& dst, bool merge_directories) {
   bs::error_code error;
   bf::rename(src, dst, error);
   if (error) {
     LOG(WARNING) << "Cannot move directory: " << src << ". Will copy/remove...";
-    if (!CopyDir(src, dst)) {
+    if (!CopyDir(src, dst, merge_directories)) {
       LOG(ERROR) << "Cannot copy directory: " << src;
+      bf::remove_all(dst, error);
       return false;
     }
     bf::remove_all(src, error);
@@ -366,6 +367,20 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
   }
 
   return true;
+}
+
+int GetSize(const boost::filesystem::path& path) {
+  int size = 0;
+  for (bf::recursive_directory_iterator iter(path);
+      iter != bf::recursive_directory_iterator(); ++iter) {
+      struct stat buf;
+      if (lstat(iter->path().c_str(), &buf) == -1) {
+        LOG(ERROR) << "lstat() failed for: " << iter->path();
+        return -1;
+      }
+      size += buf.st_size;
+  }
+  return size;
 }
 
 }  // namespace common_installer

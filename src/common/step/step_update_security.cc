@@ -11,7 +11,7 @@ namespace security {
 
 Step::Status StepUpdateSecurity::process() {
   if (!RegisterSecurityContextForApps(
-      context_->pkgid.get(), context_->pkg_path.get(),
+      context_->pkgid.get(), context_->package_storage->path(),
       context_->manifest_data.get())) {
     return Status::ERROR;
   }
@@ -21,7 +21,7 @@ Step::Status StepUpdateSecurity::process() {
 
 Step::Status StepUpdateSecurity::undo() {
   if (!RegisterSecurityContextForApps(
-      context_->pkgid.get(), context_->pkg_path.get(),
+      context_->pkgid.get(), context_->package_storage->path(),
       context_->old_manifest_data.get())) {
     return Status::ERROR;
   }

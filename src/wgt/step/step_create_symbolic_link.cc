@@ -32,9 +32,7 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
   // add ui-application element per ui application
   for (; app != nullptr; app = app->next) {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
-    bf::path exec_path =
-        context_->pkg_path.get()
-            / bf::path("bin");
+    bf::path exec_path = context_->package_storage->path() / "bin";
     common_installer::CreateDir(exec_path);
 
     exec_path /= bf::path(app->appid);
@@ -55,7 +53,7 @@ common_installer::Step::Status StepCreateSymbolicLink::undo() {
   application_x* app = context_->manifest_data.get()->application;
 
   for (; app != nullptr; app = app->next) {
-    bf::path exec_path = context_->pkg_path.get() / bf::path("bin");
+    bf::path exec_path = context_->package_storage->path() / "bin";
     if (bf::exists(exec_path))
       bf::remove_all(exec_path);
   }

@@ -38,11 +38,28 @@ Step::Status StepParse::process() {
 
   context_->manifest_data.set(mfx);
 
-  context_->pkg_path.set(
-      context_->root_application_path.get() / context_->pkgid.get());
+  // set package storage
+  context_->package_storage =
+      CreatePackageStorage(RequestType::Uninstall,
+                           context_->root_application_path.get(),
+                           context_->pkgid.get(),
+                           "", nullptr);
+  if (!context_->package_storage) {
+    LOG(ERROR) << "Failed to create storage";
+    return Status::ERROR;
+  }
 
   LOG(DEBUG) << "Successfully parse tizen manifest xml";
+  return Status::OK;
+}
 
+Step::Status StepParse::clean() {
+  context_->package_storage->Commit();
+  return Status::OK;
+}
+
+Step::Status StepParse::undo() {
+  context_->package_storage->Abort();
   return Status::OK;
 }
 

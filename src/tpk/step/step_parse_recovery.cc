@@ -38,11 +38,19 @@ common_installer::Step::Status StepParseRecovery::precheck() {
 }
 
 boost::filesystem::path StepParseRecovery::LocateConfigFile() const {
-  context_->pkg_path.set(
-      context_->root_application_path.get() / context_->pkgid.get());
+  // set package storage
+  context_->package_storage =
+      CreatePackageStorage(common_installer::RequestType::Recovery,
+                           context_->root_application_path.get(),
+                           context_->pkgid.get(),
+                           "", nullptr);
+  if (!context_->package_storage) {
+    LOG(ERROR) << "Failed to create storage";
+    return {};
+  }
   bf::path path1 = common_installer::GetBackupPathForPackagePath(
-      context_->pkg_path.get()) / kManifestFileName;
-  bf::path path2 = context_->pkg_path.get() / kManifestFileName;
+      context_->package_storage->path()) / kManifestFileName;
+  bf::path path2 = context_->package_storage->path() / kManifestFileName;
   if (bf::exists(path1))
     return path1;
   if (bf::exists(path2))

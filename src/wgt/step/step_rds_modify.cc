@@ -7,6 +7,7 @@
 #include <boost/system/error_code.hpp>
 
 #include "common/utils/file_util.h"
+#include "common/package_storage.h"
 #include "common/utils/logging.h"
 
 namespace wgt {
@@ -54,9 +55,17 @@ common_installer::Step::Status StepRDSModify::process() {
     LOG(ERROR) << "unable to setup temp directory";
     return common_installer::Step::Status::ERROR;
   }
-  context_->pkg_path.set(
-        context_->root_application_path.get() /context_->pkgid.get());
-  bf::path install_path = context_->pkg_path.get() / "res" / "wgt";
+  // set package storage
+  context_->package_storage =
+      CreatePackageStorage(common_installer::RequestType::Reinstall,
+                           context_->root_application_path.get(),
+                           context_->pkgid.get(),
+                           "", nullptr);
+  if (!context_->package_storage) {
+    LOG(ERROR) << "Failed to create storage";
+    return common_installer::Step::Status::ERROR;
+  }
+  bf::path install_path = context_->package_storage->path() / "res" / "wgt";
   bf::path unzip_path = context_->unpacked_dir_path.get();
   if (!AddFiles(unzip_path, install_path) ||
      !ModifyFiles(unzip_path, install_path) ||
@@ -164,7 +173,7 @@ bool StepRDSModify::PerformBackup(std::string relative_path,
   if (backup_temp_dir_.empty())
     return false;
   if (operation == Operation::DELETE || operation == Operation::MODIFY) {
-    bf::path app_path = context_->pkg_path.get() / "res" / "wgt";
+    bf::path app_path = context_->package_storage->path() / "res" / "wgt";
     bf::path source_path = app_path  / relative_path;
     if (bf::is_directory(source_path)) {
       if (!cu::CreateDir(backup_temp_dir_ / relative_path)) {
@@ -193,7 +202,7 @@ bool StepRDSModify::PerformBackup(std::string relative_path,
 
 void StepRDSModify::RestoreFiles() {
   LOG(ERROR) << "error occured about to restore files";
-  bf::path app_path(context_->pkg_path.get());
+  bf::path app_path(context_->package_storage->path());
   for (std::pair<std::string, Operation>& modification :
        success_modifications_) {
     bf::path source_path(backup_temp_dir_ / modification.first);
