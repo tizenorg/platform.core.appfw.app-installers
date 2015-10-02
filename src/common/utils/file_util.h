@@ -33,6 +33,8 @@ bool SetDirPermissions(const boost::filesystem::path& path,
 
 int64_t GetUnpackedPackageSize(const boost::filesystem::path& path);
 
+int64_t GetDirectorySize(const boost::filesystem::path& path);
+
 boost::filesystem::path GenerateTmpDir(const boost::filesystem::path& app_path);
 
 boost::filesystem::path GenerateTemporaryPath(

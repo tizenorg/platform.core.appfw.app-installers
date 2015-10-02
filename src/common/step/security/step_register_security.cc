@@ -13,13 +13,13 @@ namespace common_installer {
 namespace security {
 
 Step::Status StepRegisterSecurity::precheck() {
-  if (context_->pkg_path.get().empty()) {
+  if (context_->package_storage->path().empty()) {
     LOG(ERROR) << "pkg_path attribute is empty";
     return Step::Status::INVALID_VALUE;
   }
-  if (!boost::filesystem::exists(context_->pkg_path.get())) {
+  if (!boost::filesystem::exists(context_->package_storage->path())) {
     LOG(ERROR) << "pkg_path ("
-               << context_->pkg_path.get()
+               << context_->package_storage->path()
                << ") path does not exist";
     return Step::Status::INVALID_VALUE;
   }
@@ -40,9 +40,9 @@ Step::Status StepRegisterSecurity::precheck() {
 Step::Status StepRegisterSecurity::process() {
   std::string error_message;
   if (!RegisterSecurityContextForManifest(
-      context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
-      &context_->certificate_info.get(), context_->manifest_data.get(),
-      &error_message)) {
+      context_->pkgid.get(), context_->package_storage->path(),
+      context_->uid.get(), &context_->certificate_info.get(),
+      context_->manifest_data.get(), &error_message)) {
     if (!error_message.empty()) {
       LOG(ERROR) << "error_message: " << error_message;
       on_error(Status::SECURITY_ERROR, error_message);

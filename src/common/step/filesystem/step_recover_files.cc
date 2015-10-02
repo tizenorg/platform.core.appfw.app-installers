@@ -18,44 +18,56 @@ namespace common_installer {
 namespace filesystem {
 
 Step::Status StepRecoverFiles::RecoveryNew() {
-  if (!SetPackagePath()) {
+  if (!SetPackageStorage()) {
     LOG(DEBUG) << "Package files recovery not needed";
     return Status::OK;
   }
-  if (bf::exists(context_->pkg_path.get())) {
+  if (bf::exists(context_->package_storage->path())) {
     bs::error_code error;
-    bf::remove_all(context_->pkg_path.get(), error);
+    bf::remove_all(context_->package_storage->path(), error);
   }
   LOG(INFO) << "Package files recovery done";
   return Status::OK;
 }
 
 Step::Status StepRecoverFiles::RecoveryUpdate() {
-  if (!SetPackagePath()) {
+  if (!SetPackageStorage()) {
     LOG(DEBUG) << "Package files recovery not needed";
     return Status::OK;
   }
-  bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
+  bf::path backup_path = GetBackupPathForPackagePath(
+        context_->package_storage->path());
   if (bf::exists(backup_path)) {
-    if (bf::exists(context_->pkg_path.get())) {
+    if (bf::exists(context_->package_storage->path())) {
       bs::error_code error;
-      bf::remove_all(context_->pkg_path.get(), error);
+      bf::remove_all(context_->package_storage->path(), error);
       if (error) {
         LOG(ERROR) << "Cannot restore widget files to its correct location";
         return Status::RECOVERY_ERROR;
       }
     }
-    (void) MoveDir(backup_path, context_->pkg_path.get());
+    (void) MoveDir(backup_path, context_->package_storage->path());
   }
   LOG(INFO) << "Package files recovery done";
   return Status::OK;
 }
 
-bool StepRecoverFiles::SetPackagePath() {
+bool StepRecoverFiles::SetPackageStorage() {
   if (context_->pkgid.get().empty())
     return false;
-  context_->pkg_path.set(
-      context_->root_application_path.get() / context_->pkgid.get());
+  // set package storage
+  context_->package_storage =
+      AcquirePackageStorage(RequestType::Recovery,
+                           context_->root_application_path.get(),
+                           context_->pkgid.get(),
+                           context_->unpacked_dir_path.get(),
+                           context_->manifest_data.get()->installed_storage,
+                           context_->manifest_data.get()->installlocation,
+                           context_->uid.get());
+  if (!context_->package_storage) {
+    LOG(ERROR) << "Failed to create storage";
+    return false;
+  }
   return true;
 }
 

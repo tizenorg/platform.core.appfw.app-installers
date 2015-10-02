@@ -106,7 +106,6 @@ int PkgmgrForeachPrivilegeCallback(const char* privilege_name,
 // "removable" : this package can be removed.
 // "readonly" : this package exists in readonly location.
 bool AssignPackageTags(manifest_x* manifest,
-                       common_installer::RequestMode,
                        bool is_update) {
   if (!strcmp(manifest->preload, "true")) {
     manifest->removable = strdup("false");
@@ -122,8 +121,6 @@ bool AssignPackageTags(manifest_x* manifest,
     manifest->system = strdup("false");
     manifest->update = strdup("false");
   }
-  // external installation should alter this flag
-  manifest->installed_storage = strdup("installed_internal");
 
   return true;
 }
@@ -143,7 +140,7 @@ bool RegisterAppInPkgmgr(manifest_x* manifest,
   if (!tep_path.empty())
     manifest->tep_name = strdup(tep_path.c_str());
 
-  if (!AssignPackageTags(manifest, request_mode, false))
+  if (!AssignPackageTags(manifest, false))
     return false;
 
   int ret = request_mode != RequestMode::GLOBAL ?
@@ -172,7 +169,7 @@ bool UpgradeAppInPkgmgr(manifest_x* manifest,
                         const CertificateInfo& cert_info,
                         uid_t uid,
                         RequestMode request_mode) {
-  if (!AssignPackageTags(manifest, request_mode, true))
+  if (!AssignPackageTags(manifest, true))
     return false;
 
   int ret = request_mode != RequestMode::GLOBAL ?
@@ -293,6 +290,32 @@ bool QueryPrivilegesForPkgId(const std::string& pkg_id, uid_t uid,
       &PkgmgrForeachPrivilegeCallback, result) == PMINFO_R_OK;
   pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
   return ret;
+}
+
+std::string QueryStorageForPkgId(const std::string& pkg_id, uid_t uid) {
+  pkgmgrinfo_pkginfo_h package_info;
+  if (pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), uid, &package_info)
+      != PMINFO_R_OK) {
+    return false;
+  }
+
+  pkgmgrinfo_installed_storage storage;
+  bool ok = pkgmgrinfo_pkginfo_get_installed_storage(package_info,
+      &storage) == PMINFO_R_OK;
+  pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
+
+  if (!ok)
+    return "";
+
+  // TODO(t.iwanek): enum is used in pkgmgr API, whereas here we assign internal
+  // values known to pkgmgr
+  if (storage == PMINFO_INTERNAL_STORAGE) {
+    return "installed_internal";
+  } else if (storage == PMINFO_EXTERNAL_STORAGE) {
+    return "installed_external";
+  } else {
+    return "";
+  }
 }
 
 bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode) {
