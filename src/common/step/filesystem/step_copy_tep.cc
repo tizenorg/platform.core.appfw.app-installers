@@ -42,11 +42,9 @@ Step::Status StepCopyTep::process() {
   if (context_->tep_path.get().empty())
     return Step::Status::OK;
 
-  context_->pkg_path.set(
-    context_->root_application_path.get() / context_->pkgid.get());
-
   bf::path tep_path =
-      context_->pkg_path.get() / "tep" / context_->tep_path.get().filename();
+      context_->package_storage->path() / "tep" /
+      context_->tep_path.get().filename();
 
   if (!bf::exists(tep_path.parent_path())) {
     bs::error_code error;

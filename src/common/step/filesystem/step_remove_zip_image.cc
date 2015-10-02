@@ -28,7 +28,8 @@ Step::Status StepRemoveZipImage::precheck() {
 
 Step::Status StepRemoveZipImage::process() {
   bf::path zip_image_path =
-      GetZipPackageLocation(context_->pkg_path.get(), context_->pkgid.get());
+      GetZipPackageLocation(context_->package_storage->path(),
+                            context_->pkgid.get());
   if (bf::exists(zip_image_path)) {
     bs::error_code error;
     bf::remove(zip_image_path, error);
