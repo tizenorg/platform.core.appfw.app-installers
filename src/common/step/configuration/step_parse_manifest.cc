@@ -33,6 +33,7 @@
 #include "common/app_installer.h"
 #include "common/backup_paths.h"
 #include "common/installer_context.h"
+#include "common/pkgmgr_registration.h"
 #include "common/step/step.h"
 #include "common/utils/glist_range.h"
 
@@ -81,18 +82,7 @@ Step::Status StepParseManifest::precheck() {
 bool StepParseManifest::LocateConfigFile() {
   boost::filesystem::path manifest;
   switch (manifest_location_) {
-    case ManifestLocation::RECOVERY: {
-      context_->pkg_path.set(
-          context_->root_application_path.get() / context_->pkgid.get());
-      bf::path backup_path = common_installer::GetBackupPathForPackagePath(
-          context_->pkg_path.get()) / kManifestFileName;
-      bf::path in_package_path = context_->pkg_path.get() / kManifestFileName;
-      if (bf::exists(backup_path))
-        manifest = backup_path;
-      else if (bf::exists(in_package_path))
-        manifest = in_package_path;
-      break;
-    }
+    case ManifestLocation::RECOVERY:
     case ManifestLocation::INSTALLED: {
       bf::path xml_path =
           bf::path(getUserManifestPath(context_->uid.get(),
@@ -201,6 +191,17 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
       manifest->deviceprofile = g_list_append(manifest->deviceprofile,
                                               strdup(profile.c_str()));
     }
+  }
+
+  // set installed_storage if package is installed
+  // this is internal field in package manager but after reading configuration
+  // we must know it
+  if (manifest_location_ == ManifestLocation::INSTALLED ||
+      manifest_location_ == ManifestLocation::RECOVERY) {
+    std::string storage = QueryStorageForPkgId(manifest->package,
+                                               context_->uid.get());
+    if (!storage.empty())
+      manifest->installed_storage = strdup(storage.c_str());
   }
 
   if (ui_application_list) {
@@ -794,8 +795,6 @@ Step::Status StepParseManifest::process() {
           parser_->GetManifestData(app_keys::kManifestKey));
 
   context_->pkgid.set(info->package());
-  context_->pkg_path.set(
-      context_->root_application_path.get() / context_->pkgid.get());
 
   manifest_x* manifest =
       static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)));
