@@ -6,7 +6,7 @@
 #define WGT_STEP_STEP_WGT_RESOURCE_DIRECTORY_H_
 
 #include "common/app_installer.h"
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/step/step.h"
 #include "common/utils/logging.h"
 

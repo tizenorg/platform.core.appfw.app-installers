@@ -3,7 +3,7 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 
 #include <unistd.h>
 #include <cstdlib>
@@ -30,14 +30,14 @@ const char* PrivilegeLevelToString(PrivilegeLevel level) {
   }
 }
 
-ContextInstaller::ContextInstaller()
+InstallerContext::InstallerContext()
     : manifest_data(static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)))),
       old_manifest_data(nullptr),
       uid(getuid()),
       backend_data(nullptr),
       privilege_level(PrivilegeLevel::UNTRUSTED) {}
 
-ContextInstaller::~ContextInstaller() {
+InstallerContext::~InstallerContext() {
   if (manifest_data.get())
     pkgmgr_parser_free_manifest_xml(manifest_data.get());
   if (old_manifest_data.get())

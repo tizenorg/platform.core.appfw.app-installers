@@ -8,7 +8,7 @@
 
 #include "common/step/step.h"
 #include "common/app_installer.h"
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/utils/clist_helpers.h"
 #include "common/utils/file_util.h"
 #include "common/utils/logging.h"
@@ -17,12 +17,12 @@ namespace tpk {
 namespace filesystem {
 
 namespace bf = boost::filesystem;
-using common_installer::ContextInstaller;
+using common_installer::InstallerContext;
 typedef common_installer::Step::Status Status;
 
 namespace {
 
-bool CreateSymLink(application_x* app, ContextInstaller* context) {
+bool CreateSymLink(application_x* app, InstallerContext* context) {
   boost::system::error_code boost_error;
   bf::path bindir = context->pkg_path.get() /
       bf::path("bin");
@@ -56,7 +56,7 @@ bool CreateSymLink(application_x* app, ContextInstaller* context) {
   return true;
 }
 
-bool RemoveSymLink(application_x* app, ContextInstaller* context) {
+bool RemoveSymLink(application_x* app, InstallerContext* context) {
   /* NOTE: Unlike WRT app, tpk apps have bin/ directory by default.
    * So we don't remove the bin/ directory.
    */

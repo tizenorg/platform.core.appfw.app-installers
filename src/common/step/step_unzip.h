@@ -8,7 +8,7 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/step/step.h"
 #include "common/utils/logging.h"
 
@@ -27,7 +27,7 @@ namespace filesystem {
  * Unzip unpacks resources to following directory:
  * * TZ_SYS_RW/tmpuniquedir (/usr/apps/tmpuniquedir)
  * * TZ_SER_APPS/tmpdir  (/{HOME}/apps_rw/tmpuniquedir)
- * ContextInstaller::unpacked_dir_path points to this location.
+ * InstallerContext::unpacked_dir_path points to this location.
  */
 class StepUnzip : public Step {
  public:

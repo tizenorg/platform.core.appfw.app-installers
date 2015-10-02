@@ -14,7 +14,7 @@
 #include <string>
 
 #include "common/app_installer.h"
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/step/step.h"
 #include "common/utils/logging.h"
 
@@ -23,7 +23,7 @@ namespace parse {
 
 class StepParse : public common_installer::Step {
  public:
-  explicit StepParse(common_installer::ContextInstaller* context,
+  explicit StepParse(common_installer::InstallerContext* context,
       bool check_start_file);
 
   Status process() override;

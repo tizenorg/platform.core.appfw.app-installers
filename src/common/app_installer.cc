@@ -6,7 +6,7 @@
 #include <cstdio>
 
 #include "common/app_installer.h"
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 #include "common/pkgmgr_interface.h"
 #include "common/pkgmgr_signal.h"
 #include "common/utils/logging.h"
@@ -21,7 +21,7 @@ namespace common_installer {
 
 AppInstaller::AppInstaller(const char* package_type, PkgMgrPtr pkgmgr)
     : pkgmgr_(pkgmgr),
-      context_(new ContextInstaller()) {
+      context_(new InstallerContext()) {
   pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi(),
                              pkgmgr->GetRequestType()));
 

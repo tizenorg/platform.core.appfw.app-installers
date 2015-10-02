@@ -5,7 +5,7 @@
 #ifndef COMMON_STEP_STEP_CONFIGURE_H_
 #define COMMON_STEP_STEP_CONFIGURE_H_
 
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 
 #include "common/pkgmgr_interface.h"
 #include "common/step/step.h"
@@ -16,13 +16,13 @@ namespace configuration {
 
 /**
  * \brief Installation,Update, Deinstallation, RDS.
- *        Responsible for filling ContextInstaller based on the request type.
+ *        Responsible for filling InstallerContext based on the request type.
  *
- * Based on started request, process fills ContextInstaller with proper data.
+ * Based on started request, process fills InstallerContext with proper data.
  */
 class StepConfigure : public Step {
  public:
-  StepConfigure(ContextInstaller* context, PkgMgrPtr pkgmgr);
+  StepConfigure(InstallerContext* context, PkgMgrPtr pkgmgr);
 
   Status process() override;
   Status clean() override;

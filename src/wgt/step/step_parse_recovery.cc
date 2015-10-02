@@ -5,7 +5,7 @@
 #include "wgt/step/step_parse_recovery.h"
 
 #include "common/backup_paths.h"
-#include "common/context_installer.h"
+#include "common/installer_context.h"
 
 namespace {
 
@@ -17,7 +17,7 @@ namespace wgt {
 namespace parse {
 
 StepParseRecovery::StepParseRecovery(
-    common_installer::ContextInstaller* context)
+    common_installer::InstallerContext* context)
     : StepParse(context, false) {
 }
 
