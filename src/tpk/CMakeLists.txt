@@ -4,7 +4,6 @@ SET(SRCS
     step/step_parse_recovery.cc
     tpk_app_query_interface.cc
     tpk_installer.cc
-    xml_parser/xml_parser.cc
 )
 ADD_LIBRARY(${TARGET_LIBNAME_TPK} STATIC ${SRCS})
 ADD_EXECUTABLE(${TARGET_TPK_BACKEND} "tpk_backend.cc")
