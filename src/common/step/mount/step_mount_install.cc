@@ -21,9 +21,6 @@ namespace common_installer {
 namespace mount {
 
 Step::Status StepMountInstall::process() {
-  context_->pkg_path.set(
-      context_->root_application_path.get() / context_->pkgid.get());
-
   TzipInterface tzip_unpack(context_->unpacked_dir_path.get());
   if (!tzip_unpack.UnmountZip()) {
     LOG(ERROR) << "Failed to unmount zip package from temporary path";
@@ -31,7 +28,8 @@ Step::Status StepMountInstall::process() {
   }
 
   bf::path zip_destination_path =
-      GetZipPackageLocation(context_->pkg_path.get(), context_->pkgid.get());
+      GetZipPackageLocation(context_->package_storage->path(),
+                            context_->pkgid.get());
   if (!bf::exists(zip_destination_path.parent_path())) {
     bs::error_code error;
     bf::create_directories(zip_destination_path.parent_path(), error);
@@ -48,7 +46,7 @@ Step::Status StepMountInstall::process() {
   context_->manifest_data.get()->zip_mount_file =
       strdup(zip_destination_path.c_str());
 
-  bf::path mount_point = GetMountLocation(context_->pkg_path.get());
+  bf::path mount_point = GetMountLocation(context_->package_storage->path());
   if (!bf::exists(mount_point)) {
     bs::error_code error;
     bf::create_directories(mount_point, error);
@@ -68,7 +66,7 @@ Step::Status StepMountInstall::process() {
 }
 
 Step::Status StepMountInstall::clean() {
-  bf::path mount_point = GetMountLocation(context_->pkg_path.get());
+  bf::path mount_point = GetMountLocation(context_->package_storage->path());
   TzipInterface tzip_final(mount_point);
   if (!tzip_final.UnmountZip()) {
     LOG(ERROR) << "Failed to unmount zip package after installation";
@@ -81,12 +79,12 @@ Step::Status StepMountInstall::clean() {
 
 Step::Status StepMountInstall::undo() {
   bs::error_code error;
-  bf::path mount_point = GetMountLocation(context_->pkg_path.get());
+  bf::path mount_point = GetMountLocation(context_->package_storage->path());
   TzipInterface tzip_final(mount_point);
   tzip_final.UnmountZip();
-  bf::remove(GetZipPackageLocation(context_->pkg_path.get(),
+  bf::remove(GetZipPackageLocation(context_->package_storage->path(),
                                    context_->pkgid.get()), error);
-  bf::remove(context_->pkg_path.get(), error);
+  bf::remove(context_->package_storage->path(), error);
   if (error) {
     LOG(ERROR) << "Failed to remove package content";
     return Status::APP_DIR_ERROR;

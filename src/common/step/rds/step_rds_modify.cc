@@ -48,8 +48,6 @@ Step::Status StepRDSModify::process() {
     LOG(ERROR) << "unable to setup temp directory";
     return Step::Status::ERROR;
   }
-  context_->pkg_path.set(
-        context_->root_application_path.get() /context_->pkgid.get());
   bf::path install_path = GetAppPath();
   bf::path unzip_path = context_->unpacked_dir_path.get();
   if (!AddFiles(unzip_path, install_path) ||
@@ -188,7 +186,7 @@ bool StepRDSModify::PerformBackup(std::string relative_path,
 
 void StepRDSModify::RestoreFiles() {
   LOG(ERROR) << "error occured about to restore files";
-  bf::path app_path(context_->pkg_path.get());
+  bf::path app_path(context_->package_storage->path());
   for (std::pair<std::string, Operation>& modification :
        success_modifications_) {
     bf::path source_path(backup_temp_dir_ / modification.first);

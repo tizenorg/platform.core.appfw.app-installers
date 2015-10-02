@@ -40,11 +40,11 @@ Step::Status StepRemoveFiles::precheck() {
 
   // Even though, the below checks can fail, StepRemoveFiles should still try
   // to remove the files
-  if (context_->pkg_path.get().empty())
+  if (context_->package_storage->path().empty())
     LOG(ERROR) << "pkg_path attribute is empty";
-  else if (!bf::exists(context_->pkg_path.get()))
+  else if (!bf::exists(context_->package_storage->path()))
     LOG(ERROR) << "pkg_path ("
-               << context_->pkg_path.get()
+               << context_->package_storage->path()
                << ") path does not exist";
 
   return Step::Status::OK;
@@ -52,7 +52,11 @@ Step::Status StepRemoveFiles::precheck() {
 
 Step::Status StepRemoveFiles::process() {
   bs::error_code error;
-  bf::path pkg_path(context_->pkg_path.get());
+
+  // commit changes to
+  context_->package_storage->Commit();
+
+  bf::path pkg_path(context_->package_storage->path());
 
   if (IsPackageInstalled(context_->pkgid.get(), GLOBAL_USER)) {
     for (bf::directory_iterator itr(pkg_path); itr != bf::directory_iterator();
@@ -64,7 +68,8 @@ Step::Status StepRemoveFiles::process() {
         }
         bf::remove_all(itr->path(), error);
         if (error) {
-          LOG(ERROR) << "Can't remove dir:" << context_->pkg_path.get().c_str();
+          LOG(ERROR) << "Can't remove dir:"
+                     << context_->package_storage->path().c_str();
         }
       } else if (bf::is_regular_file(itr->status())) {
         bf::remove_all(itr->path(), error);
@@ -74,9 +79,9 @@ Step::Status StepRemoveFiles::process() {
     bf::remove_all(pkg_path, error);
     if (error) {
       LOG(ERROR) << "Can't remove directory:" <<
-          context_->pkg_path.get().c_str();
+          context_->package_storage->path().c_str();
     } else {
-      LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
+      LOG(DEBUG) << "Removed directory: " << context_->package_storage->path();
     }
   }
 
