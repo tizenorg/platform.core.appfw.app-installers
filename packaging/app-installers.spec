@@ -33,6 +33,7 @@ BuildRequires:  pkgconfig(security-privilege-manager)
 BuildRequires:  pkgconfig(tpk-manifest-handlers)
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(aul)
+BuildRequires:  pkgconfig(app2sd)
 
 Requires: ca-certificates-tizen
 Requires: libtzplatform-config
