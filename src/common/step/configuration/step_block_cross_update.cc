@@ -18,8 +18,9 @@ Step::Status StepBlockCrossUpdate::process() {
   // information about if package was mount-installed should be stored in pkgmgr
   // database
   bool is_mount_installed =
-      bf::exists(GetZipPackageLocation(context_->pkg_path.get(),
-                                       context_->pkgid.get()));
+      bf::exists(GetZipPackageLocation(
+          context_->root_application_path.get() / context_->pkgid.get(),
+          context_->pkgid.get()));
   if (is_mount_installed) {
     if (context_->request_type.get() == RequestType::Reinstall) {
       LOG(ERROR) << "Reinstall / RDS mode is not allowed for "

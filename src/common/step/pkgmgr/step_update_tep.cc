@@ -30,7 +30,7 @@ Step::Status StepUpdateTep::process() {
 
     bf::path old_tep_location =
         GetBackupPathForPackagePath(
-            context_->pkg_path.get()) / "tep" / old_tep.filename();
+            context_->package_storage->path()) / "tep" / old_tep.filename();
     bf::path new_tep_location = old_tep;
     if (!MoveFile(old_tep_location, new_tep_location)) {
       LOG(ERROR) << "Failed to copy tep file";
@@ -48,7 +48,7 @@ Step::Status StepUpdateTep::undo() {
     // restore old tep location during update rollback
     bf::path old_tep_location =
         GetBackupPathForPackagePath(
-            context_->pkg_path.get()) / "tep" / old_tep.filename();
+            context_->package_storage->path()) / "tep" / old_tep.filename();
     bf::path new_tep_location = old_tep;
     if (!MoveFile(new_tep_location, old_tep_location)) {
       LOG(ERROR) << "Failed to copy tep file";
