@@ -8,7 +8,7 @@
 #include <boost/system/error_code.hpp>
 #include <pkgmgr-info.h>
 
-#include "common/utils/clist_helpers.h"
+#include "common/utils/glist_range.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
@@ -27,17 +27,16 @@ Step::Status StepCreateIcons::process() {
     }
   }
 
-  application_x* app = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->application,
-                                app);
-  for (; app; app = app->next) {
+  for (application_x* app :
+       GListRange<application_x*>(context_->manifest_data.get()->application)) {
     if (strcmp(app->component_type, "uiapp") != 0)
       continue;
 
     // TODO(t.iwanek): this is ignoring icon locale as well as other steps
     // icons should be localized
-    if (app->icon && app->icon->text) {
-      bf::path source = GetIconRoot() / app->icon->text;
+    if (app->icon) {
+      icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
+      bf::path source = GetIconRoot() / icon->text;
       if (bf::exists(source)) {
         bf::path destination = icons_directory / app->appid;
         if (source.has_extension())

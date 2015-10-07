@@ -9,8 +9,8 @@
 #include "common/step/step.h"
 #include "common/app_installer.h"
 #include "common/installer_context.h"
-#include "common/utils/clist_helpers.h"
 #include "common/utils/file_util.h"
+#include "common/utils/glist_range.h"
 #include "common/utils/logging.h"
 
 namespace tpk {
@@ -83,9 +83,7 @@ Status StepCreateSymbolicLink::precheck() {
 
 Status StepCreateSymbolicLink::process() {
   manifest_x* m = context_->manifest_data.get();
-  application_x* app = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(m->application, app);
-  for (; app; app = app->next) {
+  for (application_x* app : GListRange<application_x*>(m->application)) {
     if (!CreateSymLink(app, context_))
       return Status::ERROR;
   }
@@ -96,9 +94,7 @@ Status StepCreateSymbolicLink::process() {
 Status StepCreateSymbolicLink::undo() {
   manifest_x* m = context_->manifest_data.get();
   Step::Status ret = Status::OK;
-  application_x* app = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(m->application, app);
-  for (; app; app = app->next) {
+  for (application_x* app : GListRange<application_x*>(m->application)) {
     if (!CreateSymLink(app, context_))
       ret = Status::ERROR;
   }
