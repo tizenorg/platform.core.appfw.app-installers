@@ -15,6 +15,7 @@
 #include <string>
 
 #include "common/utils/file_util.h"
+#include "common/utils/glist_range.h"
 
 namespace wgt {
 namespace filesystem {
@@ -24,13 +25,8 @@ namespace bf = boost::filesystem;
 common_installer::Step::Status StepCreateSymbolicLink::process() {
   assert(context_->manifest_data.get());
   boost::system::error_code error;
-  application_x* app = context_->manifest_data.get()->application;
-  if (!app) {
-     LOG(ERROR) << "There is no application described!";
-    return Step::Status::ERROR;
-  }
-  // add ui-application element per ui application
-  for (; app != nullptr; app = app->next) {
+  for (application_x* app :
+       GListRange<application_x*>(context_->manifest_data.get()->application)) {
     // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
     bf::path exec_path =
         context_->pkg_path.get()
@@ -52,10 +48,9 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
 }
 
 common_installer::Step::Status StepCreateSymbolicLink::undo() {
-  application_x* app = context_->manifest_data.get()->application;
-
-  for (; app != nullptr; app = app->next) {
-    bf::path exec_path = context_->pkg_path.get() / bf::path("bin");
+  for (application_x* app :
+       GListRange<application_x*>(context_->manifest_data.get()->application)) {
+    bf::path exec_path = context_->pkg_path.get() / "bin" / app->appid;
     if (bf::exists(exec_path))
       bf::remove_all(exec_path);
   }
