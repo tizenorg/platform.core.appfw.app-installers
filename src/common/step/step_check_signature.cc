@@ -16,7 +16,7 @@
 #include <cstdlib>
 #include <string>
 
-#include "common/utils/clist_helpers.h"
+#include "common/utils/glist_range.h"
 
 namespace bf = boost::filesystem;
 
@@ -106,21 +106,9 @@ common_installer::Step::Status ValidateSignatureFile(
 }
 
 bool ValidatePrivilegeLevel(common_installer::PrivilegeLevel level,
-    bool is_webapp, const char* api_version, privileges_x *privileges) {
-  GList* list = nullptr;
-  privileges_x* pvlg = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges, pvlg);
-  for (; pvlg != nullptr; pvlg = pvlg->next) {
-    privilege_x* pv = nullptr;
-    PKGMGR_LIST_MOVE_NODE_TO_HEAD(pvlg->privilege, pv);
-    for (; pv != nullptr; pv = pv->next) {
-      list = g_list_append(list, const_cast<char*>(pv->text));
-    }
-  }
-
+    bool is_webapp, const char* api_version, GList* privileges) {
   if (level == common_installer::PrivilegeLevel::UNTRUSTED) {
-    if (list) {
-      g_list_free(list);
+    if (privileges) {
       LOG(ERROR) << "Untrusted application cannot declare privileges";
       return false;
     } else {
@@ -130,12 +118,11 @@ bool ValidatePrivilegeLevel(common_installer::PrivilegeLevel level,
 
   char* error = nullptr;
   int status = PRVMGR_ERR_NONE;
-  if (list) {  // Do the privilege check only if the package has privileges
+  // Do the privilege check only if the package has privileges
+  if (privileges) {
     status = privilege_manager_verify_privilege(api_version,
-        is_webapp ? PRVMGR_PACKAGE_TYPE_WRT : PRVMGR_PACKAGE_TYPE_CORE, list,
-        PrivilegeLevelToVisibility(level),
-        &error);
-    g_list_free(list);
+        is_webapp ? PRVMGR_PACKAGE_TYPE_WRT : PRVMGR_PACKAGE_TYPE_CORE,
+        privileges, PrivilegeLevelToVisibility(level), &error);
   }
   if (status != PRVMGR_ERR_NONE) {
     LOG(ERROR) << "Error while verifing privilege level: " << error;

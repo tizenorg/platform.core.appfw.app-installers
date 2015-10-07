@@ -18,8 +18,8 @@
 #include <cstring>
 #include <string>
 
-#include "common/utils/clist_helpers.h"
 #include "common/utils/file_util.h"
+#include "common/utils/glist_range.h"
 
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
@@ -69,22 +69,20 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     WriteServiceApplicationAttributes(writer, app);
   else
     WriteUIApplicationAttributes(writer, app);
-  if (app->label) {
-    label_x* label = nullptr;
-    LISTHEAD(app->label, label);
-    for (; label; label = label->next) {
-      xmlTextWriterStartElement(writer, BAD_CAST "label");
-      if (label->lang && strlen(label->lang)) {
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
-                                    BAD_CAST label->lang);
-      }
-      xmlTextWriterWriteString(writer, BAD_CAST label->name);
-      xmlTextWriterEndElement(writer);
+
+  for (label_x* label : GListRange<label_x*>(app->label)) {
+    xmlTextWriterStartElement(writer, BAD_CAST "label");
+    if (label->lang && strlen(label->lang)) {
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                  BAD_CAST label->lang);
     }
+    xmlTextWriterWriteString(writer, BAD_CAST label->name);
+    xmlTextWriterEndElement(writer);
   }
 
   // icon is renamed to <appid.png>
-  if (app->icon && app->icon->text) {
+  if (app->icon) {
+    icon_x* iconx = reinterpret_cast<icon_x*>(app->icon->data);
     bf::path app_icon = context_->pkg_path.get();
     // TODO(t.iwanek): type should not be used here
     if (context_->pkg_type.get() == "wgt") {
@@ -92,7 +90,7 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     } else {
       app_icon /= "shared/res";
     }
-    app_icon /= app->icon->text;
+    app_icon /= iconx->text;
     bf::path icon = app->appid;
     if (app_icon.has_extension())
       icon += app_icon.extension();
@@ -108,9 +106,7 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     LOG(DEBUG) << "Icon was not found in package";
   }
 
-  appcontrol_x* appc = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(app->appcontrol, appc);
-  for (; appc != nullptr; appc = appc->next) {
+  for (appcontrol_x* appc : GListRange<appcontrol_x*>(app->appcontrol)) {
     xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
     if (appc->operation) {
@@ -137,9 +133,7 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     xmlTextWriterEndElement(writer);
   }
 
-  metadata_x* meta = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(app->metadata, meta);
-  for (; meta; meta = meta->next) {
+  for (metadata_x* meta : GListRange<metadata_x*>(app->metadata)) {
     xmlTextWriterStartElement(writer, BAD_CAST "metadata");
     xmlTextWriterWriteAttribute(writer, BAD_CAST "key",
         BAD_CAST meta->key);
@@ -211,57 +205,46 @@ common_installer::Step::Status StepGenerateXml::process() {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "api-version",
       BAD_CAST context_->manifest_data.get()->api_version);
 
-  if (context_->manifest_data.get()->label) {
-    label_x* label = nullptr;
-    LISTHEAD(context_->manifest_data.get()->label, label);
-    for (; label; label = label->next) {
-      xmlTextWriterStartElement(writer, BAD_CAST "label");
-      if (label->lang && strlen(label->lang)) {
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
-                                    BAD_CAST label->lang);
-      }
-      xmlTextWriterWriteString(writer, BAD_CAST label->name);
-      xmlTextWriterEndElement(writer);
+  for (label_x* label :
+       GListRange<label_x*>(context_->manifest_data.get()->label)) {
+    xmlTextWriterStartElement(writer, BAD_CAST "label");
+    if (label->lang && strlen(label->lang)) {
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                  BAD_CAST label->lang);
     }
+    xmlTextWriterWriteString(writer, BAD_CAST label->name);
+    xmlTextWriterEndElement(writer);
   }
 
-  if (context_->manifest_data.get()->author) {
-    author_x* author = nullptr;
-    LISTHEAD(context_->manifest_data.get()->author, author);
-    for (; author; author = author->next) {
-      xmlTextWriterStartElement(writer, BAD_CAST "author");
-      if (author->email && strlen(author->email)) {
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "email",
-                                    BAD_CAST author->email);
-      }
-      if (author->href && strlen(author->href)) {
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "href",
-                                    BAD_CAST author->href);
-      }
-      xmlTextWriterWriteString(writer, BAD_CAST author->text);
-      xmlTextWriterEndElement(writer);
+  for (author_x* author :
+       GListRange<author_x*>(context_->manifest_data.get()->author)) {
+    xmlTextWriterStartElement(writer, BAD_CAST "author");
+    if (author->email && strlen(author->email)) {
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "email",
+                                  BAD_CAST author->email);
     }
+    if (author->href && strlen(author->href)) {
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "href",
+                                  BAD_CAST author->href);
+    }
+    xmlTextWriterWriteString(writer, BAD_CAST author->text);
+    xmlTextWriterEndElement(writer);
   }
 
-  if (context_->manifest_data.get()->description) {
-    description_x* description = nullptr;
-    LISTHEAD(context_->manifest_data.get()->description, description);
-    for (; description; description = description->next) {
-      xmlTextWriterStartElement(writer, BAD_CAST "description");
-      if (description->lang && strlen(description->lang)) {
-        xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
-                                    BAD_CAST description->lang);
-      }
-      xmlTextWriterWriteString(writer, BAD_CAST description->name);
-      xmlTextWriterEndElement(writer);
+  for (description_x* description :
+       GListRange<description_x*>(context_->manifest_data.get()->description)) {
+    xmlTextWriterStartElement(writer, BAD_CAST "description");
+    if (description->lang && strlen(description->lang)) {
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                  BAD_CAST description->lang);
     }
+    xmlTextWriterWriteString(writer, BAD_CAST description->name);
+    xmlTextWriterEndElement(writer);
   }
 
   // add application
-  application_x* app = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->application,
-                                app);
-  for (; app; app = app->next) {
+  for (application_x* app :
+       GListRange<application_x*>(context_->manifest_data.get()->application)) {
     bool is_service = false;
     if (strcmp(app->component_type, "uiapp") == 0) {
       xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
@@ -278,17 +261,12 @@ common_installer::Step::Status StepGenerateXml::process() {
   }
 
   // add privilege element
-  privileges_x* pvlg = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(
-      context_->manifest_data.get()->privileges,
-      pvlg);
-  for (; pvlg != nullptr; pvlg = pvlg->next) {
+  if (context_->manifest_data.get()->privileges) {
     xmlTextWriterStartElement(writer, BAD_CAST "privileges");
-    privilege_x* pv = nullptr;
-    PKGMGR_LIST_MOVE_NODE_TO_HEAD(pvlg->privilege, pv);
-    for (; pv != nullptr; pv = pv->next) {
+    for (const char* priv :
+         GListRange<char*>(context_->manifest_data.get()->privileges)) {
       xmlTextWriterWriteFormatElement(writer, BAD_CAST "privilege",
-        "%s", BAD_CAST pv->text);
+        "%s", BAD_CAST priv);
     }
     xmlTextWriterEndElement(writer);
   }
