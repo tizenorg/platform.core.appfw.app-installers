@@ -137,6 +137,25 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     xmlTextWriterEndElement(writer);
   }
 
+  datacontrol_x* datacontrol = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(app->datacontrol, datacontrol);
+  for (; datacontrol != nullptr; datacontrol = datacontrol->next) {
+    xmlTextWriterStartElement(writer, BAD_CAST "datacontrol");
+    if (datacontrol->access) {
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "access",
+          BAD_CAST datacontrol->access);
+    }
+    if (datacontrol->providerid) {
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "providerid",
+          BAD_CAST datacontrol->providerid);
+    }
+    if (datacontrol->type) {
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
+          BAD_CAST datacontrol->type);
+    }
+    xmlTextWriterEndElement(writer);
+  }
+
   metadata_x* meta = nullptr;
   PKGMGR_LIST_MOVE_NODE_TO_HEAD(app->metadata, meta);
   for (; meta; meta = meta->next) {
