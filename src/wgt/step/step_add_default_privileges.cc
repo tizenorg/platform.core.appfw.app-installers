@@ -10,29 +10,10 @@
 #include <cstring>
 #include <memory>
 
-#include "common/utils/clist_helpers.h"
-
 namespace {
 
 const char kPrivForWebApp[] =
     "http://tizen.org/privilege/internal/webappdefault";
-
-bool AddPrivilegeToList(manifest_x* m, const char* priv_str) {
-  if (!m->privileges) {
-    m->privileges =
-      reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x*)));
-    if (!m->privileges)
-      return false;
-  }
-  privilege_x* priv =
-      reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x)));
-  if (!priv)
-    return false;
-
-  priv->text = strdup(priv_str);
-  LISTADD(m->privileges->privilege, priv);
-  return true;
-}
 
 }  // namespace
 
@@ -48,10 +29,8 @@ common_installer::Step::Status StepAddDefaultPrivileges::precheck() {
 }
 
 common_installer::Step::Status StepAddDefaultPrivileges::process() {
-  if (!AddPrivilegeToList(context_->manifest_data.get(), kPrivForWebApp)) {
-    LOG(ERROR) << "Error during adding default privileges for webapp.";
-    return Status::ERROR;
-  }
+  manifest_x* m = context_->manifest_data.get();
+  m->privileges = g_list_append(m->privileges, strdup(kPrivForWebApp));
   return Status::OK;
 }
 

@@ -11,7 +11,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "common/utils/clist_helpers.h"
+#include "common/utils/glist_range.h"
 #include "common/utils/logging.h"
 
 namespace bf = boost::filesystem;
@@ -64,14 +64,8 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
   }
 
   if (manifest) {
-    privileges_x *privileges = nullptr;
-    PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->privileges, privileges);
-    for (; privileges != nullptr; privileges = privileges->next) {
-      privilege_x* priv = nullptr;
-      PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges->privilege, priv);
-      for (; priv != nullptr; priv = priv->next) {
-        security_manager_app_inst_req_add_privilege(req, priv->text);
-      }
+    for (const char* priv : GListRange<char*>(manifest->privileges)) {
+      security_manager_app_inst_req_add_privilege(req, priv);
     }
   }
 
@@ -146,8 +140,7 @@ namespace common_installer {
 bool RegisterSecurityContextForApps(
     const std::string& pkg_id, const boost::filesystem::path& path,
     manifest_x* manifest) {
-  for (application_x* app = manifest->application;
-      app != nullptr; app = app->next) {
+  for (application_x* app : GListRange<application_x*>(manifest->application)) {
     if (!app->appid) {
       return false;
     }
@@ -161,8 +154,7 @@ bool RegisterSecurityContextForApps(
 
 bool UnregisterSecurityContextForApps(
     const std::string& pkg_id, manifest_x* manifest) {
-  for (application_x* app = manifest->application;
-      app != nullptr; app = app->next) {
+  for (application_x* app : GListRange<application_x*>(manifest->application)) {
     if (!app->appid) {
       return false;
     }

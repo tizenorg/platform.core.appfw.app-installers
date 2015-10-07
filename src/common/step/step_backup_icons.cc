@@ -11,6 +11,7 @@
 
 #include "common/backup_paths.h"
 #include "common/utils/file_util.h"
+#include "common/utils/glist_range.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
@@ -19,19 +20,21 @@ namespace common_installer {
 namespace backup {
 
 Step::Status StepBackupIcons::process() {
-  application_x* app = context_->old_manifest_data.get()->application;
-
   // gather icon info
-  for (; app != nullptr; app = app->next) {
+  for (application_x* app :
+      GListRange<application_x*>(
+         context_->old_manifest_data.get()->application)) {
     if (strcmp(app->component_type, "uiapp") != 0)
       continue;
 
     bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
         / bf::path(app->appid);
-    if (app->icon && app->icon->text)
-      app_icon += bf::path(app->icon->text).extension();
-    else
+    if (app->icon) {
+      icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
+      app_icon += bf::path(icon->text).extension();
+    } else {
       app_icon += ".png";
+    }
     bf::path icon_backup = GetBackupPathForIconFile(app_icon);
     if (bf::exists(app_icon))
         icons_.emplace_back(app_icon, icon_backup);
