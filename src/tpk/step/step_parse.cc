@@ -29,7 +29,7 @@
 #include "common/app_installer.h"
 #include "common/installer_context.h"
 #include "common/step/step.h"
-#include "utils/clist_helpers.h"
+#include "common/utils/glist_range.h"
 
 namespace tpk {
 namespace parse {
@@ -134,7 +134,7 @@ bool StepParse::FillAuthorInfo(manifest_x* manifest) {
   author->text = strdup(author_info->name().c_str());
   author->email = strdup(author_info->email().c_str());
   author->href = strdup(author_info->href().c_str());
-  LISTADD(manifest->author, author);
+  manifest->author = g_list_append(manifest->author, author);
   return true;
 }
 
@@ -152,7 +152,7 @@ bool StepParse::FillDescription(manifest_x* manifest) {
       (calloc(1, sizeof(description_x)));
   description->text = strdup(description_info->description().c_str());
   description->lang = strdup(description_info->xml_lang().c_str());
-  LISTADD(manifest->description, description);
+  manifest->description = g_list_append(manifest->description, description);
   return true;
 }
 
@@ -164,16 +164,9 @@ bool StepParse::FillPrivileges(manifest_x* manifest) {
     return true;
 
   std::set<std::string> privileges = perm_info->GetPrivileges();
-  if (!privileges.empty()) {
-    privileges_x* privileges_x_list =
-        reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x)));
-    manifest->privileges = privileges_x_list;
-    for (const std::string& p : privileges) {
-      privilege_x* privilege_x_node =
-          reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x)));
-      privilege_x_node->text = strdup(p.c_str());
-      LISTADD(manifest->privileges->privilege, privilege_x_node);
-    }
+  for (auto& priv : privileges) {
+    manifest->privileges = g_list_append(manifest->privileges,
+                                         strdup(priv.c_str()));
   }
   return true;
 }
@@ -195,7 +188,7 @@ bool StepParse::FillServiceApplication(manifest_x* manifest) {
     service_app->onboot = strdup(application.sa_info.on_boot().c_str());
     service_app->type = strdup(application.sa_info.type().c_str());
     service_app->component_type = strdup("svcapp");
-    LISTADD(manifest->application, service_app);
+    manifest->application = g_list_append(manifest->application, service_app);
 
     if (!FillAppControl(service_app,  application.app_control))
       return false;
@@ -228,7 +221,7 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
     ui_app->taskmanage = strdup(application.ui_info.taskmanage().c_str());
     ui_app->type = strdup(application.ui_info.type().c_str());
     ui_app->component_type = strdup("uiapp");
-    LISTADD(manifest->application, ui_app);
+    manifest->application = g_list_append(manifest->application, ui_app);
 
     if (!FillAppControl(ui_app, application.app_control))
       return false;
@@ -257,7 +250,7 @@ bool StepParse::FillAppControl(application_x* app, const T& app_control_list) {
       app_control->mime = strdup(control.mime().c_str());
     if (!control.uri().empty())
       app_control->uri = strdup(control.uri().c_str());
-    LISTADD(app->appcontrol, app_control);
+    app->appcontrol = g_list_append(app->appcontrol, app_control);
   }
   return true;
 }
@@ -274,7 +267,7 @@ bool StepParse::FillDataControl(application_x* app,
     data_control->access = strdup(control.access().c_str());
     data_control->providerid = strdup(control.providerid().c_str());
     data_control->type = strdup(control.type().c_str());
-    LISTADD(app->datacontrol, data_control);
+    app->datacontrol = g_list_append(app->datacontrol, data_control);
   }
   return true;
 }
@@ -289,7 +282,7 @@ bool StepParse::FillApplicationIconPaths(application_x* app,
     // Current implementation is just for compatibility.
     icon->text = strdup(application_icon.path().c_str());
     icon->name = strdup(application_icon.path().c_str());
-    LISTADD(app->icon, icon);
+    app->icon = g_list_append(app->icon, icon);
   }
   return true;
 }
@@ -308,7 +301,7 @@ bool StepParse::FillLabel(application_x* app, const T& label_list) {
     label->text = strdup(control.text().c_str());
     label->name = strdup(control.name().c_str());
     label->lang = strdup(control.xml_lang().c_str());
-    LISTADD(app->label, label);
+    app->label = g_list_append(app->label, label);
   }
   return true;
 }
@@ -323,7 +316,7 @@ bool StepParse::FillMetadata(application_x* app, const T& meta_data_list) {
         static_cast<metadata_x*>(calloc(1, sizeof(metadata_x)));
     metadata->key = strdup(meta.key().c_str());
     metadata->value = strdup(meta.val().c_str());
-    LISTADD(app->metadata, metadata);
+    app->metadata = g_list_append(app->metadata, metadata);
   }
   return true;
 }
