@@ -10,15 +10,18 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <string>
 
-#include "common/utils/clist_helpers.h"
+#include "common/utils/glist_range.h"
 
 namespace {
 
 const char kPlatformVersion[] = "3.0";
-const char kDefaultPrivilegeForWebApp[] = "http://tizen.org/privilege/webappdefault";
+const char kDefaultPrivilegeForWebApp[] =
+    "http://tizen.org/privilege/webappdefault";
 
-bool TranslatePrivilegesForCompatibility(const std::string& pkg_type, manifest_x* m) {
+bool TranslatePrivilegesForCompatibility(const std::string& pkg_type,
+                                         manifest_x* m) {
   if (!m->api_version) {
     LOG(WARNING) << "Skipping privileges mapping because api-version "
                  << "is not specified by package";
@@ -29,14 +32,8 @@ bool TranslatePrivilegesForCompatibility(const std::string& pkg_type, manifest_x
 
   // add default privilege for webapp
   if (pkg_type == "wgt") {
-    if (!m->privileges) {
-      m->privileges =
-        reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x)));
-    }
-    privilege_x* priv =
-      reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x)));
-    priv->text = strdup(kDefaultPrivilegeForWebApp);
-    LISTADD(m->privileges->privilege, priv);
+    m->privileges = g_list_append(m->privileges,
+                                  strdup(kDefaultPrivilegeForWebApp));
   }
 
   // No privileges to map
@@ -44,26 +41,13 @@ bool TranslatePrivilegesForCompatibility(const std::string& pkg_type, manifest_x
     return true;
   }
 
-  // calculate number of privileges
-  size_t size = 0;
-  privileges_x *privileges = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(m->privileges, privileges);
-  for (; privileges; privileges = privileges->next) {
-    privilege_x* priv = privileges->privilege;
-    size += PKGMGR_LIST_LEN(priv);
-  }
+  size_t size = g_list_length(m->privileges);
 
   // prepare input structure
   std::unique_ptr<const char*[]> input_privileges(new const char*[size]);
   size_t input_size = 0;
-  privileges = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(m->privileges, privileges);
-  for (; privileges; privileges = privileges->next) {
-    privilege_x* priv = nullptr;
-    PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges->privilege, priv);
-    for (; priv; priv = priv->next) {
-      input_privileges[input_size++] = priv->text;
-    }
+  for (const char* priv : GListRange<char*>(m->privileges)) {
+    input_privileges[input_size++] = priv;
   }
 
   // get mapping
@@ -76,32 +60,11 @@ bool TranslatePrivilegesForCompatibility(const std::string& pkg_type, manifest_x
     return false;
   }
 
-  // delete pkgmgr old list
-  privileges = nullptr;
-  privileges_x* privileges_next = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(m->privileges, privileges);
-  for (; privileges; privileges = privileges_next) {
-    privileges_next = privileges->next;
-    privilege_x* priv = nullptr;
-    privilege_x* next = nullptr;
-    PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges->privilege, priv);
-    for (; priv; priv = next) {
-      next = priv->next;
-      // mark as const but we actually have ownership
-      free(const_cast<char*>(priv->text));
-      free(priv);
-    }
-    free(privileges);
-  }
-
   // set pkgmgr new list
-  m->privileges =
-      reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x)));
+  g_list_free_full(m->privileges, free);
+  m->privileges = nullptr;
   for (size_t i = 0; i < output_size; ++i) {
-    privilege_x* priv =
-        reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x)));
-    priv->text = strdup(output_privileges[i]);
-    LISTADD(m->privileges->privilege, priv);
+    m->privileges = g_list_append(m->privileges, strdup(output_privileges[i]));
   }
 
   security_manager_privilege_mapping_free(output_privileges, output_size);

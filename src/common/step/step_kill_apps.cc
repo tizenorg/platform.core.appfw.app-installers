@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "common/utils/clist_helpers.h"
+#include "common/utils/glist_range.h"
 
 namespace {
 
@@ -48,12 +48,9 @@ namespace pkgmgr {
 Step::Status StepKillApps::process() {
   manifest_x* old_manifest = context_->old_manifest_data.get() ?
       context_->old_manifest_data.get() : context_->manifest_data.get();
-  application_x* ui = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(old_manifest->application, ui);
-  for (; ui; ui = ui->next) {
-    if (!ui->appid)
-      continue;
-    (void) KillApp(ui->appid);
+  for (application_x* app :
+       GListRange<application_x*>(old_manifest->application)) {
+    (void) KillApp(app->appid);
   }
   return Status::OK;
 }

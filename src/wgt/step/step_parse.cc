@@ -29,24 +29,24 @@
 #include "common/app_installer.h"
 #include "common/installer_context.h"
 #include "common/step/step.h"
-#include "utils/clist_helpers.h"
+#include "utils/glist_range.h"
 #include "wgt/wgt_backend_data.h"
 
 namespace {
 
 const std::string kManifestVersion = "1.0.0";
 
-metadata_x* GenerateMetadataListX(const wgt::parse::MetaDataInfo& meta_info,
-    metadata_x* head) {
+GList* GenerateMetadataListX(const wgt::parse::MetaDataInfo& meta_info) {
+  GList* list = nullptr;
   for (auto& meta : meta_info.metadata()) {
     metadata_x* new_meta =
         static_cast<metadata_x*>(calloc(1, sizeof(metadata_x)));
     new_meta->key = strdup(meta.first.c_str());
     if (!meta.second.empty())
       new_meta->value = strdup(meta.second.c_str());
-    LISTADD(head, new_meta);
+    list = g_list_append(list, new_meta);
   }
-  return head;
+  return list;
 }
 
 }  // namespace
@@ -82,7 +82,7 @@ bool StepParse::FillIconPaths(manifest_x* manifest) {
     for (auto& application_icon : icons_info->icons()) {
       icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
       icon->text = strdup(application_icon.path().c_str());
-      LISTADD(manifest->icon, icon);
+      manifest->icon = g_list_append(manifest->icon, icon);
     }
   }
   return true;
@@ -106,24 +106,26 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
         (calloc(1, sizeof(description_x)));
     description->name = strdup(item.second.c_str());
     description->lang = strdup(item.first.c_str());
-    LISTADD(manifest->description, description);
+    manifest->description = g_list_append(manifest->description, description);
   }
 
   for (auto& item : wgt_info->name_set()) {
     label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
     label->name = strdup(item.second.c_str());
     label->lang = strdup(item.first.c_str());
-    LISTADD(manifest->label, label);
+    manifest->label = g_list_append(manifest->label, label);
   }
 
   manifest->type = strdup("wgt");
 
   // For wgt package use the long name
   for (auto& item : wgt_info->name_set()) {
+    application_x* app =
+        reinterpret_cast<application_x*>(manifest->application->data);
     label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
     label->name = strdup(item.second.c_str());
     label->lang = strdup(item.first.c_str());
-    LISTADD(manifest->application->label, label);
+    app->label = g_list_append(app->label, label);
   }
 
   author_x* author = reinterpret_cast<author_x*>(calloc(1, sizeof(author_x)));
@@ -133,7 +135,7 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
     author->email = strdup(wgt_info->author_email().c_str());
   if (!wgt_info->author_href().empty())
     author->href = strdup(wgt_info->author_href().c_str());
-  LISTADD(manifest->author, author);
+  manifest->author = g_list_append(manifest->author, author);
 
   std::shared_ptr<const SettingInfo> settings_info =
       std::static_pointer_cast<const SettingInfo>(
@@ -170,21 +172,21 @@ bool StepParse::FillApplicationInfo(manifest_x* manifest) {
     return false;
   }
   // application data
-  manifest->application = reinterpret_cast<application_x*>
-    (calloc (1, sizeof(application_x)));
-  manifest->application->component_type = strdup("uiapp");
-  manifest->application->icon =
-      reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
-  manifest->application->appid = strdup(app_info->id().c_str());
-  manifest->application->type = strdup("webapp");
+  application_x* application = reinterpret_cast<application_x*>(
+      calloc(1, sizeof(application_x)));
+  application->component_type = strdup("uiapp");
+  application->appid = strdup(app_info->id().c_str());
+  application->type = strdup("webapp");
+  if (manifest->icon) {
+    icon_x* icon = reinterpret_cast<icon_x*>(manifest->icon->data);
+    icon_x* app_icon = reinterpret_cast<icon_x*>(calloc(1, sizeof(icon_x)));
+    app_icon->text = strdup(icon->text);
+    application->icon = g_list_append(application->icon, app_icon);
+  }
+  manifest->application = g_list_append(manifest->application, application);
+
   manifest->package = strdup(app_info->package().c_str());
   manifest->mainapp_id = strdup(app_info->id().c_str());
-  if (manifest->icon) {
-    icon_x* icon = nullptr;
-    LISTHEAD(manifest->icon, icon);
-    manifest->application->icon->text = strdup(icon->text);
-  }
-
   return true;
 }
 
@@ -193,14 +195,16 @@ bool StepParse::FillAppControl(manifest_x* manifest) {
       std::static_pointer_cast<const AppControlInfoList>(
           parser_->GetManifestData(app_keys::kTizenApplicationAppControlsKey));
 
+  application_x* app =
+      reinterpret_cast<application_x*>(manifest->application->data);
   if (app_info_list) {
     for (const auto& control : app_info_list->controls) {
       appcontrol_x* app_control =
-          static_cast<appcontrol_x*>(calloc(sizeof(appcontrol_x), 1));
+          static_cast<appcontrol_x*>(calloc(1, sizeof(appcontrol_x)));
       app_control->operation = strdup(control.operation().c_str());
       app_control->mime = strdup(control.mime().c_str());
       app_control->uri = strdup(control.uri().c_str());
-      LISTADD(manifest->application->appcontrol, app_control);
+      app->appcontrol = g_list_append(app->appcontrol, app_control);
     }
   }
   return true;
@@ -214,16 +218,9 @@ bool StepParse::FillPrivileges(manifest_x* manifest) {
   if (perm_info)
     privileges = ExtractPrivileges(perm_info);
 
-  if (!privileges.empty()) {
-    privileges_x* privileges_x_list =
-        reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x)));
-    manifest->privileges = privileges_x_list;
-    for (const std::string& p : privileges) {
-      privilege_x* privilege_x_node =
-          reinterpret_cast<privilege_x*> (calloc(1, sizeof(privilege_x)));
-      privilege_x_node->text = strdup(p.c_str());
-      LISTADD(manifest->privileges->privilege, privilege_x_node);
-    }
+  for (auto& priv : privileges) {
+    manifest->privileges =
+        g_list_append(manifest->privileges, strdup(priv.c_str()));
   }
   return true;
 }
@@ -235,11 +232,8 @@ bool StepParse::FillMetadata(manifest_x* manifest) {
   if (!meta_info)
     return true;
 
-  application_x* app = nullptr;
-  PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->application, app);
-  for (; app; app = app->next) {
-    manifest->application->metadata =
-        GenerateMetadataListX(*meta_info, manifest->application->metadata);
+  for (application_x* app : GListRange<application_x*>(manifest->application)) {
+    app->metadata = GenerateMetadataListX(*meta_info);
   }
   return true;
 }
@@ -379,7 +373,6 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "  name        = " <<  name;
   LOG(DEBUG) << "  short_name  = " <<  short_name;
   LOG(DEBUG) << "  aplication version     = " <<  package_version;
-  LOG(DEBUG) << "  icon        = " <<  manifest->application->icon->text;
   LOG(DEBUG) << "  api_version = " <<  info->required_version();
   LOG(DEBUG) << "  privileges -[";
   for (const auto& p : permissions) {
