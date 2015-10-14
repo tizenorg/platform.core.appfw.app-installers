@@ -286,7 +286,7 @@ common_installer::Step::Status StepGenerateXml::process() {
       xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
     } else if (strcmp(app->component_type, "svcapp") == 0) {
       is_service = true;
-      xmlTextWriterStartElement(writer, BAD_CAST "svc-application");
+      xmlTextWriterStartElement(writer, BAD_CAST "service-application");
     } else {
       LOG(ERROR) << "Unknown application component_type";
       xmlFreeTextWriter(writer);
