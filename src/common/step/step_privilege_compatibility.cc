@@ -16,9 +16,31 @@
 namespace {
 
 const char kPlatformVersion[] = "3.0";
-const char kDefaultPrivilegeForWebApp[] = "http://tizen.org/privilege/webappdefault";
+const char kPrivForPublic[] =
+    "http://tizen.org/privilege/internal/default/public";
+const char kPrivForPartner[] =
+    "http://tizen.org/privilege/internal/default/partner";
+const char kPrivForPlatform[] =
+    "http://tizen.org/privilege/internal/default/platform";
 
-bool TranslatePrivilegesForCompatibility(const std::string& pkg_type, manifest_x* m) {
+bool AddPrivilegeToList(manifest_x* m, const char* priv_str) {
+  if (!m->privileges) {
+    m->privileges =
+      reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x*)));
+    if (!m->privileges)
+      return false;
+  }
+  privilege_x* priv =
+      reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x)));
+  if (!priv)
+    return false;
+
+  priv->text = strdup(priv_str);
+  LISTADD(m->privileges->privilege, priv);
+  return true;
+}
+
+bool TranslatePrivilegesForCompatibility(manifest_x* m) {
   if (!m->api_version) {
     LOG(WARNING) << "Skipping privileges mapping because api-version "
                  << "is not specified by package";
@@ -26,23 +48,6 @@ bool TranslatePrivilegesForCompatibility(const std::string& pkg_type, manifest_x
   }
   if (strcmp(m->api_version, kPlatformVersion) == 0)
     return true;
-
-  // add default privilege for webapp
-  if (pkg_type == "wgt") {
-    if (!m->privileges) {
-      m->privileges =
-        reinterpret_cast<privileges_x*>(calloc(1, sizeof(privileges_x)));
-    }
-    privilege_x* priv =
-      reinterpret_cast<privilege_x*>(calloc(1, sizeof(privilege_x)));
-    priv->text = strdup(kDefaultPrivilegeForWebApp);
-    LISTADD(m->privileges->privilege, priv);
-  }
-
-  // No privileges to map
-  if (!m->privileges) {
-    return true;
-  }
 
   // calculate number of privileges
   size_t size = 0;
@@ -122,8 +127,31 @@ Step::Status StepPrivilegeCompatibility::precheck() {
 }
 
 Step::Status StepPrivilegeCompatibility::process() {
-  return TranslatePrivilegesForCompatibility(context_->pkg_type.get(),
-             context_->manifest_data.get()) ?
+  // Add default privileges for each certificates level.
+  bool ret = true;
+  switch(context_->privilege_level.get()) {
+    case common_installer::PrivilegeLevel::PUBLIC:
+      ret = AddPrivilegeToList(context_->manifest_data.get(),
+                               kPrivForPublic);
+      break;
+    case common_installer::PrivilegeLevel::PARTNER:
+      ret = AddPrivilegeToList(context_->manifest_data.get(),
+                               kPrivForPartner);
+      break;
+    case common_installer::PrivilegeLevel::PLATFORM:
+      ret = AddPrivilegeToList(context_->manifest_data.get(),
+                               kPrivForPlatform);
+      break;
+    default:
+      // No default privileges for untrusted application.
+      break;
+  }
+  if (!ret) {
+    LOG(ERROR) << "Error during adding default privileges for certificates.";
+    return Status::ERROR;
+  }
+
+  return TranslatePrivilegesForCompatibility(context_->manifest_data.get()) ?
       Status::OK : Status::ERROR;
 }
 
