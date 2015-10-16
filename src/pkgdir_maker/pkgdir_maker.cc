@@ -29,20 +29,11 @@
 
 #define BUFSIZE 1024
 
-void printUID() {
-  struct passwd *lpwd;
-  lpwd = getpwuid(getuid());
-  printf("Process UID:%d, Uname:%s\n", getuid(), lpwd->pw_name);
-  lpwd = getpwuid(geteuid());
-  printf("Process EUID:%d, EUname:%s\n", geteuid(), lpwd->pw_name);
-}
-
 int main(int argc, char** argv) {
-  char cmd[BUFSIZE] = {0,};
-  char tmp[BUFSIZE] = {0,};
+  char cmd[BUFSIZE] = {0, };
+  char tmp[BUFSIZE] = {0, };
   int i;
 
-  //snprintf(cmd, BUFSIZE, "%s/pkgdir_maker_impl.sh", dirname(argv[0]));
   snprintf(cmd, BUFSIZE, "pkgdir_maker_impl.sh");
 
   for (i=1; i < argc; i++) {
@@ -55,8 +46,6 @@ int main(int argc, char** argv) {
   //       this routine is needed.
   setuid(0);
   seteuid(0);
-//  printUID();
 
-//  printf("CMD: %s\n", cmd);
   return system(cmd);
 }

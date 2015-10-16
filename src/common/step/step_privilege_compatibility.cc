@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <string>
 
 #include "common/utils/clist_helpers.h"
 
@@ -129,7 +130,7 @@ Step::Status StepPrivilegeCompatibility::precheck() {
 Step::Status StepPrivilegeCompatibility::process() {
   // Add default privileges for each certificates level.
   bool ret = true;
-  switch(context_->privilege_level.get()) {
+  switch (context_->privilege_level.get()) {
     case common_installer::PrivilegeLevel::PUBLIC:
       ret = AddPrivilegeToList(context_->manifest_data.get(),
                                kPrivForPublic);
