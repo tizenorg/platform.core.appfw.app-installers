@@ -10,15 +10,18 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <string>
 
 #include "common/utils/clist_helpers.h"
 
 namespace {
 
 const char kPlatformVersion[] = "3.0";
-const char kDefaultPrivilegeForWebApp[] = "http://tizen.org/privilege/webappdefault";
+const char kDefaultPrivilegeForWebApp[] =
+    "http://tizen.org/privilege/webappdefault";
 
-bool TranslatePrivilegesForCompatibility(const std::string& pkg_type, manifest_x* m) {
+bool TranslatePrivilegesForCompatibility(const std::string& pkg_type,
+                                         manifest_x* m) {
   if (!m->api_version) {
     LOG(WARNING) << "Skipping privileges mapping because api-version "
                  << "is not specified by package";
