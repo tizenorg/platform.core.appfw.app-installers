@@ -49,11 +49,24 @@ class AccountInfo {
   std::vector<SingleAccountInfo> accounts_;
 };
 
+// TODO(t.iwanek): this structure should be unified for manifest handlers of
+// wgt and tpk packages
+struct ShortcutInfo {
+  std::string app_id;
+  std::string extra_data;
+  std::string extra_key;
+  std::string icon;
+  std::vector<std::pair<std::string, std::string>> labels;
+};
+
+using ShortcutListInfo = std::vector<ShortcutInfo>;
+
 class ExtraManifestData {
  public:
   ExtraManifestData() {}
 
   Property<AccountInfo> account_info;
+  Property<ShortcutListInfo> shortcut_info;
 };
 
 class BackendData {

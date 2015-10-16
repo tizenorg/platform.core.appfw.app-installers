@@ -362,6 +362,39 @@ common_installer::Step::Status StepGenerateXml::process() {
     xmlTextWriterEndElement(writer);
   }
 
+  const auto& shortcuts =
+      context_->manifest_plugins_data.get().shortcut_info.get();
+  if (!shortcuts.empty()) {
+    xmlTextWriterStartElement(writer, BAD_CAST "shortcut-list");
+    for (auto& shortcut : shortcuts) {
+      xmlTextWriterStartElement(writer, BAD_CAST "shortcut");
+      if (!shortcut.app_id.empty())
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "appid",
+                                    BAD_CAST shortcut.app_id.c_str());
+      if (!shortcut.app_id.empty())
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "extra_data",
+                                    BAD_CAST shortcut.extra_data.c_str());
+      if (!shortcut.app_id.empty())
+        xmlTextWriterWriteAttribute(writer, BAD_CAST "extra_key",
+                                    BAD_CAST shortcut.extra_key.c_str());
+      if (!shortcut.icon.empty()) {
+        xmlTextWriterStartElement(writer, BAD_CAST "icon");
+        xmlTextWriterWriteString(writer, BAD_CAST shortcut.icon.c_str());
+        xmlTextWriterEndElement(writer);
+      }
+      for (auto& label : shortcut.labels) {
+        xmlTextWriterStartElement(writer, BAD_CAST "label");
+        if (!label.first.empty())
+          xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                      BAD_CAST label.first.c_str());
+        xmlTextWriterWriteString(writer, BAD_CAST label.second.c_str());
+        xmlTextWriterEndElement(writer);
+      }
+      xmlTextWriterEndElement(writer);
+    }
+    xmlTextWriterEndElement(writer);
+  }
+
   xmlTextWriterEndElement(writer);
 
   xmlTextWriterEndDocument(writer);

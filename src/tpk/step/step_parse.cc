@@ -11,6 +11,7 @@
 #include <tpk_manifest_handlers/package_handler.h>
 #include <tpk_manifest_handlers/privileges_handler.h>
 #include <tpk_manifest_handlers/service_application_handler.h>
+#include <tpk_manifest_handlers/shortcut_handler.h>
 #include <tpk_manifest_handlers/ui_application_handler.h>
 #include <manifest_parser/manifest_constants.h>
 
@@ -350,6 +351,27 @@ bool StepParse::FillAccounts() {
   return true;
 }
 
+bool StepParse::FillShortcuts() {
+  std::shared_ptr<const ShortcutListInfo> shortcut_info =
+      std::static_pointer_cast<const ShortcutListInfo>(parser_->GetManifestData(
+          app_keys::kShortcutListKey));
+  if (!shortcut_info)
+    return true;
+
+  common_installer::ShortcutListInfo list;
+  for (auto& shortcut : shortcut_info->shortcuts) {
+    common_installer::ShortcutInfo single_info;
+    single_info.app_id = shortcut.app_id;
+    single_info.extra_data = shortcut.extra_data;
+    single_info.extra_key = shortcut.extra_key;
+    single_info.icon = shortcut.icon;
+    single_info.labels =  shortcut.labels;
+    list.push_back(single_info);
+  }
+  context_->manifest_plugins_data.get().shortcut_info.set(list);
+  return true;
+}
+
 bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillPackageInfo(manifest))
     return false;
@@ -360,6 +382,8 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillPrivileges(manifest))
     return false;
   if (!FillAccounts())
+    return false;
+  if (!FillShortcuts())
     return false;
   return true;
 }
