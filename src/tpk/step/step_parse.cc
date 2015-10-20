@@ -216,6 +216,7 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
         static_cast<application_x*>(calloc(1, sizeof(application_x)));
     ui_app->appid = strdup(application.ui_info.appid().c_str());
     ui_app->exec = strdup(application.ui_info.exec().c_str());
+    ui_app->launch_mode = strdup(application.ui_info.launch_mode().c_str());
     ui_app->multiple = strdup(application.ui_info.multiple().c_str());
     ui_app->nodisplay = strdup(application.ui_info.nodisplay().c_str());
     ui_app->taskmanage = strdup(application.ui_info.taskmanage().c_str());
