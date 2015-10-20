@@ -16,24 +16,91 @@
 
 namespace common_installer {
 
+/**
+ * \brief Adapter interface for external PkgMgr module used for registering
+ *        package into pkgmgr
+ *
+ * \param xml_path path to generated xml
+ * \param pkgid package pkgid
+ * \param uid user id
+ * \param request_mode current request mode
+ *
+ * \return true if success
+ */
 bool RegisterAppInPkgmgr(const boost::filesystem::path& xml_path,
                          const std::string& pkgid,
                          const CertificateInfo& cert_info,
                          uid_t uid,
                          RequestMode request_mode);
+
+/**
+ * \brief Adapter interface for external PkgMgr module used for upgrading
+ *        package within pkgmgr
+ *
+ * \param xml_path path to generated xml
+ * \param pkgid package pkgid
+ * \param cert_info certifciate info
+ * \param uid user id
+ * \param request_mode current request mode
+ *
+ * \return true if success
+ */
 bool UpgradeAppInPkgmgr(const boost::filesystem::path& xml_path,
                         const std::string& pkgid,
                         const CertificateInfo& cert_info,
                         uid_t uid,
                         RequestMode request_mode);
+
+/**
+ * \brief Adapter interface for external PkgMgr module used for deregistering
+ *        package into pkgmgr
+ *
+ * \param xml_path path to generated xml
+ * \param pkgid package pkgid
+ * \param uid user id
+ * \param request_mode current request mode
+ *
+ * \return true if success
+ */
 bool UnregisterAppInPkgmgr(const boost::filesystem::path& xml_path,
                            const std::string& pkgid,
                            uid_t uid,
                            RequestMode request_mode);
+
+/**
+ * \brief Adapter interface for external PkgMgr module used for getting
+ *        certificate information for given package
+ *
+ * \param pkgid package pkgid
+ * \param uid user id
+ *
+ * \return returns certificate information
+ */
 std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
                                               uid_t uid);
+
+/**
+ * \brief Adapter interface for external PkgMgr module used for getting
+ *        list of appids for given package
+ *
+ * \param pkg_id[in] package pkgid
+ * \param result[out] Output
+ * \param uid user id
+ *
+ * \return true if success
+ */
 bool QueryAppidsForPkgId(const std::string& pkg_id,
                          std::vector<std::string>* result, uid_t uid);
+
+/**
+ * \brief Adapter interface for external PkgMgr module used for checking
+ *        if given package is installed/registered
+ *
+ * \param pkg_id package id
+ * \param request_mode request mode
+ *
+ * \return true if package is installed
+ */
 bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode);
 
 }  // namespace common_installer

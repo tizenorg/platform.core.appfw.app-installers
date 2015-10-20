@@ -16,8 +16,17 @@
 
 namespace common_installer {
 
-//
-// Utility for sending signal to pkgmgr
+/**
+ * \brief Adapter interface for pkgmgr for sending notification/progress
+ *        to pkgmgr.
+ *
+ * Signals are sent using API defined and exposed by pkgmgr (external) module.
+ * Pkgmgr is notified about:
+ * * installation start,
+ * * installation result,
+ * * installation end,
+ * * installation progress.
+ */
 class PkgmgrSignal {
  public:
   enum class State {
@@ -26,20 +35,57 @@ class PkgmgrSignal {
     FINISHED
   };
 
+  /**
+   * Constructor
+   *
+   * \param pi pointer for pkgmgr_installer structure
+   * \param req_type request type
+   */
   explicit PkgmgrSignal(pkgmgr_installer* pi, RequestType req_type);
 
+  /**
+   * "start" Signal sending
+   *
+   * \param type package type
+   * \param pkgid package pkgid
+   *
+   * \return true if success
+   */
   bool SendStarted(
       const std::string& type = std::string(),
       const std::string& pkgid = std::string());
+
+  /**
+   * "progress" Signal sending
+   *
+   * \param type package type
+   * \param pkgid package pkgid
+   *
+   * \return true if success
+   */
   bool SendProgress(int progress,
       const std::string& type = std::string(),
       const std::string& pkgid = std::string());
+
+  /**
+   * "finished" Signal sending
+   *
+   * \param type package type
+   * \param pkgid package pkgid
+   *
+   * \return true if success
+   */
   bool SendFinished(
       Step::Status result,
       const std::string& type = std::string(),
       const std::string& pkgid = std::string());
   bool IsFinished() const;
 
+  /**
+   * Getter of state of the object
+   *
+   *\return current state
+   */
   State state() const { return state_; }
 
  private:

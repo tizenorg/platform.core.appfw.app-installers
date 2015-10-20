@@ -27,6 +27,10 @@ namespace common_installer {
 
 // TODO(t.iwanek): this structure should be unified for manifest handlers of
 // wgt and tpk packages
+
+/**
+ * Used to store information about single account
+ */
 struct SingleAccountInfo {
   bool multiple_account_support;
   std::vector<std::pair<std::string, std::string>> names;
@@ -36,12 +40,28 @@ struct SingleAccountInfo {
   std::string providerid;
 };
 
+
+/**
+ * Holds information about all accounts
+ */
 class AccountInfo {
  public:
+  /** Constructor */
   AccountInfo() {}
+  /**
+   * accounts list getter
+   *
+   * \return accounts list
+   */
   const std::vector<SingleAccountInfo>& accounts() const {
     return accounts_;
   }
+
+  /**
+   * Adds account to the list
+   *
+   * \param single_account account to be added
+   */
   void set_account(const SingleAccountInfo& single_account) {
     accounts_.push_back(single_account);
   }
@@ -61,34 +81,67 @@ struct ShortcutInfo {
 
 using ShortcutListInfo = std::vector<ShortcutInfo>;
 
+
+// TODO(p.sikorski): if that structure holds extra information not covered
+// in manifest_x, maybe it should hold manifest_x as well?
+/**
+ * \brief Structure, that holds additional data retrieved from manifest
+ * and used during generation of platform manifest (for data that are not
+ * available within manifest_x structure
+ */
 class ExtraManifestData {
  public:
+  /** Constructor */
   ExtraManifestData() {}
 
   Property<AccountInfo> account_info;
   Property<ShortcutListInfo> shortcut_info;
 };
 
+/**
+ * \brief Base class that is used within specific backends to keep additional
+ *        information regarding package
+ */
 class BackendData {
  public:
+  /** virtual destructor */
   virtual ~BackendData() { }
 };
 
+/**
+ * \brief Class represents certificate information
+ */
 class CertificateInfo {
  public:
+  /** author_certificate */
   Property<ValidationCore::CertificatePtr> author_certificate;
 };
 
+/**
+ * \brief Class used for recovery situation.
+ *        It holds pointer to RecoveryFile object.
+ */
 class RecoveryInfo {
  public:
+  /** default constructor */
   RecoveryInfo() { }
+
+  /**
+   * Constructor.
+   *
+   * \param rf RecoveryFile object (pointer to object)
+   */
   explicit RecoveryInfo(std::unique_ptr<recovery::RecoveryFile> rf)
       : recovery_file(std::move(rf)) {
   }
 
+  /** pointer to RecoveryFile */
   std::unique_ptr<recovery::RecoveryFile> recovery_file;
 };
 
+/**
+ * Enumeration for Privilege levels
+ */
 enum class PrivilegeLevel : int {
   UNTRUSTED  = 0,
   PUBLIC     = 1,
@@ -96,8 +149,24 @@ enum class PrivilegeLevel : int {
   PLATFORM   = 3
 };
 
+/**
+ * \brief Helper function. Checks (and compares) passed levels
+ *
+ * \param required_level level to compare
+ * \param allowed_level level to compare
+ *
+ * \return true, if required_level <= allowed_level
+ */
 bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
                    PrivilegeLevel allowed_level);
+
+/**
+ * \brief translates privilege level to string
+ *
+ * \param level privilege level to translate
+ *
+ * \return translated level (to string)
+ */
 const char* PrivilegeLevelToString(PrivilegeLevel level);
 
 // TODO(p.sikorski@samsung.com) this class should be divided into:
@@ -106,60 +175,118 @@ const char* PrivilegeLevelToString(PrivilegeLevel level);
 //  CtxUninstall class that inherits from Context
 //  It is because Uninstallation does not need so many fields.
 //  similarly, installation may not need some of them
+
+/**
+ * \brief Holds data generated/used by Steps (e.g. pkgid retrieved from
+ *        manifest parsing, path to unzipped package).
+ *        ContextInstaller is owned by AppInstaller object. Steps holds
+ *        “pointers” to ContextInstaller (pointer is initialized in Step
+ *        constructor).
+ */
 class InstallerContext {
  public:
+  /** Constructor */
   InstallerContext();
+
+  /** Destructor */
   ~InstallerContext();
 
-  // package_type
+  /**
+   * \brief package type (string representing name of backend)
+   */
   Property<std::string> pkg_type;
 
-  //  manifest information used to generate xml file
+  /**
+   * \brief In-memory representation of platform xml manifest file
+   *        - contains all information needed by tizen application
+   *        framework to handle package management (pkgid, icon,
+   *        applications, appcontrol, privileges and more)
+   */
   Property<manifest_x*> manifest_data;
 
-  // Pkgmgr-parser plugins data
+  /** Pkgmgr-parser plugins data */
   Property<ExtraManifestData> manifest_plugins_data;
 
-  //  manifest information used to revert an update
+  /**
+   * \brief In-memory representation of platform xml manifest file
+   *        - contains all already stored information needed by tizen
+   *        application framework to handle package management (pkgid,
+   *        icon, applications, appcontrol, privileges and more)
+   *        - this field is set only for update installation
+   *        (we need this information for rollback possibility)
+   */
   Property<manifest_x*> old_manifest_data;
 
-  // path to manifest xml file used to register data in databases
+  /**
+   * \brief path to xml platform manifest which was generated according
+   *        to maniest_data content */
   Property<boost::filesystem::path> xml_path;
 
-  // path to old manifest xml while updating
+  /**
+   * \brief path to backup xml platform manifest which was generated
+   *        according to old_maniest_data content (needed for rollback
+   *        operations)
+   */
   Property<boost::filesystem::path> backup_xml_path;
 
-  // pkgid used for update or uninstallation processing
+  /**
+   * \brief path to final location of installed package in filesystem
+   */
   Property<std::string> pkgid;
 
-  // package directory path containing app data
+  /**
+   * \brief package directory path containing app data
+   */
   Property<boost::filesystem::path> pkg_path;
 
-  // file path used for installation or reinstallation process
+  /**
+   * \brief file path used for installation or reinstallation process
+   */
   Property<boost::filesystem::path> file_path;
 
-  // directory path where app data are temporarily extracted
+  /**
+   * \brief path to temporary directory when package files are unpacked
+   *        before coping them to final destination
+   */
   Property<boost::filesystem::path> unpacked_dir_path;
 
-  // uid of the user that request the operation
+  /**
+   * \brief uid of user which installation was triggered for
+   *        (any normal or globaltizenapp)
+   */
   Property<uid_t> uid;
 
-  // path for the applications root directory
+  /**
+   * \brief root directory of installation of all packages for user
+   *        (/home/${USER}/apps_rw/) or tizenglobalapp user (/usr/apps/)
+   */
   Property<boost::filesystem::path> root_application_path;
 
-  // Backend specific data
+  /**
+   * \brief "void*-like" structure to store backend specific
+   *        information about installation process
+   */
   Property<BackendData*> backend_data;
 
-  // request privilege level of package
+  /**
+   * \brief privilege/visibility level discovered from signature files
+   *        - restricts package privileges
+   */
   Property<PrivilegeLevel> privilege_level;
 
-  // certificate information
+  /**
+   * \brief certificate information
+   */
   Property<CertificateInfo> certificate_info;
 
-  // information for recovery
+  /**
+   * \brief information for recovery
+   */
   Property<RecoveryInfo> recovery_info;
 
-  // user type of request (GLOBAL/USER)
+  /**
+   * \brief user type of request (GLOBAL/USER)
+   */
   Property<RequestMode> request_mode;
 };
 

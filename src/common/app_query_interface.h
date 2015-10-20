@@ -7,9 +7,26 @@
 
 namespace common_installer {
 
+
+/**
+ * \brief Base interface for some helper functionalities used before
+ *        configuring app-installer steps.
+ *        Eg. it is used to check, if package is to be installed or updated
+ */
 class AppQueryInterface {
  public:
+  /** virtual destructor (for inheritance) */
   virtual ~AppQueryInterface() { }
+
+  /**
+   * \brief abstract method for checking if package is installed based
+   *        on argv
+   *
+   * \param argc main() argc argument passed to the backend
+   * \param argv main() argv argument passed to the backend
+   *
+   * \return true if package is installed
+   */
   virtual bool IsAppInstalledByArgv(int argc, char** argv) = 0;
 };
 

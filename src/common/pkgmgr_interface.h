@@ -19,40 +19,53 @@ namespace common_installer {
 class PkgMgrInterface;
 typedef std::shared_ptr<PkgMgrInterface> PkgMgrPtr;
 
-/** Class that covers pkgmgr_installer basic platform calls.
- *
- *  PkgMgr covers all pkgmgr_installer platform calls (and manages its
- *  creation/destruction.
+/**
+ * \brief Encapsulates pkgmgr API which handles parsing backend options
+ *        and returns values/modes for installation process.
  */
 class PkgMgrInterface {
  public:
-  /** Returns Request type passed from pkgmgr_installer
+  /**
+   * Returns Request type passed from pkgmgr_installer
+   *
+   * \return request type retrieved from pkgmgr_installer
    */
   RequestType GetRequestType() const;
 
-  /** Returns Request info passed from pkgmgr_installer
+  /**
+   * Returns Request info passed from pkgmgr_installer
+   *
+   * \return request info retrieved from pkgmgr_installer
    */
   const char *GetRequestInfo() const;
 
-  /** Creates PkgMgrInterface.
+  /**
+   * Creates PkgMgrInterface
+   *
+   * \param argc main() argc argument passed to the backend
+   * \param argv main() argv argument passed to the backend
+   * \param interface pointer to AppQueryInterface
+   *
+   * \return Smart pointer to the PkgMgrInterface
    */
   static PkgMgrPtr Create(int argc, char** argv,
         AppQueryInterface* interface = nullptr);
 
-  /** Get Raw pointer to pkgmgr_installer object
+  /**
+   * Get Raw pointer to pkgmgr_installer object
+   * NOTE: It should not be used (PkgMgrInterface can destroy it
    *
-   *  It should not be used (PkgMgrInterface can destroy it
+   * \return raw pkgmgr_installer pointer
    */
   DEPRECATED pkgmgr_installer *GetRawPi() const { return pi_; }
 
-  /** PkgMgrInstance destructor.
-   *
-   */
+  /** PkgMgrInstance destructor. */
   ~PkgMgrInterface();
 
  private:
   explicit PkgMgrInterface(AppQueryInterface* interface)
       : pi_(nullptr),
+        is_app_installed_(false),
         query_interface_(interface) {}
   int InitInternal(int argc, char** argv);
 

@@ -23,10 +23,18 @@ enum class RequestMode : int {
   GLOBAL
 };
 
-/** Get mode for current request (GLOBAL/USER) */
+/**
+ * Get mode for current request (GLOBAL/USER)
+ *
+ * \return request mode
+ */
 RequestMode GetRequestMode();
 
-/** Get apps root path for current request (GLOBAL/USER) */
+/**
+ * Get apps root path for current request (GLOBAL/USER)
+ *
+ * \return root application path (eg. $HOME/apps_rw/)
+ */
 const char *GetRootAppPath();
 
 }  // namespace common_installer

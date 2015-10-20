@@ -17,8 +17,14 @@
 
 namespace common_installer {
 
+/**
+ * \brief Includes the main “steps” processing mechanisms. It holds
+ *        the lists of steps and runs each of the step in the configured
+ *        order.
+ */
 class AppInstaller {
  public:
+  /** Enumeration of possible returned Results */
   enum class Result {
     OK,
     ERROR,
@@ -27,20 +33,40 @@ class AppInstaller {
     UNKNOWN
   };
 
+  /**
+   * \brief explicit Constructor
+   *
+   * \param package_type package type
+   * \param pkgmgr pointer to PkgMgrInterface object
+   */
   explicit AppInstaller(const char* package_type, PkgMgrPtr pkgmgr);
+
+  /** virtual desctructor */
   virtual ~AppInstaller();
 
-  // Adds new step to installer by specified type
-  // Type of template parameter is used to create requested step class instance.
-  // Context of installer is passed to step in this method
-  // and is not being exposed outside installer.
-  // Step arguments are deduced and forwarded to constructor
+  /**
+   * \brief Adds new step to installer by specified type
+   *        Type of template parameter is used to create requested step
+   *        class instance.
+   *        Context of installer is passed to step in this method
+   *        and is not being exposed outside installer.
+   *        Step arguments are deduced and forwarded to constructor.
+   *
+   * \tparam StepT Step object to be added to the step list
+   * \tparam Args constructor arguments for StepT object
+   * \param args argument list
+   */
   template<class StepT, class... Args>
   void AddStep(Args&&... args) {
     steps_.push_back(std::unique_ptr<Step>(
         new StepT(context_.get(), std::forward<Args>(args)...)));
   }
 
+  /**
+   * \brief runs the steps in the specific sequence
+   *
+   * \return Result of the run (eg Result:OK)
+   */
   Result Run();
 
  protected:

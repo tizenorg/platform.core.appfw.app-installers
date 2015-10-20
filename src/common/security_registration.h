@@ -15,8 +15,32 @@
 
 namespace common_installer {
 
+/**
+ * Adapter interface for external Security module.
+ *
+ * Adapter interface for external Security module used for registering
+ * application to security context
+ *
+ * \param pkg_id pkdid of given package
+ * \param path path of installed package
+ * \param manifest pointer to manifest structure
+ *
+ * \return true if success
+ */
 bool RegisterSecurityContextForApps(const std::string& pkg_id,
     const boost::filesystem::path& path, manifest_x* manifest);
+
+/**
+ * Adapter interface for external Security module.
+ *
+ * Adapter interface for external Security module used for unregistering
+ * application from security context
+ *
+ * \param pkg_id pkdid of given package
+ * \param manifest pointer to manifest structure
+ *
+ * \return true if success
+ */
 bool UnregisterSecurityContextForApps(const std::string& pkg_id,
     manifest_x* manifest);
 

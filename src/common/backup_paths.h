@@ -9,10 +9,36 @@
 
 namespace common_installer {
 
+/**
+ * \brief Helper function for getting backup path (used for recovery)
+ *        based on package path
+ *
+ * \param pkg_path package path
+ *
+ * \return backup path
+ */
 boost::filesystem::path GetBackupPathForPackagePath(
     const boost::filesystem::path& pkg_path);
+
+/**
+ * \brief Helper function for getting backup path (used for recovery)
+ *        based on manifest file path
+ *
+ * \param manifest_path path to manifest file
+ *
+ * \return backup path
+ */
 boost::filesystem::path GetBackupPathForManifestFile(
     const boost::filesystem::path& manfest_path);
+
+/**
+ * \brief Helper function for getting backup path (used for recovery)
+ *        based on icon path
+ *
+ * \param icon_path path to icon file
+ *
+ * \return backup path
+ */
 boost::filesystem::path GetBackupPathForIconFile(
     const boost::filesystem::path& icon_path);
 
