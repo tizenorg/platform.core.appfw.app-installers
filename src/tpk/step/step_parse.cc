@@ -150,7 +150,7 @@ bool StepParse::FillDescription(manifest_x* manifest) {
 
   description_x* description = reinterpret_cast<description_x*>
       (calloc(1, sizeof(description_x)));
-  description->text = strdup(description_info->description().c_str());
+  description->name = strdup(description_info->description().c_str());
   description->lang = strdup(description_info->xml_lang().c_str());
   LISTADD(manifest->description, description);
   return true;

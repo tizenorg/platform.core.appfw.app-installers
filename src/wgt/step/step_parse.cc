@@ -12,6 +12,7 @@
 #include <manifest_handlers/category_handler.h>
 #include <manifest_handlers/content_handler.h>
 #include <manifest_handlers/metadata_handler.h>
+#include <manifest_handlers/service_handler.h>
 #include <manifest_handlers/setting_handler.h>
 #include <manifest_handlers/tizen_application_handler.h>
 #include <manifest_handlers/widget_handler.h>
@@ -162,11 +163,11 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
   return true;
 }
 
-bool StepParse::FillApplicationInfo(manifest_x* manifest) {
+bool StepParse::FillUIApplicationInfo(manifest_x* manifest) {
   std::shared_ptr<const TizenApplicationInfo> app_info =
       std::static_pointer_cast<const TizenApplicationInfo>(
           parser_->GetManifestData(app_keys::kTizenApplicationKey));
-  if (!app_info.get()) {
+  if (!app_info) {
     LOG(ERROR) << "Application info manifest data has not been found.";
     return false;
   }
@@ -186,6 +187,60 @@ bool StepParse::FillApplicationInfo(manifest_x* manifest) {
     manifest->application->icon->text = strdup(icon->text);
   }
 
+  return true;
+}
+
+bool StepParse::FillServiceApplicationInfo(manifest_x* manifest) {
+  std::shared_ptr<const ServiceList> service_list =
+      std::static_pointer_cast<const ServiceList>(
+          parser_->GetManifestData(app_keys::kTizenServiceKey));
+  if (!service_list)
+    return true;
+  for (auto& service_info : service_list->services) {
+    application_x* application = reinterpret_cast<application_x*>
+        (calloc(1, sizeof(application_x)));
+    application->component_type = strdup("svcapp");
+    application->appid = strdup(service_info.id().c_str());
+    application->type = strdup("webapp");
+    application->onboot =
+        service_info.on_boot() ? strdup("true") : strdup("false");
+    application->autorestart =
+        service_info.auto_restart() ? strdup("true") : strdup("false");
+
+    for (auto& pair : service_info.names()) {
+      label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
+      if (!pair.first.empty())
+        label->lang = strdup(pair.first.c_str());
+      label->name = strdup(pair.second.c_str());
+      LISTADD(application->label, label);
+    }
+
+    if (!service_info.icon().empty()) {
+      icon_x* icon = reinterpret_cast<icon_x*>(calloc(1, sizeof(icon_x)));
+      icon->text = strdup(service_info.icon().c_str());
+      application->icon = icon;
+    }
+
+    // TODO(t.iwanek): what about description, how is it different from name?
+
+    for (auto& category : service_info.categories()) {
+      category_x* c = reinterpret_cast<category_x*>(
+          calloc(1, sizeof(category_x)));
+      c->name = strdup(category.c_str());
+      LISTADD(application->category, c);
+    }
+
+    for (auto& pair : service_info.metadata_set()) {
+      metadata_x* item = reinterpret_cast<metadata_x*>(
+          calloc(1, sizeof(metadata_x)));
+      item->key = strdup(pair.first.c_str());
+      if (!pair.second.empty())
+        item->value = strdup(pair.second.c_str());
+      LISTADD(application->metadata, item);
+    }
+
+    LISTADD(manifest->application, application);
+  }
   return true;
 }
 
@@ -290,7 +345,7 @@ bool StepParse::FillExtraManifestInfo(manifest_x* manifest) {
 bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillIconPaths(manifest))
     return false;
-  if (!FillApplicationInfo(manifest))
+  if (!FillUIApplicationInfo(manifest))
     return false;
   if (!FillWidgetInfo(manifest))
     return false;
@@ -301,6 +356,12 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillCategories(manifest))
     return false;
   if (!FillMetadata(manifest))
+    return false;
+  // TODO(t.iwanek): fix adding ui application element
+  // for now adding application service is added here because rest of code
+  // assumes that there is one application at manifest->application
+  // so this must execute last
+  if (!FillServiceApplicationInfo(manifest))
     return false;
   if (!FillExtraManifestInfo(manifest))
     return false;
@@ -324,7 +385,11 @@ common_installer::Step::Status StepParse::process() {
   }
   if (check_start_file_) {
     if (!parser_->HasValidStartFile()) {
-      LOG(ERROR) << "No valid start file" <<  parser_->GetErrorMessage();
+      LOG(ERROR) << parser_->GetErrorMessage();
+      return common_installer::Step::Status::ERROR;
+    }
+    if (!parser_->HasValidServicesStartFiles()) {
+      LOG(ERROR) << parser_->GetErrorMessage();
       return common_installer::Step::Status::ERROR;
     }
   }
@@ -399,7 +464,6 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "  name        = " <<  name;
   LOG(DEBUG) << "  short_name  = " <<  short_name;
   LOG(DEBUG) << "  aplication version     = " <<  package_version;
-  LOG(DEBUG) << "  icon        = " <<  manifest->application->icon->text;
   LOG(DEBUG) << "  api_version = " <<  info->required_version();
   LOG(DEBUG) << "  privileges -[";
   for (const auto& p : permissions) {
