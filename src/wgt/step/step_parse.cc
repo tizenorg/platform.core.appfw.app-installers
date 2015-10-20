@@ -179,6 +179,7 @@ bool StepParse::FillUIApplicationInfo(manifest_x* manifest) {
   application->component_type = strdup("uiapp");
   application->appid = strdup(app_info->id().c_str());
   application->type = strdup("webapp");
+  application->launch_mode = strdup(app_info->launch_mode().c_str());
   if (manifest->icon) {
     icon_x* icon = reinterpret_cast<icon_x*>(manifest->icon->data);
     icon_x* app_icon = reinterpret_cast<icon_x*>(calloc(1, sizeof(icon_x)));
