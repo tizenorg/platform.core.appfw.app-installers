@@ -179,12 +179,12 @@ bool StepParse::FillApplicationInfo(manifest_x* manifest) {
   manifest->application->type = strdup("webapp");
   manifest->package = strdup(app_info->package().c_str());
   manifest->mainapp_id = strdup(app_info->id().c_str());
+  manifest->application->launch_mode = strdup(app_info->launch_mode().c_str());
   if (manifest->icon) {
     icon_x* icon = nullptr;
     LISTHEAD(manifest->icon, icon);
     manifest->application->icon->text = strdup(icon->text);
   }
-
   return true;
 }
 
