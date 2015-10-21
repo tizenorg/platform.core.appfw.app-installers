@@ -64,22 +64,14 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
   }
 
   if (manifest) {
-    std::vector<std::string> priv_vec;
-
     privileges_x *privileges = nullptr;
     PKGMGR_LIST_MOVE_NODE_TO_HEAD(manifest->privileges, privileges);
     for (; privileges != nullptr; privileges = privileges->next) {
       privilege_x* priv = nullptr;
       PKGMGR_LIST_MOVE_NODE_TO_HEAD(privileges->privilege, priv);
       for (; priv != nullptr; priv = priv->next) {
-        priv_vec.push_back(priv->text);
+        security_manager_app_inst_req_add_privilege(req, priv->text);
       }
-    }
-
-    // privileges should be sorted.
-    std::sort(priv_vec.begin(), priv_vec.end());
-    for (auto& priv : priv_vec) {
-      security_manager_app_inst_req_add_privilege(req, priv.c_str());
     }
   }
 
