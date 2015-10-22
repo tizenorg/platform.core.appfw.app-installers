@@ -9,6 +9,7 @@
 #include <manifest_handlers/app_control_handler.h>
 #include <manifest_handlers/application_icons_handler.h>
 #include <manifest_handlers/application_manifest_constants.h>
+#include <manifest_handlers/category_handler.h>
 #include <manifest_handlers/content_handler.h>
 #include <manifest_handlers/metadata_handler.h>
 #include <manifest_handlers/setting_handler.h>
@@ -228,6 +229,23 @@ bool StepParse::FillPrivileges(manifest_x* manifest) {
   return true;
 }
 
+bool StepParse::FillCategories(manifest_x* manifest) {
+  std::shared_ptr<const CategoryInfoList> category_info =
+      std::static_pointer_cast<const CategoryInfoList>(parser_->GetManifestData(
+          app_keys::kTizenCategoryKey));
+  if (!category_info)
+    return true;
+
+  // there is one app atm
+  for (auto& category : category_info->categories) {
+    category_x* c = reinterpret_cast<category_x*>(
+        calloc(1, sizeof(category_x)));
+    c->name = strdup(category.c_str());
+    LISTADD(manifest->application->category, c);
+  }
+  return true;
+}
+
 bool StepParse::FillMetadata(manifest_x* manifest) {
   std::shared_ptr<const MetaDataInfo> meta_info =
       std::static_pointer_cast<const MetaDataInfo>(parser_->GetManifestData(
@@ -279,6 +297,8 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillPrivileges(manifest))
     return false;
   if (!FillAppControl(manifest))
+    return false;
+  if (!FillCategories(manifest))
     return false;
   if (!FillMetadata(manifest))
     return false;

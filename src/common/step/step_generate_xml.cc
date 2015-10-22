@@ -168,6 +168,15 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     xmlTextWriterEndElement(writer);
   }
 
+  category_x* category = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(app->category, category);
+  for (; category; category = category->next) {
+    xmlTextWriterStartElement(writer, BAD_CAST "category");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+        BAD_CAST category->name);
+    xmlTextWriterEndElement(writer);
+  }
+
   return Step::Status::OK;
 }
 
