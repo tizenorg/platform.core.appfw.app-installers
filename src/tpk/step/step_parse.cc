@@ -34,9 +34,13 @@
 namespace tpk {
 namespace parse {
 
+namespace {
+
 namespace app_keys = tpk::application_keys;
 namespace bf = boost::filesystem;
-namespace manifest_keys = tpk::manifest_keys;
+
+const char kManifestFileName[] = "tizen-manifest.xml";
+} // namepsace
 
 common_installer::Step::Status StepParse::precheck() {
   if (context_->unpacked_dir_path.get().empty()) {
@@ -51,10 +55,10 @@ common_installer::Step::Status StepParse::precheck() {
   }
 
   boost::filesystem::path tmp(context_->unpacked_dir_path.get());
-  tmp /= manifest_keys::kManifestFileName;
+  tmp /= kManifestFileName;
 
   if (!boost::filesystem::exists(tmp)) {
-    LOG(ERROR) << manifest_keys::kManifestFileName
+    LOG(ERROR) << kManifestFileName
                << " not found from the package";
     return common_installer::Step::Status::INVALID_VALUE;
   }
@@ -64,7 +68,7 @@ common_installer::Step::Status StepParse::precheck() {
 
 bool StepParse::LocateConfigFile() {
   boost::filesystem::path manifest = context_->unpacked_dir_path.get();
-  manifest /= manifest_keys::kManifestFileName;
+  manifest /= kManifestFileName;
 
   LOG(DEBUG) << "tizen_manifest.xml path: " << manifest;
 
@@ -77,14 +81,14 @@ bool StepParse::LocateConfigFile() {
 
 bf::path StepParse::LocateConfigFile() const {
   boost::filesystem::path path(context_->unpacked_dir_path.get());
-  path /= manifest_keys::kManifestFileName;
+  path /= kManifestFileName;
   return path;
 }
 
 bool StepParse::FillPackageInfo(manifest_x* manifest) {
   std::shared_ptr<const PackageInfo> app_info =
       std::static_pointer_cast<const PackageInfo>(
-          parser_->GetManifestData(manifest_keys::kManifestKey));
+          parser_->GetManifestData(app_keys::kManifestKey));
   if (!app_info) {
     LOG(ERROR) << "Application info manifest data has not been found.";
     return false;
@@ -404,7 +408,7 @@ common_installer::Step::Status StepParse::process() {
   std::shared_ptr<const PackageInfo> info =
       std::static_pointer_cast<const PackageInfo>(
           parser_->GetManifestData(
-              manifest_keys::kManifestKey));
+              app_keys::kManifestKey));
 
   context_->pkgid.set(manifest->package);
 
