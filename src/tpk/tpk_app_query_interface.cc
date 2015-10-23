@@ -64,7 +64,7 @@ std::string GetPkgIdFromPath(const std::string& path) {
   if (!parser.ParseManifest(manifest_path))
     return {};
   auto package_info = std::static_pointer_cast<const tpk::parse::PackageInfo>(
-      parser.GetManifestData(tpk::manifest_keys::kManifestKey));
+      parser.GetManifestData(tpk::application_keys::kManifestKey));
   if (!package_info)
     return {};
   std::string pkg_id = package_info->package();
