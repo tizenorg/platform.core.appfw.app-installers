@@ -14,7 +14,14 @@
 #include <cstdio>
 #include <string>
 
+#include "common/utils/clist_helpers.h"
 #include "common/utils/file_util.h"
+
+namespace {
+
+const char kWrtServiceBinaryPath[] = "/usr/bin/wrt-service";
+
+}  // namespace
 
 namespace wgt {
 namespace filesystem {
@@ -24,7 +31,9 @@ namespace bf = boost::filesystem;
 common_installer::Step::Status StepCreateSymbolicLink::process() {
   assert(context_->manifest_data.get());
   boost::system::error_code error;
-  application_x* app = context_->manifest_data.get()->application;
+  application_x* app = nullptr;
+  PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->application,
+                                app);
   if (!app) {
      LOG(ERROR) << "There is no application described!";
     return Step::Status::ERROR;
@@ -39,7 +48,11 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
 
     exec_path /= bf::path(app->appid);
 
-    bf::create_symlink(bf::path(WRT_LAUNCHER), exec_path, error);
+    if (strcmp(app->component_type, "uiapp") == 0) {
+      bf::create_symlink(bf::path(WRT_LAUNCHER), exec_path, error);
+    } else {
+      bf::create_symlink(kWrtServiceBinaryPath, exec_path, error);
+    }
     if (error) {
       LOG(ERROR) << "Failed to set symbolic link "
         << boost::system::system_error(error).what();
