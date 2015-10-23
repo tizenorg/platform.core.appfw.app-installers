@@ -33,6 +33,9 @@ void WriteUIApplicationAttributes(
   if (app->nodisplay)
     xmlTextWriterWriteAttribute(writer, BAD_CAST "nodisplay",
         BAD_CAST app->nodisplay);
+  if (app->launch_mode)
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "launch_mode",
+        BAD_CAST app->launch_mode);
 }
 
 void WriteServiceApplicationAttributes(

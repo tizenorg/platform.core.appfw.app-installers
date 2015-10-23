@@ -381,6 +381,7 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "  aplication version     = " <<  package_version;
   LOG(DEBUG) << "  icon        = " <<  manifest->application->icon->text;
   LOG(DEBUG) << "  api_version = " <<  info->required_version();
+  LOG(DEBUG) << "  launch_mode = " <<  info->launch_mode();
   LOG(DEBUG) << "  privileges -[";
   for (const auto& p : permissions) {
     LOG(DEBUG) << "    " << p;
