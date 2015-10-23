@@ -23,9 +23,6 @@ Step::Status StepBackupIcons::process() {
 
   // gather icon info
   for (; app != nullptr; app = app->next) {
-    if (strcmp(app->component_type, "uiapp") != 0)
-      continue;
-
     bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
         / bf::path(app->appid);
     if (app->icon && app->icon->text)

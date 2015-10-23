@@ -31,9 +31,6 @@ Step::Status StepCreateIcons::process() {
   PKGMGR_LIST_MOVE_NODE_TO_HEAD(context_->manifest_data.get()->application,
                                 app);
   for (; app; app = app->next) {
-    if (strcmp(app->component_type, "uiapp") != 0)
-      continue;
-
     // TODO(t.iwanek): this is ignoring icon locale as well as other steps
     // icons should be localized
     if (app->icon && app->icon->text) {
