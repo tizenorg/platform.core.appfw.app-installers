@@ -422,10 +422,19 @@ common_installer::Step::Status StepParse::process() {
   if (perm_info)
     privileges = perm_info->GetPrivileges();
 
+  std::shared_ptr<const UIApplicationInfoList> ui_application_list =
+      std::static_pointer_cast<const UIApplicationInfoList>(
+          parser_->GetManifestData(app_keys::kUIApplicationKey));
+
   LOG(DEBUG) << " Read data -[ ";
   LOG(DEBUG) << "App package: " << info->package();
   LOG(DEBUG) << "  aplication version     = " <<  info->version();
   LOG(DEBUG) << "  api_version = " <<  info->api_version();
+  LOG(DEBUG) << "  launch_modes -[";
+  for (const auto& application : ui_application_list->items) {
+    LOG(DEBUG) << "    launch_mode[" << application.ui_info.appid() << "] = " <<  application.ui_info.launch_mode();
+  }
+  LOG(DEBUG) << "  ]-";
   LOG(DEBUG) << "  privileges -[";
   for (const auto& p : privileges) {
     LOG(DEBUG) << "    " << p;
