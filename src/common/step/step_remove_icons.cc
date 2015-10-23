@@ -31,9 +31,6 @@ Step::Status StepRemoveIcons::precheck() {
 Step::Status StepRemoveIcons::process() {
   for (application_x* app :
        GListRange<application_x*>(context_->manifest_data.get()->application)) {
-    if (strcmp(app->component_type, "uiapp") != 0)
-      continue;
-
     bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
       / bf::path(app->appid);
     if (app->icon) {

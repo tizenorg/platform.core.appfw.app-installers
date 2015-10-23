@@ -29,9 +29,6 @@ Step::Status StepCreateIcons::process() {
 
   for (application_x* app :
        GListRange<application_x*>(context_->manifest_data.get()->application)) {
-    if (strcmp(app->component_type, "uiapp") != 0)
-      continue;
-
     // TODO(t.iwanek): this is ignoring icon locale as well as other steps
     // icons should be localized
     if (app->icon) {
