@@ -394,6 +394,7 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "  short_name  = " <<  short_name;
   LOG(DEBUG) << "  aplication version     = " <<  package_version;
   LOG(DEBUG) << "  api_version = " <<  info->required_version();
+  LOG(DEBUG) << "  launch_mode = " <<  info->launch_mode();
   LOG(DEBUG) << "  privileges -[";
   for (const auto& p : permissions) {
     LOG(DEBUG) << "    " << p;
