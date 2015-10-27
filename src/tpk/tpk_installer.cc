@@ -9,6 +9,7 @@
 #include "common/step/step_copy.h"
 #include "common/step/step_copy_backup.h"
 #include "common/step/step_check_old_certificate.h"
+#include "common/step/step_delta_patch.h"
 #include "common/step/step_fail.h"
 #include "common/step/step_kill_apps.h"
 #include "common/step/step_generate_xml.h"
@@ -72,6 +73,9 @@ void TpkInstaller::Prepare() {
     case ci::RequestType::Reinstall:
       ReinstallSteps();
       break;
+    case ci::RequestType::Delta:
+      DeltaSteps();
+      break;
     case ci::RequestType::Recovery:
       RecoverySteps();
       break;
@@ -132,6 +136,28 @@ void TpkInstaller::UninstallSteps() {
 
 void TpkInstaller::ReinstallSteps() {
   AddStep<ci::configuration::StepFail>();
+}
+
+void TpkInstaller::DeltaSteps() {
+  AddStep<ci::configuration::StepConfigure>(pkgmgr_);
+  AddStep<ci::filesystem::StepUnzip>();
+  AddStep<tpk::parse::StepParse>();
+  AddStep<ci::filesystem::StepDeltaPatch>();
+  AddStep<ci::security::StepCheckSignature>();
+  AddStep<ci::security::StepPrivilegeCompatibility>();
+  AddStep<ci::security::StepCheckOldCertificate>();
+  AddStep<ci::backup::StepOldManifest>();
+  AddStep<ci::pkgmgr::StepKillApps>();
+  AddStep<ci::backup::StepBackupManifest>();
+  AddStep<ci::backup::StepBackupIcons>();
+  AddStep<ci::backup::StepCopyBackup>();
+  AddStep<ci::filesystem::StepCreateStorageDirectories>();
+  // TODO(t.iwanek): handle coping storage directories
+  AddStep<tpk::filesystem::StepCreateSymbolicLink>();
+  AddStep<ci::filesystem::StepCreateIcons>();
+  AddStep<ci::security::StepUpdateSecurity>();
+  AddStep<ci::pkgmgr::StepGenerateXml>();
+  AddStep<ci::pkgmgr::StepUpdateApplication>();
 }
 
 void TpkInstaller::RecoverySteps() {

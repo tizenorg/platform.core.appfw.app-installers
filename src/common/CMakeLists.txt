@@ -20,6 +20,7 @@ SET(SRCS
   step/step_copy_backup.cc
   step/step_copy_storage_directories.cc
   step/step_create_storage_directories.cc
+  step/step_delta_patch.cc
   step/step_fail.cc
   step/step_kill_apps.cc
   step/step_generate_xml.cc
@@ -66,6 +67,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   ZLIB_DEPS
   PRIVILEGE_CHECKER_DEPS
   APPMANAGER_DEPS
+  DELTA_MANIFEST_HANDLERS_DEPS
   Boost
 )
 
