@@ -19,6 +19,7 @@ const char kRecoveryNewInstallationString[] = "NEW";
 const char kRecoveryUpdateInstallationString[] = "UPDATE";
 const char kRecoveryUninstallationString[] = "UNINSTALLATION";
 const char kRecoveryRdsString[] = "RDS";
+const char kRecoveryDeltaString[] = "DELTA";
 const char kRecoveryUnknownString[] = "UNKNOWN";
 
 std::string TruncateNewLine(const char* data) {
@@ -146,6 +147,8 @@ bool RecoveryFile::ReadFileContent() {
     type_ = RequestType::Uninstall;
   } else if (mode == kRecoveryRdsString) {
     type_ = RequestType::Reinstall;
+  } else if (mode == kRecoveryDeltaString) {
+    type_ = RequestType::Delta;
   } else {
     type_ = RequestType::Unknown;
   }
@@ -181,6 +184,9 @@ bool RecoveryFile::WriteAndCommitFileContent() {
     break;
   case RequestType::Reinstall:
     fputs(kRecoveryRdsString, handle);
+    break;
+  case RequestType::Delta:
+    fputs(kRecoveryDeltaString, handle);
     break;
   default:
     fputs(kRecoveryUnknownString, handle);
