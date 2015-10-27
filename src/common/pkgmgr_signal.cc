@@ -23,8 +23,8 @@ const std::map<ci::RequestType, const char*> kEventStr = {
   {ci::RequestType::Recovery, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
   {ci::RequestType::Reinstall, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
   {ci::RequestType::Uninstall, PKGMGR_INSTALLER_UNINSTALL_EVENT_STR},
-  {ci::RequestType::Unknown, PKGMGR_INSTALLER_INSTALL_EVENT_STR},  // not needed
-  {ci::RequestType::Update, PKGMGR_INSTALLER_UPGRADE_EVENT_STR}
+  {ci::RequestType::Update, PKGMGR_INSTALLER_UPGRADE_EVENT_STR},
+  {ci::RequestType::Delta, PKGMGR_INSTALLER_UPGRADE_EVENT_STR}
 };
 
 }  // namespace
@@ -44,6 +44,9 @@ bool PkgmgrSignal::SendStarted(
   }
 
   auto key = kEventStr.find(request_type_);
+  if (key == kEventStr.end()) {
+    return false;
+  }
   if (!SendSignal(PKGMGR_INSTALLER_START_KEY_STR, key->second, type, pkgid)) {
     return false;
   }

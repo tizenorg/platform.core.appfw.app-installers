@@ -32,12 +32,14 @@ BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  pkgconfig(cert-svc-vcore)
 BuildRequires:  pkgconfig(manifest-parser)
 BuildRequires:  pkgconfig(manifest-handlers)
+BuildRequires:  pkgconfig(delta-manifest-handlers)
 BuildRequires:  pkgconfig(capi-security-privilege-manager)
 BuildRequires:  pkgconfig(libwebappenc)
 BuildRequires:  pkgconfig(capi-appfw-app-manager)
 
 Requires: ca-certificates-tizen
 Requires: libtzplatform-config
+Requires: xdelta3
 
 %description
 This is a meta package that installs the common application
