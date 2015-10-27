@@ -131,7 +131,8 @@ bool CopyDir(const bf::path& src, const bf::path& dst) {
       return false;
     }
   } catch (const bf::filesystem_error& error) {
-      LOG(ERROR) << error.what();
+    LOG(ERROR) << "Failed to copy directory: " << error.what();
+    return false;
   }
 
   // Iterate through the source directory
@@ -153,7 +154,8 @@ bool CopyDir(const bf::path& src, const bf::path& dst) {
         bf::copy_file(current, dst / current.filename());
       }
     } catch (const bf::filesystem_error& error) {
-        LOG(ERROR) << error.what();
+      LOG(ERROR) << "Failed to copy directory: " << error.what();
+      return false;
     }
   }
   return true;
@@ -310,12 +312,7 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
       bf::path filename_in_zip_path(raw_file_name_in_zip);
 
       // prevent "directory climbing" attack
-      std::vector<std::string> segments;
-      ba::split(segments, filename_in_zip_path.string(), ba::is_any_of("/\\"));
-      if (std::any_of(segments.begin(), segments.end(),
-                      [](const std::string& segment) {
-                        return segment == "..";
-                      })) {
+      if (HasDirectoryClimbing(filename_in_zip_path)) {
         LOG(ERROR) << "Relative path in widget in malformed";
         return false;
       }
@@ -366,6 +363,22 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
   }
 
   return true;
+}
+
+bool HasDirectoryClimbing(const boost::filesystem::path& path) {
+  std::vector<std::string> segments;
+  ba::split(segments, path.string(), ba::is_any_of("/\\"));
+  return std::any_of(segments.begin(), segments.end(),
+                  [](const std::string& segment) {
+                    return segment == "..";
+                  });
+}
+
+boost::filesystem::path MakeRelativePath(const boost::filesystem::path& input,
+                                         const boost::filesystem::path& base) {
+  bf::path input_absolute = bf::absolute(input);
+  bf::path base_absolute = bf::absolute(base);
+  return input_absolute.string().substr(base_absolute.string().length() + 1);
 }
 
 }  // namespace common_installer

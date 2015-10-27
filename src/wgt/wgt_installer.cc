@@ -129,6 +129,10 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::security::StepUpdateSecurity>();
       break;
     }
+    case ci::RequestType::Delta: {
+      // TODO(t.iwanek): add proper steps for this mode...
+      AddStep<ci::configuration::StepFail>();
+    }
     case ci::RequestType::Recovery: {
       AddStep<ci::configuration::StepConfigure>(pkgmgr_);
       AddStep<ci::recovery::StepOpenRecoveryFile>();
