@@ -4,9 +4,20 @@
 
 #include "common/pkgmgr_interface.h"
 
+#include <boost/filesystem/path.hpp>
+
 #include <memory>
+#include <string>
 
 #include "common/app_query_interface.h"
+
+namespace bf = boost::filesystem;
+
+namespace {
+
+const char kDeltaFileExtension[] = ".delta";
+
+}
 
 namespace common_installer {
 
@@ -47,12 +58,22 @@ PkgMgrInterface::~PkgMgrInterface() {
 }
 
 RequestType PkgMgrInterface::GetRequestType() const {
+  std::string extension = bf::path(GetRequestInfo()).extension().string();
   switch (pkgmgr_installer_get_request_type(pi_)) {
     case PKGMGR_REQ_INSTALL:
       if (!is_app_installed_) {
-        return RequestType::Install;
+        if (extension == kDeltaFileExtension) {
+          LOG(ERROR) << "Package is not installed. "
+                        "Cannot update from delta package";
+          return RequestType::Unknown;
+        } else {
+          return RequestType::Install;
+        }
       } else {
-        return RequestType::Update;
+        if (extension == kDeltaFileExtension)
+          return RequestType::Delta;
+        else
+          return RequestType::Update;
       }
     case PKGMGR_REQ_UNINSTALL:
       return RequestType::Uninstall;
