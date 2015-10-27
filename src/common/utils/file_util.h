@@ -34,6 +34,11 @@ bool ExtractToTmpDir(const char* zip_path,
                      const boost::filesystem::path& tmp_dir,
                      const std::string& filter_prefix);
 
+bool HasDirectoryClimbing(const boost::filesystem::path& path);
+
+boost::filesystem::path MakeRelativePath(const boost::filesystem::path& input,
+                                         const boost::filesystem::path& base);
+
 }  // namespace common_installer
 
 #endif  // COMMON_UTILS_FILE_UTIL_H_
