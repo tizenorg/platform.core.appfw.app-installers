@@ -10,14 +10,19 @@
 namespace wgt {
 
 /**
- * @brief The WgtInstaller class
+ * \brief The WgtInstaller class
  *        Subclass of AppInstaller class dedicated for handling wgt request
  *
  * Performs all types of requests of wgt packages and sets required sequence of
- * steps.
+ * steps
  */
 class WgtInstaller : public common_installer::AppInstaller {
  public:
+  /**
+   * \brief Explicit constructor
+   *
+   * \param pkgmgr pointer to pkgmgr
+   */
   explicit WgtInstaller(common_installer::PkgMgrPtr pkgrmgr);
 };
 

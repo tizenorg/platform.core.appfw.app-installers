@@ -22,7 +22,22 @@ class StepWgtCopyStorageDirectories
  public:
   using StepCopyStorageDirectories::StepCopyStorageDirectories;
 
+  /**
+   * \brief Create shared and private directories,
+   *        and copy/restore widget files to appropriate directory
+   *
+   * \return Status::ERROR when failed to create temporary location,
+   *                       private temporary location, or failed to restore
+   *                       shared/private directory for widget,
+   *         Status::OK otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief Move files from shared/private directories back to source directory
+   *
+   * \return Status::OK
+   */
   Status undo() override;
 
  private:

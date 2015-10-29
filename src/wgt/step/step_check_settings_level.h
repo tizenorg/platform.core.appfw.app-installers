@@ -13,13 +13,40 @@
 namespace wgt {
 namespace security {
 
+/**
+ * \brief Step that check privileges level for settings
+ */
 class StepCheckSettingsLevel : public common_installer::Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief Check privileges level for settings
+   *
+   * \return Status::ERROR when invalid privileges detected,
+   *         Status::OK otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status undo() override { return Status::OK; }
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status precheck() override { return Status::OK; }
 
   SCOPE_LOG_TAG(CheckSettingsLevel)

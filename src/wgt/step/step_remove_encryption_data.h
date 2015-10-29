@@ -11,13 +11,42 @@
 namespace wgt {
 namespace encrypt {
 
+/**
+ * This step remove encryption keys used for encryption during installation
+ *
+ * This step is called during uninstallation process
+ */
 class StepRemoveEncryptionData : public common_installer::Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief Remove encryption keys from database
+   *
+   * \return Status::ERROR in case of failure,
+   *         Status::OK otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status undo() override { return Status::OK; }
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status precheck() override { return Status::OK; }
 
   SCOPE_LOG_TAG(RemoveEncryptionData)

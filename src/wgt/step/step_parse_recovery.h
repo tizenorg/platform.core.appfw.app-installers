@@ -11,7 +11,7 @@
 namespace wgt {
 namespace parse {
 /**
- * @brief The StepParseRecovery class
+ * \brief The StepParseRecovery class
  *        Retrievies package information from config.xml during RECOVERY.
  *
  * Step is used in recovery mode.
@@ -24,10 +24,34 @@ namespace parse {
  */
 class StepParseRecovery : public StepParse {
  public:
+
+  /**
+   * \brief Explicit constructor
+   *
+   * \param context installer context
+   */
   explicit StepParseRecovery(common_installer::InstallerContext* context);
 
+  /**
+   * \brief Parse config.xml
+   *
+   * \return Status::OK
+   */
   Status process() override;
+
+  /**
+   * \brief Validate requirements for this step
+   *
+   * \return Status::ERROR when root path of packages is missing,
+   *         Status::OK otherwise
+   */
   Status precheck() override;
+
+  /**
+   * \brief Locate config.xml file
+   *
+   * \return true if config.xml is found
+   */
   bool LocateConfigFile() override;
 
   SCOPE_LOG_TAG(ParseRecovery)

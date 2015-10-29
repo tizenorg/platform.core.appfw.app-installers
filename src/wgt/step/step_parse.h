@@ -21,14 +21,45 @@
 namespace wgt {
 namespace parse {
 
+/**
+ * \brief This step parse manifest.xml document
+ */
 class StepParse : public common_installer::Step {
  public:
+
+  /**
+   * \brief Explicit constructor
+   *
+   * \param context Installer context
+   * \param check_start_file Flag if start file should be validated
+   */
   explicit StepParse(common_installer::InstallerContext* context,
       bool check_start_file);
 
+  /**
+   * \brief
+   */
   Status process() override;
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status undo() override { return Status::OK; }
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status precheck() override { return Status::OK; }
 
  protected:

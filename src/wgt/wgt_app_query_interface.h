@@ -9,8 +9,22 @@
 
 namespace wgt {
 
+/**
+ * \brief Helper functionalities used before
+ *        configuring app-installer steps.
+ *        Eg. it is used to check, if package is to be installed or updated
+ */
 class WgtAppQueryInterface : public common_installer::AppQueryInterface {
  public:
+  /**
+   * \brief method for checking if package is installed based
+   *        on argv
+   *
+   * \param argc main() argc argument passed to the backend
+   * \param argv main() argv argument passed to the backend
+   *
+   * \return true if package is installed
+   */
   bool IsAppInstalledByArgv(int argc, char** argv) override;
 };
 

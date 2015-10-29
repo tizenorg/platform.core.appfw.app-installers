@@ -16,12 +16,47 @@
 namespace wgt {
 namespace rds {
 
+/**
+ * \brief Step that apply RDS modification during reinstallation process
+ */
 class StepRDSModify : public common_installer::Step {
  public:
+
+  /**
+   * \brief Explicit constructor
+   *
+   * \param context Installer context
+   */
   explicit StepRDSModify(common_installer::InstallerContext* context);
+
+  /**
+   * \brief
+   *
+   * \return
+   */
   Status process() override;
+
+  /**
+   * \brief Remove files from temporary location
+   *
+   * \return Status::OK
+   */
   Status clean() override;
+
+  /**
+   * \brief Restore files to the state from before RDS installation
+   *
+   * \return Status::OK
+   */
   Status undo() override;
+
+  /**
+   * \brief
+   *
+   * \return Status::ERROR when manifest is missing, pkgid is missing,
+   *         or when path to the unpacked directory is missing or not exist,
+   *         Status::OK otherwise
+   */
   Status precheck() override;
 
  private:

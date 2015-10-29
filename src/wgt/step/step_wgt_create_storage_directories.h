@@ -31,9 +31,34 @@ class StepWgtCreateStorageDirectories :
  public:
   using StepCreateStorageDirectories::StepCreateStorageDirectories;
 
+  /**
+   * \brief Create shared and private directories
+   *
+   * \return Status::ERROR when failed to create temporary location, or
+   *                       private temporary location
+   *         Status::OK otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status undo() override { return Status::OK; }
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status precheck() override { return Status::OK; }
 
  private:

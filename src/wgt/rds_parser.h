@@ -10,14 +10,44 @@
 namespace wgt {
 namespace rds_parser {
 
+/**
+ * \brief Parse RDS config file
+ */
 class RDSParser {
  public:
+  /**
+   * \brief Explicit constructor
+   *
+   * \param path_to_delta path to directory
+   */
   explicit RDSParser(const std::string& path_to_delta);
 
+  /**
+   * \brief Parse package xml
+   *
+   * \return true if parsing was successful
+   */
   bool Parse();
 
+  /**
+   * \brief Accessor to vector of files to modify
+   *
+   * \return files to modify
+   */
   const std::vector<std::string>& files_to_modify() const;
+
+  /**
+   * \brief Accessor to vector of files to add
+   *
+   * \return files to add
+   */
   const std::vector<std::string>& files_to_add() const;
+
+  /**
+   * \brief Accessor to vector of files to delete
+   *
+   * \return files to delete
+   */
   const std::vector<std::string>& files_to_delete() const;
  private:
   std::string path_to_delta_;

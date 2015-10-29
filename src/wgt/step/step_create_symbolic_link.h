@@ -15,13 +15,40 @@
 namespace wgt {
 namespace filesystem {
 
+/**
+ * \brief Step that create symbolic link to application
+ */
 class StepCreateSymbolicLink : public common_installer::Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief Create symbolic link
+   *
+   * \return Status::ERROR when failed to create symbolic link,
+   *         Status::OK otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief Delete created symbolic link
+   *
+   * \return Status::OK
+   */
   Status undo() override;
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status precheck() override { return Status::OK; }
 
   SCOPE_LOG_TAG(SymbolicLink)

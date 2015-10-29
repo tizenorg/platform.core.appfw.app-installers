@@ -14,13 +14,42 @@
 namespace wgt {
 namespace encrypt {
 
+/**
+ * \brief Step that encrypt application resources files if flagged to do so
+ */
 class StepEncryptResources : public common_installer::Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief Encrypt files
+   *
+   * \return Status::ERROR when error occurred during encryption,
+   *         Status::OK otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status undo() override { return Status::OK; }
+
+  /**
+   * \brief Check requirements for this step
+   *
+   * \return Status::ERROR when manifest data are missing,
+   *         Status::INVALID_VALUE when requirements are not meet,
+   *         Status::OK otherwise
+   */
   Status precheck() override;
 
  private:

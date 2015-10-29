@@ -13,13 +13,40 @@
 namespace wgt {
 namespace security {
 
+/**
+ * \brief Step that add default privileges during installation
+ */
 class StepAddDefaultPrivileges : public common_installer::Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief Add default privileges
+   *
+   * \return Status::OK
+   */
   Status process() override;
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief Empty method
+   *
+   * \return Status::OK
+   */
   Status undo() override { return Status::OK; }
+
+  /**
+   * \brief Check requirements for this step
+   *
+   * \return Status::ERROR when rmanifest data are missing,
+   *         Status::OK otherwise
+   */
   Status precheck() override;
 
   SCOPE_LOG_TAG(AddDefaultPrivileges)

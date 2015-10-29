@@ -11,11 +11,19 @@
 namespace wgt {
 namespace filesystem {
 
+/**
+ * \brief This step return path to widget icon
+ */
 class StepWgtCreateIcons
     : public common_installer::filesystem::StepCreateIcons {
  public:
   using StepCreateIcons::StepCreateIcons;
 
+  /**
+   * \brief Return path to widget icon
+   *
+   * \return path to widget icon
+   */
   boost::filesystem::path GetIconRoot() const override;
 
   SCOPE_LOG_TAG(WgtCreateIcons)
