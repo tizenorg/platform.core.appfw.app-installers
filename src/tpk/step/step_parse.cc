@@ -393,7 +393,8 @@ common_installer::Step::Status StepParse::process() {
     return common_installer::Step::Status::ERROR;
   }
 
-  const manifest_x* manifest = context_->manifest_data.get();
+  manifest_x* manifest =
+      static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)));
   if (!FillManifestX(const_cast<manifest_x*>(manifest))) {
     LOG(ERROR) << "[Parse] Storing manifest_x failed. "
                <<  parser_->GetErrorMessage();
@@ -443,6 +444,7 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "  ]-";
   LOG(DEBUG) << "]-";
 
+  context_->manifest_data.set(manifest);
   return common_installer::Step::Status::OK;
 }
 
