@@ -33,7 +33,7 @@ void WriteUIApplicationAttributes(
   if (app->nodisplay)
     xmlTextWriterWriteAttribute(writer, BAD_CAST "nodisplay",
         BAD_CAST app->nodisplay);
-  if (app->launch_mode)
+  if (app->launch_mode && strlen(app->launch_mode))
     xmlTextWriterWriteAttribute(writer, BAD_CAST "launch_mode",
         BAD_CAST app->launch_mode);
 }
@@ -44,8 +44,8 @@ void WriteServiceApplicationAttributes(
       BAD_CAST(app->autorestart ? app->autorestart : "false"));
   xmlTextWriterWriteAttribute(writer, BAD_CAST "on-boot",
       BAD_CAST(app->onboot ? app->onboot : "false"));
-  xmlTextWriterWriteAttribute(writer, BAD_CAST "permission-type",
-      BAD_CAST(app->permission_type ? app->permission_type : ""));
+  xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
+      BAD_CAST "false");
 }
 
 }  // namespace
