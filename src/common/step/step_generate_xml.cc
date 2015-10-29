@@ -21,6 +21,8 @@
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
 
+#include "common/manifest_info/background_category.h"
+
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
 
@@ -46,6 +48,16 @@ void WriteServiceApplicationAttributes(
       BAD_CAST(app->onboot ? app->onboot : "false"));
   xmlTextWriterWriteAttribute(writer, BAD_CAST "taskmanage",
       BAD_CAST "false");
+}
+
+void WriteBackgroundCategory(xmlTextWriterPtr writer, application_x *app) {
+  for (const char* background_category : GListRange<char*>(
+      app->background_category)) {
+    xmlTextWriterStartElement(writer, BAD_CAST "background-category");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "value",
+        BAD_CAST background_category);
+    xmlTextWriterEndElement(writer);
+  }
 }
 
 }  // namespace
@@ -169,6 +181,8 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     xmlTextWriterWriteAttribute(writer, BAD_CAST "name", BAD_CAST category);
     xmlTextWriterEndElement(writer);
   }
+
+  WriteBackgroundCategory(writer, app);
 
   return Step::Status::OK;
 }
