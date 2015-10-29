@@ -5,8 +5,9 @@
 #ifndef COMMON_STEP_STEP_DELTA_PATCH_H_
 #define COMMON_STEP_STEP_DELTA_PATCH_H_
 
-#include "common/installer_context.h"
+#include <string>
 
+#include "common/installer_context.h"
 #include "common/step/step.h"
 #include "common/utils/logging.h"
 
@@ -20,7 +21,8 @@ namespace filesystem {
  */
 class StepDeltaPatch : public Step {
  public:
-  using Step::Step;
+  explicit StepDeltaPatch(InstallerContext* context,
+                          const std::string& delta_root = "");
 
   Status process() override;
   Status clean() override { return Status::OK; }
@@ -29,6 +31,7 @@ class StepDeltaPatch : public Step {
 
  private:
   boost::filesystem::path patch_dir_;
+  std::string delta_root_;
 
   SCOPE_LOG_TAG(DeltaPatch)
 };
