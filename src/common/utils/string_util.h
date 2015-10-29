@@ -10,6 +10,7 @@
 namespace common_installer {
 
 std::string DecodePercentEscapedCharacter(const std::string& path);
+const unsigned int GetComparableVersion(const std::string& version);
 
 }  // namespace common_installer
 

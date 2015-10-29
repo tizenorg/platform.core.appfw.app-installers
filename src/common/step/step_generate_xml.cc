@@ -170,6 +170,17 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     xmlTextWriterEndElement(writer);
   }
 
+  // FIXME This right now cause "Failed to register package" error on
+  // registration step in RegisterAppInPkgmgr function. However this element
+  // is placed correctly according to manifest.xsd
+  for (const char* background_category : GListRange<char*>(
+      app->background_category)) {
+    xmlTextWriterStartElement(writer, BAD_CAST "background-category");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "value",
+        BAD_CAST background_category);
+    xmlTextWriterEndElement(writer);
+  }
+
   return Step::Status::OK;
 }
 
