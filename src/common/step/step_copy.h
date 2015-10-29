@@ -14,13 +14,41 @@
 namespace common_installer {
 namespace filesystem {
 
+/**
+ * \brief step responsible for moving/copying files from temp unpacked dir to
+ *        final installed package destination during INSTALLATION.
+ *        Used by WGT and TPK
+ */
 class StepCopy : public Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief main logic of moving/copying files
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief removes files from final package destination
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status undo() override;
+
+  /**
+   * \brief checks if necessary paths/data are provided
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status precheck() override;
 
   SCOPE_LOG_TAG(Copy)

@@ -12,13 +12,40 @@
 namespace common_installer {
 namespace security {
 
+/**
+ * \brief step responsible for checking and comparing certificates of
+ *        current and new version of application. Used by WGT and TPK
+ */
 class StepCheckOldCertificate : public Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief main checking/comparing logic.
+   *
+   * \return Status::OK if certificates are OK. ERROR otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief empty method
+   *
+   * \return Status::OK
+   */
   Status undo() override { return Status::OK; }
+
+  /**
+   * \brief empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief empty method
+   *
+   * \return Status::OK
+   */
   Status precheck() override { return Status::OK; }
 
   SCOPE_LOG_TAG(CheckOldCertificate)

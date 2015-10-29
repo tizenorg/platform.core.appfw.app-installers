@@ -16,13 +16,40 @@
 namespace common_installer {
 namespace backup {
 
+/**
+ *\brief Step responsible for backuping icons during update and uninstallation.
+ *       Used by TPK and WGT backend
+ */
 class StepBackupIcons : public Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief main logic of backuping icons
+   *
+   * \return Status::OK, if successful backup, Status::ERROR otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief removes backup files after successful update/deinstallation
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status clean() override;
+
+  /**
+   * \brief restores backup icons.
+   *
+   * \return Status:OK if success, Status::ERROR othewise
+   */
   Status undo() override;
+
+  /**
+   * \brief empty method
+   *
+   * \return Status::OK
+   */
   Status precheck() override { return Status::OK; }
 
  private:
