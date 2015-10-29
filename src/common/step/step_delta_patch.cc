@@ -175,6 +175,12 @@ bool ApplyPatch(const delta::DeltaInfo& info, const bf::path& app_dir,
 namespace common_installer {
 namespace filesystem {
 
+StepDeltaPatch::StepDeltaPatch(InstallerContext* context,
+                               const std::string& delta_root)
+    : Step(context),
+      delta_root_(delta_root) {
+}
+
 Step::Status StepDeltaPatch::precheck() {
   if (context_->unpacked_dir_path.get().empty()) {
     LOG(ERROR) << "Unpacked dir is not set";
@@ -220,14 +226,20 @@ Step::Status StepDeltaPatch::process() {
     return Status::ERROR;
   }
 
-  if (!CopyDir(context_->root_application_path.get() / context_->pkgid.get(),
-               context_->unpacked_dir_path.get())) {
+  if (!CopyDir(context_->root_application_path.get() / context_->pkgid.get()
+               / delta_root_, context_->unpacked_dir_path.get())) {
     LOG(ERROR) << "Failed to copy package files";
     return Status::ERROR;
   }
 
-  RemoveBinarySymlinks(context_->unpacked_dir_path.get());
-  RemoveStorageDirectories(context_->unpacked_dir_path.get());
+  // if there is no root set, that means we need to handle files added by
+  // installer itself (during installation) and files added during runtime
+  // they will be restored in process so just remove extra copy here, so that
+  // it doesn't interfere with installation process
+  if (delta_root_.empty()) {
+    RemoveBinarySymlinks(context_->unpacked_dir_path.get());
+    RemoveStorageDirectories(context_->unpacked_dir_path.get());
+  }
 
   // apply changes mentioned in delta
   if (!ApplyPatch(*delta_info, context_->unpacked_dir_path.get(), patch_dir_))
