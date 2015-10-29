@@ -38,4 +38,15 @@ std::string DecodePercentEscapedCharacter(const std::string& path) {
   return std::string(output.begin(), output.end());
 }
 
+unsigned int GetComparableVersion(const std::string& version) {
+  int major, minor;
+
+  std::sscanf(version.c_str(), "%d.%d", &major, &minor);
+
+  if (major < 0) major = 0;
+  if (minor < 0) minor = 0;
+
+  return major + (10 * minor);
+}
+
 }  // namespace common_installer
