@@ -44,8 +44,6 @@ void WriteServiceApplicationAttributes(
       BAD_CAST(app->autorestart ? app->autorestart : "false"));
   xmlTextWriterWriteAttribute(writer, BAD_CAST "on-boot",
       BAD_CAST(app->onboot ? app->onboot : "false"));
-  xmlTextWriterWriteAttribute(writer, BAD_CAST "permission-type",
-      BAD_CAST(app->permission_type ? app->permission_type : ""));
 }
 
 }  // namespace
