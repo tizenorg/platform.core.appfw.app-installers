@@ -293,6 +293,15 @@ ci::AppInstaller::Result Reinstall(const bf::path& path,
   return RunInstallerWithPkgrmgr(pkgmgr, type, mode);
 }
 
+ci::AppInstaller::Result DeltaInstall(const bf::path& path,
+    const bf::path& delta_package, PackageType type) {
+  if (Install(path, type) != ci::AppInstaller::Result::OK) {
+    LOG(ERROR) << "Failed to install application. Cannot perform RDS";
+    return ci::AppInstaller::Result::UNKNOWN;
+  }
+  return Install(delta_package, type);
+}
+
 ci::AppInstaller::Result Recover(const bf::path& recovery_file,
                                  PackageType type,
                                  RequestResult mode = RequestResult::NORMAL) {
@@ -391,6 +400,43 @@ TEST_F(SmokeTest, RDSMode) {
   ASSERT_FALSE(bf::exists(root_path / pkgid / "res" / "wgt" / "DELETED"));
   ASSERT_TRUE(bf::exists(root_path / pkgid / "res" / "wgt" / "ADDED"));
   ValidateFileContentInPackage(pkgid, "res/wgt/MODIFIED", "2\n");
+}
+
+TEST_F(SmokeTest, DeltaMode) {
+  bf::path path = "/usr/share/app-installers-ut/test_samples/smoke/DeltaMode.wgt";  // NOLINT
+  std::string delta_package = "/usr/share/app-installers-ut/test_samples/smoke/DeltaMode.delta"; // NOLINT
+  std::string pkgid = "smokeapp17";
+  std::string appid = "smokeapp17.DeltaMode";
+  ASSERT_EQ(DeltaInstall(path, delta_package, PackageType::WGT),
+            ci::AppInstaller::Result::OK);
+  ValidatePackage(pkgid, appid, PackageType::WGT);
+
+  // Check delta modifications
+  bf::path root_path = ci::GetRootAppPath();
+  ASSERT_FALSE(bf::exists(root_path / pkgid / "res" / "wgt" / "DELETED"));
+  ASSERT_TRUE(bf::exists(root_path / pkgid / "res" / "wgt" / "ADDED"));
+  ASSERT_TRUE(bf::exists(root_path / pkgid / "res" / "wgt" / "css" / "style.css"));  // NOLINT
+  ASSERT_TRUE(bf::exists(root_path / pkgid / "res" / "wgt" / "images" / "tizen_32.png"));  // NOLINT
+  ASSERT_TRUE(bf::exists(root_path / pkgid / "res" / "wgt" / "js" / "main.js"));
+  ValidateFileContentInPackage(pkgid, "res/wgt/MODIFIED", "version 2\n");
+}
+
+TEST_F(SmokeTest, DeltaMode_Tpk) {
+  bf::path path = "/usr/share/app-installers-ut/test_samples/smoke/DeltaMode_Tpk.tpk";  // NOLINT
+  std::string delta_package = "/usr/share/app-installers-ut/test_samples/smoke/DeltaMode_Tpk.delta"; // NOLINT
+  std::string pkgid = "smokeapp18";
+  std::string appid = "smokeapp18.DeltaModeTpk";
+  ASSERT_EQ(DeltaInstall(path, delta_package, PackageType::TPK),
+            ci::AppInstaller::Result::OK);
+  ValidatePackage(pkgid, appid, PackageType::TPK);
+
+  // Check delta modifications
+  bf::path root_path = ci::GetRootAppPath();
+  ASSERT_FALSE(bf::exists(root_path / pkgid / "DELETED"));
+  ASSERT_TRUE(bf::exists(root_path / pkgid / "ADDED"));
+  ASSERT_TRUE(bf::exists(root_path / pkgid / "bin" / "native"));
+  ASSERT_TRUE(bf::exists(root_path / pkgid / "shared" / "res" / "native.png"));
+  ValidateFileContentInPackage(pkgid, "MODIFIED", "version 2\n");
 }
 
 TEST_F(SmokeTest, RecoveryMode_ForInstallation) {
