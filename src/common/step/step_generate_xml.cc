@@ -21,6 +21,8 @@
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
 
+#include "common/manifest_info/background_category.h"
+
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
 
@@ -108,6 +110,20 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     // Default icon setting is role of the platform
     LOG(DEBUG) << "Icon was not found in package";
   }
+
+  // write background-category entries
+  //TODO(l.wysocki): write background-category to manifest
+//  const auto bc_container =
+//      context_->manifest_plugins_data.get().background_category.get();
+//
+//  if (!bc_container.background_categories().empty()) {
+//    for (auto back_cat : bc_container.background_categories()) {
+//      xmlTextWriterStartElement(writer, BAD_CAST "background-category");
+//      xmlTextWriterWriteAttribute(writer, BAD_CAST "value",
+//          BAD_CAST back_cat.value.c_str());
+//      xmlTextWriterEndElement(writer);
+//    }
+//  }
 
   for (appcontrol_x* appc : GListRange<appcontrol_x*>(app->appcontrol)) {
     xmlTextWriterStartElement(writer, BAD_CAST "app-control");
