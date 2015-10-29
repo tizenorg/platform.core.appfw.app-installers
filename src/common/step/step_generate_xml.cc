@@ -48,6 +48,16 @@ void WriteServiceApplicationAttributes(
       BAD_CAST "false");
 }
 
+void WriteBackgroundCategory(xmlTextWriterPtr writer, application_x *app) {
+  for (const char* background_category : GListRange<char*>(
+      app->background_category)) {
+    xmlTextWriterStartElement(writer, BAD_CAST "background-category");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "value",
+        BAD_CAST background_category);
+    xmlTextWriterEndElement(writer);
+  }
+}
+
 }  // namespace
 
 namespace common_installer {
@@ -169,6 +179,8 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     xmlTextWriterWriteAttribute(writer, BAD_CAST "name", BAD_CAST category);
     xmlTextWriterEndElement(writer);
   }
+
+  WriteBackgroundCategory(writer, app);
 
   return Step::Status::OK;
 }

@@ -9,6 +9,7 @@
 #include <manifest_handlers/app_control_handler.h>
 #include <manifest_handlers/application_icons_handler.h>
 #include <manifest_handlers/application_manifest_constants.h>
+#include <manifest_handlers/background_category_handler.h>
 #include <manifest_handlers/category_handler.h>
 #include <manifest_handlers/content_handler.h>
 #include <manifest_handlers/metadata_handler.h>
@@ -245,6 +246,26 @@ bool StepParse::FillServiceApplicationInfo(manifest_x* manifest) {
   return true;
 }
 
+bool StepParse::FillBackgroundCategoryInfo(manifest_x* manifest) {
+  auto manifest_data = parser_->GetManifestData(
+      app_keys::kTizenBackgroundCategoryKey);
+  std::shared_ptr<const BackgroundCategoryInfoList> bc_list =
+      std::static_pointer_cast<const BackgroundCategoryInfoList>(manifest_data);
+
+  if (!bc_list)
+    return true;
+
+  application_x* app =
+      reinterpret_cast<application_x*>(manifest->application->data);
+
+  for (auto& background_category : bc_list->background_categories) {
+    app->background_category = g_list_append(
+        app->background_category, strdup(background_category.value().c_str()));
+  }
+
+  return true;
+}
+
 bool StepParse::FillAppControl(manifest_x* manifest) {
   std::shared_ptr<const AppControlInfoList> app_info_list =
       std::static_pointer_cast<const AppControlInfoList>(
@@ -331,7 +352,9 @@ bool StepParse::FillAccounts(manifest_x* manifest) {
 }
 
 bool StepParse::FillExtraManifestInfo(manifest_x* manifest) {
-  return FillAccounts(manifest);
+  if (!FillAccounts(manifest))
+    return false;
+  return true;
 }
 
 bool StepParse::FillManifestX(manifest_x* manifest) {
@@ -354,6 +377,8 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
   // assumes that there is one application at manifest->application
   // so this must execute last
   if (!FillServiceApplicationInfo(manifest))
+    return false;
+  if (!FillBackgroundCategoryInfo(manifest))
     return false;
   if (!FillExtraManifestInfo(manifest))
     return false;
