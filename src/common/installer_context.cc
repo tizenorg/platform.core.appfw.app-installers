@@ -31,7 +31,7 @@ const char* PrivilegeLevelToString(PrivilegeLevel level) {
 }
 
 InstallerContext::InstallerContext()
-    : manifest_data(static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)))),
+    : manifest_data(nullptr),
       old_manifest_data(nullptr),
       uid(getuid()),
       backend_data(nullptr),

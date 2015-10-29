@@ -386,7 +386,8 @@ common_installer::Step::Status StepParse::process() {
     }
   }
 
-  manifest_x* manifest = context_->manifest_data.get();
+  manifest_x* manifest =
+      static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)));
   if (!FillManifestX(manifest)) {
     LOG(ERROR) << "[Parse] Storing manifest_x failed. "
                <<  parser_->GetErrorMessage();
@@ -420,8 +421,7 @@ common_installer::Step::Status StepParse::process() {
   const std::string& package_version = wgt_info->version();
   const std::string& required_api_version = info->required_version();
 
-  context_->manifest_data.get()->api_version =
-      strdup(required_api_version.c_str());
+  manifest->api_version = strdup(required_api_version.c_str());
   context_->pkgid.set(manifest->package);
 
   // write pkgid for recovery file
@@ -465,6 +465,7 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "  ]-";
   LOG(DEBUG) << "]-";
 
+  context_->manifest_data.set(manifest);
   return common_installer::Step::Status::OK;
 }
 
