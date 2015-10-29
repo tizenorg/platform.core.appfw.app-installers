@@ -14,13 +14,41 @@
 namespace common_installer {
 namespace backup {
 
+/**
+ * \brief Responsible for backuping original package resources during
+ *        update or uninstallation and copying new content of the package.
+ *        Used by WGT and TPK backend
+ */
 class StepCopyBackup : public Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief main logic of creating backup and copying new content
+   *
+   * \return Status::OK
+   */
   Status process() override;
+
+  /**
+   * \brief removing backup files
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status clean() override;
+
+  /**
+   * \brief Restoring original pacakge files
+   *
+   * \return Status::OK if success, Status::Error otherwise
+   */
   Status undo() override;
+
+  /**
+   * \brief checks if necessary paths are available
+   *
+   * \return Status::OK if success, Status::Error otherwise
+   */
   Status precheck() override;
 
  private:

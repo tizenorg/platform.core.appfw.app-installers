@@ -12,13 +12,40 @@
 namespace common_installer {
 namespace backup {
 
+/**
+ * \brief Step responsbile for backing manifest file during update and
+ *        uninstallation. Used by WGT and TPK backend
+ */
 class StepBackupManifest : public Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief main logic of backuping manifest
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief removes backup file after successful update/deinstallation
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status clean() override;
+
+  /**
+   * \brief restores backup manifest.
+   *
+   * \return Status:OK if success, Status::ERROR othewise
+   */
   Status undo() override;
+
+  /**
+   * \brief empty method
+   *
+   * \return Status::OK
+   */
   Status precheck() override;
 
   SCOPE_LOG_TAG(BackupManifest)

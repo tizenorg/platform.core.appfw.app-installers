@@ -13,13 +13,41 @@
 namespace common_installer {
 namespace filesystem {
 
+/**
+ * \brief step responsible for copying "data" and "shared" dirs
+ *        to the proper location during update or deinstallation.
+ *        Used by TPK and WGT
+ */
 class StepCopyStorageDirectories : public common_installer::Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief main logic of copying data into directories
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief restores original content of data and shared dirs
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status undo() override;
+
+  /**
+   * \brief checks if needed paths/data are provided
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status precheck() override;
 
  protected:

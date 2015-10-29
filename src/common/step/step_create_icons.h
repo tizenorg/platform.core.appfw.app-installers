@@ -16,13 +16,40 @@
 namespace common_installer {
 namespace filesystem {
 
+/**
+ * \brief Step responsible for creating icons for applications used during
+ *        installation and update. Used by WGT and TPK backend
+ */
 class StepCreateIcons : public Step {
  public:
   using Step::Step;
 
+  /**
+   * \brief main logic for creating icons
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief empty method
+   *
+   * \return Status::OK
+   */
   Status clean() override { return Status::OK; }
+
+  /**
+   * \brief removes icons from system
+   *
+   * \return Status::OK
+   */
   Status undo() override;
+
+  /**
+   * \brief empty method
+   *
+   * \return Status::OK
+   */
   Status precheck() override { return Status::OK; }
 
  protected:

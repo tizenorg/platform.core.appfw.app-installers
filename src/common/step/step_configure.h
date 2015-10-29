@@ -22,11 +22,41 @@ namespace configuration {
  */
 class StepConfigure : public Step {
  public:
+
+  /**
+   * \brief Constuctor
+   *
+   * \param context pointer to InstallerContext structure
+   * \param pkgmgr pointer to Pkgmgr interface
+   */
   StepConfigure(InstallerContext* context, PkgMgrPtr pkgmgr);
 
+  /**
+   * \brief configuration based on pacakge typ, request mode, user
+   *
+   * \return Status::OK if success, Status::ERROR otherwise
+   */
   Status process() override;
+
+  /**
+   * \brief Recovery file reset
+   *
+   * \return Status::OK
+   */
   Status clean() override;
+
+  /**
+   * \brief empty method
+   *
+   * \return Status::OK
+   */
   Status undo() override { return Status::OK; }
+
+  /**
+   * \brief checks, if backend not launched with root uid
+   *
+   * \return Status::OK if normal user, Status::ERROR if root
+   */
   Status precheck() override;
  private:
   bool SetupRootAppDirectory();
