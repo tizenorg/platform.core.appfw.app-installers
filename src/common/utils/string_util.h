@@ -11,6 +11,18 @@ namespace common_installer {
 
 std::string DecodePercentEscapedCharacter(const std::string& path);
 
+/**
+ * \brief Compare two versions provided in dot separated format
+ *
+ * \param version version that should be compared
+ * \param compareTo version to compare to
+ *
+ * \return -1 if version is lower,
+ *         0 if both versions are equal,
+ *         1 if version is higher
+ */
+int CompareVersion(const std::string& version, const std::string& compareTo);
+
 }  // namespace common_installer
 
 #endif  // COMMON_UTILS_STRING_UTIL_H_

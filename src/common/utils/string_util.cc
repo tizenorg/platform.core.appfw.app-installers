@@ -38,4 +38,33 @@ std::string DecodePercentEscapedCharacter(const std::string& path) {
   return std::string(output.begin(), output.end());
 }
 
+int CompareVersion(const std::string& version, const std::string& compareTo) {
+  int ver1_major = 0, ver1_minor = 0, ver1_build = 0;
+  int ver2_major = 0, ver2_minor = 0, ver2_build = 0;
+
+  std::sscanf(version.c_str(), "%d.%d.%d",
+      &ver1_major, &ver1_minor, &ver1_build);
+  std::sscanf(compareTo.c_str(), "%d.%d.%d",
+      &ver2_major, &ver2_minor, &ver2_build);
+
+  if (ver1_major < 0) ver1_major = 0;
+  if (ver1_minor < 0) ver1_minor = 0;
+  if (ver1_build < 0) ver1_build = 0;
+
+  if (ver2_major < 0) ver2_major = 0;
+  if (ver2_minor < 0) ver2_minor = 0;
+  if (ver2_build < 0) ver2_build = 0;
+
+  if (ver1_major > ver2_major) return 1;
+  if (ver1_major < ver2_major) return -1;
+
+  if (ver1_minor > ver2_minor) return 1;
+  if (ver1_minor < ver2_minor) return -1;
+
+  if (ver1_build > ver2_build) return 1;
+  if (ver1_build < ver2_build) return -1;
+
+  return 0;
+}
+
 }  // namespace common_installer
