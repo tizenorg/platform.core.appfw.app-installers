@@ -42,19 +42,20 @@
 #include "common/step/step_update_security.h"
 #include "common/step/step_check_old_certificate.h"
 
-#include "wgt/step/step_create_symbolic_link.h"
+#include "wgt/step/step_add_default_privileges.h"
+#include "wgt/step/step_check_background_category.h"
 #include "wgt/step/step_check_settings_level.h"
+#include "wgt/step/step_create_symbolic_link.h"
 #include "wgt/step/step_encrypt_resources.h"
 #include "wgt/step/step_parse.h"
 #include "wgt/step/step_parse_recovery.h"
-#include "wgt/step/step_remove_encryption_data.h"
-#include "wgt/step/step_rds_parse.h"
 #include "wgt/step/step_rds_modify.h"
+#include "wgt/step/step_rds_parse.h"
+#include "wgt/step/step_remove_encryption_data.h"
+#include "wgt/step/step_wgt_copy_storage_directories.h"
 #include "wgt/step/step_wgt_create_icons.h"
 #include "wgt/step/step_wgt_create_storage_directories.h"
-#include "wgt/step/step_wgt_copy_storage_directories.h"
 #include "wgt/step/step_wgt_resource_directory.h"
-#include "wgt/step/step_add_default_privileges.h"
 
 namespace ci = common_installer;
 
@@ -72,6 +73,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
+      AddStep<wgt::security::StepCheckBackgroundCategory>();
       AddStep<wgt::encrypt::StepEncryptResources>();
       AddStep<wgt::filesystem::StepWgtResourceDirectory>();
       AddStep<ci::security::StepRollbackInstallationSecurity>();
@@ -92,6 +94,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
+      AddStep<wgt::security::StepCheckBackgroundCategory>();
       AddStep<ci::security::StepCheckOldCertificate>();
       AddStep<wgt::filesystem::StepWgtResourceDirectory>();
       AddStep<ci::backup::StepOldManifest>();
@@ -141,6 +144,7 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
+      AddStep<wgt::security::StepCheckBackgroundCategory>();
       AddStep<ci::security::StepCheckOldCertificate>();
       AddStep<wgt::filesystem::StepWgtResourceDirectory>();
       AddStep<ci::backup::StepOldManifest>();
