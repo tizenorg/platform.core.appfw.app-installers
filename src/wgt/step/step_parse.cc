@@ -9,6 +9,7 @@
 #include <manifest_handlers/app_control_handler.h>
 #include <manifest_handlers/application_icons_handler.h>
 #include <manifest_handlers/application_manifest_constants.h>
+#include <manifest_handlers/background_category_handler.h>
 #include <manifest_handlers/category_handler.h>
 #include <manifest_handlers/content_handler.h>
 #include <manifest_handlers/metadata_handler.h>
@@ -276,8 +277,33 @@ bool StepParse::FillAccounts(manifest_x* manifest) {
   return true;
 }
 
+bool StepParse::FillBackgroundCategoryInfo(manifest_x* manifest) {
+  std::shared_ptr<const BackgroundCategoryInfoList> bc_list =
+      std::static_pointer_cast<const BackgroundCategoryInfoList>(
+          parser_->GetManifestData(app_keys::kBackgroundCategoryKey));
+  if (!bc_list)
+    return true;
+
+  common_installer::BackgroundCategoryContainer bc_container;
+
+  for (auto& background_category : bc_list->background_categories) {
+    common_installer::BackgroundCategoryInfo bc_info;
+    bc_info.value = background_category.value();
+    bc_info.appid = manifest->mainapp_id;
+    bc_container.add_background_category(bc_info);
+  }
+
+  context_->manifest_plugins_data.get().background_category.set(bc_container);
+
+  return true;
+}
+
 bool StepParse::FillExtraManifestInfo(manifest_x* manifest) {
-  return FillAccounts(manifest);
+  if (!FillAccounts(manifest))
+    return false;
+  if (!FillBackgroundCategoryInfo(manifest))
+    return false;
+  return true;
 }
 
 bool StepParse::FillManifestX(manifest_x* manifest) {
@@ -296,6 +322,8 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillMetadata(manifest))
     return false;
   if (!FillExtraManifestInfo(manifest))
+    return false;
+  if (!FillBackgroundCategoryInfo(manifest))
     return false;
   return true;
 }
