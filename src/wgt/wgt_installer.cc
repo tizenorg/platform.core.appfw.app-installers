@@ -13,6 +13,7 @@
 #include "common/step/step_copy.h"
 #include "common/step/step_copy_backup.h"
 #include "common/step/step_copy_storage_directories.h"
+#include "common/step/step_delta_patch.h"
 #include "common/step/step_fail.h"
 #include "common/step/step_kill_apps.h"
 #include "common/step/step_generate_xml.h"
@@ -130,8 +131,30 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       break;
     }
     case ci::RequestType::Delta: {
-      // TODO(t.iwanek): add proper steps for this mode...
-      AddStep<ci::configuration::StepFail>();
+      AddStep<ci::configuration::StepConfigure>(pkgmgr_);
+      AddStep<ci::filesystem::StepUnzip>();
+      // TODO(t.iwanek): manifest is parsed twice...
+      AddStep<wgt::parse::StepParse>(false);  // start file may not have changed
+      AddStep<ci::filesystem::StepDeltaPatch>("res/wgt/");
+      AddStep<wgt::parse::StepParse>(true);
+      AddStep<ci::security::StepCheckSignature>();
+      AddStep<wgt::security::StepAddDefaultPrivileges>();
+      AddStep<ci::security::StepPrivilegeCompatibility>();
+      AddStep<wgt::security::StepCheckSettingsLevel>();
+      AddStep<ci::security::StepCheckOldCertificate>();
+      AddStep<wgt::filesystem::StepWgtResourceDirectory>();
+      AddStep<ci::backup::StepOldManifest>();
+      AddStep<ci::pkgmgr::StepKillApps>();
+      AddStep<ci::backup::StepBackupManifest>();
+      AddStep<ci::backup::StepBackupIcons>();
+      AddStep<ci::backup::StepCopyBackup>();
+      AddStep<wgt::filesystem::StepWgtCopyStorageDirectories>();
+      AddStep<wgt::filesystem::StepCreateSymbolicLink>();
+      AddStep<wgt::filesystem::StepWgtCreateIcons>();
+      AddStep<ci::security::StepUpdateSecurity>();
+      AddStep<ci::pkgmgr::StepGenerateXml>();
+      AddStep<ci::pkgmgr::StepUpdateApplication>();
+      break;
     }
     case ci::RequestType::Recovery: {
       AddStep<ci::configuration::StepConfigure>(pkgmgr_);
