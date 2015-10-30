@@ -28,6 +28,10 @@ Step::Status StepBackupIcons::process() {
         / bf::path(app->appid);
     if (app->icon) {
       icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
+      if (!icon->text) {
+        LOG(ERROR) << "Icon text is not set";
+        return Status::ERROR;
+      }
       app_icon += bf::path(icon->text).extension();
     } else {
       app_icon += ".png";
