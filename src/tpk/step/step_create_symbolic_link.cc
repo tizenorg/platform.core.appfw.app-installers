@@ -56,15 +56,6 @@ bool CreateSymLink(application_x* app, InstallerContext* context) {
   return true;
 }
 
-bool RemoveSymLink(application_x* app, InstallerContext* context) {
-  /* NOTE: Unlike WRT app, tpk apps have bin/ directory by default.
-   * So we don't remove the bin/ directory.
-   */
-  bf::path exec_path = bf::path(context->pkg_path.get()) / bf::path("bin");
-  bf::remove_all(exec_path / bf::path(app->appid));
-  return true;
-}
-
 }  // namespace
 
 Status StepCreateSymbolicLink::precheck() {

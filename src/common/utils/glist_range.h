@@ -34,7 +34,7 @@ class GListRange {
     reference& operator*() {
       return reinterpret_cast<T&>(ptr_->data);
     }
-    const pointer operator->() const {
+    pointer operator->() const {
       return reinterpret_cast<pointer>(&ptr_->data);
     }
     pointer operator->() {
