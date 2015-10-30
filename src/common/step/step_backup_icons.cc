@@ -26,8 +26,10 @@ Step::Status StepBackupIcons::process() {
          context_->old_manifest_data.get()->application)) {
     bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
         / bf::path(app->appid);
-    if (app->icon) {
+    if (app->icon && app->icon->data) {
       icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
+      if (!icon->text)
+        return Status::ERROR;
       app_icon += bf::path(icon->text).extension();
     } else {
       app_icon += ".png";
