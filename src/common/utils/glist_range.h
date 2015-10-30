@@ -20,6 +20,7 @@ class GListRange {
     typedef T value_type;
     typedef T& reference;
     typedef T* pointer;
+    typedef const T* const_pointer;
     typedef std::size_t difference_type;
     typedef std::forward_iterator_tag iterator_category;
 
@@ -34,7 +35,7 @@ class GListRange {
     reference& operator*() {
       return reinterpret_cast<T&>(ptr_->data);
     }
-    const pointer operator->() const {
+    const_pointer operator->() const {
       return reinterpret_cast<pointer>(&ptr_->data);
     }
     pointer operator->() {

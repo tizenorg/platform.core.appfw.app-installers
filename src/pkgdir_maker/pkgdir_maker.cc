@@ -44,8 +44,8 @@ int main(int argc, char** argv) {
   // set uid to root
   // NOTE: Even the setuid permission is set to the executable,
   //       this routine is needed.
-  setuid(0);
-  seteuid(0);
+  (void) setuid(0);
+  (void) seteuid(0);
 
   return system(cmd);
 }
