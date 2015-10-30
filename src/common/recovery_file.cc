@@ -9,9 +9,14 @@
 
 #include <array>
 #include <cstring>
+#include <map>
 
 #include "common/installer_context.h"
 #include "common/utils/logging.h"
+
+namespace bf = boost::filesystem;
+namespace bs = boost::system;
+namespace ci = common_installer;
 
 namespace {
 
@@ -22,6 +27,14 @@ const char kRecoveryRdsString[] = "RDS";
 const char kRecoveryDeltaString[] = "DELTA";
 const char kRecoveryUnknownString[] = "UNKNOWN";
 
+const std::map<std::string, ci::RequestType> kStringToRequestMap = {
+  {kRecoveryNewInstallationString, ci::RequestType::Install},
+  {kRecoveryUpdateInstallationString, ci::RequestType::Update},
+  {kRecoveryUninstallationString, ci::RequestType::Uninstall},
+  {kRecoveryRdsString, ci::RequestType::Reinstall},
+  {kRecoveryDeltaString, ci::RequestType::Delta}
+};
+
 std::string TruncateNewLine(const char* data) {
   int length = strlen(data);
   if (data[length - 1] == '\n')
@@ -30,9 +43,6 @@ std::string TruncateNewLine(const char* data) {
 }
 
 }  // namespace
-
-namespace bf = boost::filesystem;
-namespace bs = boost::system;
 
 namespace common_installer {
 namespace recovery {
@@ -139,19 +149,13 @@ bool RecoveryFile::ReadFileContent() {
     return true;
   }
   std::string mode(TruncateNewLine(data.data()));
-  if (mode == kRecoveryNewInstallationString) {
-    type_ = RequestType::Install;
-  } else if (mode == kRecoveryUpdateInstallationString) {
-    type_ = RequestType::Update;
-  } else if (mode == kRecoveryUninstallationString) {
-    type_ = RequestType::Uninstall;
-  } else if (mode == kRecoveryRdsString) {
-    type_ = RequestType::Reinstall;
-  } else if (mode == kRecoveryDeltaString) {
-    type_ = RequestType::Delta;
-  } else {
+  auto iter = kStringToRequestMap.find(mode);
+  if (iter == kStringToRequestMap.end()) {
     type_ = RequestType::Unknown;
+  } else {
+    type_ = iter->second;
   }
+
   if (!fgets(data.data(), data.size(), handle)) {
     fclose(handle);
     return true;
