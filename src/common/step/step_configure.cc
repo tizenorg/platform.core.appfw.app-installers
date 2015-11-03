@@ -30,6 +30,10 @@ Step::Status StepConfigure::process() {
     case RequestType::Install:
       context_->file_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
+      if (pkgmgr_->GetTepPath() && !std::string(pkgmgr_->GetTepPath()).empty()) {
+        context_->tep_path.set(pkgmgr_->GetTepPath());
+        context_->is_tep_move.set(pkgmgr_->GetTepMoveType()?true:false);
+      }
       break;
     case RequestType::Update:
       context_->file_path.set(pkgmgr_->GetRequestInfo());
