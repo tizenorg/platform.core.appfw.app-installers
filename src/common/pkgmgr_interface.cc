@@ -69,4 +69,12 @@ const char* PkgMgrInterface::GetRequestInfo() const {
   return pkgmgr_installer_get_request_info(pi_);
 }
 
+const char* PkgMgrInterface::GetTepPath() const {
+  return pkgmgr_installer_get_tep_path(pi_);
+}
+
+int PkgMgrInterface::GetTepMoveType() {
+  return pkgmgr_installer_get_tep_move_type(pi_);
+}
+
 }  // namespace common_installer
