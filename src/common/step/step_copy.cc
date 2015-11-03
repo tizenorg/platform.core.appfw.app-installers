@@ -74,6 +74,26 @@ Step::Status StepCopy::process() {
     return Status::ERROR;
   }
 
+#ifdef _APPFW_FEATURE_EXPANSION_PKG_INSTALL
+  if (!context_->tep_path.get().empty()) {
+    bf::path tep_path = install_path / "res" / context_->tep_path.get().filename();
+	LOG(INFO) << "TEP path is : " << tep_path.string();
+
+	if (context_->is_tep_move.get()) {
+	  if (!MoveFile(context_->tep_path.get(), tep_path)) {
+        LOG(ERROR) << "Cannnot move TEP file into install path";
+		return Step::Status::ERROR;
+	  }
+    } else {
+      if (!CopyFile(context_->tep_path.get(), tep_path)) {
+	  	LOG(ERROR) << "Cannot copy TEP file [" << context_->tep_path.get() << "] into install path [" << tep_path << "]";
+		return Step::Status::ERROR;
+      }
+    }
+	context_->tep_path.set(tep_path);
+  }
+#endif
+
   LOG(INFO) << "Successfully move: " << context_->unpacked_dir_path.get()
             << " to: " << install_path << " directory";
   return Status::OK;

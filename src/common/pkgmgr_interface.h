@@ -51,6 +51,22 @@ class PkgMgrInterface {
   static PkgMgrPtr Create(int argc, char** argv,
         AppQueryInterface* interface = nullptr);
 
+#ifdef _APPFW_FEATURE_EXPANSION_PKG_INSTALL
+  /**
+  * Returns TEP path passed from pkgmgr_installer
+  *
+  * \return TEP path retrieved from pkgmgr_installer
+  */
+  const char *GetTepPath() const;
+
+  /**
+  * Returns Move type of TEP file passed from pkgmgr_installer
+  *
+  * \return Move type of TEP file retrieved from pkgmgr_installer
+  */
+  int GetTepMoveType();
+#endif
+
   /**
    * Get Raw pointer to pkgmgr_installer object
    * NOTE: It should not be used (PkgMgrInterface can destroy it

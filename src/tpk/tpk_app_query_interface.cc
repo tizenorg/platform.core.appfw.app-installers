@@ -82,9 +82,11 @@ bool TpkAppQueryInterface::IsAppInstalledByArgv(int argc, char** argv) {
     // not the installaton
     return false;
   }
+
   std::string pkg_id = GetPkgIdFromPath(path);
   if (pkg_id.empty())
     return false;
+
   return ci::IsPackageInstalled(pkg_id, ci::GetRequestMode());
 }
 

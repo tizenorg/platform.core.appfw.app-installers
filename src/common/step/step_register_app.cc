@@ -31,6 +31,7 @@ Step::Status StepRegisterApplication::precheck() {
 }
 
 Step::Status StepRegisterApplication::process() {
+#ifndef _APPFW_FEATURE_EXPANSION_PKG_INSTALL
   if (!RegisterAppInPkgmgr(context_->xml_path.get(),
                            context_->pkgid.get(),
                            context_->certificate_info.get(),
@@ -39,6 +40,17 @@ Step::Status StepRegisterApplication::process() {
     LOG(ERROR) << "Failed to register the app";
     return Step::Status::ERROR;
   }
+#else
+  if (!RegisterAppInPkgmgrWithTep(context_->tep_path.get(),
+  	                                    context_->xml_path.get(),
+  	                                    context_->pkgid.get(),
+  	                                    context_->certificate_info.get(),
+  	                                    context_->uid.get(),
+  	                                    context_->request_mode.get())) {
+	LOG(ERROR) << "Failed to register the app";
+	return Step::Status::ERROR;
+  }
+#endif
 
   LOG(INFO) << "Successfully registered the app";
   return Status::OK;

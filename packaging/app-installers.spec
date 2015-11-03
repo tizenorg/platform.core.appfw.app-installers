@@ -39,6 +39,8 @@ BuildRequires:  pkgconfig(capi-appfw-app-manager)
 Requires: ca-certificates-tizen
 Requires: libtzplatform-config
 
+%define appfw_feature_expansion_pkg_install 1
+
 %description
 This is a meta package that installs the common application
 installers of Tizen.
@@ -62,6 +64,11 @@ Requires: %{name} = %{version}
 %description tests
 Unit tests for al modules of app-installers
 
+%if %{?appfw_feature_expansion_pkg_install}
+_EXPANSION_PKG_INSTALL=ON
+%else
+_EXPANSION_PKG_INSTALL=OFF
+%endif
 
 %prep
 %setup -q
@@ -77,7 +84,7 @@ runtime_path=%{_bindir}/xwalk-launcher
 %if "%{profile}" == "mobile" || "%{profile}" == "wearable" || "%{profile}" == "tv"
 runtime_path=%{_bindir}/wrt
 %endif
-%cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type} -DWRT_LAUNCHER=${runtime_path}
+%cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type} -DWRT_LAUNCHER=${runtime_path} -D_APPFW_FEATURE_EXPANSION_PKG_INSTALL:BOOL=_EXPANSION_PKG_INSTALL
 make %{?_smp_mflags}
 
 %install
@@ -127,7 +134,7 @@ ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 - RequestMode introduction
 
 * Fri Aug 21 2015 Pawel Sikorski <p.sikorski@samsung.com> 1.6-1
-- Icons generation fix; 
+- Icons generation fix;
 - Privilege translation for backward compatilibity
 
 * Fri Aug 21 2015 Pawel Sikorski <p.sikorski@samsung.com> 1.5-1
