@@ -44,9 +44,15 @@ AppInstaller::Result AppInstaller::Run() {
   unsigned current_step = 1;
 
   for (; it != itEnd; ++it, ++current_step) {
-    process_status = (*it)->precheck();
-    if (process_status == Step::Status::OK)
-      process_status = (*it)->process();
+    try {
+      process_status = (*it)->precheck();
+      if (process_status == Step::Status::OK) {
+        process_status = (*it)->process();
+      }
+    } catch (const std::exception& err) {
+      LOG(ERROR) << "Exception occurred in process(): " << err.what();
+      process_status = Step::Status::ERROR;
+    }
 
     // send START signal as soon as possible
     if (pi_->state() == PkgmgrSignal::State::NOT_SENT) {
@@ -70,16 +76,26 @@ AppInstaller::Result AppInstaller::Run() {
   if (it != itEnd) {
     LOG(ERROR) << "Failure occurs";
     do {
-      if ((*it)->undo() != Step::Status::OK) {
-        LOG(ERROR) << "Error during undo operation, but continuing...";
+      try {
+        if ((*it)->undo() != Step::Status::OK) {
+          LOG(ERROR) << "Error during undo operation, but continuing...";
+          ret = Result::UNDO_ERROR;
+        }
+      } catch (const std::exception& err) {
+        LOG(ERROR) << "Exception occurred in undo(): " << err.what();
         ret = Result::UNDO_ERROR;
       }
     } while (it-- != itStart);
   } else {
     for (auto& step : steps_) {
-      if (step->clean() != Step::Status::OK) {
-        LOG(ERROR) << "Error during clean operation";
-        ret = Result::CLEANUP_ERROR;
+      try {
+        if (step->clean() != Step::Status::OK) {
+          LOG(ERROR) << "Error during clean operation";
+          ret = Result::CLEANUP_ERROR;
+          break;
+        }
+      } catch (const std::exception& err) {
+        LOG(ERROR) << "Exception occurred in clean(): " << err.what();
         break;
       }
     }
