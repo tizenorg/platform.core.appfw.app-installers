@@ -30,6 +30,10 @@ Step::Status StepConfigure::process() {
     case RequestType::Install:
       context_->file_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
+      if (!pkgmgr_->GetTepPath().empty()) {
+        context_->tep_path.set(pkgmgr_->GetTepPath());
+        context_->is_tep_move.set(pkgmgr_->GetIsTepMove());
+      }
       break;
     case RequestType::Update:
       context_->file_path.set(pkgmgr_->GetRequestInfo());
@@ -47,6 +51,11 @@ Step::Status StepConfigure::process() {
     case RequestType::Recovery:
       context_->file_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
+      break;
+    case RequestType::TEPInstall:
+      context_->tep_path.set(pkgmgr_->GetTepPath());
+      context_->is_tep_move.set(pkgmgr_->GetIsTepMove());
+      context_->pkgid.set(GetPkgIdFromTEPPath(context_->tep_path.get()));
       break;
     default:
       // TODO(p.sikorski): should return unsupported, and display error
@@ -84,6 +93,11 @@ Step::Status StepConfigure::precheck() {
     return Status::ERROR;
   }
   return Status::OK;
+}
+
+std::string StepConfigure::GetPkgIdFromTEPPath(boost::filesystem::path tep_path) {
+  std::string filename = tep_path.stem().string();  //Filename without extension
+  return filename.substr(0, filename.find_last_of("-"));
 }
 
 Step::Status StepConfigure::clean() {

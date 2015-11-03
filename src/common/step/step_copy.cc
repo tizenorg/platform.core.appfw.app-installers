@@ -73,7 +73,6 @@ Step::Status StepCopy::process() {
     LOG(ERROR) << "Cannot move widget directory to install path";
     return Status::ERROR;
   }
-
   LOG(INFO) << "Successfully move: " << context_->unpacked_dir_path.get()
             << " to: " << install_path << " directory";
   return Status::OK;

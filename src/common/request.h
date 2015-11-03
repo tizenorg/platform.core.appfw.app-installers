@@ -14,7 +14,8 @@ enum class RequestType : int {
   Update,
   Uninstall,
   Reinstall,
-  Recovery
+  Recovery,
+  TEPInstall
 };
 
 /** Request mode (USER vs GLOBAL) */
