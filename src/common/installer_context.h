@@ -245,6 +245,16 @@ class InstallerContext {
   Property<boost::filesystem::path> file_path;
 
   /**
+   * \brief tep file path used for TEP installation process
+   */
+  Property<boost::filesystem::path> tep_path;
+
+  /**
+  * \brief boolean property that indicates tep file should be moved or not
+  */
+  Property<bool> is_tep_move;
+
+  /**
    * \brief path to temporary directory when package files are unpacked
    *        before coping them to final destination
    */
