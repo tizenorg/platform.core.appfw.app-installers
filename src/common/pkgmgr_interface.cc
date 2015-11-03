@@ -60,6 +60,8 @@ RequestType PkgMgrInterface::GetRequestType() const {
       return RequestType::Reinstall;
     case PKGMGR_REQ_RECOVER:
       return RequestType::Recovery;
+    case PKGMGR_REQ_INSTALL_TEP:
+      return RequestType::TEPInstall;
     default:
       return RequestType::Unknown;
   }
@@ -67,6 +69,17 @@ RequestType PkgMgrInterface::GetRequestType() const {
 
 const char* PkgMgrInterface::GetRequestInfo() const {
   return pkgmgr_installer_get_request_info(pi_);
+}
+
+boost::filesystem::path PkgMgrInterface::GetTepPath() const {
+  if (pkgmgr_installer_get_tep_path(pi_) == nullptr)
+    return boost::filesystem::path("");
+  else
+    return boost::filesystem::path(pkgmgr_installer_get_tep_path(pi_));
+}
+
+bool PkgMgrInterface::GetIsTepMove() {
+  return (pkgmgr_installer_get_tep_move_type(pi_) == 1)?true:false;
 }
 
 }  // namespace common_installer

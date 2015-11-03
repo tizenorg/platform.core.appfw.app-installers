@@ -24,7 +24,8 @@ const std::map<ci::RequestType, const char*> kEventStr = {
   {ci::RequestType::Reinstall, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
   {ci::RequestType::Uninstall, PKGMGR_INSTALLER_UNINSTALL_EVENT_STR},
   {ci::RequestType::Unknown, PKGMGR_INSTALLER_INSTALL_EVENT_STR},  // not needed
-  {ci::RequestType::Update, PKGMGR_INSTALLER_UPGRADE_EVENT_STR}
+  {ci::RequestType::Update, PKGMGR_INSTALLER_UPGRADE_EVENT_STR},
+  {ci::RequestType::TEPInstall, PKGMGR_INSTALLER_UPGRADE_EVENT_STR}
 };
 
 }  // namespace

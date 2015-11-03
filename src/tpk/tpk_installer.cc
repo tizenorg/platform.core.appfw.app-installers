@@ -7,6 +7,7 @@
 #include "common/step/step_create_icons.h"
 #include "common/step/step_create_storage_directories.h"
 #include "common/step/step_copy.h"
+#include "common/step/step_copy_tep.h"
 #include "common/step/step_copy_backup.h"
 #include "common/step/step_check_old_certificate.h"
 #include "common/step/step_fail.h"
@@ -35,6 +36,7 @@
 #include "common/step/step_unzip.h"
 #include "common/step/step_update_app.h"
 #include "common/step/step_update_security.h"
+#include "common/step/step_update_tep.h"
 #include "common/utils/logging.h"
 #include "tpk/step/step_create_symbolic_link.h"
 #include "tpk/step/step_parse.h"
@@ -75,10 +77,19 @@ void TpkInstaller::Prepare() {
     case ci::RequestType::Recovery:
       RecoverySteps();
       break;
+    case ci::RequestType::TEPInstall:
+      TEPInstallSteps();
+      break;
     default:
       AddStep<ci::configuration::StepFail>();
       break;
   }
+}
+
+void TpkInstaller::TEPInstallSteps() {
+  AddStep<ci::configuration::StepConfigure>(pkgmgr_);
+  AddStep<ci::filesystem::StepCopyTep>();
+  AddStep<ci::pkgmgr::StepUpdateTep>();
 }
 
 void TpkInstaller::InstallSteps() {
@@ -89,6 +100,8 @@ void TpkInstaller::InstallSteps() {
   AddStep<ci::security::StepPrivilegeCompatibility>();
   AddStep<ci::security::StepRollbackInstallationSecurity>();
   AddStep<ci::filesystem::StepCopy>();
+  if (!pkgmgr_->GetTepPath().empty())
+    AddStep<ci::filesystem::StepCopyTep>();
   AddStep<ci::filesystem::StepCreateStorageDirectories>();
   AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   AddStep<ci::filesystem::StepCreateIcons>();
@@ -109,6 +122,8 @@ void TpkInstaller::UpdateSteps() {
   AddStep<ci::backup::StepBackupManifest>();
   AddStep<ci::backup::StepBackupIcons>();
   AddStep<ci::backup::StepCopyBackup>();
+  if (!pkgmgr_->GetTepPath().empty())
+    AddStep<ci::filesystem::StepCopyTep>();
   AddStep<ci::filesystem::StepCreateStorageDirectories>();
   // TODO(t.iwanek): handle coping storage directories
   AddStep<tpk::filesystem::StepCreateSymbolicLink>();
@@ -116,6 +131,9 @@ void TpkInstaller::UpdateSteps() {
   AddStep<ci::security::StepUpdateSecurity>();
   AddStep<ci::pkgmgr::StepGenerateXml>();
   AddStep<ci::pkgmgr::StepUpdateApplication>();
+  if (!pkgmgr_->GetTepPath().empty())
+    // temporary step for update
+    AddStep<ci::pkgmgr::StepUpdateTep>();
 }
 
 void TpkInstaller::UninstallSteps() {

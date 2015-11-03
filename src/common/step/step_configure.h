@@ -61,6 +61,7 @@ class StepConfigure : public Step {
  private:
   bool SetupRootAppDirectory();
   void SetupRequestMode();
+  std::string GetPkgIdFromTEPPath(boost::filesystem::path tep_path);
 
   PkgMgrPtr pkgmgr_;
 

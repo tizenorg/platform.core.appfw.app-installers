@@ -33,6 +33,13 @@ bool RegisterAppInPkgmgr(const boost::filesystem::path& xml_path,
                          uid_t uid,
                          RequestMode request_mode);
 
+bool RegisterAppInPkgmgrWithTep(const boost::filesystem::path& tep_path,
+                         const boost::filesystem::path& xml_path,
+                         const std::string& pkgid,
+                         const CertificateInfo& cert_info,
+                         uid_t uid,
+                         RequestMode request_mode);
+
 /**
  * \brief Adapter interface for external PkgMgr module used for upgrading
  *        package within pkgmgr
@@ -50,6 +57,22 @@ bool UpgradeAppInPkgmgr(const boost::filesystem::path& xml_path,
                         const CertificateInfo& cert_info,
                         uid_t uid,
                         RequestMode request_mode);
+
+/**
+ * \brief Adapter interface for external PkgMgr module used for updating
+ *        tep info about package within pkgmgr
+ *
+ * \param tep_path path of tep file
+ * \param pkgid package pkgid
+ * \param uid user id
+ * \param request_mode current request mode
+ *
+ * \return true if success
+ */
+bool UpdateTepInfoInPkgmgr(const boost::filesystem::path& tep_path,
+								const std::string& pkgid,
+								uid_t uid,
+								RequestMode request_mode);
 
 /**
  * \brief Adapter interface for external PkgMgr module used for deregistering
