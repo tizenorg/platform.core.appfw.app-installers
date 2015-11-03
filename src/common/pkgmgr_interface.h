@@ -13,6 +13,7 @@
 #include "common/request.h"
 #include "common/utils/macros.h"
 #include "common/utils/logging.h"
+#include <boost/filesystem/path.hpp>
 
 namespace common_installer {
 
@@ -50,6 +51,20 @@ class PkgMgrInterface {
    */
   static PkgMgrPtr Create(int argc, char** argv,
         AppQueryInterface* interface = nullptr);
+
+  /**
+  * Returns TEP path passed from pkgmgr_installer
+  *
+  * \return TEP path retrieved from pkgmgr_installer
+  */
+  const boost::filesystem::path GetTepPath() const;
+
+  /**
+  * Returns True if TEP file should be moved. Otherwise, return false
+  *
+  * \return True if TEP file should be moved. Otherwise, return false
+  */
+  bool GetIsTepMove();
 
   /**
    * Get Raw pointer to pkgmgr_installer object
