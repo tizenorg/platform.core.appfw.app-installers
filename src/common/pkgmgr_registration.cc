@@ -73,6 +73,34 @@ int PkgmgrForeachPrivilegeCallback(const char* privilege_name,
 
 namespace common_installer {
 
+bool RegisterAppInPkgmgrWithTep(const bf::path& tep_path,
+                         const bf::path& xml_path,
+                         const std::string & pkgid,
+                         const CertificateInfo & cert_info,
+                         uid_t uid,
+                         RequestMode request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
+      pkgmgr_parser_parse_usr_manifest_for_installation_withtep(
+          xml_path.c_str(), tep_path.c_str(), uid, const_cast<char* const*>(kAppinstTags)) :
+      pkgmgr_parser_parse_manifest_for_installation_withtep(
+          xml_path.c_str(), tep_path.c_str(), const_cast<char* const*>(kAppinstTags));
+
+  if (ret) {
+	LOG(ERROR) << "Failed to register package: " << xml_path << ", "
+		"error code=" << ret;
+	return false;
+  }
+
+  if (!!cert_info.author_certificate.get()) {
+	if (!RegisterAuthorCertificate(cert_info, pkgid, uid)) {
+	  LOG(ERROR) << "Failed to register author certificate";
+	  return false;
+	}
+  }
+
+  return true;
+}
+
 bool RegisterAppInPkgmgr(const bf::path& xml_path,
                          const std::string& pkgid,
                          const CertificateInfo& cert_info,
