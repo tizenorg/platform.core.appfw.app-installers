@@ -399,11 +399,15 @@ common_installer::Step::Status StepParse::process() {
 
   manifest_x* manifest =
       static_cast<manifest_x*>(calloc(1, sizeof(manifest_x)));
+
   if (!FillManifestX(const_cast<manifest_x*>(manifest))) {
     LOG(ERROR) << "[Parse] Storing manifest_x failed. "
                <<  parser_->GetErrorMessage();
     return common_installer::Step::Status::ERROR;
   }
+
+  if (!context_->tep_path.get().empty())
+    manifest->tep_name = context_->tep_path.get().c_str();
 
   // Copy data from ManifestData to InstallerContext
   std::shared_ptr<const PackageInfo> info =

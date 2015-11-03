@@ -159,6 +159,17 @@ bool CopyDir(const bf::path& src, const bf::path& dst) {
   return true;
 }
 
+bool CopyFile(const bf::path& src, const bf::path& dst) {
+  bs::error_code error;
+
+  bf::copy_file(src, dst, bf::copy_option::overwrite_if_exists, error);
+  if (error) {
+    LOG(WARNING) << "copy file " << src << " due to error [" << error << "]";
+    return false;
+  }
+  return true;
+}
+
 bool MoveDir(const bf::path& src, const bf::path& dst) {
   if (bf::exists(dst))
     return false;
@@ -185,14 +196,18 @@ bool MoveFile(const bf::path& src, const bf::path& dst) {
   bs::error_code error;
   bf::rename(src, dst, error);
   if (error) {
-    LOG(WARNING) << "Cannot move file: " << src << ". Will copy/remove...";
+    LOG(WARNING) << "Cannot move file: " << src <<
+        ". Will copy/remove... with error [" << error << "]";
     bf::copy_file(src, dst, bf::copy_option::overwrite_if_exists, error);
     if (error) {
+      LOG(WARNING) << "Cannot copy file " << src <<
+          " due to error [" << error << "]";
       return false;
     }
     bf::remove_all(src, error);
     if (error) {
-      LOG(ERROR) << "Cannot remove old file when coping: " << src;
+      LOG(ERROR) << "Cannot remove old file when coping: " << src <<
+          "with error [" << error << "]";
     }
   }
   return true;
