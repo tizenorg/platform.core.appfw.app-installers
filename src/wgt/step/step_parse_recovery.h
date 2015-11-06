@@ -24,7 +24,6 @@ namespace parse {
  */
 class StepParseRecovery : public StepParse {
  public:
-
   /**
    * \brief Explicit constructor
    *

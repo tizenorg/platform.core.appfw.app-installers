@@ -49,6 +49,7 @@ class RDSParser {
    * \return files to delete
    */
   const std::vector<std::string>& files_to_delete() const;
+
  private:
   std::string path_to_delta_;
   std::vector<std::string> files_to_modify_;

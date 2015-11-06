@@ -26,7 +26,6 @@ namespace parse {
  */
 class StepParse : public common_installer::Step {
  public:
-
   /**
    * \brief Explicit constructor
    *
