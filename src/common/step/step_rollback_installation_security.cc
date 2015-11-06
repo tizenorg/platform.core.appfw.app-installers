@@ -25,7 +25,7 @@ Step::Status StepRollbackInstallationSecurity::precheck() {
 }
 
 Step::Status StepRollbackInstallationSecurity::undo() {
-  if (!UnregisterSecurityContextForManifest(
+  if (!UnregisterSecurityContextForApps(
       context_->pkgid.get(), context_->manifest_data.get())) {
     return Status::ERROR;
   }

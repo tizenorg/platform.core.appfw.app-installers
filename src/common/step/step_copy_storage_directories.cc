@@ -17,7 +17,6 @@ namespace bs = boost::system;
 
 namespace {
 
-const char kCache[] = "cache";
 const char kDataLocation[] = "data";
 const char kSharedLocation[] = "shared";
 
@@ -63,9 +62,6 @@ common_installer::Step::Status StepCopyStorageDirectories::process() {
     return Status::ERROR;
   }
 
-  if (!CacheDir())
-    return Status::ERROR;
-
   return Status::OK;
 }
 
@@ -86,17 +82,6 @@ common_installer::Step::Status StepCopyStorageDirectories::undo() {
   }
 
   return ret;
-}
-
-bool StepCopyStorageDirectories::CacheDir() {
-  bs::error_code error_code;
-  bf::path cache_path = context_->pkg_path.get() / kCache;
-  bf::create_directory(cache_path, error_code);
-  if (error_code) {
-    LOG(ERROR) << "Failed to create cache directory for package";
-    return false;
-  }
-  return true;
 }
 
 }  // namespace filesystem

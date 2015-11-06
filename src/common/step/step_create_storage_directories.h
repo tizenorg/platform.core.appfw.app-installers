@@ -37,7 +37,6 @@ class StepCreateStorageDirectories : public common_installer::Step {
   bool ShareDir();
   bool SubShareDir();
   bool PrivateDir();
-  bool CacheDir();
 
   SCOPE_LOG_TAG(CreateStorageDirectories)
 };

@@ -66,6 +66,7 @@ class StepWgtCreateStorageDirectories :
   bool ShareDirFor3x();
 
   bool CreatePrivateTmpDir();
+  bool CreateCacheDir();
 
   SCOPE_LOG_TAG(CreateWgtStorageDirectories)
 };

@@ -1,8 +1,5 @@
 <manifest>
-        <request>
-                <domain name="_" />
-        </request>
-        <assign>
-                <filesystem path="/usr/bin/pkgdir-tool" exec_label="User" />
-        </assign>
+ <request>
+    <domain name="_"/>
+ </request>
 </manifest>

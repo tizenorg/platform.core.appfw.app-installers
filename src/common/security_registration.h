@@ -10,7 +10,6 @@
 #include <sys/types.h>
 
 #include <string>
-#include <vector>
 
 #include "common/installer_context.h"
 
@@ -22,16 +21,14 @@ namespace common_installer {
  * Adapter interface for external Security module used for registering
  * application to security context
  *
- * \param app_id id of given application
- * \param pkg_id id of given package
+ * \param pkg_id pkdid of given package
  * \param path path of installed package
- * \param privileges pointer to manifest structure
+ * \param manifest pointer to manifest structure
  *
  * \return true if success
  */
-bool RegisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id, const boost::filesystem::path& path,
-    const std::vector<std::string>& privileges);
+bool RegisterSecurityContextForApps(const std::string& pkg_id,
+    const boost::filesystem::path& path, manifest_x* manifest);
 
 /**
  * Adapter interface for external Security module.
@@ -39,41 +36,12 @@ bool RegisterSecurityContext(const std::string& app_id,
  * Adapter interface for external Security module used for unregistering
  * application from security context
  *
- * \param app_id id of given application
- * \param pkg_id id of given package
- *
- * \return true if success
- */
-bool UnregisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id);
-
-/**
- * Adapter interface for external Security module.
- *
- * Adapter interface for external Security module used for registering
- * package to security context
- *
- * \param pkg_id pkgid of given package
- * \param path path of installed package
+ * \param pkg_id pkdid of given package
  * \param manifest pointer to manifest structure
  *
  * \return true if success
  */
-bool RegisterSecurityContextForManifest(const std::string& pkg_id,
-    const boost::filesystem::path& path, manifest_x* manifest);
-
-/**
- * Adapter interface for external Security module.
- *
- * Adapter interface for external Security module used for unregistering
- * package from security context
- *
- * \param pkg_id pkgid of given package
- * \param manifest pointer to manifest structure
- *
- * \return true if success
- */
-bool UnregisterSecurityContextForManifest(const std::string& pkg_id,
+bool UnregisterSecurityContextForApps(const std::string& pkg_id,
     manifest_x* manifest);
 
 }  // namespace common_installer

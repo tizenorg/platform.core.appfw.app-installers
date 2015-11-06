@@ -121,13 +121,11 @@ void ValidatePackageFS(const std::string& pkgid, const std::string& appid,
   bf::path binary_path = package_path / "bin" / appid;
   bf::path data_path = package_path / "data";
   bf::path shared_path = package_path / "shared";
-  bf::path cache_path = package_path / "cache";
   ASSERT_TRUE(bf::exists(root_path));
   ASSERT_TRUE(bf::exists(package_path));
   ASSERT_TRUE(bf::exists(binary_path));
   ASSERT_TRUE(bf::exists(data_path));
   ASSERT_TRUE(bf::exists(shared_path));
-  ASSERT_TRUE(bf::exists(cache_path));
 
   bf::path manifest_path =
       bf::path(getUserManifestPath(getuid())) / (pkgid + ".xml");
@@ -142,7 +140,9 @@ void ValidatePackageFS(const std::string& pkgid, const std::string& appid,
     ASSERT_TRUE(bf::exists(config_path));
 
     bf::path private_tmp_path = package_path / "tmp";
+    bf::path cache_path = package_path / "cache";
     ASSERT_TRUE(bf::exists(private_tmp_path));
+    ASSERT_TRUE(bf::exists(cache_path));
   }
 
   // backups should not exist
