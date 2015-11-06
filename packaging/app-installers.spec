@@ -93,7 +93,9 @@ chown root:users %{_bindir}/pkgdir_maker
 chmod 4750 %{_bindir}/pkgdir_maker
 chmod 0700 %{_bindir}/pkgdir_maker_impl.sh
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
+[ $1 == 0 ] && rm %{_bindir}/pkgdir_maker
 
 %files
 %defattr(-,root,root)
