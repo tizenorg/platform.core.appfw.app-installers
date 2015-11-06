@@ -21,7 +21,6 @@ namespace rds {
  */
 class StepRDSModify : public common_installer::Step {
  public:
-
   /**
    * \brief Explicit constructor
    *

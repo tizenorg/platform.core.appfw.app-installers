@@ -40,7 +40,8 @@ namespace app_keys = tpk::application_keys;
 namespace bf = boost::filesystem;
 
 const char kManifestFileName[] = "tizen-manifest.xml";
-} // namepsace
+
+}  // namepsace
 
 common_installer::Step::Status StepParse::precheck() {
   if (context_->unpacked_dir_path.get().empty()) {

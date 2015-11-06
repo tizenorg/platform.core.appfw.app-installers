@@ -22,7 +22,6 @@ namespace configuration {
  */
 class StepConfigure : public Step {
  public:
-
   /**
    * \brief Constuctor
    *
@@ -58,6 +57,7 @@ class StepConfigure : public Step {
    * \return Status::OK if normal user, Status::ERROR if root
    */
   Status precheck() override;
+
  private:
   bool SetupRootAppDirectory();
   void SetupRequestMode();
