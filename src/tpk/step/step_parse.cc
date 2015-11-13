@@ -436,10 +436,12 @@ common_installer::Step::Status StepParse::process() {
   LOG(DEBUG) << "App package: " << info->package();
   LOG(DEBUG) << "  aplication version     = " <<  info->version();
   LOG(DEBUG) << "  api_version = " <<  info->api_version();
-  LOG(DEBUG) << "  launch_modes -[";
-  for (const auto& application : ui_application_list->items) {
-    LOG(DEBUG) << "    launch_mode[" << application.ui_info.appid() << "] = "
-               <<  application.ui_info.launch_mode();
+  if (ui_application_list) {
+    LOG(DEBUG) << "  launch_modes -[";
+    for (const auto& application : ui_application_list->items) {
+      LOG(DEBUG) << "    launch_mode[" << application.ui_info.appid() << "] = "
+        <<  application.ui_info.launch_mode();
+    }
   }
   LOG(DEBUG) << "  ]-";
   LOG(DEBUG) << "  privileges -[";
