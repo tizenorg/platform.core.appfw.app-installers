@@ -11,6 +11,7 @@
 
 #include <vcore/SignatureFinder.h>
 #include <vcore/SignatureValidator.h>
+#include <vcore/Error.h>
 
 #include <cassert>
 #include <cstdlib>
@@ -58,25 +59,20 @@ common_installer::Step::Status ValidateSignatureFile(
   bf::path path = base_path / file_info.getFileName();
   LOG(INFO) << "Processing signature: " << path;
 
+  ValidationCore::SignatureValidator validator(file_info);
   ValidationCore::SignatureData data;
-  ValidationCore::SignatureValidator::Result result =
-    ValidationCore::SignatureValidator::check(
-      file_info,           // signature file info
+  ValidationCore::VCerr result = validator.check(
       base_path.string(),  // app content path for checking hash of file ref.
       true,                // ocsp check flag
       true,                // file reference hash check flag
       data);               // output signature data
 
   switch (result) {
-    case ValidationCore::SignatureValidator::SIGNATURE_REVOKED: {
+    case ValidationCore::E_SIG_REVOKED: {
       LOG(ERROR) << "Certificate is revoked";
       return common_installer::Step::Status::ERROR;
     };
-    case ValidationCore::SignatureValidator::SIGNATURE_INVALID: {
-      LOG(ERROR) << "Certificate is invalid";
-      return common_installer::Step::Status::ERROR;
-    };
-    case ValidationCore::SignatureValidator::SIGNATURE_DISREGARD: {
+    case ValidationCore::E_SIG_DISREGARDED: {
         if (data.isAuthorSignature()) {
           LOG(ERROR) << "Author-signiture is disregarded";
           return common_installer::Step::Status::ERROR;
@@ -84,7 +80,7 @@ common_installer::Step::Status ValidateSignatureFile(
         LOG(WARNING) << "Signature disregarded: " << path;
         break;
     };
-    case ValidationCore::SignatureValidator::SIGNATURE_VERIFIED: {
+    case ValidationCore::E_SIG_NONE: {
       if (!data.isAuthorSignature()) {
         // First distributor signature sets the privilege level
         // (wrt spec. 0620.)
@@ -99,6 +95,8 @@ common_installer::Step::Status ValidateSignatureFile(
       break;
     };
     default: {
+      LOG(ERROR) << "signature validation check failed : "
+                 << validator.errorToString(result);
       return common_installer::Step::Status::ERROR;
     };
   }
