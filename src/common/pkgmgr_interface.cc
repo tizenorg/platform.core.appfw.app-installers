@@ -94,4 +94,15 @@ const char* PkgMgrInterface::GetRequestInfo() const {
   return pkgmgr_installer_get_request_info(pi_);
 }
 
+boost::filesystem::path PkgMgrInterface::GetTepPath() const {
+  if (pkgmgr_installer_get_tep_path(pi_) == nullptr)
+    return boost::filesystem::path("");
+  else
+    return boost::filesystem::path(pkgmgr_installer_get_tep_path(pi_));
+}
+
+bool PkgMgrInterface::GetIsTepMove() {
+  return (pkgmgr_installer_get_tep_move_type(pi_) == 1)?true:false;
+}
+
 }  // namespace common_installer

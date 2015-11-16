@@ -40,6 +40,7 @@ Requires: ca-certificates-tizen
 Requires: libtzplatform-config
 Requires: xdelta3
 
+
 %description
 This is a meta package that installs the common application
 installers of Tizen.
@@ -62,7 +63,6 @@ Requires: %{name} = %{version}
 
 %description tests
 Unit tests for al modules of app-installers
-
 
 %prep
 %setup -q
@@ -131,7 +131,7 @@ chmod 0700 %{_bindir}/pkgdir_maker_impl.sh
 - RequestMode introduction
 
 * Fri Aug 21 2015 Pawel Sikorski <p.sikorski@samsung.com> 1.6-1
-- Icons generation fix; 
+- Icons generation fix;
 - Privilege translation for backward compatilibity
 
 * Fri Aug 21 2015 Pawel Sikorski <p.sikorski@samsung.com> 1.5-1

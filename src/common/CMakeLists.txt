@@ -17,6 +17,7 @@ SET(SRCS
   step/step_check_signature.cc
   step/step_configure.cc
   step/step_copy.cc
+  step/step_copy_tep.cc
   step/step_copy_backup.cc
   step/step_copy_storage_directories.cc
   step/step_create_storage_directories.cc
@@ -46,6 +47,7 @@ SET(SRCS
   step/step_unregister_app.cc
   step/step_update_app.cc
   step/step_update_security.cc
+  step/step_update_tep.cc
   utils/file_util.cc
   utils/string_util.cc
 )

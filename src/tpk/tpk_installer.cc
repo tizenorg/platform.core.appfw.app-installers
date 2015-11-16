@@ -7,6 +7,7 @@
 #include "common/step/step_create_icons.h"
 #include "common/step/step_create_storage_directories.h"
 #include "common/step/step_copy.h"
+#include "common/step/step_copy_tep.h"
 #include "common/step/step_copy_backup.h"
 #include "common/step/step_check_old_certificate.h"
 #include "common/step/step_delta_patch.h"
@@ -36,6 +37,7 @@
 #include "common/step/step_unzip.h"
 #include "common/step/step_update_app.h"
 #include "common/step/step_update_security.h"
+#include "common/step/step_update_tep.h"
 #include "common/utils/logging.h"
 #include "tpk/step/step_create_symbolic_link.h"
 #include "tpk/step/step_parse.h"
@@ -93,6 +95,7 @@ void TpkInstaller::InstallSteps() {
   AddStep<ci::security::StepPrivilegeCompatibility>();
   AddStep<ci::security::StepRollbackInstallationSecurity>();
   AddStep<ci::filesystem::StepCopy>();
+  AddStep<ci::filesystem::StepCopyTep>();
   AddStep<ci::filesystem::StepCreateStorageDirectories>();
   AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   AddStep<ci::filesystem::StepCreateIcons>();
@@ -113,6 +116,7 @@ void TpkInstaller::UpdateSteps() {
   AddStep<ci::backup::StepBackupManifest>();
   AddStep<ci::backup::StepBackupIcons>();
   AddStep<ci::backup::StepCopyBackup>();
+  AddStep<ci::filesystem::StepCopyTep>();
   AddStep<ci::filesystem::StepCreateStorageDirectories>();
   // TODO(t.iwanek): handle coping storage directories
   AddStep<tpk::filesystem::StepCreateSymbolicLink>();
@@ -120,6 +124,9 @@ void TpkInstaller::UpdateSteps() {
   AddStep<ci::security::StepUpdateSecurity>();
   AddStep<ci::pkgmgr::StepGenerateXml>();
   AddStep<ci::pkgmgr::StepUpdateApplication>();
+  /* TODO(jungh.yeon): this temporary step will be removed
+  * when secondary parsing procedure has removed*/
+  AddStep<ci::pkgmgr::StepUpdateTep>();
 }
 
 void TpkInstaller::UninstallSteps() {

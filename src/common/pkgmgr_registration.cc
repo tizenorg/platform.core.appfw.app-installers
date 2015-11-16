@@ -66,6 +66,36 @@ int PkgmgrForeachAppCallback(const pkgmgrinfo_appinfo_h handle,
 
 namespace common_installer {
 
+bool RegisterAppInPkgmgrWithTep(const bf::path& tep_path,
+                         const bf::path& xml_path,
+                         const std::string & pkgid,
+                         const CertificateInfo & cert_info,
+                         uid_t uid,
+                         RequestMode request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
+      pkgmgr_parser_parse_usr_manifest_for_installation_withtep(
+          xml_path.c_str(), tep_path.c_str(),
+          uid, const_cast<char* const*>(kAppinstTags)) :
+      pkgmgr_parser_parse_manifest_for_installation_withtep(
+          xml_path.c_str(), tep_path.c_str(),
+          const_cast<char* const*>(kAppinstTags));
+
+  if (ret) {
+    LOG(ERROR) << "Failed to register package: " << xml_path << ", "
+        "error code=" << ret;
+    return false;
+  }
+
+  if (!!cert_info.author_certificate.get()) {
+    if (!RegisterAuthorCertificate(cert_info, pkgid, uid)) {
+      LOG(ERROR) << "Failed to register author certificate";
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool RegisterAppInPkgmgr(const bf::path& xml_path,
                          const std::string& pkgid,
                          const CertificateInfo& cert_info,
@@ -87,6 +117,22 @@ bool RegisterAppInPkgmgr(const bf::path& xml_path,
       LOG(ERROR) << "Failed to register author certificate";
       return false;
     }
+  }
+
+  return true;
+}
+
+bool UpdateTepInfoInPkgmgr(const bf::path& tep_path, const std::string& pkgid,
+                        uid_t uid, RequestMode request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
+        pkgmgr_parser_usr_update_tep(
+            pkgid.c_str(), tep_path.string().c_str(), uid) :
+        pkgmgr_parser_update_tep(
+            pkgid.c_str(), tep_path.string().c_str());
+
+  if (ret != 0) {
+    LOG(ERROR) << "Failed to upgrade tep info: " << pkgid;
+    return false;
   }
 
   return true;

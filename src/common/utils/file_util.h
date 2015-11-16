@@ -14,6 +14,9 @@ bool CreateDir(const boost::filesystem::path& path);
 bool CopyDir(const boost::filesystem::path& src,
              const boost::filesystem::path& dst);
 
+bool CopyFile(const boost::filesystem::path& src,
+             const boost::filesystem::path& dst);
+
 bool MoveDir(const boost::filesystem::path& src,
              const boost::filesystem::path& dst);
 
