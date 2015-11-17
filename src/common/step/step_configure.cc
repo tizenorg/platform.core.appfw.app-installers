@@ -61,6 +61,12 @@ Step::Status StepConfigure::process() {
       context_->file_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       break;
+    case RequestType::ManifestDirectInstall:
+      context_->xml_path.set(pkgmgr_->GetXMLPath());
+      context_->pkgid.set(context_->xml_path.get().stem().string());
+      context_->unpacked_dir_path.set(pkgmgr_->GetDirectoryPath());
+      context_->pkg_path.set(pkgmgr_->GetDirectoryPath());
+      break;
     default:
       // TODO(p.sikorski): should return unsupported, and display error
       LOG(ERROR) <<
