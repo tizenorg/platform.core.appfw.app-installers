@@ -27,18 +27,14 @@ namespace common_installer {
  *
  * \return true if success
  */
-bool RegisterAppInPkgmgr(const boost::filesystem::path& xml_path,
-                         const std::string& pkgid,
-                         const CertificateInfo& cert_info,
-                         uid_t uid,
-                         RequestMode request_mode);
-
-bool RegisterAppInPkgmgrWithTep(const boost::filesystem::path& tep_path,
+bool RegisterAppInPkgmgr(manifest_x* manifest,
                          const boost::filesystem::path& xml_path,
                          const std::string& pkgid,
                          const CertificateInfo& cert_info,
                          uid_t uid,
-                         RequestMode request_mode);
+                         RequestMode request_mode,
+                         const boost::filesystem::path& tep_path =
+                             boost::filesystem::path());
 
 /**
  * \brief Adapter interface for external PkgMgr module used for upgrading
@@ -52,7 +48,8 @@ bool RegisterAppInPkgmgrWithTep(const boost::filesystem::path& tep_path,
  *
  * \return true if success
  */
-bool UpgradeAppInPkgmgr(const boost::filesystem::path& xml_path,
+bool UpgradeAppInPkgmgr(manifest_x* manifest,
+                        const boost::filesystem::path& xml_path,
                         const std::string& pkgid,
                         const CertificateInfo& cert_info,
                         uid_t uid,
@@ -85,7 +82,8 @@ bool UpdateTepInfoInPkgmgr(const boost::filesystem::path& tep_path,
  *
  * \return true if success
  */
-bool UnregisterAppInPkgmgr(const boost::filesystem::path& xml_path,
+bool UnregisterAppInPkgmgr(manifest_x* manifest,
+                           const boost::filesystem::path& xml_path,
                            const std::string& pkgid,
                            uid_t uid,
                            RequestMode request_mode);

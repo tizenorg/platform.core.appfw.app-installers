@@ -52,10 +52,9 @@ class StepCopyTep : public Step {
   Status precheck() override;
 
   SCOPE_LOG_TAG(CopyTEP)
-
 };
 
 }  // namespace filesystem
 }  // namespace common_installer
 
-#endif  // COMMON_STEP_STEP_TEPCOPY_H_
+#endif  // COMMON_STEP_STEP_COPY_TEP_H_
