@@ -17,7 +17,8 @@ namespace pkgmgr {
 Step::Status StepRecoverApplication::RecoveryNew() {
   if (!SetXmlPaths())
     return Status::OK;
-  UnregisterAppInPkgmgr(context_->xml_path.get(),
+  UnregisterAppInPkgmgr(context_->manifest_data.get(),
+                        context_->xml_path.get(),
                         context_->pkgid.get(),
                         context_->uid.get(),
                         context_->request_mode.get());
@@ -31,11 +32,13 @@ Step::Status StepRecoverApplication::RecoveryUpdate() {
   }
   bf::path xml_path = bf::exists(context_->backup_xml_path.get()) ?
         context_->backup_xml_path.get() : context_->xml_path.get();
-  UnregisterAppInPkgmgr(xml_path,
+  UnregisterAppInPkgmgr(context_->manifest_data.get(),
+                        xml_path,
                         context_->pkgid.get(),
                         context_->uid.get(),
                         context_->request_mode.get());
-  if (!RegisterAppInPkgmgr(xml_path,
+  if (!RegisterAppInPkgmgr(context_->manifest_data.get(),
+                           xml_path,
                            context_->pkgid.get(),
                            context_->certificate_info.get(),
                            context_->uid.get(),

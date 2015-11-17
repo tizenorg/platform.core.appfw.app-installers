@@ -193,6 +193,7 @@ bool StepParse::FillServiceApplication(manifest_x* manifest) {
     service_app->onboot = strdup(application.sa_info.on_boot().c_str());
     service_app->type = strdup(application.sa_info.type().c_str());
     service_app->component_type = strdup("svcapp");
+    service_app->mainapp = strdup("false");
     manifest->application = g_list_append(manifest->application, service_app);
 
     if (!FillAppControl(service_app,  application.app_control))
@@ -227,6 +228,7 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
     ui_app->taskmanage = strdup(application.ui_info.taskmanage().c_str());
     ui_app->type = strdup(application.ui_info.type().c_str());
     ui_app->component_type = strdup("uiapp");
+    ui_app->mainapp = strdup("false");
     manifest->application = g_list_append(manifest->application, ui_app);
 
     if (!FillAppControl(ui_app, application.app_control))

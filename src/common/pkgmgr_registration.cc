@@ -5,6 +5,7 @@
 #include "common/pkgmgr_registration.h"
 
 #include <pkgmgr_installer.h>
+#include <pkgmgr_parser_db.h>
 #include <tzplatform_config.h>
 #include <unistd.h>
 
@@ -13,14 +14,6 @@
 namespace bf = boost::filesystem;
 
 namespace {
-
-// TODO(sdi2): Check if data->removable is correctly setting
-// during parsing step.
-// Same check should be done for preload field.
-
-// Having a specific step to implement a installer commandline tool
-// for image build could be usefull also.
-const char* const kAppinstTags[] = {"removable=true", nullptr, };
 
 bool RegisterAuthorCertificate(
     const common_installer::CertificateInfo& cert_info,
@@ -66,49 +59,25 @@ int PkgmgrForeachAppCallback(const pkgmgrinfo_appinfo_h handle,
 
 namespace common_installer {
 
-bool RegisterAppInPkgmgrWithTep(const bf::path& tep_path,
+bool RegisterAppInPkgmgr(manifest_x* manifest,
                          const bf::path& xml_path,
-                         const std::string & pkgid,
-                         const CertificateInfo & cert_info,
-                         uid_t uid,
-                         RequestMode request_mode) {
-  int ret = request_mode != RequestMode::GLOBAL ?
-      pkgmgr_parser_parse_usr_manifest_for_installation_withtep(
-          xml_path.c_str(), tep_path.c_str(),
-          uid, const_cast<char* const*>(kAppinstTags)) :
-      pkgmgr_parser_parse_manifest_for_installation_withtep(
-          xml_path.c_str(), tep_path.c_str(),
-          const_cast<char* const*>(kAppinstTags));
-
-  if (ret) {
-    LOG(ERROR) << "Failed to register package: " << xml_path << ", "
-        "error code=" << ret;
-    return false;
-  }
-
-  if (!!cert_info.author_certificate.get()) {
-    if (!RegisterAuthorCertificate(cert_info, pkgid, uid)) {
-      LOG(ERROR) << "Failed to register author certificate";
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool RegisterAppInPkgmgr(const bf::path& xml_path,
                          const std::string& pkgid,
                          const CertificateInfo& cert_info,
                          uid_t uid,
-                         RequestMode request_mode) {
+                         RequestMode request_mode,
+                         const boost::filesystem::path& tep_path) {
+  // Fill "non-xml" elements
+  if (!tep_path.empty())
+    manifest->tep_name = strdup(tep_path.c_str());
+  // TODO(sdi2): Check if data->removable is correctly setting
+  manifest->removable = strdup("true");
+
   int ret = request_mode != RequestMode::GLOBAL ?
-      pkgmgr_parser_parse_usr_manifest_for_installation(
-          xml_path.c_str(), uid, const_cast<char* const*>(kAppinstTags)) :
-      pkgmgr_parser_parse_manifest_for_installation(
-          xml_path.c_str(), const_cast<char* const*>(kAppinstTags));
+      pkgmgr_parser_parse_usr_manifest_for_installation(manifest,
+          xml_path.c_str(), uid) :
+      pkgmgr_parser_parse_manifest_for_installation(manifest, xml_path.c_str());
   if (ret) {
-    LOG(ERROR) << "Failed to register package: " << xml_path << ", "
-        "error code=" << ret;
+    LOG(ERROR) << "Failed to insert manifest into pkgmgr, error code=" << ret;
     return false;
   }
 
@@ -138,19 +107,22 @@ bool UpdateTepInfoInPkgmgr(const bf::path& tep_path, const std::string& pkgid,
   return true;
 }
 
-bool UpgradeAppInPkgmgr(const bf::path& xml_path, const std::string& pkgid,
-                        const CertificateInfo& cert_info, uid_t uid,
+bool UpgradeAppInPkgmgr(manifest_x* manifest,
+                        const bf::path& xml_path,
+                        const std::string& pkgid,
+                        const CertificateInfo& cert_info,
+                        uid_t uid,
                         RequestMode request_mode) {
+  // Fill "non-xml" elements
+  manifest->removable = strdup("true");
+
   int ret = request_mode != RequestMode::GLOBAL ?
-       pkgmgr_parser_parse_usr_manifest_for_upgrade(
-           xml_path.string().c_str(), uid,
-           const_cast<char* const*>(kAppinstTags)) :
-       pkgmgr_parser_parse_manifest_for_upgrade(
-           xml_path.string().c_str(),
-           const_cast<char* const*>(kAppinstTags));
+       pkgmgr_parser_parse_usr_manifest_for_upgrade(manifest, xml_path.c_str(),
+            uid) :
+       pkgmgr_parser_parse_manifest_for_upgrade(manifest, xml_path.c_str());
 
   if (ret != 0) {
-    LOG(ERROR) << "Failed to upgrade package: " << xml_path;
+    LOG(ERROR) << "Failed to update manifest in pkgmgr, error code=" << ret;
     return false;
   }
 
@@ -164,18 +136,18 @@ bool UpgradeAppInPkgmgr(const bf::path& xml_path, const std::string& pkgid,
   return true;
 }
 
-bool UnregisterAppInPkgmgr(const bf::path& xml_path,
+bool UnregisterAppInPkgmgr(manifest_x* manifest,
+                           const bf::path& xml_path,
                            const std::string& pkgid,
                            uid_t uid,
                            RequestMode request_mode) {
   int ret = request_mode != RequestMode::GLOBAL ?
-      pkgmgr_parser_parse_usr_manifest_for_uninstallation(
-          xml_path.string().c_str(), uid,
-          const_cast<char* const*>(kAppinstTags)) :
-      pkgmgr_parser_parse_manifest_for_uninstallation(
-          xml_path.string().c_str(), const_cast<char* const*>(kAppinstTags));
+      pkgmgr_parser_parse_usr_manifest_for_uninstallation(manifest,
+          xml_path.c_str(), uid) :
+      pkgmgr_parser_parse_manifest_for_uninstallation(manifest,
+          xml_path.c_str());
   if (ret) {
-    LOG(ERROR) << "Failed to unregister package: " << xml_path;
+    LOG(ERROR) << "Failed to delete manifest from pkgmgr, error code=" << ret;
     return false;
   }
 
