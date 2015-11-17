@@ -85,6 +85,11 @@ RequestType PkgMgrInterface::GetRequestType() const {
       return RequestType::Reinstall;
     case PKGMGR_REQ_RECOVER:
       return RequestType::Recovery;
+    case PKGMGR_REQ_MANIFEST_DIRECT_INSTALL:
+      if (!is_app_installed_)
+        return RequestType::ManifestDirectInstall;
+      else
+        return RequestType::ManifestDirectUpdate;
     default:
       return RequestType::Unknown;
   }
@@ -103,6 +108,14 @@ boost::filesystem::path PkgMgrInterface::GetTepPath() const {
 
 bool PkgMgrInterface::GetIsTepMove() {
   return (pkgmgr_installer_get_tep_move_type(pi_) == 1)?true:false;
+}
+
+const char *PkgMgrInterface::GetXMLPath() {
+  return pkgmgr_installer_get_xml_path(pi_);
+}
+
+const char *PkgMgrInterface::GetDirectoryPath() {
+  return pkgmgr_installer_get_directory_path(pi_);
 }
 
 }  // namespace common_installer
