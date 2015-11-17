@@ -177,6 +177,7 @@ bool StepParse::FillUIApplicationInfo(manifest_x* manifest) {
   application_x* application = reinterpret_cast<application_x*>(
       calloc(1, sizeof(application_x)));
   application->component_type = strdup("uiapp");
+  application->mainapp = strdup("false");
   application->appid = strdup(app_info->id().c_str());
   application->type = strdup("webapp");
   application->launch_mode = strdup(app_info->launch_mode().c_str());
@@ -203,6 +204,7 @@ bool StepParse::FillServiceApplicationInfo(manifest_x* manifest) {
     application_x* application = reinterpret_cast<application_x*>
         (calloc(1, sizeof(application_x)));
     application->component_type = strdup("svcapp");
+    application->mainapp = strdup("false");
     application->appid = strdup(service_info.id().c_str());
     application->type = strdup("webapp");
     application->onboot =
