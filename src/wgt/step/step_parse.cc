@@ -21,6 +21,7 @@
 
 #include <string.h>
 
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
@@ -37,6 +38,7 @@
 namespace {
 
 const std::string kManifestVersion = "1.0.0";
+const char kTizenPackageXmlNamespace[] = "http://tizen.org/ns/packages";
 
 GList* GenerateMetadataListX(const wgt::parse::MetaDataInfo& meta_info) {
   GList* list = nullptr;
@@ -49,6 +51,25 @@ GList* GenerateMetadataListX(const wgt::parse::MetaDataInfo& meta_info) {
     list = g_list_append(list, new_meta);
   }
   return list;
+}
+
+void SetApplicationXDefaults(application_x* application) {
+  application->ambient_support = strdup("false");
+  application->effectimage_type = strdup("image");
+  application->enabled = strdup("true");
+  application->guestmode_visibility = strdup("true");
+  application->hwacceleration = strdup("default");
+  application->indicatordisplay = strdup("true");
+  application->installed_storage = strdup("installed_internal");
+  application->launchcondition = strdup("false");
+  application->permission_type = strdup("normal");
+  application->process_pool = strdup("false");
+  application->recentimage = strdup("false");
+  application->screenreader = strdup("use-system-setting");
+  application->submode = strdup("false");
+  application->support_disable = strdup("false");
+  application->taskmanage = strdup("true");
+  application->ui_gadget = strdup("false");
 }
 
 }  // namespace
@@ -76,6 +97,15 @@ const std::string& StepParse::GetPackageVersion(
   return kManifestVersion;
 }
 
+bool StepParse::FillInstallationInfo(manifest_x* manifest) {
+  manifest->root_path = strdup(
+      (context_->root_application_path.get() / manifest->package).c_str());
+  manifest->installed_time =
+      strdup(std::to_string(std::chrono::system_clock::to_time_t(
+          std::chrono::system_clock::now())).c_str());
+  return true;
+}
+
 bool StepParse::FillIconPaths(manifest_x* manifest) {
   std::shared_ptr<const ApplicationIconsInfo> icons_info =
       std::static_pointer_cast<const ApplicationIconsInfo>(
@@ -84,6 +114,7 @@ bool StepParse::FillIconPaths(manifest_x* manifest) {
     for (auto& application_icon : icons_info->icons()) {
       icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
       icon->text = strdup(application_icon.path().c_str());
+      icon->lang = strdup(DEFAULT_LOCALE);
       manifest->icon = g_list_append(manifest->icon, icon);
     }
   }
@@ -101,24 +132,31 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
 
   const std::string& version = wgt_info->version();
 
+  manifest->ns = strdup(kTizenPackageXmlNamespace);
   manifest->version = strdup(GetPackageVersion(version).c_str());
 
   for (auto& item : wgt_info->description_set()) {
     description_x* description = reinterpret_cast<description_x*>
         (calloc(1, sizeof(description_x)));
-    description->name = strdup(item.second.c_str());
-    description->lang = strdup(item.first.c_str());
+    description->text = strdup(item.second.c_str());
+    description->lang = item.first.c_str() ?
+        strdup(item.first.c_str()) : strdup(DEFAULT_LOCALE);
     manifest->description = g_list_append(manifest->description, description);
   }
 
   for (auto& item : wgt_info->name_set()) {
     label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
     label->name = strdup(item.second.c_str());
-    label->lang = strdup(item.first.c_str());
+    label->text = strdup(item.second.c_str());
+    label->lang = !item.first.empty() ?
+        strdup(item.first.c_str()) : strdup(DEFAULT_LOCALE);
     manifest->label = g_list_append(manifest->label, label);
   }
 
   manifest->type = strdup("wgt");
+  manifest->appsetting = strdup("false");
+  manifest->nodisplay_setting = strdup("false");
+  manifest->support_disable = strdup("false");
 
   // For wgt package use the long name
   for (auto& item : wgt_info->name_set()) {
@@ -126,7 +164,9 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
         reinterpret_cast<application_x*>(manifest->application->data);
     label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
     label->name = strdup(item.second.c_str());
-    label->lang = strdup(item.first.c_str());
+    label->text = strdup(item.second.c_str());
+    label->lang = !item.first.empty() ?
+        strdup(item.first.c_str()) : strdup(DEFAULT_LOCALE);
     app->label = g_list_append(app->label, label);
   }
 
@@ -137,6 +177,7 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
     author->email = strdup(wgt_info->author_email().c_str());
   if (!wgt_info->author_href().empty())
     author->href = strdup(wgt_info->author_href().c_str());
+  author->lang = strdup(DEFAULT_LOCALE);
   manifest->author = g_list_append(manifest->author, author);
 
   std::shared_ptr<const SettingInfo> settings_info =
@@ -177,13 +218,26 @@ bool StepParse::FillUIApplicationInfo(manifest_x* manifest) {
   application_x* application = reinterpret_cast<application_x*>(
       calloc(1, sizeof(application_x)));
   application->component_type = strdup("uiapp");
+  application->mainapp = strdup("true");
+  application->nodisplay = strdup("false");
+  application->multiple = strdup("false");
   application->appid = strdup(app_info->id().c_str());
+  SetApplicationXDefaults(application);
+  application->package = strdup(app_info->package().c_str());
+
+  application->exec =
+      strdup((context_->root_application_path.get() / app_info->package()
+              / "bin" / application->appid).c_str());
   application->type = strdup("webapp");
+  application->onboot = strdup("false");
+  application->autorestart = strdup("false");
+
   application->launch_mode = strdup(app_info->launch_mode().c_str());
   if (manifest->icon) {
     icon_x* icon = reinterpret_cast<icon_x*>(manifest->icon->data);
     icon_x* app_icon = reinterpret_cast<icon_x*>(calloc(1, sizeof(icon_x)));
     app_icon->text = strdup(icon->text);
+    app_icon->lang = strdup(icon->lang);
     application->icon = g_list_append(application->icon, app_icon);
   }
   manifest->application = g_list_append(manifest->application, application);
@@ -203,24 +257,34 @@ bool StepParse::FillServiceApplicationInfo(manifest_x* manifest) {
     application_x* application = reinterpret_cast<application_x*>
         (calloc(1, sizeof(application_x)));
     application->component_type = strdup("svcapp");
+    application->mainapp = strdup("false");
+    application->nodisplay = strdup("false");
+    application->multiple = strdup("false");
     application->appid = strdup(service_info.id().c_str());
+    application->exec =
+        strdup((context_->root_application_path.get() / manifest->package
+                / "bin" / application->appid).c_str());
     application->type = strdup("webapp");
     application->onboot =
         service_info.on_boot() ? strdup("true") : strdup("false");
     application->autorestart =
         service_info.auto_restart() ? strdup("true") : strdup("false");
+    SetApplicationXDefaults(application);
+    application->package = strdup(manifest->package);
 
     for (auto& pair : service_info.names()) {
       label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
-      if (!pair.first.empty())
-        label->lang = strdup(pair.first.c_str());
+      label->lang = !pair.first.empty() ?
+          strdup(pair.first.c_str()) : strdup(DEFAULT_LOCALE);
       label->name = strdup(pair.second.c_str());
+      label->text = strdup(pair.second.c_str());
       application->label = g_list_append(application->label, label);
     }
 
     if (!service_info.icon().empty()) {
       icon_x* icon = reinterpret_cast<icon_x*>(calloc(1, sizeof(icon_x)));
       icon->text = strdup(service_info.icon().c_str());
+      icon->lang = strdup(DEFAULT_LOCALE);
       application->icon = g_list_append(application->icon, icon);
     }
 
@@ -340,6 +404,8 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillUIApplicationInfo(manifest))
     return false;
   if (!FillWidgetInfo(manifest))
+    return false;
+  if (!FillInstallationInfo(manifest))
     return false;
   if (!FillPrivileges(manifest))
     return false;
