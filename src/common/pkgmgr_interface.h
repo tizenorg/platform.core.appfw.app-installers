@@ -41,6 +41,13 @@ class PkgMgrInterface {
   const char *GetRequestInfo() const;
 
   /**
+   * Returns XML path passed from pkgmgr_installer
+   *
+   * \return XML info retrieved from pkgmgr_installer
+   */
+  const char *GetManifestPath();
+
+  /**
    * Creates PkgMgrInterface
    *
    * \param argc main() argc argument passed to the backend

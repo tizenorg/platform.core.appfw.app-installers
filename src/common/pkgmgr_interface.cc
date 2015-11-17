@@ -85,6 +85,8 @@ RequestType PkgMgrInterface::GetRequestType() const {
       return RequestType::Reinstall;
     case PKGMGR_REQ_RECOVER:
       return RequestType::Recovery;
+    case PKGMGR_REQ_RPMAPPINSTALL:
+      return RequestType::RPMAppInstall;
     default:
       return RequestType::Unknown;
   }
@@ -105,4 +107,7 @@ bool PkgMgrInterface::GetIsTepMove() {
   return (pkgmgr_installer_get_tep_move_type(pi_) == 1)?true:false;
 }
 
+const char *PkgMgrInterface::GetManifestPath() {
+  return pkgmgr_installer_get_request_info(pi_);
+}
 }  // namespace common_installer

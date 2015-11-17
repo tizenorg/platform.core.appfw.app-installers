@@ -81,6 +81,9 @@ void TpkInstaller::Prepare() {
     case ci::RequestType::Recovery:
       RecoverySteps();
       break;
+    case ci::RequestType::RPMAppInstall:
+      RPMAppInstallSteps();
+      break;
     default:
       AddStep<ci::configuration::StepFail>();
       break;
@@ -178,6 +181,11 @@ void TpkInstaller::RecoverySteps() {
   AddStep<ci::filesystem::StepRecoverStorageDirectories>();
   AddStep<ci::filesystem::StepRecoverFiles>();
   AddStep<ci::security::StepRecoverSecurity>();
+}
+
+void TpkInstaller::RPMAppInstallSteps() {
+  AddStep<ci::configuration::StepConfigure>(pkgmgr_);
+  AddStep<ci::pkgmgr::StepRegisterApplication>();
 }
 
 }  // namespace tpk

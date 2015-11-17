@@ -61,6 +61,10 @@ Step::Status StepConfigure::process() {
       context_->file_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       break;
+    case RequestType::RPMAppInstall:
+      context_->xml_path.set(pkgmgr_->GetManifestPath());
+      context_->pkgid.set(context_->xml_path.get().stem().string());
+      break;
     default:
       // TODO(p.sikorski): should return unsupported, and display error
       LOG(ERROR) <<
