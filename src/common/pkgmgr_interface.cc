@@ -5,6 +5,8 @@
 #include "common/pkgmgr_interface.h"
 
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem.hpp>
+
 
 #include <memory>
 #include <string>
@@ -43,6 +45,42 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
   if (result) {
     LOG(ERROR) << "Cannot receive request. Invalid arguments?";
     // no need to free pkgmgr_installer here. it will be freed in DTOR.
+  }
+
+  if (pkgmgr_installer_get_request_type(pi_) == PKGMGR_REQ_MANIFEST_DIRECT_INSTALL) {
+    /* Add restrictions for manifest direct install
+      * - Directory should be located under /usr/apps/
+      * - XML path should be located under /usr/share/packages/
+      * - Directory name and xml name should be same */
+    bf::path directory_path = pkgmgr_installer_get_directory_path(pi_);
+    bf::path xml_path = pkgmgr_installer_get_xml_path(pi_);
+
+    if (directory_path.empty() ||
+        !bf::is_directory(directory_path) ||
+        xml_path.empty() ||
+        !bf::is_regular_file(xml_path)) {
+      LOG(ERROR) << "invalid parameter";
+      return EINVAL;
+    }
+
+    if (directory_path.parent_path().compare("/usr/apps") != 0) {
+      LOG(ERROR) << "invalid directory path";
+      return EINVAL;
+    }
+
+    if (xml_path.parent_path().compare("/usr/share/packages") != 0) {
+      LOG(ERROR) << "invalid xml path";
+      return EINVAL;
+    }
+
+    if (directory_path.filename().string().compare(xml_path.stem().string()) != 0) {
+      LOG(ERROR) << "invalid parameter: directory path "
+          << directory_path
+          << "xml path"
+          << xml_path;
+      return EINVAL;
+    }
+
   }
 
   is_app_installed_ = false;
@@ -85,6 +123,11 @@ RequestType PkgMgrInterface::GetRequestType() const {
       return RequestType::Reinstall;
     case PKGMGR_REQ_RECOVER:
       return RequestType::Recovery;
+    case PKGMGR_REQ_MANIFEST_DIRECT_INSTALL:
+      if (!is_app_installed_)
+        return RequestType::ManifestDirectInstall;
+      else
+        return RequestType::ManifestDirectUpdate;
     default:
       return RequestType::Unknown;
   }
@@ -103,6 +146,14 @@ boost::filesystem::path PkgMgrInterface::GetTepPath() const {
 
 bool PkgMgrInterface::GetIsTepMove() {
   return (pkgmgr_installer_get_tep_move_type(pi_) == 1)?true:false;
+}
+
+boost::filesystem::path PkgMgrInterface::GetXMLPath() {
+  return boost::filesystem::path(pkgmgr_installer_get_xml_path(pi_));
+}
+
+boost::filesystem::path PkgMgrInterface::GetDirectoryPath() {
+  return boost::filesystem::path(pkgmgr_installer_get_directory_path(pi_));
 }
 
 }  // namespace common_installer
