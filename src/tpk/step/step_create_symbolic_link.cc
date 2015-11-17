@@ -44,9 +44,8 @@ bool CreateSymLink(application_x* app, InstallerContext* context) {
   }
 
   // Give an execution permission to the original executable
-  bf::path exec_path = bindir / bf::path(app->exec);
-  LOG(DEBUG) << "Giving exec permission to " << exec_path;
-  bf::permissions(exec_path, bf::owner_all |
+  LOG(DEBUG) << "Giving exec permission to " << app->exec;
+  bf::permissions(bf::path(app->exec), bf::owner_all |
       bf::group_read | bf::group_exe |
       bf::others_read | bf::others_exe, boost_error);
   if (boost_error) {

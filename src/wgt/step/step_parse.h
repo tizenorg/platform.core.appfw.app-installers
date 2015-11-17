@@ -73,6 +73,7 @@ class StepParse : public common_installer::Step {
 
   const std::string& GetPackageVersion(const std::string& manifest_version);
 
+  bool FillInstallationInfo(manifest_x* manifest);
   bool FillIconPaths(manifest_x* manifest);
   bool FillWidgetInfo(manifest_x* manifest);
   bool FillUIApplicationInfo(manifest_x* manifest);
