@@ -18,6 +18,7 @@
 
 #include <pkgmgr/pkgmgr_parser.h>
 
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -57,9 +58,9 @@ common_installer::Step::Status StepParse::precheck() {
   }
 
   boost::filesystem::path tmp;
-  if (!context_->xml_path.get().empty())
+  if (!context_->xml_path.get().empty()) {
     tmp = context_->xml_path.get();
-  else {
+  } else {
     tmp = context_->unpacked_dir_path.get();
     tmp /= kManifestFileName;
   }
@@ -74,9 +75,9 @@ common_installer::Step::Status StepParse::precheck() {
 
 bool StepParse::LocateConfigFile() {
   boost::filesystem::path manifest;
-  if (!context_->xml_path.get().empty())
+  if (!context_->xml_path.get().empty()) {
     manifest = context_->xml_path.get();
-  else {
+  } else {
     manifest = context_->unpacked_dir_path.get();
     manifest /= kManifestFileName;
   }
@@ -92,13 +93,22 @@ bool StepParse::LocateConfigFile() {
 
 bf::path StepParse::LocateConfigFile() const {
   boost::filesystem::path path;
-  if (!context_->xml_path.get().empty())
+  if (!context_->xml_path.get().empty()) {
     path = context_->xml_path.get();
-  else {
+  } else {
     path = context_->unpacked_dir_path.get();
     path /= kManifestFileName;
   }
   return path;
+}
+
+bool StepParse::FillInstallationInfo(manifest_x* manifest) {
+  manifest->root_path = strdup(
+      (context_->root_application_path.get() / manifest->package).c_str());
+  manifest->installed_time =
+      strdup(std::to_string(std::chrono::system_clock::to_time_t(
+          std::chrono::system_clock::now())).c_str());
+  return true;
 }
 
 bool StepParse::FillPackageInfo(manifest_x* manifest) {
@@ -128,6 +138,9 @@ bool StepParse::FillPackageInfo(manifest_x* manifest) {
   manifest->package = strdup(pkg_info->package().c_str());
   manifest->nodisplay_setting = strdup(pkg_info->nodisplay_setting().c_str());
   manifest->type = strdup("tpk");
+  manifest->appsetting = strdup("false");
+  manifest->nodisplay_setting = strdup("false");
+  manifest->support_disable = strdup("false");
   manifest->version = strdup(pkg_info->version().c_str());
   manifest->installlocation = strdup(pkg_info->install_location().c_str());
   manifest->api_version = strdup(pkg_info->api_version().c_str());
@@ -136,6 +149,8 @@ bool StepParse::FillPackageInfo(manifest_x* manifest) {
     label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
     if (!pair.first.empty())
       label->lang = strdup(pair.first.c_str());
+    else
+      label->lang = strdup(DEFAULT_LOCALE);
     label->name = strdup(pair.second.c_str());
     manifest->label = g_list_append(manifest->label, label);
   }
@@ -174,6 +189,7 @@ bool StepParse::FillAuthorInfo(manifest_x* manifest) {
   author->text = strdup(author_info->name().c_str());
   author->email = strdup(author_info->email().c_str());
   author->href = strdup(author_info->href().c_str());
+  author->lang = strdup(DEFAULT_LOCALE);
   manifest->author = g_list_append(manifest->author, author);
   return true;
 }
@@ -190,8 +206,9 @@ bool StepParse::FillDescription(manifest_x* manifest) {
 
   description_x* description = reinterpret_cast<description_x*>
       (calloc(1, sizeof(description_x)));
-  description->name = strdup(description_info->description().c_str());
-  description->lang = strdup(description_info->xml_lang().c_str());
+  description->text = strdup(description_info->description().c_str());
+  description->lang = !description_info->xml_lang().empty() ?
+      strdup(description_info->xml_lang().c_str()) : strdup(DEFAULT_LOCALE);
   manifest->description = g_list_append(manifest->description, description);
   return true;
 }
@@ -219,18 +236,37 @@ bool StepParse::FillServiceApplication(manifest_x* manifest) {
     return true;
 
   for (const auto& application : service_application_list->items) {
+    // if there is no app yet, set this app as mainapp
+    bool main_app = manifest->application == nullptr;
+
     application_x* service_app =
         static_cast<application_x*>(calloc(1, sizeof(application_x)));
     service_app->appid = strdup(application.sa_info.appid().c_str());
     service_app->autorestart =
         strdup(application.sa_info.auto_restart().c_str());
-    service_app->exec = strdup(application.sa_info.exec().c_str());
+    service_app->exec = strdup((context_->root_application_path.get()
+                           / manifest->package / "bin"
+                           / application.sa_info.exec()).c_str());
     service_app->onboot = strdup(application.sa_info.on_boot().c_str());
     service_app->type = strdup(application.sa_info.type().c_str());
     service_app->process_pool =
         strdup(application.sa_info.process_pool().c_str());
-
     service_app->component_type = strdup("svcapp");
+    service_app->mainapp = main_app ? strdup("true") : strdup("false");
+    service_app->enabled = strdup("true");
+    service_app->hwacceleration = strdup("default");
+    service_app->screenreader = strdup("use-system-setting");
+    service_app->recentimage = strdup("false");
+    service_app->launchcondition = strdup("false");
+    service_app->indicatordisplay = strdup("true");
+    service_app->effectimage_type = strdup("image");
+    service_app->guestmode_visibility = strdup("true");
+    service_app->permission_type = strdup("normal");
+    service_app->submode = strdup("false");
+    service_app->process_pool = strdup("false");
+    service_app->ambient_support = strdup("false");
+    service_app->package = strdup(manifest->package);
+    service_app->support_disable = strdup(manifest->support_disable);
     manifest->application = g_list_append(manifest->application, service_app);
 
     if (!FillAppControl(service_app,  application.app_control))
@@ -255,10 +291,15 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
     return true;
 
   for (const auto& application : ui_application_list->items) {
+    // if there is no app yet, set this app as mainapp
+    bool main_app = manifest->application == nullptr;
+
     application_x* ui_app =
         static_cast<application_x*>(calloc(1, sizeof(application_x)));
     ui_app->appid = strdup(application.ui_info.appid().c_str());
-    ui_app->exec = strdup(application.ui_info.exec().c_str());
+    ui_app->exec = strdup((context_->root_application_path.get()
+                           / manifest->package / "bin"
+                           / application.ui_info.exec()).c_str());
     ui_app->launch_mode = strdup(application.ui_info.launch_mode().c_str());
     ui_app->multiple = strdup(application.ui_info.multiple().c_str());
     ui_app->nodisplay = strdup(application.ui_info.nodisplay().c_str());
@@ -280,6 +321,19 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
         strdup(application.ui_info.submode_mainid().c_str());
     ui_app->hwacceleration =
         strdup(application.ui_info.hwacceleration().c_str());
+    ui_app->onboot = strdup("false");
+    ui_app->autorestart = strdup("false");
+    ui_app->component_type = strdup("uiapp");
+    ui_app->mainapp = main_app ? strdup("true") : strdup("false");
+    ui_app->enabled = strdup("true");
+    ui_app->screenreader = strdup("use-system-setting");
+    ui_app->recentimage = strdup("false");
+    ui_app->launchcondition = strdup("false");
+    ui_app->guestmode_visibility = strdup("true");
+    ui_app->permission_type = strdup("normal");
+    ui_app->ambient_support = strdup("false");
+    ui_app->package = strdup(manifest->package);
+    ui_app->support_disable = strdup(manifest->support_disable);
     manifest->application = g_list_append(manifest->application, ui_app);
 
     if (!FillAppControl(ui_app, application.app_control))
@@ -343,6 +397,7 @@ bool StepParse::FillApplicationIconPaths(application_x* app,
     // Current implementation is just for compatibility.
     icon->text = strdup(application_icon.path().c_str());
     icon->name = strdup(application_icon.path().c_str());
+    icon->lang = strdup(DEFAULT_LOCALE);
     app->icon = g_list_append(app->icon, icon);
   }
   return true;
@@ -361,7 +416,8 @@ bool StepParse::FillLabel(application_x* app, const T& label_list) {
     // Current implementation is just for compatibility.
     label->text = strdup(control.text().c_str());
     label->name = strdup(control.name().c_str());
-    label->lang = strdup(control.xml_lang().c_str());
+    label->lang = !control.xml_lang().empty() ?
+        strdup(control.xml_lang().c_str()) : strdup(DEFAULT_LOCALE);
     app->label = g_list_append(app->label, label);
   }
   return true;
@@ -391,6 +447,8 @@ bool StepParse::FillImage(application_x* app,
     std::string lang = app_image.lang();
     if (!lang.empty())
       image->lang = strdup(lang.c_str());
+    else
+      image->lang = strdup(DEFAULT_LOCALE);
     app->image = g_list_append(app->image, image);
   }
   return true;
@@ -442,6 +500,8 @@ bool StepParse::FillShortcuts() {
 
 bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillPackageInfo(manifest))
+    return false;
+  if (!FillInstallationInfo(manifest))
     return false;
   if (!FillUIApplication(manifest))
     return false;

@@ -33,6 +33,9 @@ void WriteUIApplicationAttributes(
   if (app->nodisplay)
     xmlTextWriterWriteAttribute(writer, BAD_CAST "nodisplay",
         BAD_CAST app->nodisplay);
+  if (app->multiple)
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "multiple",
+        BAD_CAST app->multiple);
   if (app->launch_mode && strlen(app->launch_mode))
     xmlTextWriterWriteAttribute(writer, BAD_CAST "launch_mode",
         BAD_CAST app->launch_mode);
@@ -102,7 +105,7 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
 
   for (label_x* label : GListRange<label_x*>(app->label)) {
     xmlTextWriterStartElement(writer, BAD_CAST "label");
-    if (label->lang && strlen(label->lang)) {
+    if (label->lang && strcmp(DEFAULT_LOCALE, label->lang) != 0) {
       xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
                                   BAD_CAST label->lang);
     }
@@ -140,7 +143,7 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     xmlTextWriterStartElement(writer, BAD_CAST "image");
     xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
         BAD_CAST image->name);
-    if (image->lang) {
+    if (image->lang && strcmp(DEFAULT_LOCALE, image->lang) != 0) {
       xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
                                   BAD_CAST image->lang);
     }
@@ -282,7 +285,7 @@ common_installer::Step::Status StepGenerateXml::process() {
   for (label_x* label :
        GListRange<label_x*>(context_->manifest_data.get()->label)) {
     xmlTextWriterStartElement(writer, BAD_CAST "label");
-    if (label->lang && strlen(label->lang)) {
+    if (label->lang && strcmp(DEFAULT_LOCALE, label->lang) != 0) {
       xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
                                   BAD_CAST label->lang);
     }
@@ -308,11 +311,11 @@ common_installer::Step::Status StepGenerateXml::process() {
   for (description_x* description :
        GListRange<description_x*>(context_->manifest_data.get()->description)) {
     xmlTextWriterStartElement(writer, BAD_CAST "description");
-    if (description->lang && strlen(description->lang)) {
+    if (description->lang && strcmp(DEFAULT_LOCALE, description->lang) != 0) {
       xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
                                   BAD_CAST description->lang);
     }
-    xmlTextWriterWriteString(writer, BAD_CAST description->name);
+    xmlTextWriterWriteString(writer, BAD_CAST description->text);
     xmlTextWriterEndElement(writer);
   }
 
