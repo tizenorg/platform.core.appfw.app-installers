@@ -43,6 +43,25 @@ std::string GetInstallationPackagePath(int argc, char** argv) {
   return path;
 }
 
+std::string GetXmlPath(int argc, char** argv) {
+  std::string path;
+  for (int i = 0; i < argc; ++i) {
+    if (!strcmp(argv[i], "-x")) {
+      if (i + 1 < argc) {
+        path = argv[i + 1];
+        break;
+      }
+    }
+  }
+  return path;
+}
+
+std::string GetPkgIdFromXml(const std::string&path) {
+  bf::path xml_path(path);
+
+  return xml_path.stem().string();
+}
+
 std::string GetPkgIdFromPath(const std::string& path) {
   bf::path tmp_path = common_installer::GenerateTmpDir("/tmp");
   bs::error_code code;
@@ -78,11 +97,19 @@ namespace tpk {
 
 bool TpkAppQueryInterface::IsAppInstalledByArgv(int argc, char** argv) {
   std::string path = GetInstallationPackagePath(argc, argv);
+  std::string pkg_id;
   if (path.empty()) {
-    // not the installaton
-    return false;
+    //check if it is manifest direct install
+    path = GetXmlPath(argc, argv);
+    if (path.empty())
+      return false;
+
+    pkg_id = GetPkgIdFromXml(path);
+    if (pkg_id.empty())
+      return false;
+    return ci::IsPackageInstalled(pkg_id, ci::GetRequestMode());
   }
-  std::string pkg_id = GetPkgIdFromPath(path);
+  pkg_id = GetPkgIdFromPath(path);
   if (pkg_id.empty())
     return false;
   return ci::IsPackageInstalled(pkg_id, ci::GetRequestMode());
