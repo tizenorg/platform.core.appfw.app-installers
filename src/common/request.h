@@ -15,7 +15,9 @@ enum class RequestType : int {
   Uninstall,
   Reinstall,
   Delta,
-  Recovery
+  Recovery,
+  ManifestDirectInstall,
+  ManifestDirectUpdate
 };
 
 /** Request mode (USER vs GLOBAL) */
