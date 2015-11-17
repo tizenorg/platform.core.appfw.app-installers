@@ -81,6 +81,9 @@ void TpkInstaller::Prepare() {
     case ci::RequestType::Recovery:
       RecoverySteps();
       break;
+    case ci::RequestType::ManifestDirectInstall:
+      ManifestDirectInstallSteps();
+      break;
     default:
       AddStep<ci::configuration::StepFail>();
       break;
@@ -178,6 +181,16 @@ void TpkInstaller::RecoverySteps() {
   AddStep<ci::filesystem::StepRecoverStorageDirectories>();
   AddStep<ci::filesystem::StepRecoverFiles>();
   AddStep<ci::security::StepRecoverSecurity>();
+}
+
+void TpkInstaller::ManifestDirectInstallSteps() {
+  AddStep<ci::configuration::StepConfigure>(pkgmgr_);
+  AddStep<tpk::parse::StepParse>();
+  AddStep<ci::security::StepCheckSignature>();
+  AddStep<ci::security::StepPrivilegeCompatibility>();
+  AddStep<ci::security::StepRollbackInstallationSecurity>();
+  AddStep<ci::security::StepRegisterSecurity>();
+  AddStep<ci::pkgmgr::StepRegisterApplication>();
 }
 
 }  // namespace tpk

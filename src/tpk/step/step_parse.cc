@@ -55,12 +55,15 @@ common_installer::Step::Status StepParse::precheck() {
     return common_installer::Step::Status::INVALID_VALUE;
   }
 
-  boost::filesystem::path tmp(context_->unpacked_dir_path.get());
-  tmp /= kManifestFileName;
+  boost::filesystem::path tmp;
+  if (context_->xml_path.get().empty()) {
+    tmp = context_->unpacked_dir_path.get();
+    tmp /= kManifestFileName;
+  } else
+    tmp = context_->xml_path.get();
 
   if (!boost::filesystem::exists(tmp)) {
-    LOG(ERROR) << kManifestFileName
-               << " not found from the package";
+    LOG(ERROR) << "manifest not found from the package";
     return common_installer::Step::Status::INVALID_VALUE;
   }
 
@@ -68,10 +71,15 @@ common_installer::Step::Status StepParse::precheck() {
 }
 
 bool StepParse::LocateConfigFile() {
-  boost::filesystem::path manifest = context_->unpacked_dir_path.get();
-  manifest /= kManifestFileName;
+  boost::filesystem::path manifest;
+  if (!context_->xml_path.get().empty())
+    manifest = context_->xml_path.get();
+  else {
+    manifest = context_->unpacked_dir_path.get();
+    manifest /= kManifestFileName;
+  }
 
-  LOG(DEBUG) << "tizen_manifest.xml path: " << manifest;
+  LOG(DEBUG) << "manifest path: " << manifest;
 
   if (!boost::filesystem::exists(manifest))
     return false;
@@ -81,8 +89,13 @@ bool StepParse::LocateConfigFile() {
 }
 
 bf::path StepParse::LocateConfigFile() const {
-  boost::filesystem::path path(context_->unpacked_dir_path.get());
-  path /= kManifestFileName;
+  boost::filesystem::path path;
+  if (!context_->xml_path.get().empty())
+    path = context_->xml_path.get();
+  else {
+    path = context_->unpacked_dir_path.get();
+    path /= kManifestFileName;
+  }
   return path;
 }
 
@@ -389,7 +402,7 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
 
 common_installer::Step::Status StepParse::process() {
   if (!LocateConfigFile()) {
-    LOG(ERROR) << "No tizen_manifest.xml";
+    LOG(ERROR) << "No manifest file exists";
     return common_installer::Step::Status::ERROR;
   }
   parser_.reset(new tpk::parse::TPKConfigParser());
