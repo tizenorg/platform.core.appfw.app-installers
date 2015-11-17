@@ -41,6 +41,7 @@ class StepParse : public common_installer::Step {
   boost::filesystem::path path_;
 
  private:
+  bool FillInstallationInfo(manifest_x* manifest);
   bool FillPackageInfo(manifest_x* manifest);
   bool FillAuthorInfo(manifest_x* manifest);
   bool FillDescription(manifest_x* manifest);
