@@ -33,7 +33,8 @@ Step::Status StepUpdateApplication::precheck() {
 }
 
 Step::Status StepUpdateApplication::process() {
-  if (!UpgradeAppInPkgmgr(context_->xml_path.get(),
+  if (!UpgradeAppInPkgmgr(context_->manifest_data.get(),
+                          context_->xml_path.get(),
                           context_->pkgid.get(),
                           context_->certificate_info.get(),
                           context_->uid.get(),
@@ -64,7 +65,8 @@ Step::Status StepUpdateApplication::undo() {
     }
   }
 
-  if (!UpgradeAppInPkgmgr(context_->backup_xml_path.get(),
+  if (!UpgradeAppInPkgmgr(context_->old_manifest_data.get(),
+                          context_->backup_xml_path.get(),
                           context_->pkgid.get(), certificate_info,
                           context_->uid.get(),
                           context_->request_mode.get())) {
