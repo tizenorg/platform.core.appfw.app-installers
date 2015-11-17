@@ -31,12 +31,13 @@ Step::Status StepRegisterApplication::precheck() {
 }
 
 Step::Status StepRegisterApplication::process() {
-  if (!RegisterAppInPkgmgrWithTep(context_->tep_path.get(),
-                                  context_->xml_path.get(),
-                                  context_->pkgid.get(),
-                                  context_->certificate_info.get(),
-                                  context_->uid.get(),
-                                  context_->request_mode.get())) {
+  if (!RegisterAppInPkgmgr(context_->manifest_data.get(),
+                           context_->xml_path.get(),
+                           context_->pkgid.get(),
+                           context_->certificate_info.get(),
+                           context_->uid.get(),
+                           context_->request_mode.get(),
+                           context_->tep_path.get())) {
     LOG(ERROR) << "Failed to register the app";
     return Step::Status::ERROR;
   }
@@ -46,7 +47,8 @@ Step::Status StepRegisterApplication::process() {
 }
 
 Step::Status StepRegisterApplication::undo() {
-  if (!UnregisterAppInPkgmgr(context_->xml_path.get(),
+  if (!UnregisterAppInPkgmgr(context_->manifest_data.get(),
+                             context_->xml_path.get(),
                              context_->pkgid.get(),
                              context_->uid.get(),
                              context_->request_mode.get())) {
