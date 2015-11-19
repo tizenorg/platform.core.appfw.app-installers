@@ -93,12 +93,29 @@ bool StepRDSModify::AddFiles(bf::path unzip_path, bf::path install_path) {
         LOG(ERROR) << "unable to create dir for temp backup data";
         return false;
       }
+      if (!cu::SetDirPermissions(temp_install_path,
+          bf::owner_all | bf::group_read | bf::others_read)) {
+        LOG(ERROR) <<
+            "Could not set permissions for dir:" << temp_install_path;
+        return false;
+      }
+
+
     } else {
       if (!bf::exists(temp_install_path.parent_path()) &&
           !cu::CreateDir(temp_install_path.parent_path())) {
         LOG(ERROR) << "unable to create dir for temp backup data";
         return false;
       }
+      if (!cu::SetDirPermissions(temp_install_path.parent_path(),
+          bf::owner_all | bf::group_read | bf::others_read)) {
+        LOG(ERROR) <<
+            "Could not set permissions for dir:"
+            << temp_install_path.parent_path();
+        return false;
+      }
+
+
       bf::path temp_unzip_path(unzip_path / file);
       bf::copy_file(temp_unzip_path, temp_install_path, error);
       if (error) {
@@ -156,6 +173,15 @@ bool StepRDSModify::SetUpTempBackupDir() {
     LOG(ERROR) << "unable to create backup data temp dir";
     return false;
   }
+
+  if (!cu::SetDirPermissions(backup_temp_dir_,
+           bf::owner_all | bf::group_read | bf::others_read)) {
+         LOG(ERROR) <<
+             "Could not set permissions for dir:"
+             << backup_temp_dir_;
+         return false;
+       }
+
   return true;
 }
 
@@ -171,6 +197,14 @@ bool StepRDSModify::PerformBackup(std::string relative_path,
         LOG(ERROR) << "unable to create dir for temp backup data";
         return false;
       }
+      if (!cu::SetDirPermissions(backup_temp_dir_ / relative_path,
+          bf::owner_all | bf::group_read | bf::others_read)) {
+        LOG(ERROR)
+            << "Could not set permissions for dir:"
+            << (backup_temp_dir_ / relative_path).string();
+        return false;
+      }
+
     } else {
       bs::error_code error;
       bf::path tmp_dest_path = backup_temp_dir_ / relative_path;
@@ -179,6 +213,14 @@ bool StepRDSModify::PerformBackup(std::string relative_path,
         LOG(ERROR) << "unable to create dir for temp backup data";
         return false;
       }
+
+      if (!cu::SetDirPermissions((tmp_dest_path).parent_path(),
+          bf::owner_all | bf::group_read | bf::others_read)) {
+        LOG(ERROR) << "Could not set permissions for dir:"
+            << (tmp_dest_path).parent_path();
+        return false;
+      }
+
       bf::copy_file(source_path, tmp_dest_path, error);
       if (error) {
         LOG(ERROR) << "unable to backup file: "
@@ -210,6 +252,8 @@ void StepRDSModify::RestoreFiles() {
     } else {
       if (bf::is_directory(source_path)) {
         cu::CreateDir(destination_path);
+        cu::SetDirPermissions(destination_path,
+            bf::owner_all | bf::group_read | bf::others_read);
       } else {
         bf::copy_file(source_path, destination_path,
                       bf::copy_option::overwrite_if_exists);

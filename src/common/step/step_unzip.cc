@@ -92,6 +92,13 @@ Step::Status StepUnzip::process() {
     return Step::Status::ERROR;
   }
 
+  if (!SetDirPermissions(tmp_dir,
+      bf::owner_all | bf::group_read | bf::others_read)) {
+    LOG(ERROR) <<
+        "Could not set permissions for dir:" << tmp_dir;
+    return Status::ERROR;
+  }
+
   int64_t required_size =
       GetUnpackedPackageSize(context_->file_path.get());
 

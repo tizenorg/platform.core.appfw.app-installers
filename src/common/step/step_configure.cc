@@ -4,6 +4,7 @@
 
 #include "common/step/step_configure.h"
 
+#include <sys/stat.h>
 #include <tzplatform_config.h>
 #include <string>
 
@@ -22,6 +23,7 @@ StepConfigure::StepConfigure(InstallerContext* context, PkgMgrPtr pkgmgr)
 
 Step::Status StepConfigure::process() {
   SetupRequestMode();
+  SetupFileCreationMask();
 
   if (!SetupRootAppDirectory())
     return Status::ERROR;
@@ -129,6 +131,25 @@ bool StepConfigure::SetupRootAppDirectory() {
 
 void StepConfigure::SetupRequestMode() {
   context_->request_mode.set(GetRequestMode());
+}
+
+void StepConfigure::SetupFileCreationMask() {
+  mode_t old_mask, new_mask;
+  old_mask = new_mask = 0;
+
+  switch (context_->request_mode.get()) {
+    case RequestMode::USER:
+      new_mask = 033;  // results in 744 privileges
+      break;
+    case RequestMode::GLOBAL:
+      new_mask = 022;  // results in 755 privileges
+      break;
+  }
+
+  old_mask = umask(new_mask);
+
+  LOG(INFO) << "Changed file creation mask from " << std::oct <<  old_mask
+      << " to " << std::oct <<  new_mask;
 }
 
 }  // namespace configuration

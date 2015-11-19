@@ -204,6 +204,13 @@ common_installer::Step::Status StepGenerateXml::process() {
           "Directory for manifest xml is missing and cannot be created";
       return Status::ERROR;
     }
+
+    if (!common_installer::SetDirPermissions(xml_path.parent_path(),
+        bf::owner_all | bf::group_read | bf::others_read)) {
+      LOG(ERROR) <<
+          "Could not set permissions for dir:" << xml_path.parent_path();
+      return Status::ERROR;
+    }
   }
 
   xmlTextWriterPtr writer;
