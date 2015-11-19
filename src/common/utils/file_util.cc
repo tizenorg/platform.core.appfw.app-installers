@@ -89,6 +89,10 @@ class UnzFilePointer {
 
 namespace common_installer {
 
+bool IsApplicationPathGlobal(const bf::path& path) {
+  return path.string().find("/usr/apps/") != std::string::npos;
+}
+
 bool CreateDir(const bf::path& path) {
   if (bf::exists(path))
     return true;
@@ -101,9 +105,22 @@ bool CreateDir(const bf::path& path) {
     return false;
   }
 
-  bf::permissions(path, bf::owner_all
-      | bf::group_read | bf::others_read,
-      error);
+  if (IsApplicationPathGlobal(path)) {
+    LOG(DEBUG) << "Setting permission for global application: " << path.string()
+               << ".";
+    bf::permissions(path,
+                    bf::owner_all |
+                    bf::group_read | bf::group_exe |
+                    bf::others_read | bf::others_exe,
+                    error);
+  } else {
+    LOG(DEBUG) << "Setting permission for user application: " << path.string()
+               << ".";
+    bf::permissions(path,
+                    bf::owner_all | bf::group_read | bf::others_read,
+                    error);
+  }
+
   if (error) {
     LOG(ERROR) << "Failed to set permission: "
                << boost::system::system_error(error).what();
