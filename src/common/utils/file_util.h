@@ -4,7 +4,7 @@
 #define COMMON_UTILS_FILE_UTIL_H_
 
 #include <boost/filesystem.hpp>
-
+#include <boost/filesystem/path.hpp>
 #include <string>
 
 namespace common_installer {
@@ -22,6 +22,9 @@ bool MoveDir(const boost::filesystem::path& src,
 
 bool MoveFile(const boost::filesystem::path& src,
               const boost::filesystem::path& dst);
+
+bool SetDirPermissions(const boost::filesystem::path& path,
+                      boost::filesystem::perms permissions);
 
 int64_t GetUnpackedPackageSize(const boost::filesystem::path& path);
 
