@@ -112,6 +112,13 @@ bool StepEncryptResources::EncryptFile(const bf::path &src) {
   // read size
   fseek(input , 0 , SEEK_END);
   size_t length = ftell(input);
+
+  // don't encrypt empty files because libwebappenc doesn't support it
+  if (length == 0) {
+    fclose(input);
+    return true;
+  }
+
   rewind(input);
 
   char *input_buffer = new char[length];
