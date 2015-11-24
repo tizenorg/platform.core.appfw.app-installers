@@ -12,7 +12,7 @@
 namespace wgt {
 namespace encrypt {
 
-common_installer::Step::Status StepRemoveEncryptionData::process() {
+common_installer::Step::Status StepRemoveEncryptionData::clean() {
   wae_app_type_e enc_type =
       context_->request_mode.get() == common_installer::RequestMode::GLOBAL ?
           WAE_DOWNLOADED_GLOBAL_APP : WAE_DOWNLOADED_NORMAL_APP;
