@@ -30,6 +30,8 @@ class TpkInstaller : public common_installer::AppInstaller {
   void ReinstallSteps();
   void DeltaSteps();
   void RecoverySteps();
+  void ManifestDirectInstallSteps();
+  void ManifestDirectUpdateSteps();
 
   SCOPE_LOG_TAG(TpkInstaller)
 };
