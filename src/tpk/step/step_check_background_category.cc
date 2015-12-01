@@ -2,13 +2,11 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "wgt/step/step_check_background_category.h"
+#include "tpk/step/step_check_background_category.h"
 
 #include <algorithm>
 #include <memory>
 #include <vector>
-
-#include <manifest_handlers/setting_handler.h>
 
 #include "common/installer_context.h"
 #include "common/utils/glist_range.h"
@@ -17,9 +15,9 @@
 
 namespace {
 
-namespace wgt_sec = wgt::security;
+namespace tpk_sec = tpk::security;
 using CompositeSpec =
-    common_installer::CompositeSpecification<wgt_sec::BackgroundCatSpecTest>;
+    common_installer::CompositeSpecification<tpk_sec::BackgroundCatSpecTest>;
 
 /**
  * \brief Implementation of Specification that check version requirement
@@ -29,7 +27,7 @@ class VersionAtLeastSpec : public CompositeSpec {
   explicit VersionAtLeastSpec(utils::VersionNumber const& version)
       : version_(version) {}
 
-  bool IsSatisfiedBy(const wgt_sec::BackgroundCatSpecTest &candidate) override {
+  bool IsSatisfiedBy(const tpk_sec::BackgroundCatSpecTest &candidate) override {
     return version_ <= candidate.version;
   }
 
@@ -46,7 +44,7 @@ class CertSpec : public CompositeSpec {
   explicit CertSpec(common_installer::PrivilegeLevel privilege) :
     privilege_(privilege) {}
 
-  bool IsSatisfiedBy(const wgt_sec::BackgroundCatSpecTest &candidate) override {
+  bool IsSatisfiedBy(const tpk_sec::BackgroundCatSpecTest &candidate) override {
     return candidate.cert == privilege_;
   }
 
@@ -60,7 +58,7 @@ class CertSpec : public CompositeSpec {
  */
 class BackgroundSuptSpec : public CompositeSpec {
  public:
-  bool IsSatisfiedBy(const wgt_sec::BackgroundCatSpecTest &candidate) override {
+  bool IsSatisfiedBy(const tpk_sec::BackgroundCatSpecTest &candidate) override {
     return candidate.background_supt;
   }
 };
@@ -71,12 +69,12 @@ class BackgroundSuptSpec : public CompositeSpec {
  */
 class KnownValueSpec : public CompositeSpec {
  public:
-  explicit KnownValueSpec(const wgt_sec::BackgroundCatSet &values) :
+  explicit KnownValueSpec(const tpk_sec::BackgroundCatSet &values) :
       valid_values_(values) {
   }
 
-  bool IsSatisfiedBy(const wgt_sec::BackgroundCatSpecTest &candidate) override {
-    wgt_sec::BackgroundCatSet intersect;
+  bool IsSatisfiedBy(const tpk_sec::BackgroundCatSpecTest &candidate) override {
+    tpk_sec::BackgroundCatSet intersect;
     std::set_intersection(valid_values_.begin(), valid_values_.end(),
         candidate.values.begin(), candidate.values.end(),
         std::inserter(intersect, intersect.begin()));
@@ -84,7 +82,7 @@ class KnownValueSpec : public CompositeSpec {
   }
 
  private:
-  wgt_sec::BackgroundCatSet valid_values_;
+  tpk_sec::BackgroundCatSet valid_values_;
 };
 
 /**
@@ -93,12 +91,12 @@ class KnownValueSpec : public CompositeSpec {
  */
 class UnknownValueSpec : public CompositeSpec {
  public:
-  explicit UnknownValueSpec(const wgt_sec::BackgroundCatSet &values) :
+  explicit UnknownValueSpec(const tpk_sec::BackgroundCatSet &values) :
     invalid_values_(values) {
   }
 
-  bool IsSatisfiedBy(const wgt_sec::BackgroundCatSpecTest &candidate) override {
-    wgt_sec::BackgroundCatSet diff;
+  bool IsSatisfiedBy(const tpk_sec::BackgroundCatSpecTest &candidate) override {
+    tpk_sec::BackgroundCatSet diff;
     std::set_difference(candidate.values.begin(), candidate.values.end(),
         invalid_values_.begin(), invalid_values_.end(),
         std::inserter(diff, diff.begin()));
@@ -106,7 +104,7 @@ class UnknownValueSpec : public CompositeSpec {
   }
 
  private:
-  wgt_sec::BackgroundCatSet invalid_values_;
+  tpk_sec::BackgroundCatSet invalid_values_;
 };
 
 /**
@@ -115,7 +113,7 @@ class UnknownValueSpec : public CompositeSpec {
  */
 class SystemValueSpec : public CompositeSpec {
  public:
-  bool IsSatisfiedBy(const wgt_sec::BackgroundCatSpecTest &candidate) override {
+  bool IsSatisfiedBy(const tpk_sec::BackgroundCatSpecTest &candidate) override {
     return candidate.values.find("system") != candidate.values.end();
   }
 };
@@ -126,14 +124,14 @@ class SystemValueSpec : public CompositeSpec {
  */
 class EmptyValueSpec : public CompositeSpec {
  public:
-  bool IsSatisfiedBy(const wgt_sec::BackgroundCatSpecTest &candidate) override {
+  bool IsSatisfiedBy(const tpk_sec::BackgroundCatSpecTest &candidate) override {
     return candidate.values.empty();
   }
 };
 
 }  // namespace
 
-namespace wgt {
+namespace tpk {
 namespace security {
 
 StepCheckBackgroundCategory::StepCheckBackgroundCategory(
@@ -185,9 +183,7 @@ common_installer::Step::Status StepCheckBackgroundCategory::process() {
   std::string str_ver(context_->manifest_data.get()->api_version);
   common_installer::PrivilegeLevel privilege_level =
       context_->privilege_level.get();
-  const wgt::parse::SettingInfo& settings = static_cast<WgtBackendData*>(
-      context_->backend_data.get())->settings.get();
-  bool background_supt = settings.background_support_enabled();
+  bool background_supt = true;
   utils::VersionNumber version(str_ver);
 
   for (application_x* app :
@@ -257,4 +253,4 @@ common_installer::Step::Status StepCheckBackgroundCategory::process() {
 }
 
 }  // namespace security
-}  // namespace wgt
+}  // namespace tpk

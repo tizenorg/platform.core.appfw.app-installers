@@ -59,6 +59,9 @@ class StepParse : public common_installer::Step {
       bool FillMetadata(application_x* manifest, const T& meta_data_list);
   bool FillAccounts();
   bool FillShortcuts();
+  template <typename T>
+  bool FillBackgroundCategoryInfo(application_x* app,
+      const T& background_category_data_list);
   bool FillManifestX(manifest_x* manifest);
 
   std::unique_ptr<tpk::parse::TPKConfigParser> parser_;
