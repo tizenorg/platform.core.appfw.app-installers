@@ -2,7 +2,7 @@
 SET(SRCS
   rds_parser.cc
   step/step_check_settings_level.cc
-  step/step_check_background_category.cc
+  step/step_check_wgt_background_category.cc
   step/step_create_symbolic_link.cc
   step/step_encrypt_resources.cc
   step/step_parse.cc

@@ -39,6 +39,7 @@
 #include "common/step/step_update_security.h"
 #include "common/step/step_update_tep.h"
 #include "common/utils/logging.h"
+#include "step/step_check_tpk_background_category.h"
 #include "tpk/step/step_create_symbolic_link.h"
 #include "tpk/step/step_parse.h"
 #include "tpk/step/step_parse_recovery.h"
@@ -99,6 +100,7 @@ void TpkInstaller::InstallSteps() {
   AddStep<tpk::parse::StepParse>();
   AddStep<ci::security::StepCheckSignature>();
   AddStep<ci::security::StepPrivilegeCompatibility>();
+  AddStep<tpk::security::StepCheckTpkBackgroundCategory>();
   AddStep<ci::security::StepRollbackInstallationSecurity>();
   AddStep<ci::filesystem::StepCopy>();
   AddStep<ci::filesystem::StepCopyTep>();
@@ -116,6 +118,7 @@ void TpkInstaller::UpdateSteps() {
   AddStep<tpk::parse::StepParse>();
   AddStep<ci::security::StepCheckSignature>();
   AddStep<ci::security::StepPrivilegeCompatibility>();
+  AddStep<tpk::security::StepCheckTpkBackgroundCategory>();
   AddStep<ci::security::StepCheckOldCertificate>();
   AddStep<ci::backup::StepOldManifest>();
   AddStep<ci::pkgmgr::StepKillApps>();
@@ -158,6 +161,7 @@ void TpkInstaller::DeltaSteps() {
   AddStep<ci::filesystem::StepDeltaPatch>();
   AddStep<ci::security::StepCheckSignature>();
   AddStep<ci::security::StepPrivilegeCompatibility>();
+  AddStep<tpk::security::StepCheckTpkBackgroundCategory>();
   AddStep<ci::security::StepCheckOldCertificate>();
   AddStep<ci::backup::StepOldManifest>();
   AddStep<ci::pkgmgr::StepKillApps>();
@@ -191,6 +195,7 @@ void TpkInstaller::ManifestDirectInstallSteps() {
   AddStep<tpk::parse::StepParse>();
   AddStep<ci::security::StepCheckSignature>();
   AddStep<ci::security::StepPrivilegeCompatibility>();
+  AddStep<tpk::security::StepCheckTpkBackgroundCategory>();
   AddStep<ci::security::StepRollbackInstallationSecurity>();
   AddStep<ci::security::StepRegisterSecurity>();
   AddStep<ci::pkgmgr::StepRegisterApplication>();
@@ -201,6 +206,7 @@ void TpkInstaller::ManifestDirectUpdateSteps() {
   AddStep<tpk::parse::StepParse>();
   AddStep<ci::security::StepCheckSignature>();
   AddStep<ci::security::StepPrivilegeCompatibility>();
+  AddStep<tpk::security::StepCheckTpkBackgroundCategory>();
   AddStep<ci::security::StepCheckOldCertificate>();
   AddStep<ci::pkgmgr::StepKillApps>();
   AddStep<ci::security::StepRollbackInstallationSecurity>();
