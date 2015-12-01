@@ -5,9 +5,10 @@
 #ifndef COMMON_STEP_STEP_UNREGISTER_APP_H_
 #define COMMON_STEP_STEP_UNREGISTER_APP_H_
 
+#include <manifest_parser/utils/logging.h>
+
 #include "common/installer_context.h"
 #include "common/step/step.h"
-#include "common/utils/logging.h"
 
 namespace common_installer {
 namespace pkgmgr {

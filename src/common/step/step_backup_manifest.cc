@@ -16,7 +16,6 @@
 
 #include "common/backup_paths.h"
 #include "common/utils/file_util.h"
-#include "common/utils/logging.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;

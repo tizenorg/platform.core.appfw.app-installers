@@ -5,8 +5,9 @@
 #ifndef COMMON_STEP_STEP_CREATE_STORAGE_DIRECTORIES_H_
 #define COMMON_STEP_STEP_CREATE_STORAGE_DIRECTORIES_H_
 
+#include <manifest_parser/utils/logging.h>
+
 #include "common/step/step.h"
-#include "utils/logging.h"
 
 namespace common_installer {
 namespace filesystem {

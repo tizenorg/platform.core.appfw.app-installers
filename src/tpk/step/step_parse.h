@@ -6,6 +6,8 @@
 #define TPK_STEP_STEP_PARSE_H_
 
 #include <boost/filesystem.hpp>
+
+#include <manifest_parser/utils/logging.h>
 #include <tpk_manifest_handlers/privileges_handler.h>
 #include <tpk_manifest_handlers/tpk_config_parser.h>
 #include <tpk_manifest_handlers/ui_and_service_application_infos.h>
@@ -17,7 +19,6 @@
 #include "common/app_installer.h"
 #include "common/installer_context.h"
 #include "common/step/step.h"
-#include "common/utils/logging.h"
 
 namespace tpk {
 namespace parse {
@@ -62,6 +63,9 @@ class StepParse : public common_installer::Step {
                  const tpk::parse::ApplicationImagesInfo& label_list);
   bool FillAccounts();
   bool FillShortcuts();
+  template <typename T>
+  bool FillBackgroundCategoryInfo(application_x* app,
+      const T& background_category_data_list);
   bool FillManifestX(manifest_x* manifest);
 
   std::unique_ptr<tpk::parse::TPKConfigParser> parser_;

@@ -13,6 +13,7 @@ SET(SRCS
   step/step_backup_manifest.cc
   step/step_unzip.cc
   step/step_create_icons.cc
+  step/step_check_background_category.cc
   step/step_check_old_certificate.cc
   step/step_check_signature.cc
   step/step_configure.cc
@@ -49,7 +50,6 @@ SET(SRCS
   step/step_update_security.cc
   step/step_update_tep.cc
   utils/file_util.cc
-  utils/string_util.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})
