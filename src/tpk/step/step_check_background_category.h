@@ -2,8 +2,8 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef WGT_STEP_STEP_CHECK_BACKGROUND_CATEGORY_H_
-#define WGT_STEP_STEP_CHECK_BACKGROUND_CATEGORY_H_
+#ifndef TPK_STEP_STEP_CHECK_BACKGROUND_CATEGORY_H_
+#define TPK_STEP_STEP_CHECK_BACKGROUND_CATEGORY_H_
 
 #include <glib.h>
 #include <set>
@@ -14,7 +14,7 @@
 #include "common/utils/logging.h"
 #include "common/utils/specification.h"
 
-namespace wgt {
+namespace tpk {
 namespace security {
 
 typedef std::set<std::string> BackgroundCatSet;
@@ -85,6 +85,6 @@ class StepCheckBackgroundCategory : public common_installer::Step {
 };
 
 }  // namespace security
-}  // namespace wgt
+}  // namespace tpk
 
-#endif  // WGT_STEP_STEP_CHECK_BACKGROUND_CATEGORY_H_
+#endif  // TPK_STEP_STEP_CHECK_BACKGROUND_CATEGORY_H_
