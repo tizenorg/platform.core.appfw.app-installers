@@ -8,7 +8,7 @@
 #include <pkgmgr-info.h>
 #include <string>
 
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace common_installer {
 namespace backup {

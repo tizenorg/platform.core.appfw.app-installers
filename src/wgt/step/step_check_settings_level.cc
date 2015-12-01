@@ -8,7 +8,7 @@
 
 #include <map>
 
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 #include "wgt/wgt_backend_data.h"
 

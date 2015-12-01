@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "common/pkgmgr_interface.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 #include "tpk/tpk_app_query_interface.h"
 #include "tpk/tpk_installer.h"
 

@@ -12,7 +12,7 @@
 #include <algorithm>
 
 #include "common/utils/glist_range.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace bf = boost::filesystem;
 

@@ -5,8 +5,8 @@
 #ifndef WGT_STEP_STEP_WGT_CREATE_ICONS_H_
 #define WGT_STEP_STEP_WGT_CREATE_ICONS_H_
 
-#include "common/utils/logging.h"
 #include "common/step/step_create_icons.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace wgt {
 namespace filesystem {

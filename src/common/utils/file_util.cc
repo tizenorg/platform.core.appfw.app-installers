@@ -17,7 +17,7 @@
 #include <vector>
 
 #include "common/utils/byte_size_literals.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace ba = boost::algorithm;
 namespace bs = boost::system;

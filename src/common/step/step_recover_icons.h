@@ -11,7 +11,7 @@
 
 #include "common/installer_context.h"
 #include "common/step/step_recovery.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace common_installer {
 namespace filesystem {

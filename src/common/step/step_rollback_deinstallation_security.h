@@ -6,7 +6,7 @@
 #define COMMON_STEP_STEP_ROLLBACK_DEINSTALLATION_SECURITY_H_
 
 #include "common/step/step.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace common_installer {
 namespace security {

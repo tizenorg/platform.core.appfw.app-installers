@@ -25,7 +25,7 @@
 #include "common/pkgmgr_registration.h"
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace bf = boost::filesystem;
 namespace bpo = boost::program_options;

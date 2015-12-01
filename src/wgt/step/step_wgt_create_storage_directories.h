@@ -6,7 +6,7 @@
 #define WGT_STEP_STEP_WGT_CREATE_STORAGE_DIRECTORIES_H_
 
 #include "common/step/step_create_storage_directories.h"
-#include "utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace wgt {
 namespace filesystem {

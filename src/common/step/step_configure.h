@@ -9,7 +9,7 @@
 
 #include "common/pkgmgr_interface.h"
 #include "common/step/step.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace common_installer {
 namespace configuration {

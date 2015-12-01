@@ -7,7 +7,7 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 #include "tpk/step/step_parse.h"
 
 namespace tpk {

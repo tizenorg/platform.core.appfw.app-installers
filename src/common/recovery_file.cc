@@ -12,7 +12,7 @@
 #include <map>
 
 #include "common/installer_context.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;

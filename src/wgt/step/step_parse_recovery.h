@@ -5,7 +5,7 @@
 #ifndef WGT_STEP_STEP_PARSE_RECOVERY_H_
 #define WGT_STEP_STEP_PARSE_RECOVERY_H_
 
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 #include "wgt/step/step_parse.h"
 
 namespace wgt {

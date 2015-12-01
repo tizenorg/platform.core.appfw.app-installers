@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 #include "wgt/rds_parser.h"
 #include "wgt/wgt_backend_data.h"
 

@@ -15,7 +15,7 @@
 #include <string>
 
 #include "common/utils/file_util.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace {
 

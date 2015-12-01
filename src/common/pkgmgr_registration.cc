@@ -8,7 +8,7 @@
 #include <tzplatform_config.h>
 #include <unistd.h>
 
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace bf = boost::filesystem;
 

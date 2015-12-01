@@ -5,7 +5,7 @@
 
 #include "common/app_installer.h"
 #include "common/pkgmgr_interface.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace tpk {
 

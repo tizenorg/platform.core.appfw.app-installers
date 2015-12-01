@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "common/pkgmgr_registration.h"
-#include "common/utils/logging.h"
+#include "manifest_parser/utils/logging.h"
 
 namespace {
 
