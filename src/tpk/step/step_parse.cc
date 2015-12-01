@@ -219,6 +219,9 @@ bool StepParse::FillServiceApplication(manifest_x* manifest) {
       return false;
     if (!FillMetadata(service_app, application.meta_data))
       return false;
+    if (!FillBackgroundCategoryInfo(service_app,
+        application.background_category))
+      return false;
   }
   return true;
 }
@@ -252,6 +255,8 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
     if (!FillLabel(ui_app, application.label))
       return false;
     if (!FillMetadata(ui_app, application.meta_data))
+      return false;
+    if (!FillBackgroundCategoryInfo(ui_app, application.background_category))
       return false;
   }
   return true;
@@ -382,6 +387,17 @@ bool StepParse::FillShortcuts() {
     list.push_back(single_info);
   }
   context_->manifest_plugins_data.get().shortcut_info.set(list);
+  return true;
+}
+
+template <typename T>
+bool StepParse::FillBackgroundCategoryInfo(application_x* app,
+    const T& background_category_data_list) {
+  for (const auto& background_category : background_category_data_list) {
+    app->background_category = g_list_append(
+        app->background_category, strdup(background_category.value().c_str()));
+  }
+
   return true;
 }
 
