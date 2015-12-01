@@ -2,14 +2,11 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "wgt/step/step_check_background_category.h"
-
-#include <manifest_handlers/setting_handler.h>
+#include "tpk/step/step_check_background_category.h"
 
 #include "common/installer_context.h"
-#include "wgt/wgt_backend_data.h"
 
-namespace wgt {
+namespace tpk {
 namespace security {
 
 StepCheckBackgroundCategory::StepCheckBackgroundCategory(
@@ -17,10 +14,8 @@ StepCheckBackgroundCategory::StepCheckBackgroundCategory(
         BaseStepCheckBackgroundCategory(context) {};
 
 bool StepCheckBackgroundCategory::GetBackgroundSupport() {
-  const wgt::parse::SettingInfo& settings = static_cast<WgtBackendData*>(
-      context_->backend_data.get())->settings.get();
-  return settings.background_support_enabled();
+  return true;
 }
 
 }  // namespace security
-}  // namespace wgt
+}  // namespace tpk
