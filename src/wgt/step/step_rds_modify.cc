@@ -6,8 +6,9 @@
 
 #include <boost/system/error_code.hpp>
 
+#include <manifest_parser/utils/logging.h>
+
 #include "common/utils/file_util.h"
-#include "common/utils/logging.h"
 
 namespace wgt {
 namespace rds {

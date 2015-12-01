@@ -4,6 +4,8 @@
 
 #include "common/pkgmgr_signal.h"
 
+#include <manifest_parser/utils/logging.h>
+
 #include <unistd.h>
 #include <sys/types.h>
 
@@ -12,7 +14,6 @@
 #include <vector>
 
 #include "common/pkgmgr_registration.h"
-#include "common/utils/logging.h"
 
 namespace {
 

@@ -7,7 +7,6 @@
 #include <boost/filesystem/path.hpp>
 
 #include "common/utils/file_util.h"
-#include "common/utils/logging.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;

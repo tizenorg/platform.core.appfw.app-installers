@@ -6,6 +6,8 @@
 #define TPK_STEP_STEP_PARSE_H_
 
 #include <boost/filesystem.hpp>
+
+#include <manifest_parser/utils/logging.h>
 #include <tpk_manifest_handlers/privileges_handler.h>
 #include <tpk_manifest_handlers/tpk_config_parser.h>
 
@@ -16,7 +18,6 @@
 #include "common/app_installer.h"
 #include "common/installer_context.h"
 #include "common/step/step.h"
-#include "common/utils/logging.h"
 
 namespace tpk {
 namespace parse {
