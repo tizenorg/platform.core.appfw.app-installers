@@ -10,6 +10,8 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
+
+#include <manifest_parser/utils/logging.h>
 #include <tpk_manifest_handlers/application_manifest_constants.h>
 #include <tpk_manifest_handlers/package_handler.h>
 #include <tpk_manifest_handlers/tpk_config_parser.h>
@@ -20,7 +22,6 @@
 #include "common/pkgmgr_registration.h"
 #include "common/request.h"
 #include "common/utils/file_util.h"
-#include "common/utils/logging.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;

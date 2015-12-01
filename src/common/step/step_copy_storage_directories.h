@@ -7,8 +7,9 @@
 
 #include <boost/filesystem/path.hpp>
 
+#include <manifest_parser/utils/logging.h>
+
 #include "common/step/step.h"
-#include "utils/logging.h"
 
 namespace common_installer {
 namespace filesystem {

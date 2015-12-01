@@ -7,12 +7,13 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <manifest_parser/utils/logging.h>
+
 #include <array>
 #include <cstring>
 #include <map>
 
 #include "common/installer_context.h"
-#include "common/utils/logging.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;

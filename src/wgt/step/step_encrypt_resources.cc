@@ -8,6 +8,9 @@
 
 #include <boost/filesystem/operations.hpp>
 #include <boost/system/error_code.hpp>
+
+#include <manifest_parser/utils/logging.h>
+
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
@@ -15,7 +18,6 @@
 #include <string>
 
 #include "common/utils/file_util.h"
-#include "common/utils/logging.h"
 
 namespace {
 

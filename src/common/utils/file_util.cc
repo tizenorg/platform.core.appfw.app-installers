@@ -12,12 +12,13 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <manifest_parser/utils/logging.h>
+
 #include <algorithm>
 #include <string>
 #include <vector>
 
 #include "common/utils/byte_size_literals.h"
-#include "common/utils/logging.h"
 
 namespace ba = boost::algorithm;
 namespace bs = boost::system;

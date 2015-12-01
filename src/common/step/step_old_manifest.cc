@@ -5,10 +5,11 @@
 #include "common/step/step_old_manifest.h"
 
 #include <boost/filesystem.hpp>
-#include <pkgmgr-info.h>
-#include <string>
 
-#include "common/utils/logging.h"
+#include <manifest_parser/utils/logging.h>
+#include <pkgmgr-info.h>
+
+#include <string>
 
 namespace common_installer {
 namespace backup {

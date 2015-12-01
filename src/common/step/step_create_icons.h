@@ -6,12 +6,14 @@
 #define COMMON_STEP_STEP_CREATE_ICONS_H_
 
 #include <boost/filesystem/path.hpp>
+
+#include <manifest_parser/utils/logging.h>
+
 #include <utility>
 #include <vector>
 
 #include "common/installer_context.h"
 #include "common/step/step.h"
-#include "common/utils/logging.h"
 
 namespace common_installer {
 namespace filesystem {

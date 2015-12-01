@@ -38,7 +38,6 @@
 #include "common/step/step_update_app.h"
 #include "common/step/step_update_security.h"
 #include "common/step/step_update_tep.h"
-#include "common/utils/logging.h"
 #include "tpk/step/step_check_tpk_background_category.h"
 #include "tpk/step/step_create_symbolic_link.h"
 #include "tpk/step/step_parse.h"

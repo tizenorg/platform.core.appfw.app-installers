@@ -5,6 +5,8 @@
 #include "common/security_registration.h"
 
 #include <boost/filesystem/operations.hpp>
+
+#include <manifest_parser/utils/logging.h>
 #include <security-manager.h>
 
 #include <utility>
@@ -12,7 +14,6 @@
 #include <algorithm>
 
 #include "common/utils/glist_range.h"
-#include "common/utils/logging.h"
 
 namespace bf = boost::filesystem;
 

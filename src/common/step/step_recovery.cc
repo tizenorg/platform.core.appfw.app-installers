@@ -4,8 +4,9 @@
 
 #include "common/step/step_recovery.h"
 
+#include <manifest_parser/utils/logging.h>
+
 #include "common/request.h"
-#include "common/utils/logging.h"
 
 namespace common_installer {
 namespace recovery {
