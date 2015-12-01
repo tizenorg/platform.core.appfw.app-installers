@@ -11,7 +11,6 @@
 #include "common/installer_context.h"
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
-#include "common/utils/logging.h"
 
 namespace tpk {
 namespace filesystem {

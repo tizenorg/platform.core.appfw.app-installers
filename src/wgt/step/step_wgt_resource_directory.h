@@ -5,10 +5,11 @@
 #ifndef WGT_STEP_STEP_WGT_RESOURCE_DIRECTORY_H_
 #define WGT_STEP_STEP_WGT_RESOURCE_DIRECTORY_H_
 
+#include <manifest_parser/utils/logging.h>
+
 #include "common/app_installer.h"
 #include "common/installer_context.h"
 #include "common/step/step.h"
-#include "common/utils/logging.h"
 
 namespace wgt {
 namespace filesystem {

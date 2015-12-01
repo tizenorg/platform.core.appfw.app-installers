@@ -4,9 +4,10 @@
 
 #include "wgt/step/step_rds_parse.h"
 
+#include <manifest_parser/utils/logging.h>
+
 #include <memory>
 
-#include "common/utils/logging.h"
 #include "wgt/rds_parser.h"
 #include "wgt/wgt_backend_data.h"
 

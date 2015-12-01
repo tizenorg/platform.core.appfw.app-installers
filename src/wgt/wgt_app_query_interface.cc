@@ -15,6 +15,7 @@
 #include <manifest_handlers/tizen_application_handler.h>
 #include <manifest_handlers/widget_handler.h>
 #include <manifest_parser/manifest_parser.h>
+#include <manifest_parser/utils/logging.h>
 
 #include <memory>
 #include <string>
@@ -23,7 +24,6 @@
 #include "common/pkgmgr_registration.h"
 #include "common/request.h"
 #include "common/utils/file_util.h"
-#include "common/utils/logging.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;

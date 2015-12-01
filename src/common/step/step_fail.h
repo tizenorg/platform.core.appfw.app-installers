@@ -5,10 +5,11 @@
 #ifndef COMMON_STEP_STEP_FAIL_H_
 #define COMMON_STEP_STEP_FAIL_H_
 
+#include <manifest_parser/utils/logging.h>
+
 #include "common/installer_context.h"
 
 #include "common/step/step.h"
-#include "common/utils/logging.h"
 
 namespace common_installer {
 namespace configuration {

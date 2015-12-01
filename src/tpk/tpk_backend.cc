@@ -1,9 +1,10 @@
 /* Copyright 2015 Samsung Electronics, license APACHE-2.0, see LICENSE file */
 
+#include <manifest_parser/utils/logging.h>
+
 #include <iostream>
 
 #include "common/pkgmgr_interface.h"
-#include "common/utils/logging.h"
 #include "tpk/tpk_app_query_interface.h"
 #include "tpk/tpk_installer.h"
 

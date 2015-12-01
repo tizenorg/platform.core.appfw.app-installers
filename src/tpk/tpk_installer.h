@@ -3,9 +3,10 @@
 #ifndef TPK_TPK_INSTALLER_H_
 #define TPK_TPK_INSTALLER_H_
 
+#include <manifest_parser/utils/logging.h>
+
 #include "common/app_installer.h"
 #include "common/pkgmgr_interface.h"
-#include "common/utils/logging.h"
 
 namespace tpk {
 
