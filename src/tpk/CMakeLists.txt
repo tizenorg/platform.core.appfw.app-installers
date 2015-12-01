@@ -1,4 +1,5 @@
 SET(SRCS
+    step/step_check_background_category.cc
     step/step_create_symbolic_link.cc
     step/step_parse.cc
     step/step_parse_recovery.cc
