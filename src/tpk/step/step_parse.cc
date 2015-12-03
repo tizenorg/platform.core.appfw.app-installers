@@ -113,11 +113,11 @@ bool StepParse::FillInstallationInfo(manifest_x* manifest) {
 }
 
 bool StepParse::FillPackageInfo(manifest_x* manifest) {
-  std::shared_ptr<const PackageInfo> app_info =
+  std::shared_ptr<const PackageInfo> pkg_info =
       std::static_pointer_cast<const PackageInfo>(
           parser_->GetManifestData(app_keys::kManifestKey));
-  if (!app_info) {
-    LOG(ERROR) << "Application info manifest data has not been found.";
+  if (!pkg_info) {
+    LOG(ERROR) << "Package info manifest data has not been found.";
     return false;
   }
 
@@ -135,15 +135,15 @@ bool StepParse::FillPackageInfo(manifest_x* manifest) {
     return false;
   }
 
-  manifest->ns = strdup(kTizenPackageXmlNamespace);
-  manifest->package = strdup(app_info->package().c_str());
+  manifest->ns = strdup(pkg_info->xmlns().c_str());
+  manifest->package = strdup(pkg_info->package().c_str());
   manifest->type = strdup("tpk");
   manifest->appsetting = strdup("false");
   manifest->nodisplay_setting = strdup("false");
   manifest->support_disable = strdup("false");
-  manifest->version = strdup(app_info->version().c_str());
-  manifest->installlocation = strdup(app_info->install_location().c_str());
-  manifest->api_version = strdup(app_info->api_version().c_str());
+  manifest->version = strdup(pkg_info->version().c_str());
+  manifest->installlocation = strdup(pkg_info->install_location().c_str());
+  manifest->api_version = strdup(pkg_info->api_version().c_str());
 
   std::shared_ptr<const ProfileInfo> profile_info =
       std::static_pointer_cast<const ProfileInfo>(
