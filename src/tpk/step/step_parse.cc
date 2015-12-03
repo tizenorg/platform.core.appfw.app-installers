@@ -10,6 +10,7 @@
 #include <tpk_manifest_handlers/description_handler.h>
 #include <tpk_manifest_handlers/package_handler.h>
 #include <tpk_manifest_handlers/privileges_handler.h>
+#include <tpk_manifest_handlers/profile_handler.h>
 #include <tpk_manifest_handlers/service_application_handler.h>
 #include <tpk_manifest_handlers/shortcut_handler.h>
 #include <tpk_manifest_handlers/ui_application_handler.h>
@@ -128,6 +129,16 @@ bool StepParse::FillPackageInfo(manifest_x* manifest) {
   manifest->version = strdup(app_info->version().c_str());
   manifest->installlocation = strdup(app_info->install_location().c_str());
   manifest->api_version = strdup(app_info->api_version().c_str());
+
+  std::shared_ptr<const ProfileInfo> profile_info =
+      std::static_pointer_cast<const ProfileInfo>(
+          parser_->GetManifestData(ProfileInfo::Key()));
+  if (profile_info) {
+    for (auto& profile : profile_info->profiles()) {
+      manifest->deviceprofile = g_list_append(manifest->deviceprofile,
+                                              strdup(profile.c_str()));
+    }
+  }
 
   if (ui_application_list) {
     manifest->mainapp_id =

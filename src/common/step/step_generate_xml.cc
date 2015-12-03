@@ -355,6 +355,14 @@ common_installer::Step::Status StepGenerateXml::process() {
     xmlTextWriterEndElement(writer);
   }
 
+  for (const char* profile :
+       GListRange<char*>(context_->manifest_data.get()->deviceprofile)) {
+    xmlTextWriterStartElement(writer, BAD_CAST "profile");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+                                BAD_CAST profile);
+    xmlTextWriterEndElement(writer);
+  }
+
   const auto& shortcuts =
       context_->manifest_plugins_data.get().shortcut_info.get();
   if (!shortcuts.empty()) {
