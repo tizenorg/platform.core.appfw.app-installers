@@ -5,7 +5,7 @@
 #include "common/step/step_privilege_compatibility.h"
 
 #include <pkgmgrinfo_basic.h>
-#include <security-manager.h>
+#include <privilege_manager.h>
 
 #include <cstdlib>
 #include <cstring>
@@ -38,32 +38,28 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
     return true;
   }
 
-  // prepare input structure
-  std::unique_ptr<const char*[]> input_privileges(
-      new const char*[g_list_length(m->privileges)]);
-  size_t input_size = 0;
-  for (const char* priv : GListRange<char*>(m->privileges)) {
-    input_privileges[input_size++] = priv;
-  }
-
   // get mapping
-  size_t output_size = 0;
-  char** output_privileges = nullptr;
-  if (security_manager_get_privileges_mapping(m->api_version, kPlatformVersion,
-      input_privileges.get(), input_size, &output_privileges, &output_size)
-      != SECURITY_MANAGER_SUCCESS) {
-    LOG(ERROR) << "security_manager_get_privileges_mapping failed";
+  GList* mapped_privilege_list;
+  bool is_webapp = (strncmp(m->type, "wgt", strlen("wgt")) == 0) ? true : false;
+  LOG(DEBUG) << "type = " << m->type;
+  if (privilege_manager_get_mapped_privilege_list(m->api_version,
+      is_webapp ? PRVMGR_PACKAGE_TYPE_WRT : PRVMGR_PACKAGE_TYPE_CORE,
+      m->privileges, &mapped_privilege_list) != PRVMGR_ERR_NONE) {
+    LOG(ERROR) << "privilege_manager_get_mapped_privilege_list failed";
+    return false;
+  } else if (mapped_privilege_list == NULL) {
+    LOG(ERROR) << "privilege_manager_get_mapped_privilege_list failed";
     return false;
   }
 
   // set pkgmgr new list
   g_list_free_full(m->privileges, free);
   m->privileges = nullptr;
-  for (size_t i = 0; i < output_size; ++i) {
-    m->privileges = g_list_append(m->privileges, strdup(output_privileges[i]));
+  for (GList* l = mapped_privilege_list; l != NULL; l = l->next) {
+    m->privileges = g_list_append(m->privileges, (char*)l->data);
   }
 
-  security_manager_privilege_mapping_free(output_privileges, output_size);
+  g_list_free_full(mapped_privilege_list, free);
   return true;
 }
 
