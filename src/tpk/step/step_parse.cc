@@ -126,6 +126,7 @@ bool StepParse::FillPackageInfo(manifest_x* manifest) {
 
   manifest->ns = strdup(pkg_info->xmlns().c_str());
   manifest->package = strdup(pkg_info->package().c_str());
+  manifest->nodisplay_setting = strdup(pkg_info->nodisplay_setting().c_str());
   manifest->type = strdup("tpk");
   manifest->version = strdup(pkg_info->version().c_str());
   manifest->installlocation = strdup(pkg_info->install_location().c_str());
@@ -218,6 +219,9 @@ bool StepParse::FillServiceApplication(manifest_x* manifest) {
     service_app->exec = strdup(application.sa_info.exec().c_str());
     service_app->onboot = strdup(application.sa_info.on_boot().c_str());
     service_app->type = strdup(application.sa_info.type().c_str());
+    service_app->process_pool =
+        strdup(application.sa_info.process_pool().c_str());
+
     service_app->component_type = strdup("svcapp");
     manifest->application = g_list_append(manifest->application, service_app);
 
@@ -253,6 +257,21 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
     ui_app->taskmanage = strdup(application.ui_info.taskmanage().c_str());
     ui_app->type = strdup(application.ui_info.type().c_str());
     ui_app->component_type = strdup("uiapp");
+    ui_app->ui_gadget = strdup(application.ui_info.uigadget().c_str());
+    ui_app->process_pool = strdup(application.ui_info.process_pool().c_str());
+    ui_app->submode = strdup(application.ui_info.submode().c_str());
+    ui_app->indicatordisplay =
+        strdup(application.ui_info.indicator_display().c_str());
+    ui_app->effectimage_type =
+        strdup(application.ui_info.effectimage_type().c_str());
+    ui_app->portraitimg =
+        strdup(application.ui_info.portrait_image().c_str());
+    ui_app->landscapeimg =
+        strdup(application.ui_info.landscape_image().c_str());
+    ui_app->submode_mainid =
+        strdup(application.ui_info.submode_mainid().c_str());
+    ui_app->hwacceleration =
+        strdup(application.ui_info.hwacceleration().c_str());
     manifest->application = g_list_append(manifest->application, ui_app);
 
     if (!FillAppControl(ui_app, application.app_control))
