@@ -39,6 +39,27 @@ void WriteUIApplicationAttributes(
   if (app->launch_mode && strlen(app->launch_mode))
     xmlTextWriterWriteAttribute(writer, BAD_CAST "launch_mode",
         BAD_CAST app->launch_mode);
+  if (app->ui_gadget && strlen(app->ui_gadget))
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "ui-gadget",
+        BAD_CAST app->ui_gadget);
+  if (app->submode && strlen(app->submode))
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "submode",
+        BAD_CAST app->submode);
+  if (app->submode_mainid && strlen(app->submode_mainid))
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "submode-mainid",
+        BAD_CAST app->submode_mainid);
+  if (app->indicatordisplay && strlen(app->indicatordisplay))
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "indicatordisplay",
+        BAD_CAST app->indicatordisplay);
+  if (app->portraitimg && strlen(app->portraitimg))
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "portrait-effectimage",
+        BAD_CAST app->portraitimg);
+  if (app->landscapeimg && strlen(app->landscapeimg))
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "landscape-effectimage",
+        BAD_CAST app->landscapeimg);
+  if (app->effectimage_type && strlen(app->effectimage_type))
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "effectimage-type",
+        BAD_CAST app->effectimage_type);
 }
 
 void WriteServiceApplicationAttributes(
@@ -70,6 +91,9 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
   else
     xmlTextWriterWriteAttribute(writer, BAD_CAST "type", BAD_CAST "capp");
 
+  if (app->process_pool && strlen(app->process_pool))
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "process-pool",
+                                BAD_CAST app->process_pool);
   // app-specific attributes
   if (is_service)
     WriteServiceApplicationAttributes(writer, app);
