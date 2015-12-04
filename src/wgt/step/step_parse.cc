@@ -120,6 +120,7 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
   }
 
   manifest->type = strdup("wgt");
+  manifest->nodisplay_setting = strdup("false");
 
   // For wgt package use the long name
   for (auto& item : wgt_info->name_set()) {
