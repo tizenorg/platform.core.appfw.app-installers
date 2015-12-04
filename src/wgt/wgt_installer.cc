@@ -69,7 +69,6 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::filesystem::StepUnzip>();
       AddStep<wgt::parse::StepParse>(true);
       AddStep<ci::security::StepCheckSignature>();
-      AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
       AddStep<wgt::encrypt::StepEncryptResources>();
@@ -89,7 +88,6 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::filesystem::StepUnzip>();
       AddStep<wgt::parse::StepParse>(true);
       AddStep<ci::security::StepCheckSignature>();
-      AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
       AddStep<ci::security::StepCheckOldCertificate>();
@@ -138,7 +136,6 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::filesystem::StepDeltaPatch>("res/wgt/");
       AddStep<wgt::parse::StepParse>(true);
       AddStep<ci::security::StepCheckSignature>();
-      AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
       AddStep<ci::security::StepCheckOldCertificate>();
