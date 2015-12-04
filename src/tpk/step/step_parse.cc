@@ -239,6 +239,8 @@ bool StepParse::FillServiceApplication(manifest_x* manifest) {
                            / application.sa_info.exec()).c_str());
     service_app->onboot = strdup(application.sa_info.on_boot().c_str());
     service_app->type = strdup(application.sa_info.type().c_str());
+    service_app->process_pool =
+        strdup(application.sa_info.process_pool().c_str());
     service_app->ui_gadget = strdup("false");
     service_app->nodisplay = strdup("false");
     service_app->taskmanage = strdup("true");
@@ -255,7 +257,6 @@ bool StepParse::FillServiceApplication(manifest_x* manifest) {
     service_app->guestmode_visibility = strdup("true");
     service_app->permission_type = strdup("normal");
     service_app->submode = strdup("false");
-    service_app->process_pool = strdup("false");
     service_app->installed_storage = strdup("installed_internal");
     service_app->ambient_support = strdup("false");
     service_app->package = strdup(manifest->package);
@@ -298,7 +299,19 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
     ui_app->nodisplay = strdup(application.ui_info.nodisplay().c_str());
     ui_app->taskmanage = strdup(application.ui_info.taskmanage().c_str());
     ui_app->type = strdup(application.ui_info.type().c_str());
-    ui_app->ui_gadget = strdup("false");
+    ui_app->ui_gadget = strdup(application.ui_info.uigadget().c_str());
+    ui_app->process_pool = strdup(application.ui_info.process_pool().c_str());
+    ui_app->submode = strdup(application.ui_info.submode().c_str());
+    ui_app->indicatordisplay =
+        strdup(application.ui_info.indicator_display().c_str());
+    ui_app->effectimage_type =
+        strdup(application.ui_info.effectimage_type().c_str());
+    ui_app->portraitimg =
+        strdup(application.ui_info.portrait_image().c_str());
+    ui_app->landscapeimg =
+        strdup(application.ui_info.landscape_image().c_str());
+    ui_app->submode_mainid =
+        strdup(application.ui_info.submode_mainid().c_str());
     ui_app->onboot = strdup("false");
     ui_app->autorestart = strdup("false");
     ui_app->component_type = strdup("uiapp");
@@ -308,12 +321,8 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
     ui_app->screenreader = strdup("use-system-setting");
     ui_app->recentimage = strdup("false");
     ui_app->launchcondition = strdup("false");
-    ui_app->indicatordisplay = strdup("true");
-    ui_app->effectimage_type = strdup("image");
     ui_app->guestmode_visibility = strdup("true");
     ui_app->permission_type = strdup("normal");
-    ui_app->submode = strdup("false");
-    ui_app->process_pool = strdup("false");
     ui_app->installed_storage = strdup("installed_internal");
     ui_app->ambient_support = strdup("false");
     ui_app->package = strdup(manifest->package);
