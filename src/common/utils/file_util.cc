@@ -135,13 +135,6 @@ bool CopyDir(const bf::path& src, const bf::path& dst) {
       LOG(ERROR) << "Unable to create destination directory" << dst.string();
       return false;
     }
-
-    if (!SetDirPermissions(dst,
-                           bf::owner_all | bf::group_read | bf::others_read)) {
-      LOG(ERROR) <<
-          "Could not set permissions for dir:" << dst;
-      return false;
-    }
   } catch (const bf::filesystem_error& error) {
     LOG(ERROR) << "Failed to copy directory: " << error.what();
     return false;
@@ -185,8 +178,11 @@ bool CopyFile(const bf::path& src, const bf::path& dst) {
 }
 
 bool MoveDir(const bf::path& src, const bf::path& dst) {
-  if (bf::exists(dst))
+  if (bf::exists(dst)) {
+    LOG(ERROR) << "Destination directory does not exist: " << dst;
     return false;
+  }
+
   bs::error_code error;
   bf::rename(src, dst, error);
   if (error) {
@@ -348,14 +344,6 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
         if (!CreateDir(filename_in_zip_path.parent_path())) {
           LOG(ERROR) << "Failed to create directory: "
               << filename_in_zip_path.parent_path();
-          return false;
-        }
-        if (!SetDirPermissions(
-            filename_in_zip_path.parent_path(),
-            bf::owner_all | bf::group_read | bf::others_read)) {
-          LOG(ERROR) <<
-              "Could not set permissions for dir:" <<
-              filename_in_zip_path.parent_path();
           return false;
         }
       }
