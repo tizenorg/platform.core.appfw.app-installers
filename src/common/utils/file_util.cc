@@ -185,8 +185,11 @@ bool CopyFile(const bf::path& src, const bf::path& dst) {
 }
 
 bool MoveDir(const bf::path& src, const bf::path& dst) {
-  if (bf::exists(dst))
+  if (bf::exists(dst)) {
+    LOG(ERROR) << "Destination directory does not exist: " << dst;
     return false;
+  }
+
   bs::error_code error;
   bf::rename(src, dst, error);
   if (error) {

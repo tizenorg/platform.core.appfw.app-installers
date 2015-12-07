@@ -39,9 +39,6 @@ common_installer::Step::Status StepCreateSymbolicLink::process() {
             / bf::path("bin");
     common_installer::CreateDir(exec_path);
 
-    common_installer::SetDirPermissions(exec_path,
-        bf::owner_all | bf::group_read | bf::others_read);
-
     exec_path /= bf::path(app->appid);
 
     if (strcmp(app->component_type, "uiapp") == 0) {
