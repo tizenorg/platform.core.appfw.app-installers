@@ -31,12 +31,6 @@ bool CreateSymLink(application_x* app, InstallerContext* context) {
     LOG(ERROR) << "Directory creation failure: " << bindir;
     return false;
   }
-  if (!common_installer::SetDirPermissions(bindir,
-      bf::owner_all | bf::group_read | bf::others_read)) {
-    LOG(ERROR) <<
-        "Could not set permissions for dir:" << bindir;
-    return false;
-  }
 
   // Exec path
   // Make a symlink with the name of appid, pointing exec file
