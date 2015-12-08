@@ -139,6 +139,17 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     LOG(DEBUG) << "Icon was not found in package";
   }
 
+  for (image_x* image : GListRange<image_x*>(app->image)) {
+    xmlTextWriterStartElement(writer, BAD_CAST "image");
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "name",
+        BAD_CAST image->name);
+    if (image->lang && strcmp(DEFAULT_LOCALE, image->lang) != 0) {
+      xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
+                                  BAD_CAST image->lang);
+    }
+    xmlTextWriterEndElement(writer);
+  }
+
   for (appcontrol_x* appc : GListRange<appcontrol_x*>(app->appcontrol)) {
     xmlTextWriterStartElement(writer, BAD_CAST "app-control");
 
