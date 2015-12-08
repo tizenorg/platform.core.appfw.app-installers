@@ -8,6 +8,7 @@
 #include <boost/filesystem.hpp>
 #include <tpk_manifest_handlers/privileges_handler.h>
 #include <tpk_manifest_handlers/tpk_config_parser.h>
+#include <tpk_manifest_handlers/ui_and_service_application_infos.h>
 
 #include <memory>
 #include <set>
@@ -57,6 +58,8 @@ class StepParse : public common_installer::Step {
       bool FillLabel(application_x* manifest, const T& label_list);
   template <typename T>
       bool FillMetadata(application_x* manifest, const T& meta_data_list);
+  bool FillImage(application_x* app,
+                 const tpk::parse::ApplicationImagesInfo& label_list);
   bool FillAccounts();
   bool FillShortcuts();
   bool FillManifestX(manifest_x* manifest);
