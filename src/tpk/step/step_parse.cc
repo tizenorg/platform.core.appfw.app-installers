@@ -132,6 +132,14 @@ bool StepParse::FillPackageInfo(manifest_x* manifest) {
   manifest->installlocation = strdup(pkg_info->install_location().c_str());
   manifest->api_version = strdup(pkg_info->api_version().c_str());
 
+  for (auto& pair : pkg_info->labels()) {
+    label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
+    if (!pair.first.empty())
+      label->lang = strdup(pair.first.c_str());
+    label->name = strdup(pair.second.c_str());
+    manifest->label = g_list_append(manifest->label, label);
+  }
+
   std::shared_ptr<const ProfileInfo> profile_info =
       std::static_pointer_cast<const ProfileInfo>(
           parser_->GetManifestData(ProfileInfo::Key()));
@@ -282,6 +290,8 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
       return false;
     if (!FillLabel(ui_app, application.label))
       return false;
+    if (!FillImage(ui_app, application.app_images))
+      return false;
     if (!FillMetadata(ui_app, application.meta_data))
       return false;
   }
@@ -368,6 +378,20 @@ bool StepParse::FillMetadata(application_x* app, const T& meta_data_list) {
     metadata->key = strdup(meta.key().c_str());
     metadata->value = strdup(meta.val().c_str());
     app->metadata = g_list_append(app->metadata, metadata);
+  }
+  return true;
+}
+
+bool StepParse::FillImage(application_x* app,
+                          const tpk::parse::ApplicationImagesInfo& image_list) {
+  for (auto& app_image : image_list.images) {
+    image_x* image =
+        static_cast<image_x*>(calloc(1, sizeof(image_x)));
+    image->name = strdup(app_image.name().c_str());
+    std::string lang = app_image.lang();
+    if (!lang.empty())
+      image->lang = strdup(lang.c_str());
+    app->image = g_list_append(app->image, image);
   }
   return true;
 }
