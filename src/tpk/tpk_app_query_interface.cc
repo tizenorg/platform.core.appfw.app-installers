@@ -99,14 +99,15 @@ bool TpkAppQueryInterface::IsAppInstalledByArgv(int argc, char** argv) {
   std::string path = GetInstallationPackagePath(argc, argv);
   std::string pkg_id;
   if (path.empty()) {
-    //check if it is manifest direct install
+    // check if it is manifest direct install
     path = GetXmlPath(argc, argv);
     if (path.empty())
       return false;
 
     pkg_id = GetPkgIdFromXml(path);
-  } else
+  } else {
     pkg_id = GetPkgIdFromPath(path);
+  }
 
   if (pkg_id.empty())
     return false;

@@ -5,10 +5,10 @@
 #ifndef WGT_STEP_STEP_CHECK_BACKGROUND_CATEGORY_H_
 #define WGT_STEP_STEP_CHECK_BACKGROUND_CATEGORY_H_
 
+#include <manifest_parser/utils/version_number.h>
 #include <glib.h>
 #include <set>
-
-#include <manifest_parser/utils/version_number.h>
+#include <string>
 
 #include "common/step/step.h"
 #include "common/utils/logging.h"

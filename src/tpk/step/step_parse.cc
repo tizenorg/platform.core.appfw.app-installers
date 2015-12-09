@@ -56,9 +56,9 @@ common_installer::Step::Status StepParse::precheck() {
   }
 
   boost::filesystem::path tmp;
-  if (!context_->xml_path.get().empty())
+  if (!context_->xml_path.get().empty()) {
     tmp = context_->xml_path.get();
-  else {
+  } else {
     tmp = context_->unpacked_dir_path.get();
     tmp /= kManifestFileName;
   }
@@ -73,9 +73,9 @@ common_installer::Step::Status StepParse::precheck() {
 
 bool StepParse::LocateConfigFile() {
   boost::filesystem::path manifest;
-  if (!context_->xml_path.get().empty())
+  if (!context_->xml_path.get().empty()) {
     manifest = context_->xml_path.get();
-  else {
+  } else {
     manifest = context_->unpacked_dir_path.get();
     manifest /= kManifestFileName;
   }
@@ -91,9 +91,9 @@ bool StepParse::LocateConfigFile() {
 
 bf::path StepParse::LocateConfigFile() const {
   boost::filesystem::path path;
-  if (!context_->xml_path.get().empty())
+  if (!context_->xml_path.get().empty()) {
     path = context_->xml_path.get();
-  else {
+  } else {
     path = context_->unpacked_dir_path.get();
     path /= kManifestFileName;
   }

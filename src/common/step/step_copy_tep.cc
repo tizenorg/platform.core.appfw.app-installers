@@ -39,14 +39,14 @@ Step::Status StepCopyTep::precheck() {
 }
 
 Step::Status StepCopyTep::process() {
-
   if (context_->tep_path.get().empty())
     return Step::Status::OK;
 
   context_->pkg_path.set(
     context_->root_application_path.get() / context_->pkgid.get());
 
-  bf::path tep_path = context_->pkg_path.get() / "res" / context_->tep_path.get().filename();
+  bf::path tep_path =
+    context_->pkg_path.get() / "res" / context_->tep_path.get().filename();
   bs::error_code error;
 
   if (context_->is_tep_move.get()) {

@@ -4,12 +4,12 @@
 
 #include "wgt/step/step_check_background_category.h"
 
+#include <manifest_handlers/setting_handler.h>
+
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <manifest_handlers/setting_handler.h>
 
 #include "common/installer_context.h"
 #include "common/utils/glist_range.h"

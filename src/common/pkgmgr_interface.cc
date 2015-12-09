@@ -47,7 +47,8 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
     // no need to free pkgmgr_installer here. it will be freed in DTOR.
   }
 
-  if (pkgmgr_installer_get_request_type(pi_) == PKGMGR_REQ_MANIFEST_DIRECT_INSTALL) {
+  if (pkgmgr_installer_get_request_type(pi_)
+        == PKGMGR_REQ_MANIFEST_DIRECT_INSTALL) {
     /* Add restrictions for manifest direct install
       * - Directory should be located under /usr/apps/
       * - XML path should be located under /usr/share/packages/
@@ -73,14 +74,14 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
       return EINVAL;
     }
 
-    if (directory_path.filename().string().compare(xml_path.stem().string()) != 0) {
+    if (directory_path.filename().string()
+          .compare(xml_path.stem().string()) != 0) {
       LOG(ERROR) << "invalid parameter: directory path "
           << directory_path
           << "xml path"
           << xml_path;
       return EINVAL;
     }
-
   }
 
   is_app_installed_ = false;

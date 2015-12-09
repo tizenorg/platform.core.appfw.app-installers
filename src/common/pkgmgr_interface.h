@@ -6,14 +6,13 @@
 #define COMMON_PKGMGR_INTERFACE_H_
 
 #include <pkgmgr_installer.h>
-
+#include <boost/filesystem/path.hpp>
 #include <memory>
 
 #include "common/app_query_interface.h"
 #include "common/request.h"
 #include "common/utils/macros.h"
 #include "common/utils/logging.h"
-#include <boost/filesystem/path.hpp>
 
 namespace common_installer {
 
