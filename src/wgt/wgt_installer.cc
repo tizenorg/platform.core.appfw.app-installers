@@ -70,7 +70,6 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::filesystem::StepUnzip>();
       AddStep<wgt::parse::StepParse>(true);
       AddStep<ci::security::StepCheckSignature>();
-      AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
 // TODO(p.sikorski): AddStep<wgt::security::StepCheckBackgroundCategory>();
@@ -91,7 +90,6 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::filesystem::StepUnzip>();
       AddStep<wgt::parse::StepParse>(true);
       AddStep<ci::security::StepCheckSignature>();
-      AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
 // TODO(p.sikorski): AddStep<wgt::security::StepCheckBackgroundCategory>();
@@ -141,7 +139,6 @@ WgtInstaller::WgtInstaller(ci::PkgMgrPtr pkgrmgr)
       AddStep<ci::filesystem::StepDeltaPatch>("res/wgt/");
       AddStep<wgt::parse::StepParse>(true);
       AddStep<ci::security::StepCheckSignature>();
-      AddStep<wgt::security::StepAddDefaultPrivileges>();
       AddStep<ci::security::StepPrivilegeCompatibility>();
       AddStep<wgt::security::StepCheckSettingsLevel>();
       AddStep<wgt::security::StepCheckBackgroundCategory>();
