@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <tzplatform_config.h>
+#include <sys/xattr.h>
 
 #include <cassert>
 #include <cstring>
@@ -202,10 +203,36 @@ bool CreateSkelDirectories(const std::string& pkgid) {
   LOG(DEBUG) << "Creating directories in: " << path;
   bs::error_code error;
   bf::create_directories(path, error);
+  int r = -1;
+
   if (error) {
     LOG(ERROR) << "Failed to create directory: " << path;
     return false;
   }
+
+  // TODO(jungh.yeon) : this is hotfix.
+  for (auto& pair : kEntries) {
+    bf::path subpath = path / pair.first;
+    bf::create_directories(subpath, error);
+    std::string label = "User::Pkg::" + pkgid;
+    if (error) {
+      LOG(ERROR) << "Failed to create directory: " << subpath;
+      return false;
+    }
+
+    r = lsetxattr(subpath.c_str(), "security.SMACK64TRANSMUTE", "TRUE", 4, 0);
+    if (r < 0) {
+      LOG(ERROR) << "Failed to apply transmute";
+      return false;
+    }
+
+    r = lsetxattr(subpath.c_str(), "security.SMACK64", label.c_str(), label.length(), 0);
+    if (r < 0) {
+      LOG(ERROR) << "Failed to apply label";
+      return false;
+    }
+  }
+
   return true;
 }
 
