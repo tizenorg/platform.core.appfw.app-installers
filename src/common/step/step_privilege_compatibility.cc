@@ -56,7 +56,7 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
   g_list_free_full(m->privileges, free);
   m->privileges = nullptr;
   for (GList* l = mapped_privilege_list; l != NULL; l = l->next) {
-    m->privileges = g_list_append(m->privileges, (char*)l->data);
+    m->privileges = g_list_append(m->privileges, strdup((char*)l->data));
   }
 
   g_list_free_full(mapped_privilege_list, free);
