@@ -316,7 +316,8 @@ common_installer::Step::Status StepGenerateXml::process() {
   for (description_x* description :
        GListRange<description_x*>(context_->manifest_data.get()->description)) {
     xmlTextWriterStartElement(writer, BAD_CAST "description");
-    if (description->lang && strcmp(DEFAULT_LOCALE, description->lang) != 0) {
+    if (description->lang && strcmp(DEFAULT_LOCALE, description->lang) != 0 &&
+        strlen(description->lang) > 0) {
       xmlTextWriterWriteAttribute(writer, BAD_CAST "xml:lang",
                                   BAD_CAST description->lang);
     }
