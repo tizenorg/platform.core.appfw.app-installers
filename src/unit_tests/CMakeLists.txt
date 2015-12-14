@@ -1,7 +1,3 @@
-SET(TESTS
-  signature_unittest
-  smoke_test
-)
 SET(DESTINATION_DIR app-installers-ut)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../)
@@ -10,27 +6,17 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/../)
 ADD_EXECUTABLE(signature_unittest
   signature_unittest.cc
 )
-ADD_EXECUTABLE(smoke_test
-  smoke_test.cc
-)
 
 INSTALL(DIRECTORY test_samples/ DESTINATION ${SHAREDIR}/${DESTINATION_DIR}/test_samples)
-INSTALL(FILES run-unit-tests.sh DESTINATION ${BINDIR}/app-installers-ut/
-        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ)
 
-FOREACH(test ${TESTS})
-APPLY_PKG_CONFIG(${test} PUBLIC
+APPLY_PKG_CONFIG(signature_unittest PUBLIC
   Boost
   GTEST
 )
-ENDFOREACH(test)
 
 # FindGTest module do not sets all needed libraries in GTEST_LIBRARIES and
 # GTest main libraries is still missing, so additional linking of
 # GTEST_MAIN_LIBRARIES is needed.
 target_link_libraries(signature_unittest PUBLIC ${TARGET_LIBNAME_COMMON} ${GTEST_MAIN_LIBRARIES})
-target_link_libraries(smoke_test PRIVATE ${TARGET_LIBNAME_WGT} ${TARGET_LIBNAME_TPK})
 
-FOREACH(test ${TESTS})
-  INSTALL(TARGETS ${test} DESTINATION ${BINDIR}/${DESTINATION_DIR})
-ENDFOREACH(test)
+INSTALL(TARGETS signature_unittest DESTINATION ${BINDIR}/${DESTINATION_DIR})

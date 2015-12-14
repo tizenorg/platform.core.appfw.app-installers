@@ -6,6 +6,6 @@ includedir=@INCLUDEDIR@
 Name: app-installers
 Description: Common library for pkgmgr backends
 Version: @VERSION@
-Requires: pkgmgr pkgmgr-installer minizip zlib libtzplatform-config security-manager manifest-parser manifest-handlers delta-manifest-handlers tpk-manifest-handlers cert-svc-vcore pkgmgr-parser pkgmgr-info libxml-2.0 capi-security-privilege-manager libwebappenc capi-appfw-app-manager
+Requires: pkgmgr pkgmgr-installer minizip zlib libtzplatform-config security-manager manifest-parser-utils delta-manifest-handlers cert-svc-vcore pkgmgr-parser pkgmgr-info libxml-2.0 capi-security-privilege-manager capi-appfw-app-manager
 Libs: -L${libdir} -lapp-installers
 Cflags: -I${includedir}/app-installers/
