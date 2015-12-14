@@ -140,7 +140,7 @@ bool StepParse::FillWidgetInfo(manifest_x* manifest) {
     description_x* description = reinterpret_cast<description_x*>
         (calloc(1, sizeof(description_x)));
     description->text = strdup(item.second.c_str());
-    description->lang = item.first.c_str() ?
+    description->lang = !item.first.empty() ?
         strdup(item.first.c_str()) : strdup(DEFAULT_LOCALE);
     manifest->description = g_list_append(manifest->description, description);
   }
