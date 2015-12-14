@@ -57,6 +57,14 @@ Summary: Backend of TPK files
 %description -n tpk-backend
 Backend for tizen package files
 
+%package devel
+Summary:    App-installers development files
+Group:      Application Framework/Package Management
+Requires:   %{name} = %{version}
+
+%description devel
+This package contains header files of app-installers common library
+
 %package tests
 Summary: Unit tests for app-installers
 Requires: %{name} = %{version}
@@ -98,7 +106,7 @@ ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 %files
 %defattr(-,root,root)
 %manifest app-installers.manifest
-%{_libdir}/libcommon-installer.so*
+%{_libdir}/libapp-installers.so*
 %attr(6750,root,users) %{_bindir}/pkgdir-tool
 %license LICENSE
 
@@ -111,6 +119,11 @@ ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 %{_sysconfdir}/package-manager/backend/tpk
 %manifest tpk-backend.manifest
 %{_bindir}/tpk-backend
+
+%files devel
+%{_includedir}/app-installers/common/*.h
+%{_includedir}/app-installers/common/*/*.h
+%{_libdir}/pkgconfig/app-installers.pc
 
 %files tests
 %manifest app-installers-tests.manifest
