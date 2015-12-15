@@ -166,10 +166,10 @@ bool StepParse::FillPackageInfo(manifest_x* manifest) {
 
   if (ui_application_list) {
     manifest->mainapp_id =
-        strdup(ui_application_list->items[0].ui_info.appid().c_str());
+        strdup(ui_application_list->items[0].app_info.appid().c_str());
   } else {
     manifest->mainapp_id =
-        strdup(service_application_list->items[0].sa_info.appid().c_str());
+        strdup(service_application_list->items[0].app_info.appid().c_str());
   }
   return true;
 }
@@ -240,16 +240,16 @@ bool StepParse::FillServiceApplication(manifest_x* manifest) {
 
     application_x* service_app =
         static_cast<application_x*>(calloc(1, sizeof(application_x)));
-    service_app->appid = strdup(application.sa_info.appid().c_str());
+    service_app->appid = strdup(application.app_info.appid().c_str());
     service_app->autorestart =
-        strdup(application.sa_info.auto_restart().c_str());
+        strdup(application.app_info.auto_restart().c_str());
     service_app->exec = strdup((context_->root_application_path.get()
                            / manifest->package / "bin"
-                           / application.sa_info.exec()).c_str());
-    service_app->onboot = strdup(application.sa_info.on_boot().c_str());
-    service_app->type = strdup(application.sa_info.type().c_str());
+                           / application.app_info.exec()).c_str());
+    service_app->onboot = strdup(application.app_info.on_boot().c_str());
+    service_app->type = strdup(application.app_info.type().c_str());
     service_app->process_pool =
-        strdup(application.sa_info.process_pool().c_str());
+        strdup(application.app_info.process_pool().c_str());
     service_app->component_type = strdup("svcapp");
     service_app->mainapp = main_app ? strdup("true") : strdup("false");
     service_app->enabled = strdup("true");
@@ -298,31 +298,31 @@ bool StepParse::FillUIApplication(manifest_x* manifest) {
 
     application_x* ui_app =
         static_cast<application_x*>(calloc(1, sizeof(application_x)));
-    ui_app->appid = strdup(application.ui_info.appid().c_str());
+    ui_app->appid = strdup(application.app_info.appid().c_str());
     ui_app->exec = strdup((context_->root_application_path.get()
                            / manifest->package / "bin"
-                           / application.ui_info.exec()).c_str());
-    ui_app->launch_mode = strdup(application.ui_info.launch_mode().c_str());
-    ui_app->multiple = strdup(application.ui_info.multiple().c_str());
-    ui_app->nodisplay = strdup(application.ui_info.nodisplay().c_str());
-    ui_app->taskmanage = strdup(application.ui_info.taskmanage().c_str());
-    ui_app->type = strdup(application.ui_info.type().c_str());
+                           / application.app_info.exec()).c_str());
+    ui_app->launch_mode = strdup(application.app_info.launch_mode().c_str());
+    ui_app->multiple = strdup(application.app_info.multiple().c_str());
+    ui_app->nodisplay = strdup(application.app_info.nodisplay().c_str());
+    ui_app->taskmanage = strdup(application.app_info.taskmanage().c_str());
+    ui_app->type = strdup(application.app_info.type().c_str());
     ui_app->component_type = strdup("uiapp");
-    ui_app->ui_gadget = strdup(application.ui_info.uigadget().c_str());
-    ui_app->process_pool = strdup(application.ui_info.process_pool().c_str());
-    ui_app->submode = strdup(application.ui_info.submode().c_str());
+    ui_app->ui_gadget = strdup(application.app_info.uigadget().c_str());
+    ui_app->process_pool = strdup(application.app_info.process_pool().c_str());
+    ui_app->submode = strdup(application.app_info.submode().c_str());
     ui_app->indicatordisplay =
-        strdup(application.ui_info.indicator_display().c_str());
+        strdup(application.app_info.indicator_display().c_str());
     ui_app->effectimage_type =
-        strdup(application.ui_info.effectimage_type().c_str());
+        strdup(application.app_info.effectimage_type().c_str());
     ui_app->portraitimg =
-        strdup(application.ui_info.portrait_image().c_str());
+        strdup(application.app_info.portrait_image().c_str());
     ui_app->landscapeimg =
-        strdup(application.ui_info.landscape_image().c_str());
+        strdup(application.app_info.landscape_image().c_str());
     ui_app->submode_mainid =
-        strdup(application.ui_info.submode_mainid().c_str());
+        strdup(application.app_info.submode_mainid().c_str());
     ui_app->hwacceleration =
-        strdup(application.ui_info.hwacceleration().c_str());
+        strdup(application.app_info.hwacceleration().c_str());
     ui_app->onboot = strdup("false");
     ui_app->autorestart = strdup("false");
     ui_app->component_type = strdup("uiapp");
@@ -589,8 +589,8 @@ common_installer::Step::Status StepParse::process() {
   if (ui_application_list) {
     LOG(DEBUG) << "  launch_modes -[";
     for (const auto& application : ui_application_list->items) {
-      LOG(DEBUG) << "    launch_mode[" << application.ui_info.appid() << "] = "
-        <<  application.ui_info.launch_mode();
+      LOG(DEBUG) << "    launch_mode[" << application.app_info.appid() << "] = "
+        <<  application.app_info.launch_mode();
     }
   }
   LOG(DEBUG) << "  ]-";
