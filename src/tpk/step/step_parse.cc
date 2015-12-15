@@ -14,6 +14,7 @@
 #include <tpk_manifest_handlers/service_application_handler.h>
 #include <tpk_manifest_handlers/shortcut_handler.h>
 #include <tpk_manifest_handlers/ui_application_handler.h>
+#include <tpk_manifest_handlers/widget_application_handler.h>
 #include <manifest_parser/manifest_constants.h>
 
 #include <pkgmgr/pkgmgr_parser.h>
@@ -223,6 +224,62 @@ bool StepParse::FillPrivileges(manifest_x* manifest) {
   for (auto& priv : privileges) {
     manifest->privileges = g_list_append(manifest->privileges,
                                          strdup(priv.c_str()));
+  }
+  return true;
+}
+
+bool StepParse::FillWidgetApplication(manifest_x* manifest) {
+  std::shared_ptr<const WidgetApplicationInfoList> widget_application_list =
+      std::static_pointer_cast<const WidgetApplicationInfoList>(
+          parser_->GetManifestData(app_keys::kWidgetApplicationKey));
+  LOG(ERROR) << "FILLWIDGETAPPLICATION!!!";
+  if (!widget_application_list) {
+	  LOG(ERROR) << "NO WIDGET !!!!!!!!!";
+    return true;
+  }
+
+  for (const auto& application : widget_application_list->items) {
+    // if there is no app yet, set this app as mainapp
+    bool main_app = manifest->application == nullptr;
+
+    application_x* widget_app =
+        static_cast<application_x*>(calloc(1, sizeof(application_x)));
+    widget_app->appid = strdup(application.widget_info.appid().c_str());
+    widget_app->exec = strdup((context_->root_application_path.get()
+                           / manifest->package / "bin"
+                           / application.widget_info.exec()).c_str());
+    widget_app->launch_mode =
+        strdup(application.widget_info.launch_mode().c_str());
+    widget_app->multiple = strdup(application.widget_info.multiple().c_str());
+    widget_app->nodisplay =
+        strdup(application.widget_info.nodisplay().c_str());
+    widget_app->type = strdup(application.widget_info.type().c_str());
+    widget_app->component_type = strdup("widgetapp");
+    widget_app->hwacceleration =
+        strdup(application.widget_info.hwacceleration().c_str());
+    widget_app->onboot = strdup("false");
+    widget_app->autorestart = strdup("false");
+    widget_app->component_type = strdup("uiapp");
+    widget_app->mainapp = main_app ? strdup("true") : strdup("false");
+    widget_app->enabled = strdup("true");
+    widget_app->screenreader = strdup("use-system-setting");
+    widget_app->recentimage = strdup("false");
+    widget_app->launchcondition = strdup("false");
+    widget_app->guestmode_visibility = strdup("true");
+    widget_app->permission_type = strdup("normal");
+    widget_app->ambient_support = strdup("false");
+    widget_app->package = strdup(manifest->package);
+    widget_app->support_disable = strdup(manifest->support_disable);
+    manifest->application = g_list_append(manifest->application, widget_app);
+
+    if (!FillApplicationIconPaths(widget_app, application.app_icons))
+      return false;
+    if (!FillLabel(widget_app, application.label))
+      return false;
+    if (!FillImage(widget_app, application.app_images))
+      return false;
+    if (!FillMetadata(widget_app, application.meta_data))
+      return false;
   }
   return true;
 }
@@ -523,6 +580,8 @@ bool StepParse::FillManifestX(manifest_x* manifest) {
   if (!FillUIApplication(manifest))
     return false;
   if (!FillServiceApplication(manifest))
+    return false;
+  if (!FillWidgetApplication(manifest))
     return false;
   if (!FillPrivileges(manifest))
     return false;
