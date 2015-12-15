@@ -16,7 +16,6 @@
 
 namespace {
 
-const char kPlatformVersion[] = "3.0";
 const char kPrivForPublic[] =
     "http://tizen.org/privilege/internal/default/public";
 const char kPrivForPartner[] =
@@ -30,8 +29,6 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
                  << "is not specified by package";
     return true;
   }
-  if (strcmp(m->api_version, kPlatformVersion) == 0)
-    return true;
 
   // No privileges to map
   if (!m->privileges) {
