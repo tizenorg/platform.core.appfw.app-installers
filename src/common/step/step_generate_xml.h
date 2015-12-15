@@ -16,6 +16,8 @@
 namespace common_installer {
 namespace pkgmgr {
 
+
+
 class StepGenerateXml : public common_installer::Step {
  public:
   using Step::Step;
@@ -26,9 +28,15 @@ class StepGenerateXml : public common_installer::Step {
   Status precheck() override;
 
  private:
+  enum class AppCompType {
+    UIAPP,
+    SVCAPP,
+    WIDGETAPP
+  };
+
   Step::Status GenerateApplicationCommonXml(application_x* app,
                                             xmlTextWriterPtr writer,
-                                            bool is_service);
+                                            AppCompType type);
 
   SCOPE_LOG_TAG(GenerateXML)
 };

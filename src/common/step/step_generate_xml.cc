@@ -75,13 +75,23 @@ void WriteServiceApplicationAttributes(
       BAD_CAST "false");
 }
 
+void WriteWidgetApplicationAttributes(
+    xmlTextWriterPtr writer, application_x *app) {
+  if (app->nodisplay)
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "nodisplay",
+        BAD_CAST app->nodisplay);
+  if (app->multiple)
+    xmlTextWriterWriteAttribute(writer, BAD_CAST "multiple",
+        BAD_CAST app->multiple);
+}
+
 }  // namespace
 
 namespace common_installer {
 namespace pkgmgr {
 
 common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
-    application_x* app, xmlTextWriterPtr writer, bool is_service) {
+    application_x* app, xmlTextWriterPtr writer, AppCompType type) {
   xmlTextWriterWriteAttribute(writer, BAD_CAST "appid", BAD_CAST app->appid);
 
   // binary is a symbolic link named <appid> and is located in <pkgid>/<appid>
@@ -98,10 +108,17 @@ common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
     xmlTextWriterWriteAttribute(writer, BAD_CAST "process-pool",
                                 BAD_CAST app->process_pool);
   // app-specific attributes
-  if (is_service)
+  switch (type) {
+  case AppCompType::UIAPP:
     WriteServiceApplicationAttributes(writer, app);
-  else
+    break;
+  case AppCompType::SVCAPP:
     WriteUIApplicationAttributes(writer, app);
+    break;
+  case AppCompType::WIDGETAPP:
+    WriteWidgetApplicationAttributes(writer, app);
+    break;
+  }
 
   for (label_x* label : GListRange<label_x*>(app->label)) {
     xmlTextWriterStartElement(writer, BAD_CAST "label");
@@ -327,18 +344,22 @@ common_installer::Step::Status StepGenerateXml::process() {
   // add application
   for (application_x* app :
        GListRange<application_x*>(context_->manifest_data.get()->application)) {
-    bool is_service = false;
+    AppCompType type;
     if (strcmp(app->component_type, "uiapp") == 0) {
+      type = AppCompType::UIAPP;
       xmlTextWriterStartElement(writer, BAD_CAST "ui-application");
     } else if (strcmp(app->component_type, "svcapp") == 0) {
-      is_service = true;
+      type = AppCompType::SVCAPP;
       xmlTextWriterStartElement(writer, BAD_CAST "service-application");
+    } else if (strcmp(app->component_type, "widgetapp") == 0) {
+      type = AppCompType::WIDGETAPP;
+      xmlTextWriterStartElement(writer, BAD_CAST "widget-application");
     } else {
       LOG(ERROR) << "Unknown application component_type";
       xmlFreeTextWriter(writer);
       return Status::ERROR;
     }
-    GenerateApplicationCommonXml(app, writer, is_service);
+    GenerateApplicationCommonXml(app, writer, type);
     xmlTextWriterEndElement(writer);
   }
 
