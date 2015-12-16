@@ -93,7 +93,10 @@ Step::Status StepPrivilegeCompatibility::process() {
                         strdup(kPrivForPlatform));
       break;
     default:
-      // No default privileges for untrusted application.
+      // TODO(jongmyeong.ko): temporarily, public privileges for untrusted application.
+      context_->manifest_data.get()->privileges =
+          g_list_append(context_->manifest_data.get()->privileges,
+                        strdup(kPrivForPublic));
       break;
   }
   if (!ret) {
