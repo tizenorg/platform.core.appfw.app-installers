@@ -3,6 +3,7 @@ SET(SRCS
     step/step_create_symbolic_link.cc
     step/step_parse.cc
     step/step_parse_recovery.cc
+    step/step_convert_xml.cc
     tpk_app_query_interface.cc
     tpk_installer.cc
 )
