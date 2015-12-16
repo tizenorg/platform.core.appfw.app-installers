@@ -26,6 +26,10 @@
 #ifndef COMMON_STEP_STEP_H_
 #define COMMON_STEP_STEP_H_
 
+#include <string>
+
+#include <boost/signals2.hpp>
+
 #include "common/installer_context.h"
 
 namespace common_installer {
@@ -38,6 +42,8 @@ namespace common_installer {
  */
 class Step {
  public:
+  using StepErrorSignal = boost::signals2::signal<void(const std::string&)>;
+
   /** Possible code returned by process, undo, clean, precheck methods. */
   enum class Status {
     OUT_OF_SPACE = -3,      /**< Out of disc space */
@@ -63,6 +69,8 @@ class Step {
 
   /** Checks the input data used during process method */
   virtual Status precheck() = 0;
+
+  StepErrorSignal on_error;
 
  protected:
   InstallerContext* context_;
