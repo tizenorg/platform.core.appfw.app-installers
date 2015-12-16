@@ -55,7 +55,8 @@ common_installer::Step::Status ValidateSignatureFile(
     const bf::path& base_path,
     const ValidationCore::SignatureFileInfo& file_info,
     common_installer::PrivilegeLevel* level,
-    common_installer::CertificateInfo* cert_info) {
+    common_installer::CertificateInfo* cert_info,
+    std::string* error_message) {
   bf::path path = base_path / file_info.getFileName();
   LOG(INFO) << "Processing signature: " << path;
 
@@ -66,6 +67,8 @@ common_installer::Step::Status ValidateSignatureFile(
       true,                // ocsp check flag
       true,                // file reference hash check flag
       data);               // output signature data
+
+  *error_message = validator.errorToString(result);
 
   switch (result) {
     case ValidationCore::E_SIG_REVOKED: {
@@ -137,7 +140,8 @@ namespace common_installer {
 namespace security {
 
 Step::Status ValidateSignatures(const bf::path& base_path,
-    PrivilegeLevel* level, common_installer::CertificateInfo* cert_info) {
+    PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
+    std::string* error_message) {
   // Find signature files
   ValidationCore::SignatureFileInfoSet signature_files;
   ValidationCore::SignatureFinder signature_finder(base_path.string());
@@ -150,9 +154,11 @@ Step::Status ValidateSignatures(const bf::path& base_path,
 
   // Read xml schema for signatures
   for (auto& file_info : signature_files) {
+    std::string error;
     Step::Status status = ValidateSignatureFile(base_path, file_info, level,
-                                                cert_info);
+                                                cert_info, &error);
     if (status != Step::Status::OK) {
+      *error_message = error;
       return status;
     }
   }
@@ -176,13 +182,14 @@ Step::Status StepCheckSignature::precheck() {
 
 Step::Status StepCheckSignature::process() {
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
+  std::string error_message;
   Status status =
       ValidateSignatures(context_->unpacked_dir_path.get(), &level,
-                         &context_->certificate_info.get());
+                         &context_->certificate_info.get(), &error_message);
   if (status != Status::OK) {
+      on_error(error_message);
     return status;
   }
-
   LOG(INFO) << "Privilege level: " << PrivilegeLevelToString(level);
   context_->privilege_level.set(level);
 
