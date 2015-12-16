@@ -42,6 +42,7 @@
 #include "tpk/step/step_create_symbolic_link.h"
 #include "tpk/step/step_parse.h"
 #include "tpk/step/step_parse_recovery.h"
+#include "tpk/step/step_convert_xml.h"
 
 namespace ci = common_installer;
 
@@ -107,7 +108,7 @@ void TpkInstaller::InstallSteps() {
   AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   AddStep<ci::filesystem::StepCreateIcons>();
   AddStep<ci::security::StepRegisterSecurity>();
-  AddStep<ci::pkgmgr::StepGenerateXml>();
+  AddStep<ci::tpk::StepConvertXml>();
   AddStep<ci::pkgmgr::StepRegisterApplication>();
 }
 
@@ -130,7 +131,7 @@ void TpkInstaller::UpdateSteps() {
   AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   AddStep<ci::filesystem::StepCreateIcons>();
   AddStep<ci::security::StepUpdateSecurity>();
-  AddStep<ci::pkgmgr::StepGenerateXml>();
+  AddStep<ci::tpk::StepConvertXml>();
   AddStep<ci::pkgmgr::StepUpdateApplication>();
   /* TODO(jungh.yeon): this temporary step will be removed
   * when secondary parsing procedure has removed*/
@@ -172,7 +173,7 @@ void TpkInstaller::DeltaSteps() {
   AddStep<tpk::filesystem::StepCreateSymbolicLink>();
   AddStep<ci::filesystem::StepCreateIcons>();
   AddStep<ci::security::StepUpdateSecurity>();
-  AddStep<ci::pkgmgr::StepGenerateXml>();
+  AddStep<ci::tpk::StepConvertXml>();
   AddStep<ci::pkgmgr::StepUpdateApplication>();
 }
 
