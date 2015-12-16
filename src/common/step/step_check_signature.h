@@ -7,6 +7,8 @@
 
 #include <manifest_parser/utils/logging.h>
 
+#include <string>
+
 #include "common/installer_context.h"
 #include "common/step/step.h"
 
@@ -54,7 +56,8 @@ class StepCheckSignature : public Step {
 
 // Exposed for tests
 Step::Status ValidateSignatures(const boost::filesystem::path& base_path,
-    PrivilegeLevel* level, common_installer::CertificateInfo* cert_info);
+    PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
+    std::string* error_message);
 
 }  // namespace security
 }  // namespace common_installer
