@@ -16,6 +16,8 @@
 #include "common/step/step.h"
 #include "common/utils/macros.h"
 
+#include <boost/bind.hpp>
+
 namespace common_installer {
 
 /**
@@ -59,8 +61,11 @@ class AppInstaller {
    */
   template<class StepT, class... Args>
   void AddStep(Args&&... args) {
-    steps_.push_back(std::unique_ptr<Step>(
-        new StepT(context_.get(), std::forward<Args>(args)...)));
+    std::unique_ptr<Step> step(
+        new StepT(context_.get(), std::forward<Args>(args)...));
+    step->on_error.connect(
+        boost::bind(&AppInstaller::handle_step_error, this, _1));
+    steps_.emplace_back(std::move(step));
   }
 
   /**
@@ -79,6 +84,8 @@ class AppInstaller {
 
   // data used to send signal
   std::unique_ptr<PkgmgrSignal> pi_;
+
+  void handle_step_error(const std::string& error);
 
   SCOPE_LOG_TAG(AppInstaller)
 

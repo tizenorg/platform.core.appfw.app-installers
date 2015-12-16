@@ -94,6 +94,17 @@ bool PkgmgrSignal::SendFinished(
   return true;
 }
 
+bool PkgmgrSignal::SendError(const std::string& error_message) const {
+  if (state_ != State::STARTED) {
+    return false;
+  }
+  return SendSignal(
+    PKGMGR_INSTALLER_ERROR_KEY_STR,
+    error_message.c_str(),
+    std::string(),
+    std::string());
+}
+
 bool PkgmgrSignal::SendSignal(
     const char* key,
     const char* value,
