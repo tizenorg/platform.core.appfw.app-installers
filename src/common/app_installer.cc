@@ -111,4 +111,10 @@ AppInstaller::Result AppInstaller::Run() {
   return ret;
 }
 
+void AppInstaller::handle_step_error(const std::string& error_message) {
+  pi_->SendError(error_message,
+                context_->pkg_type.get(),
+                context_->pkgid.get());
+}
+
 }  // namespace common_installer
