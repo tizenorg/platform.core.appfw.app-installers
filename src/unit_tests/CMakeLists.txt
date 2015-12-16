@@ -28,8 +28,8 @@ ENDFOREACH(test)
 # FindGTest module do not sets all needed libraries in GTEST_LIBRARIES and
 # GTest main libraries is still missing, so additional linking of
 # GTEST_MAIN_LIBRARIES is needed.
-target_link_libraries(signature_unittest PUBLIC ${TARGET_LIBNAME_COMMON} ${GTEST_MAIN_LIBRARIES})
-target_link_libraries(smoke_test PRIVATE ${TARGET_LIBNAME_WGT} ${TARGET_LIBNAME_TPK})
+target_link_libraries(signature_unittest PUBLIC ${TARGET_LIBNAME_COMMON} ${GTEST_MAIN_LIBRARIES} pthread)
+target_link_libraries(smoke_test PRIVATE ${TARGET_LIBNAME_WGT} ${TARGET_LIBNAME_TPK} pthread)
 
 FOREACH(test ${TESTS})
   INSTALL(TARGETS ${test} DESTINATION ${BINDIR}/${DESTINATION_DIR})

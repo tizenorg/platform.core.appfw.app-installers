@@ -79,6 +79,16 @@ class PkgmgrSignal {
       Step::Status result,
       const std::string& type = std::string(),
       const std::string& pkgid = std::string());
+  
+  /**
+   * "error" Signal sending
+   *
+   * \param error_message error message content
+   *
+   * \return true if success
+   */
+  bool SendError(const std::string& error_message) const;
+  
   bool IsFinished() const;
 
   /**
