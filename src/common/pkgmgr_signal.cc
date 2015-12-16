@@ -37,7 +37,7 @@ namespace common_installer {
 PkgmgrSignal::State PkgmgrSignal::state_ = PkgmgrSignal::State::NOT_SENT;
 
 PkgmgrSignal::PkgmgrSignal(pkgmgr_installer* pi, RequestType req_type)
-    : pi_(pi), request_type_(req_type) {
+    : pi_(pi), request_type_(req_type), error_message_sent_(false) {
 }
 
 bool PkgmgrSignal::SendStarted(
@@ -79,7 +79,7 @@ bool PkgmgrSignal::SendFinished(
   if (state_ != State::STARTED) {
     return false;
   }
-  if (result != Step::Status::OK) {
+  if (result != Step::Status::OK && !error_message_sent_) {
     if (!SendSignal(
         PKGMGR_INSTALLER_ERROR_KEY_STR,
         std::to_string(static_cast<int>(result)).c_str(), type, pkgid)) {
@@ -92,6 +92,21 @@ bool PkgmgrSignal::SendFinished(
   }
   state_ = State::FINISHED;
   return true;
+}
+
+bool PkgmgrSignal::SendError(
+    const std::string& error_message,
+    const std::string& type,
+    const std::string& pkgid) {
+  if (state_ != State::STARTED) {
+    return false;
+  }
+  error_message_sent_ = true;
+  return SendSignal(
+    PKGMGR_INSTALLER_ERROR_KEY_STR,
+    error_message.c_str(),
+    type,
+    pkgid);
 }
 
 bool PkgmgrSignal::SendSignal(
