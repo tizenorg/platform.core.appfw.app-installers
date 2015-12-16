@@ -28,6 +28,8 @@
 
 #include "common/installer_context.h"
 
+#include <boost/signals2.hpp>
+
 namespace common_installer {
 
 /**
@@ -38,6 +40,8 @@ namespace common_installer {
  */
 class Step {
  public:
+  using StepErrorSignal = boost::signals2::signal<void(const std::string&)>;
+
   /** Possible code returned by process, undo, clean, precheck methods. */
   enum class Status {
     OUT_OF_SPACE = -3,      /**< Out of disc space */
@@ -64,8 +68,10 @@ class Step {
   /** Checks the input data used during process method */
   virtual Status precheck() = 0;
 
+  StepErrorSignal on_error;
  protected:
   InstallerContext* context_;
+
 };
 
 }  // namespace common_installer
