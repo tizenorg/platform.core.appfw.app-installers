@@ -13,7 +13,6 @@
 #include "common/step/step_delta_patch.h"
 #include "common/step/step_fail.h"
 #include "common/step/step_kill_apps.h"
-#include "common/step/step_generate_xml.h"
 #include "common/step/step_old_manifest.h"
 #include "common/step/step_open_recovery_file.h"
 #include "common/step/step_parse.h"
