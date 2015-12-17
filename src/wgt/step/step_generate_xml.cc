@@ -3,7 +3,7 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "common/step/step_generate_xml.h"
+#include "wgt/step/step_generate_xml.h"
 
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
@@ -87,7 +87,7 @@ void WriteWidgetApplicationAttributes(
 
 }  // namespace
 
-namespace common_installer {
+namespace wgt {
 namespace pkgmgr {
 
 common_installer::Step::Status StepGenerateXml::GenerateApplicationCommonXml(
@@ -489,4 +489,4 @@ common_installer::Step::Status StepGenerateXml::undo() {
 }
 
 }  // namespace pkgmgr
-}  // namespace common_installer
+}  // namespace wgt
