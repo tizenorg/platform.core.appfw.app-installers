@@ -127,9 +127,13 @@ bool StepParse::FillPackageInfo(manifest_x* manifest) {
   std::shared_ptr<const ServiceApplicationInfoList> service_application_list =
       std::static_pointer_cast<const ServiceApplicationInfoList>(
           parser_->GetManifestData(app_keys::kServiceApplicationKey));
+  std::shared_ptr<const WidgetApplicationInfoList> widget_application_list =
+      std::static_pointer_cast<const WidgetApplicationInfoList>(
+          parser_->GetManifestData(app_keys::kWidgetApplicationKey));
 
   // mandatory check
-  if (!ui_application_list && !service_application_list) {
+  if (!ui_application_list && !service_application_list &&
+      !widget_application_list) {
     LOG(ERROR) << "UI Application or Service Application "
                   "are mandatory and has not been found.";
     return false;
