@@ -172,9 +172,12 @@ bool StepParse::FillPackageInfo(manifest_x* manifest) {
   if (ui_application_list) {
     manifest->mainapp_id =
         strdup(ui_application_list->items[0].ui_info.appid().c_str());
-  } else {
+  } else if (service_application_list) {
     manifest->mainapp_id =
         strdup(service_application_list->items[0].sa_info.appid().c_str());
+  } else if (widget_application_list) {
+    manifest->mainapp_id =
+        strdup(widget_application_list->items[0].widget_info.appid().c_str());
   }
   return true;
 }
