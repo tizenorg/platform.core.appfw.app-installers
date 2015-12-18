@@ -227,7 +227,8 @@ bool CreateSkelDirectories(const std::string& pkgid) {
       return false;
     }
 
-    r = lsetxattr(subpath.c_str(), "security.SMACK64", label.c_str(), label.length(), 0);
+    r = lsetxattr(subpath.c_str(), "security.SMACK64",
+                  label.c_str(), label.length(), 0);
     if (r < 0) {
       LOG(ERROR) << "Failed to apply label";
       return false;
