@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <fstream>
 
 #include "common/app_query_interface.h"
 
@@ -80,6 +81,24 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
           << directory_path
           << "xml path"
           << xml_path;
+      return EINVAL;
+    }
+
+    //check its name is written on PRELOAD_PACKAGE_LIST
+    std::ifstream preload_list("/etc/package-manager/preload/preload_list.txt");
+    char preload_pkgid[100]; // 100 should be fixed as pkgid length
+    bool is_preload_app = false;
+    while(!preload_list.eof()) {
+      preload_list.getline(preload_pkgid, 100);
+      if (strncmp(preload_pkgid, directory_path.filename().c_str(), strlen(directory_path.filename().c_str())) == 0) {
+        is_preload_app = true;
+        break;
+      }
+    }
+    preload_list.close();
+
+    if (!is_preload_app) {
+      LOG(ERROR) << "only preload app could be installed through manifest direct install for now";
       return EINVAL;
     }
   }

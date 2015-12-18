@@ -42,6 +42,7 @@ class StepParse : public common_installer::Step {
   boost::filesystem::path path_;
 
  private:
+  boost::filesystem::path FindIcon(const std::string& filename);
   bool FillInstallationInfo(manifest_x* manifest);
   bool FillPackageInfo(manifest_x* manifest);
   bool FillAuthorInfo(manifest_x* manifest);
