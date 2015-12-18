@@ -26,9 +26,8 @@
 #ifndef COMMON_STEP_STEP_H_
 #define COMMON_STEP_STEP_H_
 
-#include <string>
-
 #include <boost/signals2.hpp>
+#include <string>
 
 #include "common/installer_context.h"
 

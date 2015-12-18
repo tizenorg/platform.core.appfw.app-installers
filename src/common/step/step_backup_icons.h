@@ -6,10 +6,9 @@
 #define COMMON_STEP_STEP_BACKUP_ICONS_H_
 
 #include <boost/filesystem/path.hpp>
+#include <manifest_parser/utils/logging.h>
 #include <utility>
 #include <vector>
-
-#include <manifest_parser/utils/logging.h>
 
 #include "common/installer_context.h"
 #include "common/step/step.h"

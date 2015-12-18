@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "common/installer_context.h"
-#include "step_check_tpk_background_category.h"
+#include "tpk/step/step_check_tpk_background_category.h"
 
 namespace {
 namespace ci_sec = common_installer::security;

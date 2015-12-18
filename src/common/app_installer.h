@@ -7,12 +7,10 @@
 #define COMMON_APP_INSTALLER_H_
 
 #include <manifest_parser/utils/logging.h>
-
+#include <boost/bind.hpp>
 #include <list>
 #include <memory>
 #include <string>
-
-#include <boost/bind.hpp>
 
 #include "common/pkgmgr_interface.h"
 #include "common/pkgmgr_signal.h"
