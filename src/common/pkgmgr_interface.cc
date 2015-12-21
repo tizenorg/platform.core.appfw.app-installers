@@ -149,12 +149,4 @@ bool PkgMgrInterface::GetIsTepMove() {
   return (pkgmgr_installer_get_tep_move_type(pi_) == 1)?true:false;
 }
 
-boost::filesystem::path PkgMgrInterface::GetXMLPath() {
-  return boost::filesystem::path(pkgmgr_installer_get_xml_path(pi_));
-}
-
-boost::filesystem::path PkgMgrInterface::GetDirectoryPath() {
-  return boost::filesystem::path(pkgmgr_installer_get_directory_path(pi_));
-}
-
 }  // namespace common_installer
