@@ -4,12 +4,17 @@
 
 #include "common/step/step_configure.h"
 
+#include <boost/filesystem/path.hpp>
+
+#include <pkgmgr-info.h>
 #include <sys/stat.h>
 #include <tzplatform_config.h>
 #include <string>
 
 #include "common/request.h"
 #include "common/utils/file_util.h"
+
+namespace bf = boost::filesystem;
 
 namespace common_installer {
 namespace configuration {
@@ -64,17 +69,26 @@ Step::Status StepConfigure::process() {
       context_->pkgid.set(kStrEmpty);
       break;
     case RequestType::ManifestDirectInstall:
-    case RequestType::ManifestDirectUpdate:
+    case RequestType::ManifestDirectUpdate: {
       if (context_->request_mode.get() != RequestMode::GLOBAL) {
         LOG(ERROR) <<
           "Only global user allows to use Manifest Direct Install";
         return Status::ERROR;
       }
-      context_->xml_path.set(pkgmgr_->GetXMLPath());
-      context_->pkgid.set(context_->xml_path.get().stem().string());
-      context_->unpacked_dir_path.set(pkgmgr_->GetDirectoryPath());
-      context_->pkg_path.set(pkgmgr_->GetDirectoryPath());
+      context_->pkgid.set(pkgmgr_->GetRequestInfo());
+      bf::path package_directory =
+          context_->root_application_path.get() / context_->pkgid.get();
+      bf::path xml_path = bf::path(getUserManifestPath(context_->uid.get()))
+          / bf::path(context_->pkgid.get());
+      xml_path += ".xml";
+      context_->unpacked_dir_path.set(package_directory);
+      context_->pkg_path.set(package_directory);
+      context_->xml_path.set(xml_path);
+
+      // required in certain steps, there is not signature in this case
+      context_->privilege_level.set(PrivilegeLevel::PLATFORM);
       break;
+    }
     default:
       // TODO(p.sikorski): should return unsupported, and display error
       LOG(ERROR) <<
