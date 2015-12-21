@@ -49,46 +49,12 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
   }
 
   if (pkgmgr_installer_get_request_type(pi_)
-        == PKGMGR_REQ_MANIFEST_DIRECT_INSTALL) {
-    /* Add restrictions for manifest direct install
-      * - Directory should be located under /usr/apps/
-      * - XML path should be located under /usr/share/packages/
-      * - Directory name and xml name should be same */
-    bf::path directory_path = pkgmgr_installer_get_directory_path(pi_);
-    bf::path xml_path = pkgmgr_installer_get_xml_path(pi_);
-
-    if (directory_path.empty() ||
-        !bf::is_directory(directory_path) ||
-        xml_path.empty() ||
-        !bf::is_regular_file(xml_path)) {
-      LOG(ERROR) << "invalid parameter";
-      return EINVAL;
-    }
-
-    if (directory_path.parent_path().compare("/usr/apps") != 0) {
-      LOG(ERROR) << "invalid directory path";
-      return EINVAL;
-    }
-
-    if (xml_path.parent_path().compare("/usr/share/packages") != 0) {
-      LOG(ERROR) << "invalid xml path";
-      return EINVAL;
-    }
-
-    if (directory_path.filename().string()
-          .compare(xml_path.stem().string()) != 0) {
-      LOG(ERROR) << "invalid parameter: directory path "
-          << directory_path
-          << "xml path"
-          << xml_path;
-      return EINVAL;
-    }
-
+      == PKGMGR_REQ_MANIFEST_DIRECT_INSTALL) {
     // pkgid should be exists in preload app list
     std::ifstream preload_list("/etc/package-manager/preload/preload_list.txt");
     bool is_preload_app = false;
     for (std::string str; std::getline(preload_list, str); ) {
-      if (str.compare(directory_path.filename().string()) == 0) {
+      if (str == GetRequestInfo()) {
         is_preload_app = true;
         break;
       }
@@ -96,11 +62,11 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
     preload_list.close();
 
     if (!is_preload_app) {
-      LOG(ERROR) << "Only preload app could be installed by manifest direct install";
+      LOG(ERROR) <<
+          "Only preload app could be installed by manifest direct install";
       return EINVAL;
     }
   }
-
   is_app_installed_ = false;
   if (query_interface_)
     is_app_installed_ = query_interface_->IsAppInstalledByArgv(argc, argv);
@@ -164,14 +130,6 @@ boost::filesystem::path PkgMgrInterface::GetTepPath() const {
 
 bool PkgMgrInterface::GetIsTepMove() {
   return (pkgmgr_installer_get_tep_move_type(pi_) == 1)?true:false;
-}
-
-boost::filesystem::path PkgMgrInterface::GetXMLPath() {
-  return boost::filesystem::path(pkgmgr_installer_get_xml_path(pi_));
-}
-
-boost::filesystem::path PkgMgrInterface::GetDirectoryPath() {
-  return boost::filesystem::path(pkgmgr_installer_get_directory_path(pi_));
 }
 
 }  // namespace common_installer
