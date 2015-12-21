@@ -38,8 +38,14 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
   pi_ = pkgmgr_installer_new();
 
   if (!pi_) {
-    LOG(ERROR) << "Cannot create pkgmgr_installer object";
-    return ENOMEM;
+    LOG(WARNING) << "Cannot create pkgmgr_installer object. Will try offline";
+    // TODO(t.iwanek): app-installer should recognize offline installation and
+    // this information should be accesible in installation context
+    pi_ = pkgmgr_installer_offline_new();
+    if (!pi_) {
+      LOG(ERROR) << "Cannot create pkgmgr_installer object. Aborting.";
+      return ENOMEM;
+    }
   }
 
   int result = pkgmgr_installer_receive_request(pi_, argc, argv);
