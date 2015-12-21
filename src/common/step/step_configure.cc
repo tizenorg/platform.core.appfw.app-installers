@@ -119,9 +119,15 @@ Step::Status StepConfigure::process() {
 }
 
 Step::Status StepConfigure::precheck() {
-  if (getuid() == 0) {
-    LOG(ERROR) << "App-installer should not run with superuser!";
-    return Status::ERROR;
+  if (pkgmgr_->GetRequestType() != RequestType::ManifestDirectInstall &&
+      pkgmgr_->GetRequestType() != RequestType::ManifestDirectUpdate) {
+    if (getuid() == 0) {
+      LOG(ERROR) << "App-installer should not run with superuser!";
+      return Status::ERROR;
+    }
+  } else {
+    LOG(INFO) << "Allowing installation from root user for"
+                  "manifest direct installation mode.";
   }
   return Status::OK;
 }

@@ -9,7 +9,8 @@
 namespace common_installer {
 
 RequestMode GetRequestMode() {
-  return (getuid() == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) ?
+  return (getuid() == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER) ||
+          getuid() == 0) ?
       RequestMode::GLOBAL : RequestMode::USER;
 }
 
