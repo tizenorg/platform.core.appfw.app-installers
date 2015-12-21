@@ -86,7 +86,6 @@ Step::Status StepConfigure::process() {
       context_->unpacked_dir_path.set(package_directory);
       context_->pkg_path.set(package_directory);
       context_->xml_path.set(xml_path);
-      context_->privilege_level.set(common_installer::PrivilegeLevel::PUBLIC);
       context_->pkg_type.set(kRpmPackageType);  // temporary fix as rpm
       break;
     }
@@ -121,9 +120,15 @@ Step::Status StepConfigure::process() {
 }
 
 Step::Status StepConfigure::precheck() {
-  if (getuid() == 0) {
-    LOG(ERROR) << "App-installer should not run with superuser!";
-    return Status::OPERATION_NOT_ALLOWED;
+  if (pkgmgr_->GetRequestType() != RequestType::ManifestDirectInstall &&
+      pkgmgr_->GetRequestType() != RequestType::ManifestDirectUpdate) {
+    if (getuid() == 0) {
+      LOG(ERROR) << "App-installer should not run with superuser!";
+      return Status::OPERATION_NOT_ALLOWED;
+    }
+  } else {
+    LOG(INFO) << "Allowing installation from root user for"
+                 "manifest direct installation mode.";
   }
   return Status::OK;
 }
