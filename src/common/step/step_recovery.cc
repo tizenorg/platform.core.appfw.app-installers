@@ -19,7 +19,7 @@ Step::Status StepRecovery::process() {
     return RecoveryUpdate();
   default:
     LOG(ERROR) << "Recovery is not supported for given type of installation";
-    return Status::ERROR;
+    return Status::RECOVERY_ERROR;
   }
 }
 

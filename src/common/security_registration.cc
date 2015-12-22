@@ -34,7 +34,7 @@ const std::vector<std::pair<const char*,
 bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     const boost::filesystem::path& path, uid_t uid,
     const std::vector<std::string>& privileges,
-    app_inst_req* req) {
+    app_inst_req* req, std::string* error_message) {
   if (app_id.empty() || pkg_id.empty()) {
     LOG(ERROR) << "Appid or pkgid is empty. Both values must be set";
     return false;
@@ -43,17 +43,20 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
   int error = security_manager_app_inst_req_set_app_id(req,
       app_id.c_str());
   if (error != SECURITY_MANAGER_SUCCESS) {
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
     return false;
   }
 
   error = security_manager_app_inst_req_set_pkg_id(req,
       pkg_id.c_str());
   if (error != SECURITY_MANAGER_SUCCESS) {
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
     return false;
   }
 
   error = security_manager_app_inst_req_set_uid(req, uid);
   if (error != SECURITY_MANAGER_SUCCESS) {
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
     return false;
   }
 
@@ -64,6 +67,7 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
         error = security_manager_app_inst_req_add_path(req, subpath.c_str(),
                                                        policy.second);
         if (error != SECURITY_MANAGER_SUCCESS) {
+          *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
           return false;
         }
       }
@@ -82,7 +86,7 @@ namespace common_installer {
 
 bool RegisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, const boost::filesystem::path& path, uid_t uid,
-    const std::vector<std::string>& privileges) {
+    const std::vector<std::string>& privileges, std::string* error_message) {
   app_inst_req* req;
 
   int error = security_manager_app_inst_req_new(&req);
@@ -90,10 +94,11 @@ bool RegisterSecurityContext(const std::string& app_id,
     LOG(ERROR)
         << "Failed while calling security_manager_app_inst_req_new failed "
         << "(error code: " << error << ")";
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, path, uid, privileges, req)) {
+  if (!PrepareRequest(app_id, pkg_id, path, uid, privileges, req, error_message)) {
       LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
       security_manager_app_inst_req_free(req);
       return false;
@@ -103,6 +108,7 @@ bool RegisterSecurityContext(const std::string& app_id,
   if (error != SECURITY_MANAGER_SUCCESS) {
     LOG(ERROR) << "Failed while calling security_manager_app_install failed "
                << "(error code: " << error << ")";
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
     security_manager_app_inst_req_free(req);
     return false;
   }
@@ -112,17 +118,18 @@ bool RegisterSecurityContext(const std::string& app_id,
 }
 
 bool UnregisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id, uid_t uid) {
+    const std::string& pkg_id, uid_t uid, std::string* error_message) {
   app_inst_req* req;
 
   int error = security_manager_app_inst_req_new(&req);
   if (error != SECURITY_MANAGER_SUCCESS) {
     LOG(ERROR) << "Failed while calling security_manager_app_inst_req_new  "
                << "(error code: " << error << ")";
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, bf::path(), uid, {}, req)) {
+  if (!PrepareRequest(app_id, pkg_id, bf::path(), uid, {}, req, error_message)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
@@ -132,6 +139,7 @@ bool UnregisterSecurityContext(const std::string& app_id,
   if (error != SECURITY_MANAGER_SUCCESS) {
     LOG(ERROR) << "Failed while calling  security_manager_app_uninstall failed "
                << "(error code: " << error << ")";
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
     security_manager_app_inst_req_free(req);
     return false;
   }
@@ -142,7 +150,7 @@ bool UnregisterSecurityContext(const std::string& app_id,
 
 bool RegisterSecurityContextForManifest(
     const std::string& pkg_id, const boost::filesystem::path& path,
-    uid_t uid, manifest_x* manifest) {
+    uid_t uid, manifest_x* manifest, std::string* error_message) {
   std::vector<std::string> priv_vec;
   for (const char* priv : GListRange<char*>(manifest->privileges)) {
     priv_vec.emplace_back(priv);
@@ -152,7 +160,7 @@ bool RegisterSecurityContextForManifest(
       return false;
     }
     if (!RegisterSecurityContext(app->appid, pkg_id,
-        path, uid, priv_vec)) {
+        path, uid, priv_vec, error_message)) {
       return false;
     }
   }
@@ -160,12 +168,12 @@ bool RegisterSecurityContextForManifest(
 }
 
 bool UnregisterSecurityContextForManifest(const std::string& pkg_id,
-                                          uid_t uid, manifest_x* manifest) {
+                                          uid_t uid, manifest_x* manifest, std::string* error_message) {
   for (application_x* app : GListRange<application_x*>(manifest->application)) {
     if (!app->appid) {
       return false;
     }
-    if (!UnregisterSecurityContext(app->appid, pkg_id, uid)) {
+    if (!UnregisterSecurityContext(app->appid, pkg_id, uid, error_message)) {
       return false;
     }
   }

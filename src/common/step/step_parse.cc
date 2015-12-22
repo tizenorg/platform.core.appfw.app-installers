@@ -33,7 +33,7 @@ Step::Status StepParse::process() {
   if (!mfx) {
     LOG(ERROR) << "Failed to parse tizen manifest xml "
         << context_->xml_path.get();
-    return Step::Status::ERROR;
+    return Step::Status::PARSE_ERROR;
   }
 
   context_->manifest_data.set(mfx);

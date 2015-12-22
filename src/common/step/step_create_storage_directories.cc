@@ -26,11 +26,11 @@ namespace filesystem {
 
 common_installer::Step::Status StepCreateStorageDirectories::process() {
   if (!ShareDir())
-    return Status::ERROR;
+    return Status::APP_DIR_ERROR;
   if (!PrivateDir())
-    return Status::ERROR;
+    return Status::APP_DIR_ERROR;
   if (!CacheDir())
-    return Status::ERROR;
+    return Status::APP_DIR_ERROR;
 
   return Status::OK;
 }

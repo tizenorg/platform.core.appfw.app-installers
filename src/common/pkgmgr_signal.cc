@@ -95,16 +95,22 @@ bool PkgmgrSignal::SendFinished(
 }
 
 bool PkgmgrSignal::SendError(
+    Step::Status result,
     const std::string& error_message,
     const std::string& type,
     const std::string& pkgid) {
   if (state_ != State::STARTED) {
     return false;
   }
+  std::string error_value = std::to_string(static_cast<int>(result));
+  if (!error_message.empty()) {
+    error_value = error_value + ":" + error_message;
+  }
+  LOG(ERROR) << "PkgmgrSignal error_value: (" << error_value << ")";
   error_message_sent_ = true;
   return SendSignal(
     PKGMGR_INSTALLER_ERROR_KEY_STR,
-    error_message.c_str(),
+    error_value.c_str(),
     type,
     pkgid);
 }

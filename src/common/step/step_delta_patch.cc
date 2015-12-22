@@ -187,11 +187,11 @@ StepDeltaPatch::StepDeltaPatch(InstallerContext* context,
 Step::Status StepDeltaPatch::precheck() {
   if (context_->unpacked_dir_path.get().empty()) {
     LOG(ERROR) << "Unpacked dir is not set";
-    return Status::ERROR;
+    return Status::INVALID_VALUE;
   }
   if (context_->pkgid.get().empty()) {
     LOG(ERROR) << "Package id is not set";
-    return Status::ERROR;
+    return Status::PACKAGE_NOT_FOUND;
   }
   return Status::OK;
 }
@@ -200,25 +200,25 @@ Step::Status StepDeltaPatch::process() {
   bf::path delta_file = context_->unpacked_dir_path.get() / kDeltaFile;
   if (!bf::exists(delta_file)) {
     LOG(ERROR) << "Delta file doesn't exist in package.";
-    return Status::ERROR;
+    return Status::DELTA_ERROR;
   }
   delta::DeltaParser parser;
   if (!parser.ParseManifest(delta_file)) {
     LOG(ERROR) << parser.GetErrorMessage();
-    return Status::ERROR;
+    return Status::DELTA_ERROR;
   }
   std::shared_ptr<const delta::DeltaInfo> delta_info =
       std::static_pointer_cast<const delta::DeltaInfo>(
         parser.GetManifestData(delta::kDeltaInfoKey));
   if (!delta_info) {
     LOG(ERROR) << "Failed to parse delta information";
-    return Status::ERROR;
+    return Status::DELTA_ERROR;
   }
 
   // additional validation
   if (!ValidateDeltaInfo(*delta_info)) {
     LOG(ERROR) << "Delta info is malformed";
-    return Status::ERROR;
+    return Status::DELTA_ERROR;
   }
 
   // create old content directory and patch directory
@@ -226,13 +226,13 @@ Step::Status StepDeltaPatch::process() {
   patch_dir_ += ".patch";
   if (!MoveDir(context_->unpacked_dir_path.get(), patch_dir_)) {
     LOG(ERROR) << "Failed to move content to patch directory";
-    return Status::ERROR;
+    return Status::DELTA_ERROR;
   }
 
   if (!CopyDir(context_->root_application_path.get() / context_->pkgid.get()
                / delta_root_, context_->unpacked_dir_path.get())) {
     LOG(ERROR) << "Failed to copy package files";
-    return Status::ERROR;
+    return Status::DELTA_ERROR;
   }
 
   // if there is no root set, that means we need to handle files added by
@@ -246,7 +246,7 @@ Step::Status StepDeltaPatch::process() {
 
   // apply changes mentioned in delta
   if (!ApplyPatch(*delta_info, context_->unpacked_dir_path.get(), patch_dir_))
-    return Status::ERROR;
+    return Status::DELTA_ERROR;
 
   bs::error_code error;
   bf::remove_all(patch_dir_, error);
