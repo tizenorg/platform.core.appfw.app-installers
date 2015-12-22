@@ -74,6 +74,8 @@ Step::Status StepConfigure::process() {
       context_->pkgid.set(context_->xml_path.get().stem().string());
       context_->unpacked_dir_path.set(pkgmgr_->GetDirectoryPath());
       context_->pkg_path.set(pkgmgr_->GetDirectoryPath());
+      context_->privilege_level.set(common_installer::PrivilegeLevel::PUBLIC);
+      context_->pkg_type.set("rpm"); //temporary fix as rpm
       break;
     default:
       // TODO(p.sikorski): should return unsupported, and display error
