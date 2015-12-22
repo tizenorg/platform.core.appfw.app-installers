@@ -32,7 +32,7 @@ namespace common_installer {
  */
 bool RegisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, const boost::filesystem::path& path, uid_t uid,
-    const std::vector<std::string>& privileges);
+    const std::vector<std::string>& privileges, std::string* error_message);
 
 /**
  * Adapter interface for external Security module.
@@ -47,7 +47,7 @@ bool RegisterSecurityContext(const std::string& app_id,
  * \return true if success
  */
 bool UnregisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id, uid_t uid);
+    const std::string& pkg_id, uid_t uid, std::string* error_message);
 
 /**
  * Adapter interface for external Security module.
@@ -63,7 +63,8 @@ bool UnregisterSecurityContext(const std::string& app_id,
  * \return true if success
  */
 bool RegisterSecurityContextForManifest(const std::string& pkg_id,
-    const boost::filesystem::path& path, uid_t uid, manifest_x* manifest);
+    const boost::filesystem::path& path, uid_t uid, manifest_x* manifest,
+    std::string* error_message);
 
 /**
  * Adapter interface for external Security module.
@@ -78,7 +79,7 @@ bool RegisterSecurityContextForManifest(const std::string& pkg_id,
  * \return true if success
  */
 bool UnregisterSecurityContextForManifest(const std::string& pkg_id, uid_t uid,
-    manifest_x* manifest);
+    manifest_x* manifest, std::string* error_message);
 
 }  // namespace common_installer
 

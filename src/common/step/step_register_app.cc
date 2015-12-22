@@ -17,13 +17,13 @@ namespace pkgmgr {
 Step::Status StepRegisterApplication::precheck() {
   if (context_->xml_path.get().empty()) {
     LOG(ERROR) << "xml_path attribute is empty";
-    return Step::Status::INVALID_VALUE;
+    return Step::Status::MANIFEST_NOT_FOUND;
   }
   if (!boost::filesystem::exists(context_->xml_path.get())) {
     LOG(ERROR) << "xml_path ("
                << context_->xml_path.get()
                << ") path does not exist";
-    return Step::Status::INVALID_VALUE;
+    return Step::Status::MANIFEST_NOT_FOUND;
   }
   // TODO(p.sikorski) check context_->uid.get()
 
@@ -39,7 +39,7 @@ Step::Status StepRegisterApplication::process() {
                            context_->request_mode.get(),
                            context_->tep_path.get())) {
     LOG(ERROR) << "Failed to register the app";
-    return Step::Status::ERROR;
+    return Step::Status::REGISTER_ERROR;
   }
 
   LOG(INFO) << "Successfully registered the app";
@@ -53,7 +53,7 @@ Step::Status StepRegisterApplication::undo() {
                              context_->uid.get(),
                              context_->request_mode.get())) {
     LOG(ERROR) << "Application couldn't be unregistered";
-    return Status::ERROR;
+    return Status::REGISTER_ERROR;
   }
 
   LOG(INFO) << "Successfuly clean database";

@@ -33,7 +33,7 @@ Step::Status StepUpdateTep::process() {
                           context_->uid.get(),
                           context_->request_mode.get())) {
     LOG(ERROR) << "Cannot update tep info for application";
-    return Status::ERROR;
+    return Status::REGISTER_ERROR;
   }
 
   LOG(INFO) << "Successfully update the tep info for application";

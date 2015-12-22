@@ -25,25 +25,25 @@ Step::Status StepCheckOldCertificate::process() {
     if (!cert) {
       LOG(ERROR) << "Trying to update package without signature is not allowed "
                  << "when the previous version of package has signature";
-      return Status::ERROR;
+      return Status::AUTHOR_CERT_NOT_FOUND;
     } else {
       try {
         if (old_author_certificate != cert->getBase64()) {
           LOG(ERROR) << "Author signature doesn't match the previous one. "
                      << "Update must be aborted";
-          return Status::ERROR;
+          return Status::AUTHOR_CERT_NOT_MATCH;
         }
       } catch (const ValidationCore::Certificate::Exception::Base &e) {
         LOG(ERROR) << "Exception occured on cert-svc-vcore getBase64 "
                    << "Dump : " << e.DumpToString();
-        return Status::ERROR;
+        return Status::CERT_ERROR;
       }
     }
   } else {
     if (cert) {
       LOG(ERROR) << "Trying to update package with signature is not allowed "
                  << "when the previous version of package has not signature";
-      return Status::ERROR;
+      return Status::AUTHOR_CERT_NOT_MATCH;
     }
   }
 
