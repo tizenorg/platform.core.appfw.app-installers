@@ -42,12 +42,12 @@ Step::Status StepCopy::precheck() {
 
   if (!context_->manifest_data.get()) {
     LOG(ERROR) << "manifest_data attribute is empty";
-    return Step::Status::INVALID_VALUE;
+    return Step::Status::MANIFEST_NOT_FOUND;
   }
 
   if (context_->pkgid.get().empty()) {
     LOG(ERROR) << "pkgid attribute is empty";
-    return Step::Status::INVALID_VALUE;
+    return Step::Status::PACKAGE_NOT_FOUND;
   }
 
   // TODO(p.sikorski) asserts?
@@ -67,12 +67,12 @@ Step::Status StepCopy::process() {
   if (error) {
     LOG(ERROR) << "Cannot create directory: "
                << install_path.parent_path().string();
-    return Step::Status::ERROR;
+    return Step::Status::APP_DIR_ERROR;
   }
   if (!MoveDir(context_->unpacked_dir_path.get(), install_path)) {
     LOG(ERROR) << "Cannot move widget directory to install path, from "
         << context_->unpacked_dir_path.get() << " to " << install_path;
-    return Status::ERROR;
+    return Status::APP_DIR_ERROR;
   }
   LOG(INFO) << "Successfully move: " << context_->unpacked_dir_path.get()
             << " to: " << install_path << " directory";

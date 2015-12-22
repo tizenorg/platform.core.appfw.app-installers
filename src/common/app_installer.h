@@ -63,7 +63,7 @@ class AppInstaller {
     std::unique_ptr<Step> step(
         new StepT(context_.get(), std::forward<Args>(args)...));
     step->on_error.connect(
-        boost::bind(&AppInstaller::HandleStepError, this, _1));
+        boost::bind(&AppInstaller::HandleStepError, this, _1, _2));
     steps_.emplace_back(std::move(step));
   }
 
@@ -84,7 +84,7 @@ class AppInstaller {
   // data used to send signal
   std::unique_ptr<PkgmgrSignal> pi_;
 
-  void HandleStepError(const std::string& error);
+  void HandleStepError(Step::Status result, const std::string& error);
 
   SCOPE_LOG_TAG(AppInstaller)
 
