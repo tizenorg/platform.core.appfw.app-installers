@@ -22,7 +22,7 @@ namespace bf = boost::filesystem;
 Step::Status StepRemoveIcons::precheck() {
   if (!context_->manifest_data.get()) {
     LOG(ERROR) << "manifest_data attribute is empty";
-    return Status::ERROR;
+    return Status::MANIFEST_NOT_FOUND;
   }
 
   return Status::OK;
@@ -43,7 +43,7 @@ Step::Status StepRemoveIcons::process() {
       bf::path backup_icon_file = GetBackupPathForIconFile(app_icon);
       if (!MoveFile(app_icon, backup_icon_file)) {
         LOG(ERROR) << "Failed to create backup for icon: " << app_icon;
-        return Status::ERROR;
+        return Status::ICON_ERROR;
       }
       backups_.emplace_back(backup_icon_file, app_icon);
     }
@@ -73,7 +73,7 @@ Step::Status StepRemoveIcons::undo() {
       if (!MoveFile(pair.first, pair.second)) {
         LOG(ERROR) << "Failed to restore: " << pair.second;
         // We need to try to restore all icons anyway...
-        ret = Status::ERROR;
+        ret = Status::ICON_ERROR;
       }
     }
   }

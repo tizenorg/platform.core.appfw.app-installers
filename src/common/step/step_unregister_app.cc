@@ -25,17 +25,17 @@ namespace bf = boost::filesystem;
 Step::Status StepUnregisterApplication::precheck() {
   if (context_->pkgid.get().empty()) {
     LOG(ERROR) << "pkgid attribute is empty";
-    return Status::INVALID_VALUE;
+    return Status::PACKAGE_NOT_FOUND;
   }
   if (context_->xml_path.get().empty()) {
     LOG(ERROR) << "xml_path attribute is empty";
-    return Status::INVALID_VALUE;
+    return Status::MANIFEST_NOT_FOUND;
   }
   if (!boost::filesystem::exists(context_->xml_path.get())) {
     LOG(ERROR) << "xml_path ("
                << context_->xml_path.get()
                << ") path does not exist";
-    return Status::INVALID_VALUE;
+    return Status::MANIFEST_NOT_FOUND;
   }
 
   if (context_->backup_xml_path.get().empty()) {
@@ -73,7 +73,7 @@ Step::Status StepUnregisterApplication::process() {
   // Prepare certificate info for rollback operations
   if (!BackupCertInfo()) {
     LOG(ERROR) << "Failed to backup cert info";
-    return Status::ERROR;
+    return Status::CERT_ERROR;
   }
 
   if (!UnregisterAppInPkgmgr(context_->manifest_data.get(),
@@ -82,7 +82,7 @@ Step::Status StepUnregisterApplication::process() {
                              context_->uid.get(),
                              context_->request_mode.get())) {
     LOG(ERROR) << "Failed to unregister package into database";
-    return Status::ERROR;
+    return Status::REGISTER_ERROR;
   }
 
   // remove manifest file
@@ -102,7 +102,7 @@ Step::Status StepUnregisterApplication::undo() {
                            context_->uid.get(),
                            context_->request_mode.get())) {
     LOG(ERROR) << "Failed to restore the app registration in pkgmgr";
-    return Step::Status::ERROR;
+    return Step::Status::REGISTER_ERROR;
   }
 
   LOG(INFO) << "Successfully restored the app registration in pkgmgr";
