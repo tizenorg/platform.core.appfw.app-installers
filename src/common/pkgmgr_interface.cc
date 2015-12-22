@@ -10,8 +10,11 @@
 
 #include <memory>
 #include <string>
+#include <fstream>
 
 #include "common/app_query_interface.h"
+
+#define PKG_NAME_STRING_LEN_MAX 128
 
 namespace bf = boost::filesystem;
 
@@ -81,6 +84,24 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
           << "xml path"
           << xml_path;
       return EINVAL;
+
+      // pkgid should be exists in preload app list
+      std::ifstream preload_list("/etc/package-manager/preload/preload_list.txt");
+      char preload_pkgid[PKG_NAME_STRING_LEN_MAX];
+      bool is_preload_app = false;
+      while(!preload_list.eof()) {
+        preload_list.getline(preload_pkgid, PKG_NAME_STRING_LEN_MAX);
+        if (strncmp(preload_pkgid, directory_path.filename().c_str(), strlen(directory_path.filename().c_str())) == 0) {
+          is_preload_app = true;
+          break;
+        }
+      }
+      preload_list.close();
+
+      if (!is_preload_app) {
+        LOG(ERROR) << "Only preload app could be installed by manifest direct install";
+        return EINVAL;
+      }
     }
   }
 
