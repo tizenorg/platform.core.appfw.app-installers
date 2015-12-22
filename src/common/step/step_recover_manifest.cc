@@ -42,7 +42,7 @@ Step::Status StepRecoverManifest::RecoveryUpdate() {
       bf::remove(context_->xml_path.get(), error);
       if (error) {
         LOG(ERROR) << "Cannot move manifest file to restore its location";
-        return Status::ERROR;
+        return Status::RECOVERY_ERROR;
       }
     }
     (void) MoveFile(context_->backup_xml_path.get(), context_->xml_path.get());

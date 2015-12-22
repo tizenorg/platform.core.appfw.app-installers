@@ -69,7 +69,7 @@ namespace security {
 Step::Status StepPrivilegeCompatibility::precheck() {
   if (!context_->manifest_data.get()) {
     LOG(ERROR) << "Manifest data is not set";
-    return Status::ERROR;
+    return Status::MANIFEST_NOT_FOUND;
   }
   return Status::OK;
 }
@@ -103,11 +103,11 @@ Step::Status StepPrivilegeCompatibility::process() {
   }
   if (!ret) {
     LOG(ERROR) << "Error during adding default privileges for certificates.";
-    return Status::ERROR;
+    return Status::PRIVILEGE_ERROR;
   }
 
   return TranslatePrivilegesForCompatibility(context_->manifest_data.get()) ?
-      Status::OK : Status::ERROR;
+      Status::OK : Status::PRIVILEGE_ERROR;
 }
 
 }  // namespace security
