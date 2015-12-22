@@ -26,7 +26,7 @@ namespace backup {
 Step::Status StepBackupManifest::precheck() {
   if (!bf::exists(context_->xml_path.get())) {
     LOG(ERROR) << "Xml manifest file does not exist";
-    return Status::ERROR;
+    return Status::MANIFEST_NOT_FOUND;
   }
   return Status::OK;
 }
@@ -40,7 +40,7 @@ Step::Status StepBackupManifest::process() {
   bf::copy(context_->xml_path.get(), context_->backup_xml_path.get(), error);
   if (error) {
     LOG(ERROR) << "Failed to make a copy of xml manifest file";
-    return Status::ERROR;
+    return Status::MANIFEST_ERROR;
   }
   LOG(DEBUG) << "Manifest backup created";
   return Status::OK;
@@ -51,7 +51,7 @@ Step::Status StepBackupManifest::clean() {
   bf::remove(context_->backup_xml_path.get(), error);
   if (error) {
     LOG(WARNING) << "Cannot remove backup manifest file";
-    return Status::ERROR;
+    return Status::MANIFEST_ERROR;
   }
   LOG(DEBUG) << "Manifest backup removed";
   return Status::OK;
@@ -63,12 +63,12 @@ Step::Status StepBackupManifest::undo() {
     bf::remove(context_->xml_path.get(), error);
     if (error) {
       LOG(ERROR) << "Failed to remove newly generated xml file in revert";
-      return Status::ERROR;
+      return Status::MANIFEST_ERROR;
     }
     if (!MoveFile(context_->backup_xml_path.get(),
         context_->xml_path.get())) {
       LOG(ERROR) << "Failed to revert a content of xml manifest file";
-      return Status::ERROR;
+      return Status::MANIFEST_ERROR;
     }
     LOG(DEBUG) << "Manifest reverted from backup";
   }

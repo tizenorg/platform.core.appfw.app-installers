@@ -13,7 +13,7 @@ Step::Status StepUpdateSecurity::process() {
   if (!RegisterSecurityContextForManifest(
       context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
       context_->manifest_data.get())) {
-    return Status::ERROR;
+    return Status::SECURITY_ERROR;
   }
   LOG(DEBUG) << "Security context updated";
   return Status::OK;
@@ -23,7 +23,7 @@ Step::Status StepUpdateSecurity::undo() {
   if (!RegisterSecurityContextForManifest(
       context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
       context_->old_manifest_data.get())) {
-    return Status::ERROR;
+    return Status::SECURITY_ERROR;
   }
   LOG(DEBUG) << "Security context reverted";
   return Status::OK;

@@ -73,12 +73,12 @@ common_installer::Step::Status ValidateSignatureFile(
   switch (result) {
     case ValidationCore::E_SIG_REVOKED: {
       LOG(ERROR) << "Certificate is revoked";
-      return common_installer::Step::Status::ERROR;
+      return common_installer::Step::Status::SIGNATURE_INVALID;
     };
     case ValidationCore::E_SIG_DISREGARDED: {
         if (data.isAuthorSignature()) {
           LOG(ERROR) << "Author-signiture is disregarded";
-          return common_installer::Step::Status::ERROR;
+          return common_installer::Step::Status::SIGNATURE_INVALID;
         }
         LOG(WARNING) << "Signature disregarded: " << path;
         break;
@@ -100,7 +100,7 @@ common_installer::Step::Status ValidateSignatureFile(
     default: {
       LOG(ERROR) << "signature validation check failed : "
                  << validator.errorToString(result);
-      return common_installer::Step::Status::ERROR;
+      return common_installer::Step::Status::SIGNATURE_INVALID;
     };
   }
   return common_installer::Step::Status::OK;
@@ -187,7 +187,7 @@ Step::Status StepCheckSignature::process() {
       ValidateSignatures(context_->unpacked_dir_path.get(), &level,
                          &context_->certificate_info.get(), &error_message);
   if (status != Status::OK) {
-      on_error(error_message);
+    on_error(error_message);
     return status;
   }
   LOG(INFO) << "Privilege level: " << PrivilegeLevelToString(level);
@@ -198,7 +198,7 @@ Step::Status StepCheckSignature::process() {
   if (!ValidatePrivilegeLevel(level, is_webapp,
       context_->manifest_data.get()->api_version,
       context_->manifest_data.get()->privileges))
-    return Status::ERROR;
+    return Status::SIGNATURE_ERROR;
 
   LOG(INFO) << "Signature done";
   return Status::OK;

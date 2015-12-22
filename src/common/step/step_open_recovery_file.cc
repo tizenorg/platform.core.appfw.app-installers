@@ -16,7 +16,7 @@ Step::Status StepOpenRecoveryFile::process() {
       RecoveryFile::OpenRecoveryFileForPath(context_->file_path.get());
   if (!recovery_file) {
     LOG(ERROR) << "Failed to open recovery file";
-    return Status::ERROR;
+    return Status::RECOVERY_ERROR;
   }
   context_->unpacked_dir_path.set(recovery_file->unpacked_dir());
   context_->pkgid.set(recovery_file->pkgid());

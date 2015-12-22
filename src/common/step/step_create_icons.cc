@@ -23,7 +23,7 @@ Step::Status StepCreateIcons::process() {
     bf::create_directories(icons_directory, error);
     if (error) {
       LOG(ERROR) << "Cannot create directory of application icons";
-      return Status::ERROR;
+      return Status::ICON_ERROR;
     }
   }
 
@@ -44,7 +44,7 @@ Step::Status StepCreateIcons::process() {
         bf::copy_file(source, destination, error);
         if (error) {
           LOG(ERROR) << "Cannot create package icon: " << destination;
-          return Status::ERROR;
+          return Status::ICON_ERROR;
         }
         icons_.push_back(destination);
       }

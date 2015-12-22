@@ -40,7 +40,7 @@ Step::Status StepRegisterSecurity::process() {
   if (!RegisterSecurityContextForManifest(
       context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
       context_->manifest_data.get())) {
-    return Status::ERROR;
+    return Status::SECURITY_ERROR;
   }
   LOG(DEBUG) << "Security context installed";
   return Status::OK;

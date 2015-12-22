@@ -18,7 +18,7 @@ namespace bf = boost::filesystem;
 Step::Status StepRemoveFiles::precheck() {
   if (!context_->manifest_data.get()) {
     LOG(ERROR) << "manifest_data attribute is empty";
-    return Step::Status::INVALID_VALUE;
+    return Step::Status::MANIFEST_NOT_FOUND;
   }
 
   // Even though, the below checks can fail, StepRemoveFiles should still try
@@ -38,7 +38,7 @@ Step::Status StepRemoveFiles::process() {
   bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
   if (!MoveDir(context_->pkg_path.get(), backup_path)) {
     LOG(ERROR) << "Cannot remove widget files from its location";
-    return Status::ERROR;
+    return Status::APP_DIR_ERROR;
   }
   LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
   return Status::OK;
@@ -57,7 +57,7 @@ Step::Status StepRemoveFiles::undo() {
     LOG(DEBUG) << "Restoring directory: " << context_->pkg_path.get();
     if (!MoveDir(backup_path, context_->pkg_path.get())) {
       LOG(ERROR) << "Cannot restore widget files";
-      return Status::ERROR;
+      return Status::APP_DIR_ERROR;
     }
   }
 

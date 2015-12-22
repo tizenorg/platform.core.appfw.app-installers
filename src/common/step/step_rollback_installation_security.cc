@@ -14,11 +14,11 @@ namespace security {
 Step::Status StepRollbackInstallationSecurity::precheck() {
   if (context_->pkgid.get().empty()) {
     LOG(ERROR) << "pkgid attribute is empty";
-    return Step::Status::INVALID_VALUE;
+    return Step::Status::PACKAGE_NOT_FOUND;
   }
   if (!context_->manifest_data.get()) {
     LOG(ERROR) << "manifest_data attribute is empty";
-    return Step::Status::INVALID_VALUE;
+    return Step::Status::MANIFEST_NOT_FOUND;
   }
 
   return Step::Status::OK;
@@ -28,7 +28,7 @@ Step::Status StepRollbackInstallationSecurity::undo() {
   if (!UnregisterSecurityContextForManifest(
       context_->pkgid.get(),  context_->uid.get(),
       context_->manifest_data.get())) {
-    return Status::ERROR;
+    return Status::SECURITY_ERROR;
   }
   LOG(DEBUG) << "Security context uninstalled";
   return Status::OK;
