@@ -27,7 +27,7 @@ Step::Status StepOldManifest::process() {
 
   if (!bf::exists(context_->xml_path.get())) {
     LOG(ERROR) << "Missing old platform manifest file";
-    return Status::ERROR;
+    return Status::MANIFEST_NOT_FOUND;
   }
 
   xmlInitParser();
@@ -36,7 +36,7 @@ Step::Status StepOldManifest::process() {
   if (!mfx) {
     LOG(ERROR) << "Failed to parse old tizen manifest xml "
                << context_->xml_path.get();
-    return Step::Status::ERROR;
+    return Step::Status::MANIFEST_ERROR;
   }
 
   context_->old_manifest_data.set(mfx);

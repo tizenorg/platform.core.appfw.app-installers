@@ -26,22 +26,35 @@ bool StepRecoverSecurity::Check() {
 Step::Status StepRecoverSecurity::RecoveryNew() {
   if (!Check())
     return Status::OK;
-  UnregisterSecurityContextForManifest(
+  std::string error_message;
+  if (!UnregisterSecurityContextForManifest(
       context_->pkgid.get(), context_->uid.get(),
-      context_->manifest_data.get());
+      context_->manifest_data.get(), &error_message)) {
+    LOG(ERROR) << "Unsuccessful install";
+    if (!error_message.empty()) {
+      LOG(ERROR) << "error_message: " << error_message;
+      on_error(Status::RECOVERY_ERROR, error_message);
+    }
+    return Status::RECOVERY_ERROR;
+  }
   return Status::OK;
 }
 
 Step::Status StepRecoverSecurity::RecoveryUpdate() {
   if (!Check()) {
     LOG(ERROR) << "Invalid parameters";
-    return Status::ERROR;
+    return Status::INVALID_VALUE;
   }
+  std::string error_message;
   if (!RegisterSecurityContextForManifest(
       context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
-      context_->manifest_data.get())) {
+      context_->manifest_data.get(), &error_message)) {
     LOG(ERROR) << "Unsuccessful update";
-    return Status::ERROR;
+    if (!error_message.empty()) {
+      LOG(ERROR) << "error_message: " << error_message;
+      on_error(Status::RECOVERY_ERROR, error_message);
+    }
+    return Status::RECOVERY_ERROR;
   }
   return Status::OK;
 }
