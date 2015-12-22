@@ -91,9 +91,11 @@ bool SetPackageDirectorySmackRules(const bf::path& base_dir,
       LOG(ERROR) << "Failed to get application ids for package id";
       return false;
     }
+    std::string error_message;
     for (const auto& appid : appids) {
       if (!common_installer::RegisterSecurityContext(appid, pkgid, base_dir,
-                                                     uid, privileges)) {
+                                                     uid, privileges, &error_message)) {
+        LOG(ERROR) << "Failed to register security context, (" << error_message << ")";
         return false;
       }
     }

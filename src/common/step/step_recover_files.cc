@@ -42,7 +42,7 @@ Step::Status StepRecoverFiles::RecoveryUpdate() {
       bf::remove_all(context_->pkg_path.get(), error);
       if (error) {
         LOG(ERROR) << "Cannot restore widget files to its correct location";
-        return Status::ERROR;
+        return Status::RECOVERY_ERROR;
       }
     }
     (void) MoveDir(backup_path, context_->pkg_path.get());

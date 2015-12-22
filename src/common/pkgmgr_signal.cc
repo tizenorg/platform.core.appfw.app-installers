@@ -95,6 +95,7 @@ bool PkgmgrSignal::SendFinished(
 }
 
 bool PkgmgrSignal::SendError(
+    Step::Status result,
     const std::string& error_message,
     const std::string& type,
     const std::string& pkgid) {

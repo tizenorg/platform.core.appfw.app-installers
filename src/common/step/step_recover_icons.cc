@@ -42,7 +42,7 @@ Step::Status StepRecoverIcons::RecoveryUpdate() {
       bf::remove(pair.first, error);
       if (error) {
         LOG(ERROR) << "Cannot move icon to restore its correct location";
-        return Status::ERROR;
+        return Status::RECOVERY_ERROR;
       }
     }
     (void) MoveFile(pair.second, pair.first);
