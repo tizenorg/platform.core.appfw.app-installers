@@ -27,7 +27,7 @@ namespace pkgmgr {
 Step::Status StepUpdateApplication::precheck() {
   if (context_->xml_path.get().empty()) {
     LOG(ERROR) << "Xml path is empty";
-    return Status::ERROR;
+    return Status::MANIFEST_NOT_FOUND;
   }
   return Status::OK;
 }
@@ -40,7 +40,7 @@ Step::Status StepUpdateApplication::process() {
                           context_->uid.get(),
                           context_->request_mode.get())) {
     LOG(ERROR) << "Cannot upgrade manifest for application";
-    return Status::ERROR;
+    return Status::REGISTER_ERROR;
   }
 
   LOG(INFO) << "Successfully install the application";
@@ -61,7 +61,7 @@ Step::Status StepUpdateApplication::undo() {
     } catch (const ValidationCore::Certificate::Exception::Base &e) {
       LOG(ERROR) << "Exception in cert-svc-vcore Certificate "
                  << "Dump : " << e.DumpToString();
-      return Status::ERROR;
+      return Status::CERT_ERROR;
     }
   }
 
@@ -71,7 +71,7 @@ Step::Status StepUpdateApplication::undo() {
                           context_->uid.get(),
                           context_->request_mode.get())) {
     LOG(ERROR) << "Cannot revert manifest for application";
-    return Status::ERROR;
+    return Status::REGISTER_ERROR;
   }
   LOG(INFO) << "Database reverted successfully";
   return Status::OK;

@@ -44,7 +44,7 @@ Step::Status StepRecoverApplication::RecoveryUpdate() {
                            context_->uid.get(),
                            context_->request_mode.get())) {
     LOG(ERROR) << "Unsuccessful app registration";
-    return Status::ERROR;
+    return Status::RECOVERY_ERROR;
   }
   return Status::OK;
 }

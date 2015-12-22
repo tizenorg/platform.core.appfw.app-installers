@@ -30,7 +30,7 @@ Step::Status StepBackupIcons::process() {
       icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
       if (!icon->text) {
         LOG(ERROR) << "Icon text is not set";
-        return Status::ERROR;
+        return Status::ICON_NOT_FOUND;
       }
       app_icon += bf::path(icon->text).extension();
     } else {
@@ -45,7 +45,7 @@ Step::Status StepBackupIcons::process() {
   for (auto& pair : icons_) {
     if (!MoveFile(pair.first, pair.second)) {
       LOG(ERROR) << "Cannot create backup for icon: " << pair.first;
-      return Status::ERROR;
+      return Status::ICON_ERROR;
     }
   }
 
@@ -63,7 +63,7 @@ Step::Status StepBackupIcons::undo() {
   for (auto& pair : icons_) {
     if (!MoveFile(pair.second, pair.first)) {
       LOG(ERROR) << "Cannot revert icon from backup: " << pair.first;
-      return Status::ERROR;
+      return Status::ICON_ERROR;
     }
   }
   LOG(DEBUG) << "Icons reverted from backup";

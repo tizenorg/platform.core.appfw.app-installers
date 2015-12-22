@@ -10,20 +10,29 @@ namespace common_installer {
 namespace security {
 
 Step::Status StepUpdateSecurity::process() {
+  std::string error_message;
   if (!RegisterSecurityContextForManifest(
       context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
-      context_->manifest_data.get())) {
-    return Status::ERROR;
+      context_->manifest_data.get(), &error_message)) {
+    if (!error_message.empty()) {
+      LOG(ERROR) << "error_message: " << error_message;
+      on_error(Status::SECURITY_ERROR, error_message);
+    }
+    return Status::SECURITY_ERROR;
   }
   LOG(DEBUG) << "Security context updated";
   return Status::OK;
 }
 
 Step::Status StepUpdateSecurity::undo() {
+  std::string error_message;
   if (!RegisterSecurityContextForManifest(
       context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
-      context_->old_manifest_data.get())) {
-    return Status::ERROR;
+      context_->old_manifest_data.get(), &error_message)) {
+    if (!error_message.empty()) {
+      LOG(ERROR) << "error_message: " << error_message;
+    }
+    return Status::SECURITY_ERROR;
   }
   LOG(DEBUG) << "Security context reverted";
   return Status::OK;
