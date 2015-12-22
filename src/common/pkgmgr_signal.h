@@ -87,7 +87,8 @@ class PkgmgrSignal {
    *
    * \return true if success
    */
-  bool SendError(const std::string& error_message,
+  bool SendError(Step::Status result,
+      const std::string& error_message,
       const std::string& type = std::string(),
       const std::string& pkgid = std::string());
 

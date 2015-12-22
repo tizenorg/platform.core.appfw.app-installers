@@ -52,13 +52,13 @@ Step::Status StepCopyTep::process() {
   if (context_->is_tep_move.get()) {
     if (!MoveFile(context_->tep_path.get(), tep_path)) {
       LOG(ERROR) << "Cannnot move TEP file into install path";
-      return Step::Status::ERROR;
+      return Step::Status::APP_DIR_ERROR;
     }
   } else {
     if (!CopyFile(context_->tep_path.get(), tep_path)) {
       LOG(ERROR) << "Cannot copy TEP file [" << context_->tep_path.get() <<
           "] into install path [" << tep_path << "]";
-      return Step::Status::ERROR;
+      return Step::Status::APP_DIR_ERROR;
     }
   }
   context_->tep_path.set(tep_path);
