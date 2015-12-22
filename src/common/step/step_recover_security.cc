@@ -35,13 +35,13 @@ Step::Status StepRecoverSecurity::RecoveryNew() {
 Step::Status StepRecoverSecurity::RecoveryUpdate() {
   if (!Check()) {
     LOG(ERROR) << "Invalid parameters";
-    return Status::ERROR;
+    return Status::INVALID_VALUE;
   }
   if (!RegisterSecurityContextForManifest(
       context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
       context_->manifest_data.get())) {
     LOG(ERROR) << "Unsuccessful update";
-    return Status::ERROR;
+    return Status::RECOVERY_ERROR;
   }
   return Status::OK;
 }

@@ -45,10 +45,29 @@ class Step {
 
   /** Possible code returned by process, undo, clean, precheck methods. */
   enum class Status {
-    OUT_OF_SPACE = -3,      /**< Out of disc space */
-    INVALID_VALUE = -2,     /**< Invalid argument */
-    ERROR = -1,             /**< General error */
-    OK = 0                  /**< General success */
+    SECURITY_ERROR = -22,             /**< Security error */
+    REGISTER_ERROR = -21,             /**< Register application error */
+    PRIVILEGE_ERROR = -20,            /**< Privilege error */
+    PARSE_ERROR = -19,                /**< Parsing error */
+    RECOVERY_ERROR = -18,             /**< Recovery error */
+    DELTA_ERROR = -17,                /**< Delta patch error */
+    APP_DIR_ERROR = -16,              /**< Application directory error */
+    CONFIG_ERROR = -15,               /**< Configuration error */
+    SIGNATURE_ERROR = -14,            /**< Signature error */
+    SIGNATURE_INVALID = -13,          /**< Signature invalid */
+    CERT_ERROR = -12,                 /**< Check certificate error */
+    AUTHOR_CERT_NOT_MATCH = -11,      /**< Author certificate not match */
+    AUTHOR_CERT_NOT_FOUND = -10,      /**< Author certificate not found */
+    ICON_ERROR = -9,                  /**< Icon error */
+    ICON_NOT_FOUND = -8,              /**< Icon not found */
+    MANIFEST_ERROR = -7,              /**< Manifest error */
+    MANIFEST_NOT_FOUND = -6,          /**< Manifest not found */
+    PACKAGE_NOT_FOUND = -5,           /**< Package not found */
+    OPERATION_NOT_ALLOWED = -4,       /**< Operation not allowed */
+    OUT_OF_SPACE = -3,                /**< Out of disc space */
+    INVALID_VALUE = -2,               /**< Invalid argument */
+    ERROR = -1,                       /**< General error */
+    OK = 0                            /**< General success */
   };
 
   /** Standard constructor */
