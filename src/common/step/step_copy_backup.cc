@@ -22,7 +22,7 @@ namespace bs = boost::system;
 Step::Status StepCopyBackup::precheck() {
   if (context_->pkgid.get().empty()) {
     LOG(ERROR) << "pkgid attribute is empty";
-    return Step::Status::INVALID_VALUE;
+    return Step::Status::PACKAGE_NOT_FOUND;
   }
   if (context_->root_application_path.get().empty()) {
     LOG(ERROR) << "root_application_path attribute is empty";
@@ -40,10 +40,10 @@ Step::Status StepCopyBackup::precheck() {
 
 Step::Status StepCopyBackup::process() {
   if (!Backup())
-    return Status::ERROR;
+    return Status::APP_DIR_ERROR;
 
   if (!NewContent())
-    return Status::ERROR;
+    return Status::APP_DIR_ERROR;
 
   return Status::OK;
 }
@@ -51,7 +51,7 @@ Step::Status StepCopyBackup::process() {
 Step::Status StepCopyBackup::clean() {
   if (!CleanBackupDirectory()) {
     LOG(DEBUG) << "Cannot remove backup directory";
-    return Status::ERROR;
+    return Status::APP_DIR_ERROR;
   }
   LOG(DEBUG) << "Applications files backup directory removed";
 
@@ -68,7 +68,7 @@ Step::Status StepCopyBackup::undo() {
   if (bf::exists(backup_path_)) {
     if (!RollbackApplicationDirectory()) {
       LOG(ERROR) << "Failed to revert package directory";
-      return Status::ERROR;
+      return Status::APP_DIR_ERROR;
     }
     LOG(DEBUG) << "Application files reverted from backup";
   }

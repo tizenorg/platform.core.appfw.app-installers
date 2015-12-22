@@ -29,6 +29,8 @@
 #include <boost/signals2.hpp>
 #include <string>
 
+#include <package-manager.h>
+
 #include "common/installer_context.h"
 
 namespace common_installer {
@@ -41,15 +43,36 @@ namespace common_installer {
  */
 class Step {
  public:
-  using StepErrorSignal = boost::signals2::signal<void(const std::string&)>;
-
   /** Possible code returned by process, undo, clean, precheck methods. */
   enum class Status {
-    OUT_OF_SPACE = -3,      /**< Out of disc space */
-    INVALID_VALUE = -2,     /**< Invalid argument */
-    ERROR = -1,             /**< General error */
-    OK = 0                  /**< General success */
+    UNZIP_ERROR = PKGCMD_ERRCODE_UNZIP_ERROR,
+    SECURITY_ERROR = PKGCMD_ERRCODE_SECURITY_ERROR,
+    REGISTER_ERROR = PKGCMD_ERRCODE_REGISTER_ERROR,
+    PRIVILEGE_ERROR = PKGCMD_ERRCODE_PRIVILEGE_ERROR,
+    PARSE_ERROR = PKGCMD_ERRCODE_PARSE_ERROR,
+    RECOVERY_ERROR = PKGCMD_ERRCODE_RECOVERY_ERROR,
+    DELTA_ERROR = PKGCMD_ERRCODE_DELTA_ERROR,
+    APP_DIR_ERROR = PKGCMD_ERRCODE_APP_DIR_ERROR,
+    CONFIG_ERROR = PKGCMD_ERRCODE_CONFIG_ERROR,
+    SIGNATURE_ERROR = PKGCMD_ERRCODE_SIGNATURE_ERROR,
+    SIGNATURE_INVALID = PKGCMD_ERRCODE_SIGNATURE_INVALID,
+    CERT_ERROR = PKGCMD_ERRCODE_CERT_ERROR,
+    AUTHOR_CERT_NOT_MATCH = PKGCMD_ERRCODE_AUTHOR_CERT_NOT_MATCH,
+    AUTHOR_CERT_NOT_FOUND = PKGCMD_ERRCODE_AUTHOR_CERT_NOT_FOUND,
+    ICON_ERROR = PKGCMD_ERRCODE_ICON_ERROR,
+    ICON_NOT_FOUND = PKGCMD_ERRCODE_ICON_NOT_FOUND,
+    MANIFEST_ERROR = PKGCMD_ERRCODE_MANIFEST_ERROR,
+    MANIFEST_NOT_FOUND = PKGCMD_ERRCODE_MANIFEST_NOT_FOUND,
+    PACKAGE_NOT_FOUND = PKGCMD_ERRCODE_PACKAGE_NOT_FOUND,
+    OPERATION_NOT_ALLOWED = PKGCMD_ERRCODE_OPERATION_NOT_ALLOWED,
+    OUT_OF_SPACE = PKGCMD_ERRCODE_OUT_OF_SPACE,
+    INVALID_VALUE = PKGCMD_ERRCODE_INVALID_VALUE,
+    ERROR = PKGCMD_ERRCODE_ERROR,
+    OK = PKGCMD_ERRCODE_OK
   };
+
+  using StepErrorSignal =
+    boost::signals2::signal<void(Step::Status result, const std::string&)>;
 
   /** Standard constructor */
   explicit Step(InstallerContext* context) : context_(context) { }

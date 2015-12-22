@@ -89,7 +89,7 @@ Step::Status StepUnzip::process() {
 
   if (!CreateDir(tmp_dir)) {
     LOG(ERROR) << "Failed to create temp directory: " << tmp_dir;
-    return Step::Status::ERROR;
+    return Step::Status::APP_DIR_ERROR;
   }
 
   int64_t required_size =
@@ -100,7 +100,7 @@ Step::Status StepUnzip::process() {
                << context_->file_path.get();
     bs::error_code error;
     bf::remove_all(tmp_dir, error);
-    return Step::Status::ERROR;
+    return Step::Status::APP_DIR_ERROR;
   }
 
   LOG(DEBUG) << "Required size for application: " << required_size << "B";
@@ -124,7 +124,7 @@ Step::Status StepUnzip::process() {
     LOG(ERROR) << "Failed to process unpack step";
     bs::error_code error;
     bf::remove_all(tmp_dir, error);
-    return Step::Status::ERROR;
+    return Step::Status::UNZIP_ERROR;
   }
   context_->unpacked_dir_path.set(tmp_dir);
 

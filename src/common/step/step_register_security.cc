@@ -5,6 +5,7 @@
 #include "common/step/step_register_security.h"
 
 #include <boost/filesystem.hpp>
+#include <string>
 
 #include "common/security_registration.h"
 
@@ -37,10 +38,15 @@ Step::Status StepRegisterSecurity::precheck() {
 }
 
 Step::Status StepRegisterSecurity::process() {
+  std::string error_message;
   if (!RegisterSecurityContextForManifest(
       context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
-      context_->manifest_data.get())) {
-    return Status::ERROR;
+      context_->manifest_data.get(), &error_message)) {
+    if (!error_message.empty()) {
+      LOG(ERROR) << "error_message: " << error_message;
+      on_error(Status::SECURITY_ERROR, error_message);
+    }
+    return Status::SECURITY_ERROR;
   }
   LOG(DEBUG) << "Security context installed";
   return Status::OK;
