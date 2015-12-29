@@ -46,7 +46,7 @@ namespace common_installer {
 namespace pkgmgr {
 
 Step::Status StepKillApps::process() {
-  manifest_x* old_manifest = context_->old_manifest_data.get() ?
+  std::shared_ptr<ManifestXWrapper> old_manifest = context_->old_manifest_data.get() ?
       context_->old_manifest_data.get() : context_->manifest_data.get();
   for (application_x* app :
        GListRange<application_x*>(old_manifest->application)) {

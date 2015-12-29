@@ -31,9 +31,10 @@ Step::Status StepOldManifest::process() {
   }
 
   xmlInitParser();
-  manifest_x* mfx = pkgmgr_parser_usr_process_manifest_xml(
-      context_->xml_path.get().c_str(), context_->uid.get());
-  if (!mfx) {
+  std::shared_ptr<ManifestXWrapper> mfx = std::make_shared<ManifestXWrapper>(
+      context_->xml_path.get(), context_->uid.get());
+
+  if (!mfx->Create()) {
     LOG(ERROR) << "Failed to parse old tizen manifest xml "
                << context_->xml_path.get();
     return Step::Status::ERROR;

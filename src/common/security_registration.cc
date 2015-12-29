@@ -80,6 +80,8 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
 
 namespace common_installer {
 
+using ManifestXWrapperPtr = std::shared_ptr<ManifestXWrapper>;
+
 bool RegisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, const boost::filesystem::path& path, uid_t uid,
     const std::vector<std::string>& privileges) {
@@ -142,7 +144,7 @@ bool UnregisterSecurityContext(const std::string& app_id,
 
 bool RegisterSecurityContextForManifest(
     const std::string& pkg_id, const boost::filesystem::path& path,
-    uid_t uid, manifest_x* manifest) {
+    uid_t uid, ManifestXWrapperPtr& manifest) {
   std::vector<std::string> priv_vec;
   for (const char* priv : GListRange<char*>(manifest->privileges)) {
     priv_vec.emplace_back(priv);
@@ -160,7 +162,8 @@ bool RegisterSecurityContextForManifest(
 }
 
 bool UnregisterSecurityContextForManifest(const std::string& pkg_id,
-                                          uid_t uid, manifest_x* manifest) {
+                                          uid_t uid,
+                                          ManifestXWrapperPtr &manifest) {
   for (application_x* app : GListRange<application_x*>(manifest->application)) {
     if (!app->appid) {
       return false;
