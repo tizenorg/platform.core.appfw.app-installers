@@ -15,6 +15,7 @@
 #include <string>
 
 #include "common/utils/file_util.h"
+#include "common/wrappers/manifest_x_wrapper.h"
 
 namespace common_installer {
 namespace parse {
@@ -28,13 +29,16 @@ Step::Status StepParse::process() {
 
   context_->xml_path.set(xml_path.string());
   xmlInitParser();
-  manifest_x* mfx = pkgmgr_parser_usr_process_manifest_xml(
-    context_->xml_path.get().c_str(), context_->uid.get());
-  if (!mfx) {
+  std::shared_ptr<ManifestXWrapper> mfx(new ManifestXWrapper(
+    context_->xml_path.get(), context_->uid.get()));
+
+
+  if (!mfx->Create()) {
     LOG(ERROR) << "Failed to parse tizen manifest xml "
         << context_->xml_path.get();
     return Step::Status::ERROR;
   }
+
 
   context_->manifest_data.set(mfx);
 

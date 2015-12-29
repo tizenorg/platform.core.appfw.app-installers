@@ -195,10 +195,10 @@ void StepCheckBackgroundCategory::RemoveContextBackgroundCategories(
 }
 
 ci::Step::Status StepCheckBackgroundCategory::process() {
-  std::string str_ver(context_->manifest_data.get()->api_version);
+
   ci::PrivilegeLevel privilege_level = context_->privilege_level.get();
   bool background_supt = GetBackgroundSupport();
-  utils::VersionNumber version(str_ver);
+  utils::VersionNumber version(context_->manifest_data.get()->ApiVersion());
 
   for (application_x* app :
       GListRange<application_x*>(context_->manifest_data.get()->application)) {

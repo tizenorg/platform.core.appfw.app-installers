@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "common/wrappers/manifest_x_wrapper.h"
 #include "common/installer_context.h"
 
 namespace common_installer {
@@ -27,7 +28,7 @@ namespace common_installer {
  *
  * \return true if success
  */
-bool RegisterAppInPkgmgr(manifest_x* manifest,
+bool RegisterAppInPkgmgr(std::shared_ptr<ManifestXWrapper> &manifest,
                          const boost::filesystem::path& xml_path,
                          const std::string& pkgid,
                          const CertificateInfo& cert_info,
@@ -48,7 +49,7 @@ bool RegisterAppInPkgmgr(manifest_x* manifest,
  *
  * \return true if success
  */
-bool UpgradeAppInPkgmgr(manifest_x* manifest,
+bool UpgradeAppInPkgmgr(std::shared_ptr<ManifestXWrapper> &manifest,
                         const boost::filesystem::path& xml_path,
                         const std::string& pkgid,
                         const CertificateInfo& cert_info,
@@ -82,7 +83,7 @@ bool UpdateTepInfoInPkgmgr(const boost::filesystem::path& tep_path,
  *
  * \return true if success
  */
-bool UnregisterAppInPkgmgr(manifest_x* manifest,
+bool UnregisterAppInPkgmgr(std::shared_ptr<ManifestXWrapper> &manifest,
                            const boost::filesystem::path& xml_path,
                            const std::string& pkgid,
                            uid_t uid,

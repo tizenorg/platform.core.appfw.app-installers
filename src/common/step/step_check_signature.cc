@@ -107,7 +107,7 @@ common_installer::Step::Status ValidateSignatureFile(
 }
 
 bool ValidatePrivilegeLevel(common_installer::PrivilegeLevel level,
-    bool is_webapp, const char* api_version, GList* privileges) {
+    bool is_webapp, const std::string &api_version, GList* privileges) {
   if (level == common_installer::PrivilegeLevel::UNTRUSTED) {
     if (privileges) {
       LOG(ERROR) << "Untrusted application cannot declare privileges";
@@ -121,7 +121,7 @@ bool ValidatePrivilegeLevel(common_installer::PrivilegeLevel level,
   int status = PRVMGR_ERR_NONE;
   // Do the privilege check only if the package has privileges
   if (privileges) {
-    status = privilege_manager_verify_privilege(api_version,
+    status = privilege_manager_verify_privilege(api_version.c_str(),
         is_webapp ? PRVMGR_PACKAGE_TYPE_WRT : PRVMGR_PACKAGE_TYPE_CORE,
         privileges, PrivilegeLevelToVisibility(level), &error);
   }
@@ -196,7 +196,7 @@ Step::Status StepCheckSignature::process() {
   // TODO(t.iwanek): refactoring, move to wgt backend
   bool is_webapp = context_->pkg_type.get() == "wgt";
   if (!ValidatePrivilegeLevel(level, is_webapp,
-      context_->manifest_data.get()->api_version,
+      context_->manifest_data.get()->ApiVersion(),
       context_->manifest_data.get()->privileges))
     return Status::ERROR;
 

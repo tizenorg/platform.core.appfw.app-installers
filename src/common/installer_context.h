@@ -6,6 +6,7 @@
 #ifndef COMMON_INSTALLER_CONTEXT_H_
 #define COMMON_INSTALLER_CONTEXT_H_
 
+#include "common/wrappers/manifest_x_wrapper.h"
 #include <boost/filesystem/path.hpp>
 
 #include <pkgmgr_parser.h>
@@ -24,6 +25,7 @@
 #include "common/utils/property.h"
 
 #include "manifest_info/account.h"
+
 
 namespace common_installer {
 
@@ -160,7 +162,7 @@ class InstallerContext {
    *        framework to handle package management (pkgid, icon,
    *        applications, appcontrol, privileges and more)
    */
-  Property<manifest_x*> manifest_data;
+  Property<std::shared_ptr<ManifestXWrapper>> manifest_data;
 
   /** Pkgmgr-parser plugins data */
   Property<ExtraManifestData> manifest_plugins_data;
@@ -173,7 +175,7 @@ class InstallerContext {
    *        - this field is set only for update installation
    *        (we need this information for rollback possibility)
    */
-  Property<manifest_x*> old_manifest_data;
+  Property<std::shared_ptr<ManifestXWrapper>> old_manifest_data;
 
   /**
    * \brief path to xml platform manifest which was generated according

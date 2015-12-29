@@ -37,11 +37,7 @@ InstallerContext::InstallerContext()
       backend_data(nullptr),
       privilege_level(PrivilegeLevel::UNTRUSTED) {}
 
-InstallerContext::~InstallerContext() {
-  if (manifest_data.get())
-    pkgmgr_parser_free_manifest_xml(manifest_data.get());
-  if (old_manifest_data.get())
-    pkgmgr_parser_free_manifest_xml(old_manifest_data.get());
+InstallerContext::~InstallerContext() { 
   if (backend_data.get())
     delete backend_data.get();
 }
