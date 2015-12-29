@@ -63,7 +63,9 @@ bool UnregisterSecurityContext(const std::string& app_id,
  * \return true if success
  */
 bool RegisterSecurityContextForManifest(const std::string& pkg_id,
-    const boost::filesystem::path& path, uid_t uid, manifest_x* manifest);
+                                        const boost::filesystem::path& path,
+                                        uid_t uid,
+                                        const ManifestXWrapperPtr& manifest);
 
 /**
  * Adapter interface for external Security module.
@@ -78,7 +80,7 @@ bool RegisterSecurityContextForManifest(const std::string& pkg_id,
  * \return true if success
  */
 bool UnregisterSecurityContextForManifest(const std::string& pkg_id, uid_t uid,
-    manifest_x* manifest);
+    const ManifestXWrapperPtr& manifest);
 
 }  // namespace common_installer
 

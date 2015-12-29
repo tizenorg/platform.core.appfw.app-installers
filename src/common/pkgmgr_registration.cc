@@ -61,7 +61,8 @@ int PkgmgrForeachPrivilegeCallback(const char* privilege_name,
   return PMINFO_R_OK;
 }
 
-bool AssignPackageTags(const std::string& pkgid, manifest_x* manifest,
+bool AssignPackageTags(const std::string& pkgid,
+                       const ManifestXWrapperPtr& manifest,
                        common_installer::RequestMode request_mode,
                        bool is_update) {
   int ret = pkgmgr_parser_preload_package_type(pkgid.c_str());
@@ -72,36 +73,36 @@ bool AssignPackageTags(const std::string& pkgid, manifest_x* manifest,
   // this flag is actually set by preloaded app update to "true" but it is never
   // read anyway.
   if (request_mode == common_installer::RequestMode::GLOBAL && is_update)
-    manifest->update = strdup("true");
+    manifest->SetUpdate(true);
   else
-    manifest->update = strdup("false");
+    manifest->SetUpdate(false);
   // external installation should alter this flag
-  manifest->installed_storage = strdup("installed_internal");
+  manifest->SetInstalledStorage("installed_internal");
 
   if (request_mode == common_installer::RequestMode::USER) {
-    manifest->preload = strdup("false");
-    manifest->removable = strdup("true");
-    manifest->readonly = strdup("false");
-    manifest->system = strdup("false");
+    manifest->SetPreload(false);
+    manifest->SetRemovable(true);
+    manifest->SetReadonly(false);
+    manifest->SetSystem(false);
   } else {
     switch (ret) {
     case PM_PRELOAD_NONE:
-      manifest->preload = strdup("false");
-      manifest->removable = strdup("true");
-      manifest->readonly = strdup("false");
-      manifest->system = strdup("false");
+      manifest->SetPreload(false);
+      manifest->SetRemovable(true);
+      manifest->SetReadonly(false);
+      manifest->SetSystem(false);
       break;
     case PM_PRELOAD_RW_NORM:
-      manifest->preload = strdup("true");
-      manifest->removable = strdup("false");
-      manifest->readonly = strdup("true");
-      manifest->system = strdup("true");
+      manifest->SetPreload(true);
+      manifest->SetRemovable(false);
+      manifest->SetReadonly(true);
+      manifest->SetSystem(true);
       break;
     case PM_PRELOAD_RW_RM:
-      manifest->preload = strdup("true");
-      manifest->removable = strdup("true");
-      manifest->readonly = strdup("true");
-      manifest->system = strdup("false");
+      manifest->SetPreload(true);
+      manifest->SetRemovable(true);
+      manifest->SetReadonly(true);
+      manifest->SetSystem(false);
       break;
     default:
       LOG(ERROR) <<
@@ -116,7 +117,7 @@ bool AssignPackageTags(const std::string& pkgid, manifest_x* manifest,
 
 namespace common_installer {
 
-bool RegisterAppInPkgmgr(manifest_x* manifest,
+bool RegisterAppInPkgmgr(const ManifestXWrapperPtr& manifest,
                          const bf::path& xml_path,
                          const std::string& pkgid,
                          const CertificateInfo& cert_info,
@@ -125,16 +126,18 @@ bool RegisterAppInPkgmgr(manifest_x* manifest,
                          const boost::filesystem::path& tep_path) {
   // Fill "non-xml" elements
   if (!tep_path.empty())
-    manifest->tep_name = strdup(tep_path.c_str());
+    manifest->SetTepPath(tep_path);
 
   if (!AssignPackageTags(pkgid, manifest, request_mode, false))
     return false;
 
-  int ret = request_mode != RequestMode::GLOBAL ?
-      pkgmgr_parser_process_usr_manifest_x_for_installation(manifest,
-          xml_path.c_str(), uid) :
-      pkgmgr_parser_process_manifest_x_for_installation(manifest,
-          xml_path.c_str());
+  int ret =
+      request_mode != RequestMode::GLOBAL
+          ? manifest->Utilities()
+                ->PkgmgrParserProcessUsrManifestXForInstallation(xml_path, uid)
+          : manifest->Utilities()->PkgmgrParserProcessManifestXForInstallation(
+                xml_path);
+
   if (ret) {
     LOG(ERROR) << "Failed to insert manifest into pkgmgr, error code=" << ret;
     return false;
@@ -166,7 +169,7 @@ bool UpdateTepInfoInPkgmgr(const bf::path& tep_path, const std::string& pkgid,
   return true;
 }
 
-bool UpgradeAppInPkgmgr(manifest_x* manifest,
+bool UpgradeAppInPkgmgr(const ManifestXWrapperPtr& manifest,
                         const bf::path& xml_path,
                         const std::string& pkgid,
                         const CertificateInfo& cert_info,
@@ -175,10 +178,12 @@ bool UpgradeAppInPkgmgr(manifest_x* manifest,
   if (!AssignPackageTags(pkgid, manifest, request_mode, true))
     return false;
 
-  int ret = request_mode != RequestMode::GLOBAL ?
-       pkgmgr_parser_process_usr_manifest_x_for_upgrade(manifest,
-          xml_path.c_str(), uid) :
-       pkgmgr_parser_process_manifest_x_for_upgrade(manifest, xml_path.c_str());
+  int ret =
+      request_mode != RequestMode::GLOBAL
+          ? manifest->Utilities()->PkgmgrParserProcessUsrManifestXForUpgrade(
+                xml_path, uid)
+          : manifest->Utilities()->PkgmgrParserProcessManifestXForUpgrade(
+                xml_path);
 
   if (ret != 0) {
     LOG(ERROR) << "Failed to update manifest in pkgmgr, error code=" << ret;
@@ -195,16 +200,17 @@ bool UpgradeAppInPkgmgr(manifest_x* manifest,
   return true;
 }
 
-bool UnregisterAppInPkgmgr(manifest_x* manifest,
+bool UnregisterAppInPkgmgr(const ManifestXWrapperPtr& manifest,
                            const bf::path& xml_path,
                            const std::string& pkgid,
                            uid_t uid,
                            RequestMode request_mode) {
-  int ret = request_mode != RequestMode::GLOBAL ?
-      pkgmgr_parser_process_usr_manifest_x_for_uninstallation(manifest,
-          xml_path.c_str(), uid) :
-      pkgmgr_parser_process_manifest_x_for_uninstallation(manifest,
-          xml_path.c_str());
+  int ret = request_mode != RequestMode::GLOBAL
+                ? manifest->Utilities()
+                      ->PkgmgrParserProcessUsrManifestXForUninstallation(
+                          xml_path, uid)
+                : manifest->Utilities()
+                      ->PkgmgrParserProcessManifestXForUninstallation(xml_path);
   if (ret) {
     LOG(ERROR) << "Failed to delete manifest from pkgmgr, error code=" << ret;
     return false;
