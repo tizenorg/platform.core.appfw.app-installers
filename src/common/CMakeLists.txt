@@ -9,6 +9,8 @@ SET(SRCS
   recovery_file.cc
   request.cc
   security_registration.cc
+  wrappers/manifest_x_wrapper.cc
+  wrappers/manifest_x_utilities.cc
   step/step_backup_icons.cc
   step/step_backup_manifest.cc
   step/step_unzip.cc

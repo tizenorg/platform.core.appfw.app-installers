@@ -22,26 +22,29 @@ const char kPrivForPartner[] =
     "http://tizen.org/privilege/internal/default/partner";
 const char kPrivForPlatform[] =
     "http://tizen.org/privilege/internal/default/platform";
+using ManifestXWrapperPtr = std::shared_ptr<ManifestXWrapper>;
 
-bool TranslatePrivilegesForCompatibility(manifest_x* m) {
-  if (!m->api_version) {
+bool TranslatePrivilegesForCompatibility(const ManifestXWrapperPtr& manifest) {
+  if (!manifest->IsApiVersionExist()) {
     LOG(WARNING) << "Skipping privileges mapping because api-version "
                  << "is not specified by package";
     return true;
   }
 
   // No privileges to map
-  if (!m->privileges) {
+  if (!manifest->privileges) {
     return true;
   }
 
   // get mapping
   GList* mapped_privilege_list;
-  bool is_webapp = (strncmp(m->type, "wgt", strlen("wgt")) == 0) ? true : false;
-  LOG(DEBUG) << "type = " << m->type;
-  if (privilege_manager_get_mapped_privilege_list(m->api_version,
+
+  bool is_webapp = manifest->IsWgtType();
+
+  LOG(DEBUG) << "type = " << manifest->Type();
+  if (privilege_manager_get_mapped_privilege_list(manifest->ApiVersion().c_str(),
       is_webapp ? PRVMGR_PACKAGE_TYPE_WRT : PRVMGR_PACKAGE_TYPE_CORE,
-      m->privileges, &mapped_privilege_list) != PRVMGR_ERR_NONE) {
+      manifest->privileges, &mapped_privilege_list) != PRVMGR_ERR_NONE) {
     LOG(ERROR) << "privilege_manager_get_mapped_privilege_list failed";
     return false;
   } else if (mapped_privilege_list == NULL) {
@@ -50,10 +53,10 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
   }
 
   // set pkgmgr new list
-  g_list_free_full(m->privileges, free);
-  m->privileges = nullptr;
+  g_list_free_full(manifest->privileges, free);
+  manifest->privileges = nullptr;
   for (GList* l = mapped_privilege_list; l != NULL; l = l->next) {
-    m->privileges = g_list_append(m->privileges,
+    manifest->privileges = g_list_append(manifest->privileges,
                                   strdup(reinterpret_cast<char*>(l->data)));
   }
 

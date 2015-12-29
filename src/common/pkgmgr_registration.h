@@ -13,8 +13,11 @@
 #include <vector>
 
 #include "common/installer_context.h"
+#include "common/wrappers/manifest_x_wrapper.h"
 
 namespace common_installer {
+
+using ManifestXWrapperPtr = std::shared_ptr<ManifestXWrapper>;
 
 /**
  * \brief Adapter interface for external PkgMgr module used for registering
@@ -27,7 +30,7 @@ namespace common_installer {
  *
  * \return true if success
  */
-bool RegisterAppInPkgmgr(manifest_x* manifest,
+bool RegisterAppInPkgmgr(const ManifestXWrapperPtr& manifest,
                          const boost::filesystem::path& xml_path,
                          const std::string& pkgid,
                          const CertificateInfo& cert_info,
@@ -48,7 +51,7 @@ bool RegisterAppInPkgmgr(manifest_x* manifest,
  *
  * \return true if success
  */
-bool UpgradeAppInPkgmgr(manifest_x* manifest,
+bool UpgradeAppInPkgmgr(const ManifestXWrapperPtr& manifest,
                         const boost::filesystem::path& xml_path,
                         const std::string& pkgid,
                         const CertificateInfo& cert_info,
@@ -82,7 +85,7 @@ bool UpdateTepInfoInPkgmgr(const boost::filesystem::path& tep_path,
  *
  * \return true if success
  */
-bool UnregisterAppInPkgmgr(manifest_x* manifest,
+bool UnregisterAppInPkgmgr(const ManifestXWrapperPtr& manifest,
                            const boost::filesystem::path& xml_path,
                            const std::string& pkgid,
                            uid_t uid,
