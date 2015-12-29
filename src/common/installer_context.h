@@ -21,7 +21,9 @@
 
 #include "common/recovery_file.h"
 #include "common/request.h"
+#include "common/typesdefs.h"
 #include "common/utils/property.h"
+#include "common/wrappers/manifest_x_wrapper.h"
 
 #include "manifest_info/account.h"
 
@@ -160,7 +162,7 @@ class InstallerContext {
    *        framework to handle package management (pkgid, icon,
    *        applications, appcontrol, privileges and more)
    */
-  Property<manifest_x*> manifest_data;
+  Property<ManifestXWrapperPtr> manifest_data;
 
   /** Pkgmgr-parser plugins data */
   Property<ExtraManifestData> manifest_plugins_data;
@@ -173,7 +175,7 @@ class InstallerContext {
    *        - this field is set only for update installation
    *        (we need this information for rollback possibility)
    */
-  Property<manifest_x*> old_manifest_data;
+  Property<ManifestXWrapperPtr> old_manifest_data;
 
   /**
    * \brief path to xml platform manifest which was generated according
