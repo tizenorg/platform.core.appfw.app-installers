@@ -44,9 +44,6 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
       m->privileges, &mapped_privilege_list) != PRVMGR_ERR_NONE) {
     LOG(ERROR) << "privilege_manager_get_mapped_privilege_list failed";
     return false;
-  } else if (mapped_privilege_list == NULL) {
-    LOG(ERROR) << "privilege_manager_get_mapped_privilege_list failed";
-    return false;
   }
 
   // set pkgmgr new list
