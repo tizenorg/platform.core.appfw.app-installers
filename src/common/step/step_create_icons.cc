@@ -10,48 +10,18 @@
 
 #include "common/utils/glist_range.h"
 
+namespace {
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
+}  // namespace
 
 namespace common_installer {
 namespace filesystem {
 
 Step::Status StepCreateIcons::process() {
-  bf::path icons_directory(getIconPath(context_->uid.get()));
-  if (!bf::exists(icons_directory)) {
-    bs::error_code error;
-    bf::create_directories(icons_directory, error);
-    if (error) {
-      LOG(ERROR) << "Cannot create directory of application icons";
-      return Status::ERROR;
-    }
-  }
-
-  for (application_x* app :
-       GListRange<application_x*>(context_->manifest_data.get()->application)) {
-    // TODO(t.iwanek): this is ignoring icon locale as well as other steps
-    // icons should be localized
-    if (app->icon) {
-      icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
-      bf::path source = GetIconRoot() / icon->text;
-      if (bf::exists(source)) {
-        bf::path destination = icons_directory / app->appid;
-        if (source.has_extension())
-          destination += source.extension();
-        else
-          destination += ".png";
-        bs::error_code error;
-        bf::copy_file(source, destination, error);
-        if (error) {
-          LOG(ERROR) << "Cannot create package icon: " << destination;
-          return Status::ERROR;
-        }
-        icons_.push_back(destination);
-      }
-    }
-  }
-  LOG(DEBUG) << "Icon files created";
-  return Status::OK;
+  std::vector<bf::path> paths;
+  paths.push_back(getIconPath(context_->uid.get()));
+  return CopyIcons(paths);
 }
 
 Step::Status StepCreateIcons::undo() {
@@ -59,6 +29,45 @@ Step::Status StepCreateIcons::undo() {
     bs::error_code error;
     bf::remove_all(icon, error);
   }
+  return Status::OK;
+}
+
+Step::Status StepCreateIcons::CopyIcons(
+    const std::vector<bf::path>& destinations) {
+  for (application_x* app :
+      GListRange<application_x*>(context_->manifest_data.get()->application)) {
+    // TODO(t.iwanek): this is ignoring icon locale as well as other steps
+    // icons should be localized
+    if (app->icon) {
+      icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
+      bf::path source = GetIconRoot() / icon->text;
+      if (bf::exists(source)) {
+        for (const auto& destination : destinations) {
+          bs::error_code error;
+          if (!bf::exists(destination)) {
+            bf::create_directories(destination, error);
+            if (error) {
+              LOG(ERROR) << "Cannot create directory of application icons: "
+                  << destination;
+              return Status::ERROR;
+            }
+          }
+          bf::path destination_path = destination / app->appid;
+          if (source.has_extension())
+            destination_path += source.extension();
+          else
+            destination_path += ".png";
+          bf::copy_file(source, destination_path, error);
+          if (error) {
+            LOG(ERROR) << "Cannot create package icon: " << destination_path;
+            return Status::ERROR;
+          }
+          icons_.push_back(destination_path);
+        }
+      }
+    }
+  }
+  LOG(DEBUG) << "Icon files created";
   return Status::OK;
 }
 

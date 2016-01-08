@@ -20,37 +20,9 @@ namespace common_installer {
 namespace backup {
 
 Step::Status StepBackupIcons::process() {
-  // gather icon info
-  for (application_x* app :
-      GListRange<application_x*>(
-         context_->old_manifest_data.get()->application)) {
-    bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
-        / bf::path(app->appid);
-    if (app->icon) {
-      icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
-      if (!icon->text) {
-        LOG(ERROR) << "Icon text is not set";
-        return Status::ERROR;
-      }
-      app_icon += bf::path(icon->text).extension();
-    } else {
-      app_icon += ".png";
-    }
-    bf::path icon_backup = GetBackupPathForIconFile(app_icon);
-    if (bf::exists(app_icon))
-        icons_.emplace_back(app_icon, icon_backup);
-  }
-
-  // backup
-  for (auto& pair : icons_) {
-    if (!MoveFile(pair.first, pair.second)) {
-      LOG(ERROR) << "Cannot create backup for icon: " << pair.first;
-      return Status::ERROR;
-    }
-  }
-
-  LOG(DEBUG) << "Icons backup created";
-  return Status::OK;
+  std::vector<bf::path> paths;
+  paths.push_back(getIconPath(context_->uid.get()));
+  return MoveIcons(paths);
 }
 
 Step::Status StepBackupIcons::clean() {
@@ -67,6 +39,42 @@ Step::Status StepBackupIcons::undo() {
     }
   }
   LOG(DEBUG) << "Icons reverted from backup";
+  return Status::OK;
+}
+
+Step::Status StepBackupIcons::MoveIcons(
+    const std::vector<boost::filesystem::path>& sources) {
+  // gather icon info
+  for (application_x* app :
+      GListRange<application_x*>(
+         context_->old_manifest_data.get()->application)) {
+    for (const auto& source : sources) {
+      bf::path source_path = source / bf::path(app->appid);
+      if (app->icon) {
+        icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
+        if (!icon->text) {
+          LOG(ERROR) << "Icon text is not set";
+          return Status::ERROR;
+        }
+        source_path += bf::path(icon->text).extension();
+      } else {
+        source_path += ".png";
+      }
+      bf::path icon_backup = GetBackupPathForIconFile(source_path);
+      if (bf::exists(source_path))
+          icons_.emplace_back(source_path, icon_backup);
+    }
+  }
+
+  // backup
+  for (auto& pair : icons_) {
+    if (!MoveFile(pair.first, pair.second)) {
+      LOG(ERROR) << "Cannot create backup for icon: " << pair.first;
+      return Status::ERROR;
+    }
+  }
+
+  LOG(DEBUG) << "Icons backup created";
   return Status::OK;
 }
 
