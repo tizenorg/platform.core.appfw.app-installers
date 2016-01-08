@@ -33,6 +33,9 @@ class StepRecoverIcons : public recovery::StepRecovery {
   Status RecoveryNew() override;
   Status RecoveryUpdate() override;
 
+ protected:
+  virtual std::vector<boost::filesystem::path> GetIconsPaths();
+
  private:
   bool TryGatherIcons();
 

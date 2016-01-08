@@ -52,6 +52,9 @@ class StepBackupIcons : public Step {
    */
   Status precheck() override { return Status::OK; }
 
+ protected:
+  Status MoveIcons(const std::vector<boost::filesystem::path>& sources);
+
  private:
   void RemoveBackupIcons();
 
