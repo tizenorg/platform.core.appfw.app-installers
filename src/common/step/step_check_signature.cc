@@ -79,14 +79,6 @@ common_installer::Step::Status ValidateSignatureFile(
       LOG(ERROR) << "Certificate is revoked";
       return common_installer::Step::Status::SIGNATURE_INVALID;
     };
-    case ValidationCore::E_SIG_DISREGARDED: {
-        if (data.isAuthorSignature()) {
-          LOG(ERROR) << "Author-signiture is disregarded";
-          return common_installer::Step::Status::SIGNATURE_INVALID;
-        }
-        LOG(WARNING) << "Signature disregarded: " << path;
-        break;
-    };
     case ValidationCore::E_SIG_NONE: {
       if (!data.isAuthorSignature()) {
         // First distributor signature sets the privilege level
