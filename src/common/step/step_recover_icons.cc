@@ -51,22 +51,28 @@ Step::Status StepRecoverIcons::RecoveryUpdate() {
   return Status::OK;
 }
 
+std::vector<boost::filesystem::path> StepRecoverIcons::GetIconsPaths() {
+  std::vector<bf::path> paths { getIconPath(context_->uid.get()) };
+  return paths;
+}
+
 bool StepRecoverIcons::TryGatherIcons() {
   if (!context_->manifest_data.get())
     return false;
   for (application_x* app :
        GListRange<application_x*>(context_->manifest_data.get()->application)) {
-    bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
-      / bf::path(app->appid);
-    if (app->icon) {
-      icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
-      app_icon += bf::path(icon->text).extension();
-    } else {
-      app_icon += ".png";
+    for (const auto& path : GetIconsPaths()) {
+      bf::path icon_path = path / bf::path(app->appid);
+      if (app->icon) {
+        icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
+        icon_path += bf::path(icon->text).extension();
+      } else {
+        icon_path += ".png";
+      }
+      bf::path icon_backup = GetBackupPathForIconFile(icon_path);
+      if (bf::exists(icon_backup) || bf::exists(icon_path))
+          icons_.emplace_back(icon_path, icon_backup);
     }
-    bf::path icon_backup = GetBackupPathForIconFile(app_icon);
-    if (bf::exists(icon_backup) || bf::exists(app_icon))
-        icons_.emplace_back(app_icon, icon_backup);
   }
   return true;
 }
