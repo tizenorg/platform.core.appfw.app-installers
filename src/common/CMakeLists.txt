@@ -49,6 +49,7 @@ SET(SRCS
   step/step_update_security.cc
   step/step_update_tep.cc
   utils/file_util.cc
+  utils/subprocess.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})
