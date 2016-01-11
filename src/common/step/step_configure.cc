@@ -34,6 +34,13 @@ Step::Status StepConfigure::process() {
   if (!SetupRootAppDirectory())
     return Status::CONFIG_ERROR;
 
+  if (!SetupRequest())
+    return Status::CONFIG_ERROR;
+
+  return Status::OK;
+}
+
+bool StepConfigure::SetupRequest() {
   switch (pkgmgr_->GetRequestType()) {
     case RequestType::Install:
       context_->file_path.set(pkgmgr_->GetRequestInfo());
@@ -74,7 +81,7 @@ Step::Status StepConfigure::process() {
       if (context_->request_mode.get() != RequestMode::GLOBAL) {
         LOG(ERROR) <<
           "Only global user allows to use Manifest Direct Install";
-        return Status::CONFIG_ERROR;
+        return false;
       }
       context_->pkgid.set(pkgmgr_->GetRequestInfo());
       bf::path package_directory =
@@ -93,8 +100,7 @@ Step::Status StepConfigure::process() {
       // TODO(p.sikorski): should return unsupported, and display error
       LOG(ERROR) <<
           "Only installation, update and uninstallation is now supported";
-      return Status::CONFIG_ERROR;
-      break;
+      return false;
   }
 
   // Record recovery file for update and installation modes
@@ -106,17 +112,16 @@ Step::Status StepConfigure::process() {
                 context_->root_application_path.get() / "recovery"));
     if (!recovery_file) {
       LOG(ERROR) << "Failed to create recovery file";
-      return Status::CONFIG_ERROR;
+      return false;
     }
     recovery_file->set_type(pkgmgr_->GetRequestType());
     if (!recovery_file->WriteAndCommitFileContent()) {
       LOG(ERROR) << "Failed to write recovery file";
-      return Status::CONFIG_ERROR;
+      return false;
     }
     context_->recovery_info.set(RecoveryInfo(std::move(recovery_file)));
   }
-
-  return Status::OK;
+  return true;
 }
 
 Step::Status StepConfigure::precheck() {

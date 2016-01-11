@@ -59,12 +59,15 @@ class StepConfigure : public Step {
    */
   Status precheck() override;
 
+ protected:
+  virtual bool SetupRequest();
+
+  PkgMgrPtr pkgmgr_;
+
  private:
   bool SetupRootAppDirectory();
   void SetupRequestMode();
   void SetupFileCreationMask();
-
-  PkgMgrPtr pkgmgr_;
 
   SCOPE_LOG_TAG(Configure)
 };
