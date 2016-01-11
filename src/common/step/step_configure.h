@@ -60,6 +60,8 @@ class StepConfigure : public Step {
   Status precheck() override;
 
  private:
+  virtual bool SetupRequest();
+
   bool SetupRootAppDirectory();
   void SetupRequestMode();
   void SetupFileCreationMask();
