@@ -389,6 +389,57 @@ bool ExtractToTmpDir(const char* zip_path, const bf::path& tmp_dir,
   return true;
 }
 
+bool CheckPathInZipArchive(const char* zip_archive_path,
+                           const boost::filesystem::path& relative_zip_path,
+                           bool* found) {
+  unz_global_info info;
+  unz_file_info raw_file_info;
+  char raw_file_name_in_zip[kZipMaxPath];
+  *found = false;
+
+  UnzFilePointer zip_file;
+  if (!zip_file.Open(zip_archive_path)) {
+    LOG(ERROR) << "Failed to open the source dir: " << zip_archive_path;
+    return false;
+  }
+
+  if (unzGetGlobalInfo(zip_file.Get(), &info) != UNZ_OK) {
+    LOG(ERROR) << "Failed to read global info";
+    return false;
+  }
+
+  for (uLong i = 0; i < info.number_entry; i++) {
+    if (unzGetCurrentFileInfo(zip_file.Get(),
+                              &raw_file_info,
+                              raw_file_name_in_zip,
+                              sizeof(raw_file_name_in_zip),
+                              nullptr,
+                              0,
+                              nullptr,
+                              0) != UNZ_OK) {
+      LOG(ERROR) << "Failed to read file info";
+      return false;
+    }
+
+    if (raw_file_name_in_zip[0] == '\0')
+      return false;
+
+    if (relative_zip_path.string() == raw_file_name_in_zip) {
+      *found = true;
+      return true;
+    }
+
+    if ((i+1) < info.number_entry) {
+      if (unzGoToNextFile(zip_file.Get()) != UNZ_OK) {
+        LOG(ERROR) << "Failed to read next file";
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 bool HasDirectoryClimbing(const boost::filesystem::path& path) {
   std::vector<std::string> segments;
   ba::split(segments, path.string(), ba::is_any_of("/\\"));
