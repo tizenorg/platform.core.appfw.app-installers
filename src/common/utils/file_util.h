@@ -40,6 +40,10 @@ bool ExtractToTmpDir(const char* zip_path,
                      const boost::filesystem::path& tmp_dir,
                      const std::string& filter_prefix);
 
+bool CheckPathInZipArchive(const char* zip_archive_path,
+                           const boost::filesystem::path& relative_zip_path,
+                           bool* found);
+
 bool HasDirectoryClimbing(const boost::filesystem::path& path);
 
 boost::filesystem::path MakeRelativePath(const boost::filesystem::path& input,
