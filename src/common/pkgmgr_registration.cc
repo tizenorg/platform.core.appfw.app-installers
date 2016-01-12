@@ -64,11 +64,6 @@ int PkgmgrForeachPrivilegeCallback(const char* privilege_name,
 bool AssignPackageTags(const std::string& pkgid, manifest_x* manifest,
                        common_installer::RequestMode request_mode,
                        bool is_update) {
-  int ret = pkgmgr_parser_preload_package_type(pkgid.c_str());
-  if (ret == -1) {
-    LOG(ERROR) << "pkgmgr_parser_preload_package_type failed";
-    return false;
-  }
   // this flag is actually set by preloaded app update to "true" but it is never
   // read anyway.
   if (request_mode == common_installer::RequestMode::GLOBAL && is_update)
@@ -83,31 +78,6 @@ bool AssignPackageTags(const std::string& pkgid, manifest_x* manifest,
     manifest->removable = strdup("true");
     manifest->readonly = strdup("false");
     manifest->system = strdup("false");
-  } else {
-    switch (ret) {
-    case PM_PRELOAD_NONE:
-      manifest->preload = strdup("false");
-      manifest->removable = strdup("true");
-      manifest->readonly = strdup("false");
-      manifest->system = strdup("false");
-      break;
-    case PM_PRELOAD_RW_NORM:
-      manifest->preload = strdup("true");
-      manifest->removable = strdup("false");
-      manifest->readonly = strdup("true");
-      manifest->system = strdup("true");
-      break;
-    case PM_PRELOAD_RW_RM:
-      manifest->preload = strdup("true");
-      manifest->removable = strdup("true");
-      manifest->readonly = strdup("true");
-      manifest->system = strdup("false");
-      break;
-    default:
-      LOG(ERROR) <<
-          "Unknown value returned by pkgmgr_parser_preload_package_type";
-      return false;
-    }
   }
   return true;
 }
