@@ -29,6 +29,9 @@ Step::Status StepCreateIcons::process() {
 
   for (application_x* app :
        GListRange<application_x*>(context_->manifest_data.get()->application)) {
+    if (GetAppTypeForIcons() != app->type)
+      continue;
+
     // TODO(t.iwanek): this is ignoring icon locale as well as other steps
     // icons should be localized
     if (app->icon) {
@@ -65,6 +68,10 @@ Step::Status StepCreateIcons::undo() {
 boost::filesystem::path StepCreateIcons::GetIconRoot() const {
   // TODO(t.iwanek): shared/res is location of icons for tpk
   return context_->pkg_path.get() / "shared" / "res";
+}
+
+std::string StepCreateIcons::GetAppTypeForIcons() const {
+  return "capp";
 }
 
 }  // namespace filesystem
