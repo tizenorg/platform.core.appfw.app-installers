@@ -10,6 +10,11 @@
 #include <glib.h>
 #include <privilege_manager.h>
 
+#include <gum/gum-user.h>
+#include <gum/common/gum-user-types.h>
+#include <gum/gum-user-service.h>
+#include <gum/common/gum-string-utils.h>
+
 #include <vcore/SignatureFinder.h>
 #include <vcore/SignatureValidator.h>
 #include <vcore/Error.h>
@@ -19,10 +24,49 @@
 #include <string>
 
 #include "common/utils/glist_range.h"
+#include "common/pkgmgr_registration.h"
 
 namespace bf = boost::filesystem;
+namespace ci = common_installer;
 
 namespace {
+
+bool CheckPkgCertificateMismatch(const std::string& pkgid,
+                                 const uid_t current_uid,
+                                 const std::string& old_certificate) {
+  gchar **users_types = nullptr;
+  users_types = gum_string_utils_append_string(nullptr, "normal");
+  users_types = gum_string_utils_append_string(users_types, "admin");
+  users_types = gum_string_utils_append_string(users_types, "guest");
+
+  GumUserService *user_service = nullptr;
+  user_service = gum_user_service_create_sync(FALSE);
+
+  GumUserList *users = NULL;
+  users = gum_user_service_get_user_list_sync(user_service,
+      static_cast<const gchar* const *>(users_types));
+  g_strfreev(users_types);
+
+  bool certificate_mismatch = false;
+
+  if (users) {
+    uid_t uid = G_MAXUINT;
+
+    for (GumUser* guser : GListRange<GumUser*>(users)) {
+      g_object_get(G_OBJECT(guser), "uid", &uid, NULL);
+      if (current_uid == uid) continue;
+
+      auto certificate = ci::QueryCertificateAuthorCertificate(pkgid, uid);
+      if (!certificate.empty()) {
+        certificate_mismatch = (old_certificate != certificate);
+      }
+    }
+    gum_user_service_list_free(users);
+  }
+
+  g_object_unref(user_service);
+  return certificate_mismatch;
+}
 
 common_installer::PrivilegeLevel CertStoreIdToPrivilegeLevel(
     ValidationCore::CertStoreId::Type id) {
@@ -197,10 +241,25 @@ Step::Status StepCheckSignature::process() {
       ValidateSignatures(context_->unpacked_dir_path.get(), &level,
                          &context_->certificate_info.get(), &error_message);
   if (status != Status::OK) {
-    LOG(ERROR) << "error_message: " << error_message;
     on_error(status, error_message);
     return status;
   }
+
+  const auto& cert = context_->certificate_info.get().author_certificate.get();
+  if (cert) {
+    bool certificate_mismatch =
+        CheckPkgCertificateMismatch(context_->pkgid.get(),
+                                    context_->uid.get(),
+                                    cert->getBase64());
+    if (certificate_mismatch) {
+      std::string error_message =
+          "Package with the same id and different certificate "
+          "has been already installed";
+      on_error(Status::CERT_ERROR, error_message);
+      return Status::CERT_ERROR;
+    }
+  }
+
   LOG(INFO) << "Privilege level: " << PrivilegeLevelToString(level);
   context_->privilege_level.set(level);
 
