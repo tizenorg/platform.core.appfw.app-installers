@@ -9,6 +9,7 @@
 
 #include <manifest_parser/utils/logging.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -56,6 +57,7 @@ class StepCreateIcons : public Step {
 
  protected:
   virtual boost::filesystem::path GetIconRoot() const;
+  virtual std::string GetAppTypeForIcons() const;
 
  private:
   std::vector<boost::filesystem::path> icons_;
