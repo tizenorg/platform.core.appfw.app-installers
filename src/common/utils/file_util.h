@@ -9,16 +9,21 @@
 
 namespace common_installer {
 
+enum FSFlag {
+  FS_NONE              = 0,
+  FS_MERGE_DIRECTORIES = (1 << 0)
+};
+
 bool CreateDir(const boost::filesystem::path& path);
 
 bool CopyDir(const boost::filesystem::path& src,
-             const boost::filesystem::path& dst);
+             const boost::filesystem::path& dst, FSFlag flags = FS_NONE);
 
 bool CopyFile(const boost::filesystem::path& src,
              const boost::filesystem::path& dst);
 
 bool MoveDir(const boost::filesystem::path& src,
-             const boost::filesystem::path& dst);
+             const boost::filesystem::path& dst, FSFlag flags = FS_NONE);
 
 bool MoveFile(const boost::filesystem::path& src,
               const boost::filesystem::path& dst);
