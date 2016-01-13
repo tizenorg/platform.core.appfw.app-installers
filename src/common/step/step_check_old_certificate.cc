@@ -21,6 +21,7 @@ Step::Status StepCheckOldCertificate::process() {
       QueryCertificateAuthorCertificate(context_->pkgid.get(),
                                         context_->uid.get());
   const auto& cert = context_->certificate_info.get().author_certificate.get();
+
   if (!old_author_certificate.empty()) {
     if (!cert) {
       LOG(ERROR) << "Trying to update package without signature is not allowed "
