@@ -29,10 +29,11 @@ namespace filesystem {
 bool StepCopyStorageDirectories::MoveAppStorage(
     const bf::path& in_src,
     const bf::path& in_dst,
-    const char *key) {
+    const char *key,
+    bool merge_dirs) {
   bf::path src = in_src / key;
   bf::path dst = in_dst / key;
-  return common_installer::MoveDir(src, dst);
+  return common_installer::MoveDir(src, dst, merge_dirs);
 }
 
 common_installer::Step::Status StepCopyStorageDirectories::precheck() {
@@ -58,7 +59,7 @@ common_installer::Step::Status StepCopyStorageDirectories::process() {
 
   if (!MoveAppStorage(backup_path_,
                       context_->pkg_path.get(),
-                      kSharedLocation)) {
+                      kSharedLocation, true)) {
     LOG(ERROR) << "Failed to restore shared directory for widget in update";
     return Status::APP_DIR_ERROR;
   }

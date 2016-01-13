@@ -12,13 +12,13 @@ namespace common_installer {
 bool CreateDir(const boost::filesystem::path& path);
 
 bool CopyDir(const boost::filesystem::path& src,
-             const boost::filesystem::path& dst);
+             const boost::filesystem::path& dst, bool merge_dirs = false);
 
 bool CopyFile(const boost::filesystem::path& src,
              const boost::filesystem::path& dst);
 
 bool MoveDir(const boost::filesystem::path& src,
-             const boost::filesystem::path& dst);
+             const boost::filesystem::path& dst, bool merge_dirs = false);
 
 bool MoveFile(const boost::filesystem::path& src,
               const boost::filesystem::path& dst);
