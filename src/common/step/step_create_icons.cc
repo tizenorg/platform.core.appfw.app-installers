@@ -65,14 +65,5 @@ Step::Status StepCreateIcons::undo() {
   return Status::OK;
 }
 
-boost::filesystem::path StepCreateIcons::GetIconRoot() const {
-  // TODO(t.iwanek): shared/res is location of icons for tpk
-  return context_->pkg_path.get() / "shared" / "res";
-}
-
-std::string StepCreateIcons::GetAppTypeForIcons() const {
-  return "capp";
-}
-
 }  // namespace filesystem
 }  // namespace common_installer
