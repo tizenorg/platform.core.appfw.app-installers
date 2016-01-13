@@ -56,8 +56,8 @@ class StepCreateIcons : public Step {
   Status precheck() override { return Status::OK; }
 
  protected:
-  virtual boost::filesystem::path GetIconRoot() const;
-  virtual std::string GetAppTypeForIcons() const;
+  virtual boost::filesystem::path GetIconRoot() const = 0;
+  virtual std::string GetAppTypeForIcons() const = 0;
 
  private:
   std::vector<boost::filesystem::path> icons_;
