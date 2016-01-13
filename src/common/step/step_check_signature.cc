@@ -19,10 +19,24 @@
 #include <string>
 
 #include "common/utils/glist_range.h"
+#include "common/pkgmgr_registration.h"
 
 namespace bf = boost::filesystem;
+namespace ci = common_installer;
 
 namespace {
+
+bool CheckPkgCertificateMismatch(const std::string& pkgid,
+                                 const std::string& old_certificate) {
+  bool certificate_mismatch = false;
+  uid_t uid = G_MAXUINT;
+  auto certificate = ci::QueryCertificateAuthorCertificate(pkgid, uid);
+
+  if (!certificate.empty()) {
+    certificate_mismatch = (old_certificate != certificate);
+  }
+  return certificate_mismatch;
+}
 
 common_installer::PrivilegeLevel CertStoreIdToPrivilegeLevel(
     ValidationCore::CertStoreId::Type id) {
@@ -197,10 +211,23 @@ Step::Status StepCheckSignature::process() {
       ValidateSignatures(context_->unpacked_dir_path.get(), &level,
                          &context_->certificate_info.get(), &error_message);
   if (status != Status::OK) {
-    LOG(ERROR) << "error_message: " << error_message;
     on_error(status, error_message);
     return status;
   }
+
+  const auto& cert = context_->certificate_info.get().author_certificate.get();
+  if (cert) {
+    bool certificate_mismatch =
+        CheckPkgCertificateMismatch(context_->pkgid.get(), cert->getBase64());
+    if (certificate_mismatch) {
+      std::string error_message =
+          "Package with the same id and different certificate "
+          "has been already installed";
+      on_error(Status::CERT_ERROR, error_message);
+      return Status::CERT_ERROR;
+    }
+  }
+
   LOG(INFO) << "Privilege level: " << PrivilegeLevelToString(level);
   context_->privilege_level.set(level);
 

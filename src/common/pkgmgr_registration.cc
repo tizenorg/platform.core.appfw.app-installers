@@ -191,13 +191,13 @@ std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
   pkgmgrinfo_certinfo_h handle;
   int ret = pkgmgrinfo_pkginfo_create_certinfo(&handle);
   if (ret != PMINFO_R_OK) {
-    LOG(ERROR) << "pkgmgrinfo_pkginfo_create_certinfo failed with error: "
+    LOG(DEBUG) << "pkgmgrinfo_pkginfo_create_certinfo failed with error: "
                << ret;
     return {};
   }
   ret = pkgmgrinfo_pkginfo_load_certinfo(pkgid.c_str(), handle, uid);
   if (ret != PMINFO_R_OK) {
-    LOG(ERROR) << "pkgmgrinfo_pkginfo_load_certinfo failed with error: " << ret;
+    LOG(DEBUG) << "pkgmgrinfo_pkginfo_load_certinfo failed with error: " << ret;
     pkgmgrinfo_pkginfo_destroy_certinfo(handle);
     return {};
   }
@@ -205,7 +205,7 @@ std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
   ret = pkgmgrinfo_pkginfo_get_cert_value(handle, PMINFO_AUTHOR_SIGNER_CERT,
                                           &author_cert);
   if (ret != PMINFO_R_OK) {
-    LOG(ERROR) << "pkgmgrinfo_pkginfo_get_cert_value failed with error: "
+    LOG(DEBUG) << "pkgmgrinfo_pkginfo_get_cert_value failed with error: "
                << ret;
     pkgmgrinfo_pkginfo_destroy_certinfo(handle);
     return {};
