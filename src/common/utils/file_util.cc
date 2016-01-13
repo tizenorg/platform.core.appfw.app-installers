@@ -118,24 +118,28 @@ bool SetDirPermissions(const boost::filesystem::path& path,
   return true;
 }
 
-bool CopyDir(const bf::path& src, const bf::path& dst) {
+bool CopyDir(const bf::path& src, const bf::path& dst, bool merge_dirs) {
   try {
     // Check whether the function call is valid
     if (!bf::exists(src) || !bf::is_directory(src)) {
-      LOG(ERROR) << "Source directory " << src.string()
+      LOG(ERROR) << "Source directory " << src
                  << " does not exist or is not a directory.";
       return false;
     }
-    if (bf::exists(dst)) {
-      LOG(ERROR) << "Destination directory " << dst.string()
-                 << " already exists.";
-      return false;
+    if (!bf::exists(dst)) {
+      // Create the destination directory
+      if (!CreateDir(dst)) {
+        LOG(ERROR) << "Unable to create destination directory" << dst;
+        return false;
+      }
+    } else {
+      if (!merge_dirs) {
+        LOG(ERROR) << "Destination directory " << dst.string()
+                   << " already exists.";
+        return false;
+      }
     }
-    // Create the destination directory
-    if (!CreateDir(dst)) {
-      LOG(ERROR) << "Unable to create destination directory" << dst.string();
-      return false;
-    }
+
   } catch (const bf::filesystem_error& error) {
     LOG(ERROR) << "Failed to copy directory: " << error.what();
     return false;
@@ -147,17 +151,20 @@ bool CopyDir(const bf::path& src, const bf::path& dst) {
       ++file) {
     try {
       bf::path current(file->path());
+      bf::path target = dst / current.filename();
       if (bf::is_directory(current)) {
         // Found directory: Recursion
-        if (!CopyDir(current, dst / current.filename())) {
+        if (!CopyDir(current, target, merge_dirs)) {
           return false;
         }
       } else if (bf::is_symlink(current)) {
-        // Found symlink
-        bf::copy_symlink(current, dst / current.filename());
+        if (merge_dirs && bf::exists(target))
+          continue;
+        bf::copy_symlink(current, target);
       } else {
-        // Found file: Copy
-        bf::copy_file(current, dst / current.filename());
+        if (merge_dirs && bf::exists(target))
+          continue;
+        bf::copy_file(current, target);
       }
     } catch (const bf::filesystem_error& error) {
       LOG(ERROR) << "Failed to copy directory: " << error.what();
@@ -178,9 +185,9 @@ bool CopyFile(const bf::path& src, const bf::path& dst) {
   return true;
 }
 
-bool MoveDir(const bf::path& src, const bf::path& dst) {
-  if (bf::exists(dst)) {
-    LOG(ERROR) << "Destination directory does not exist: " << dst;
+bool MoveDir(const bf::path& src, const bf::path& dst, bool merge_dirs) {
+  if (bf::exists(dst) && !merge_dirs) {
+    LOG(ERROR) << "Destination directory does exist: " << dst;
     return false;
   }
 
@@ -188,7 +195,7 @@ bool MoveDir(const bf::path& src, const bf::path& dst) {
   bf::rename(src, dst, error);
   if (error) {
     LOG(WARNING) << "Cannot move directory: " << src << ". Will copy/remove...";
-    if (!CopyDir(src, dst)) {
+    if (!CopyDir(src, dst, merge_dirs)) {
       LOG(ERROR) << "Cannot copy directory: " << src;
       return false;
     }
