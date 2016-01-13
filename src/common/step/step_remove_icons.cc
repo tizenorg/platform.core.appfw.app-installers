@@ -35,6 +35,11 @@ Step::Status StepRemoveIcons::process() {
       / bf::path(app->appid);
     if (app->icon) {
       icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
+      // TODO(t.iwanek): there is some icon lookup in pkgmgr-parser so that
+      // icon although register in database is not always returned here.
+      // This is quickfix to avoid crash of deinstallation
+      if (!icon->text)
+        continue;
       app_icon += bf::path(icon->text).extension();
     } else {
       app_icon += ".png";
