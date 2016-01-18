@@ -77,6 +77,7 @@ ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 
 %files
 %defattr(-,root,root)
+%{_datarootdir}/app-installers/plugins_list.txt
 %manifest app-installers.manifest
 %{_libdir}/libapp-installers.so*
 %attr(6750,root,users) %{_bindir}/pkgdir-tool
