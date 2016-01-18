@@ -43,12 +43,16 @@ SET(SRCS
   step/step_register_security.cc
   step/step_rollback_deinstallation_security.cc
   step/step_rollback_installation_security.cc
+  step/step_run_parser_plugins.cc
   step/step_unregister_app.cc
   step/step_update_app.cc
   step/step_update_security.cc
   step/step_update_tep.cc
   utils/file_util.cc
   utils/subprocess.cc
+  utils/plugin_xml_parser.cc
+  utils/plugin_list_parser.cc
+  utils/plugin_manager.cc
 )
 # Target - definition
 ADD_LIBRARY(${TARGET_LIBNAME_COMMON} SHARED ${SRCS})
@@ -80,6 +84,18 @@ SET_TARGET_PROPERTIES(${TARGET_LIBNAME_COMMON} PROPERTIES SOVERSION ${VERSION_MA
 
 # Install
 INSTALL(TARGETS ${TARGET_LIBNAME_COMMON} DESTINATION ${LIB_INSTALL_DIR})
+
+
+# Plugins
+SET(PLUGINS_LIST_FILE_NAME plugins_list.txt)
+SET(PLUGINS_LIST_FILE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGINS_LIST_FILE_NAME})
+
+SET(PLUGINS_LIST_INSTALL_PATH ${SHAREDIR}/${TARGET_LIBNAME_COMMON})
+SET(PLUGINS_LIST_INSTALL_FILE_PATH ${PLUGINS_LIST_INSTALL_PATH}/${PLUGINS_LIST_FILE_NAME})
+
+ADD_DEFINITIONS("-DPLUGINS_LIST_INSTALL_FILE_PATH=\"${PLUGINS_LIST_INSTALL_FILE_PATH}\"")
+CONFIGURE_FILE(${PLUGINS_LIST_FILE_NAME}.in ${PLUGINS_LIST_FILE_NAME} @ONLY)
+INSTALL(FILES ${PLUGINS_LIST_FILE_PATH} DESTINATION ${PLUGINS_LIST_INSTALL_PATH}/)
 
 # Export devel package
 CONFIGURE_FILE(app-installers.pc.in app-installers.pc @ONLY)
