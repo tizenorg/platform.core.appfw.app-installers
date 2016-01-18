@@ -34,4 +34,8 @@ boost::filesystem::path GetBackupPathForIconFile(
   return GetBackupPath(icon_path);
 }
 
+std::string GetIconFileBackupExtension() {
+  return ".bck";
+}
+
 }  // namespace common_installer

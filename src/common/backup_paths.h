@@ -7,6 +7,8 @@
 
 #include <boost/filesystem/path.hpp>
 
+#include <string>
+
 namespace common_installer {
 
 /**
@@ -41,6 +43,12 @@ boost::filesystem::path GetBackupPathForManifestFile(
  */
 boost::filesystem::path GetBackupPathForIconFile(
     const boost::filesystem::path& icon_path);
+
+/**
+ * @brief GetIconFileBackupExtension
+ * @return extension for backup icon files
+ */
+std::string GetIconFileBackupExtension();
 
 }  // namespace common_installer
 
