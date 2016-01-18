@@ -9,8 +9,9 @@
 
 #include <manifest_parser/utils/logging.h>
 
+#include <set>
+#include <string>
 #include <utility>
-#include <vector>
 
 #include "common/installer_context.h"
 #include "common/step/step_recovery.h"
@@ -33,13 +34,10 @@ class StepRecoverIcons : public recovery::StepRecovery {
   Status RecoveryNew() override;
   Status RecoveryUpdate() override;
 
- protected:
-  virtual std::vector<boost::filesystem::path> GetIconsPaths();
-
  private:
   bool TryGatherIcons();
 
-  std::vector<std::pair<boost::filesystem::path, boost::filesystem::path>>
+  std::set<std::pair<boost::filesystem::path, boost::filesystem::path>>
       icons_;
 
   SCOPE_LOG_TAG(RecoverIcons)

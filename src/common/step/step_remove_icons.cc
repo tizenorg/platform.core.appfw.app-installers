@@ -8,6 +8,7 @@
 #include <pkgmgr-info.h>
 
 #include <cstring>
+#include <string>
 
 #include "common/backup_paths.h"
 #include "common/utils/file_util.h"
@@ -29,23 +30,20 @@ Step::Status StepRemoveIcons::precheck() {
 }
 
 Step::Status StepRemoveIcons::process() {
-  for (application_x* app :
-       GListRange<application_x*>(context_->manifest_data.get()->application)) {
-    bf::path app_icon = bf::path(getIconPath(context_->uid.get()))
-      / bf::path(app->appid);
-    if (app->icon) {
-      icon_x* icon = reinterpret_cast<icon_x*>(app->icon->data);
-      app_icon += bf::path(icon->text).extension();
-    } else {
-      app_icon += ".png";
-    }
-    if (bf::exists(app_icon)) {
-      bf::path backup_icon_file = GetBackupPathForIconFile(app_icon);
-      if (!MoveFile(app_icon, backup_icon_file)) {
-        LOG(ERROR) << "Failed to create backup for icon: " << app_icon;
-        return Status::ICON_ERROR;
+  for (auto iter = bf::directory_iterator(getIconPath(context_->uid.get()));
+      iter != bf::directory_iterator(); ++iter) {
+    if (!bf::is_regular_file(iter->path()))
+      continue;
+    for (application_x* app :
+        GListRange<application_x*>(
+           context_->manifest_data.get()->application)) {
+      if (app->icon) {
+        std::string filename = iter->path().filename().string();
+        if (filename.find(app->appid) == 0) {
+          bf::path icon_backup = GetBackupPathForIconFile(iter->path());
+          backups_.emplace_back(iter->path(), icon_backup);
+        }
       }
-      backups_.emplace_back(backup_icon_file, app_icon);
     }
   }
   return Status::OK;
