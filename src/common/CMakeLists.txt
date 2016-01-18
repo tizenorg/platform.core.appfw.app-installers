@@ -6,6 +6,7 @@ SET(SRCS
   pkgmgr_interface.cc
   pkgmgr_registration.cc
   pkgmgr_signal.cc
+  plugins_launcher.cc
   recovery_file.cc
   request.cc
   security_registration.cc
@@ -48,6 +49,7 @@ SET(SRCS
   step/step_update_app.cc
   step/step_update_security.cc
   step/step_update_tep.cc
+  utils/dynamic_lib_handle.cc
   utils/file_util.cc
   utils/subprocess.cc
 )
