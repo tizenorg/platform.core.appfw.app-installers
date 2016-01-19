@@ -71,11 +71,6 @@ Step::Status StepConfigure::process() {
       break;
     case RequestType::ManifestDirectInstall:
     case RequestType::ManifestDirectUpdate: {
-      if (context_->request_mode.get() != RequestMode::GLOBAL) {
-        LOG(ERROR) <<
-          "Only global user allows to use Manifest Direct Install";
-        return Status::CONFIG_ERROR;
-      }
       context_->pkgid.set(pkgmgr_->GetRequestInfo());
       bf::path package_directory =
           context_->root_application_path.get() / context_->pkgid.get();
