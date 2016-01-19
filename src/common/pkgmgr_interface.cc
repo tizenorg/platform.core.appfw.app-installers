@@ -50,20 +50,9 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
 
   if (pkgmgr_installer_get_request_type(pi_)
       == PKGMGR_REQ_MANIFEST_DIRECT_INSTALL) {
-    // pkgid should be exists in preload app list
-    std::ifstream preload_list("/etc/package-manager/preload/preload_list.txt");
-    bool is_preload_app = false;
-    for (std::string str; std::getline(preload_list, str); ) {
-      if (str == GetRequestInfo()) {
-        is_preload_app = true;
-        break;
-      }
-    }
-    preload_list.close();
-
-    if (!is_preload_app) {
-      LOG(ERROR) <<
-          "Only preload app could be installed by manifest direct install";
+    uid_t uid = getuid();
+    if (uid != 0) {
+      LOG(ERROR) << "You are not an authorized user(" << uid << ")!";
       return EINVAL;
     }
   }
