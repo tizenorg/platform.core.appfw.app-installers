@@ -54,14 +54,6 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
     // no need to free pkgmgr_installer here. it will be freed in DTOR.
   }
 
-  if (pkgmgr_installer_get_request_type(pi_)
-      == PKGMGR_REQ_MANIFEST_DIRECT_INSTALL) {
-    uid_t uid = getuid();
-    if (uid != 0) {
-      LOG(ERROR) << "You are not an authorized user(" << uid << ")!";
-      return EINVAL;
-    }
-  }
   is_app_installed_ = false;
   if (query_interface_)
     is_app_installed_ = query_interface_->IsAppInstalledByArgv(argc, argv);
