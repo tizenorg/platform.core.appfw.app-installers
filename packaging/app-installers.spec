@@ -31,6 +31,7 @@ BuildRequires:  pkgconfig(manifest-parser-utils)
 BuildRequires:  pkgconfig(delta-manifest-handlers)
 BuildRequires:  pkgconfig(capi-security-privilege-manager)
 BuildRequires:  pkgconfig(capi-appfw-app-manager)
+BuildRequires:  pkgconfig(tpk-manifest-handlers)
 
 Requires: ca-certificates-tizen
 Requires: libtzplatform-config
