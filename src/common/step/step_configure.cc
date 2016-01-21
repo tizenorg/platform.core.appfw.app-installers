@@ -159,6 +159,10 @@ void StepConfigure::SetupRequestMode() {
   context_->request_mode.set(GetRequestMode());
 }
 
+void StepConfigure::SetupRequestType() {
+  context_->request_type.set(pkgmgr_->GetRequestType());
+}
+
 void StepConfigure::SetupFileCreationMask() {
   mode_t old_mask, new_mask;
   old_mask = new_mask = 0;

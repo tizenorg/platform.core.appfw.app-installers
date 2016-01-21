@@ -256,6 +256,11 @@ class InstallerContext {
    * \brief user type of request (GLOBAL/USER)
    */
   Property<RequestMode> request_mode;
+
+  /**
+   * \brief request type received from pkgmgr_installer
+   */
+  Property<RequestType> request_type;
 };
 
 }  // namespace common_installer
