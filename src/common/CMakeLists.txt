@@ -25,6 +25,7 @@ SET(SRCS
   step/step_delta_patch.cc
   step/step_fail.cc
   step/step_kill_apps.cc
+  step/step_parse_manifest.cc
   step/step_recover_application.cc
   step/step_recover_files.cc
   step/step_recover_icons.cc
@@ -71,6 +72,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   PRIVILEGE_CHECKER_DEPS
   APPMANAGER_DEPS
   DELTA_MANIFEST_HANDLERS_DEPS
+  TPK_MANIFEST_HANDLERS_DEPS
   Boost
 )
 
