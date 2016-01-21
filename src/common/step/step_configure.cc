@@ -29,6 +29,7 @@ StepConfigure::StepConfigure(InstallerContext* context, PkgMgrPtr pkgmgr)
 
 Step::Status StepConfigure::process() {
   SetupRequestMode();
+  SetupRequestType();
   SetupFileCreationMask();
 
   if (!SetupRootAppDirectory())
@@ -157,6 +158,10 @@ bool StepConfigure::SetupRootAppDirectory() {
 
 void StepConfigure::SetupRequestMode() {
   context_->request_mode.set(GetRequestMode());
+}
+
+void StepConfigure::SetupRequestType() {
+  context_->request_type.set(pkgmgr_->GetRequestType());
 }
 
 void StepConfigure::SetupFileCreationMask() {

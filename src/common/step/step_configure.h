@@ -62,6 +62,7 @@ class StepConfigure : public Step {
  private:
   bool SetupRootAppDirectory();
   void SetupRequestMode();
+  void SetupRequestType();
   void SetupFileCreationMask();
 
   PkgMgrPtr pkgmgr_;
