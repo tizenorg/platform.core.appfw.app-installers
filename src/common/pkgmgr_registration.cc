@@ -74,7 +74,6 @@ bool AssignPackageTags(const std::string& pkgid, manifest_x* manifest,
   manifest->installed_storage = strdup("installed_internal");
 
   if (request_mode == common_installer::RequestMode::USER) {
-    manifest->preload = strdup("false");
     manifest->removable = strdup("true");
     manifest->readonly = strdup("false");
     manifest->system = strdup("false");
