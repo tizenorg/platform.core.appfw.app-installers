@@ -34,9 +34,7 @@ SET(SRCS
   step/step_recover_storage_directories.cc
   step/step_recovery.cc
   step/step_register_app.cc
-  step/step_old_manifest.cc
   step/step_open_recovery_file.cc
-  step/step_parse.cc
   step/step_privilege_compatibility.cc
   step/step_remove_icons.cc
   step/step_remove_files.cc
