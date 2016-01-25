@@ -31,7 +31,7 @@ namespace parse {
  *  - where to look for manifest file
  *  - where to store information from manifest in context structure
  *
- * Different installation mode will choose different ManifestLocation and
+ * Different request mode will choose different ManifestLocation and
  * StoreLocation for its purpose but main goal of this step parsing tpk
  * manifest doesn't change.
  */

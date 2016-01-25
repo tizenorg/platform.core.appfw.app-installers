@@ -97,7 +97,7 @@ Step::Status StepConfigure::process() {
       break;
   }
 
-  // Record recovery file for update and installation modes
+  // Record recovery file for update and request modes
   if (pkgmgr_->GetRequestType() == RequestType::Install ||
       pkgmgr_->GetRequestType() == RequestType::Update) {
     std::unique_ptr<recovery::RecoveryFile> recovery_file =
@@ -128,7 +128,7 @@ Step::Status StepConfigure::precheck() {
     }
   } else {
     LOG(INFO) << "Allowing installation from root user for"
-                 "manifest direct installation mode.";
+                 "manifest direct request mode.";
   }
   return Status::OK;
 }

@@ -16,7 +16,7 @@ namespace recovery {
  * @brief The StepRecovery class
  *
  * Common base of all steps that performs recovery. Recover is supported for
- * new and update installation modes. Each step that performs recovery needs
+ * new and update request modes. Each step that performs recovery needs
  * to override methods:
  *  - RecoveryNew(),
  *  - RecoveryUpdate(),
