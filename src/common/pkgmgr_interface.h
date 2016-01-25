@@ -16,6 +16,11 @@
 
 namespace common_installer {
 
+enum class InstallationMode {
+  ONLINE,
+  OFFLINE
+};
+
 class PkgMgrInterface;
 typedef std::shared_ptr<PkgMgrInterface> PkgMgrPtr;
 
@@ -73,18 +78,29 @@ class PkgMgrInterface {
    */
   DEPRECATED pkgmgr_installer *GetRawPi() const { return pi_; }
 
+  /**
+  * Returns installation mode
+  *
+  * \return 'ONLINE' for online installation, 'OFFLINE' otherwise
+  */
+  InstallationMode GetInstallationMode() const { return install_mode_; }
+
+
   /** PkgMgrInstance destructor. */
   ~PkgMgrInterface();
 
  private:
   explicit PkgMgrInterface(AppQueryInterface* interface)
       : pi_(nullptr),
+        install_mode_(InstallationMode::ONLINE),
         is_app_installed_(false),
         query_interface_(interface) {}
   int InitInternal(int argc, char** argv);
 
   pkgmgr_installer* pi_;
+  InstallationMode install_mode_;
   bool is_app_installed_;
+
   AppQueryInterface* query_interface_;
 
   SCOPE_LOG_TAG(PkgMgrInterface)
