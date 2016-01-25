@@ -27,6 +27,7 @@ AppInstaller::AppInstaller(const char* package_type, PkgMgrPtr pkgmgr)
   // TODO(p.sikorski) below property is only used in AppInstaller.
   // maybe it should then be kept in AppInstaller
   context_->pkg_type.set(package_type);
+  context_->installation_mode.set(pkgmgr->GetInstallationMode());
 }
 
 AppInstaller::~AppInstaller() {
