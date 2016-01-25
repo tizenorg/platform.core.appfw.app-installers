@@ -46,7 +46,9 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
       LOG(ERROR) << "Cannot create pkgmgr_installer object. Aborting.";
       return ENOMEM;
     }
+    install_mode_ = InstallationMode::OFFLINE;
   }
+  install_mode_ = InstallationMode::ONLINE;
 
   int result = pkgmgr_installer_receive_request(pi_, argc, argv);
   if (result) {

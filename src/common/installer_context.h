@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "common/pkgmgr_interface.h"
 #include "common/recovery_file.h"
 #include "common/request.h"
 #include "common/utils/property.h"
@@ -261,6 +262,11 @@ class InstallerContext {
    * \brief request type received from pkgmgr_installer
    */
   Property<RequestType> request_type;
+
+  /**
+   * \brief installation mode (ONLINE / OFFLINE)
+   */
+  Property<InstallationMode> installation_mode;
 };
 
 }  // namespace common_installer
