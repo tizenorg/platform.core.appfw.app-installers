@@ -29,7 +29,7 @@ BuildRequires:  pkgconfig(libtzplatform-config)
 BuildRequires:  pkgconfig(cert-svc-vcore)
 BuildRequires:  pkgconfig(manifest-parser-utils)
 BuildRequires:  pkgconfig(delta-manifest-handlers)
-BuildRequires:  pkgconfig(capi-security-privilege-manager)
+BuildRequires:  pkgconfig(security-privilege-manager)
 BuildRequires:  pkgconfig(capi-appfw-app-manager)
 BuildRequires:  pkgconfig(tpk-manifest-handlers)
 
