@@ -209,7 +209,6 @@ bool CreateSkelDirectories(const std::string& pkgid) {
   LOG(DEBUG) << "Creating directories in: " << path;
   bs::error_code error;
   bf::create_directories(path, error);
-  int r = -1;
 
   if (error) {
     LOG(ERROR) << "Failed to create directory: " << path;
@@ -226,7 +225,8 @@ bool CreateSkelDirectories(const std::string& pkgid) {
       return false;
     }
 
-    r = lsetxattr(subpath.c_str(), "security.SMACK64TRANSMUTE", "TRUE", 4, 0);
+    int r =
+        lsetxattr(subpath.c_str(), "security.SMACK64TRANSMUTE", "TRUE", 4, 0);
     if (r < 0) {
       LOG(ERROR) << "Failed to apply transmute";
       return false;
