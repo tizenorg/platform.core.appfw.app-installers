@@ -84,6 +84,12 @@ Step::Status StepConfigure::process() {
       context_->xml_path.set(xml_path);
       context_->pkg_type.set(kRpmPackageType);  // temporary fix as rpm
 
+      // TODO(t.iwanek): setting privilege level here should be removed because
+      // of the fact that many apps may not have PLATFORM level. User can
+      // malform platform xml or just reinstall app with direct-manifest
+      // installation mode and gain "system" background category
+      context_->privilege_level.set(PrivilegeLevel::PLATFORM);
+
       if (!bf::exists(context_->pkg_path.get())) {
         LOG(INFO) << "[ManifestDirect] Create pkg_path("
                   << context_->pkg_path.get()
