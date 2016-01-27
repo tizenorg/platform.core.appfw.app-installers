@@ -87,6 +87,7 @@ Step::Status StepConfigure::process() {
       context_->pkg_path.set(package_directory);
       context_->xml_path.set(xml_path);
       context_->pkg_type.set(kRpmPackageType);  // temporary fix as rpm
+      context_->privilege_level.set(PrivilegeLevel::PLATFORM);
       break;
     }
     default:
