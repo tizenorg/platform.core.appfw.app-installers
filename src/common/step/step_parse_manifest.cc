@@ -168,6 +168,7 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
     manifest->type = strdup("rpm");
   else
     manifest->type = strdup("tpk");
+  manifest->preload = strdup(pkg_info->preload().c_str());
 
   for (auto& pair : pkg_info->labels()) {
     label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
