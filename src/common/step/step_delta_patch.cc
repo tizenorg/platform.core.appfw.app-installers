@@ -90,18 +90,18 @@ bool ApplyModifiedFiles(const delta::DeltaInfo& info, const bf::path& app_dir,
       LOG(ERROR) << "Cannot modify. Not a regular file: " << input;
       return false;
     }
-    const char* const argv[] = {
-      kXDeltaBinary,
-      "-d",
-      "-s",
-      input.c_str(),
-      patch_file.c_str(),
-      temp_file.c_str(),
-      nullptr,
-    };
     pid_t pid = fork();
     if (pid == 0) {
-    int ret = execv(argv[0], const_cast<char* const*>(argv));
+      const char* const argv[] = {
+        kXDeltaBinary,
+        "-d",
+        "-s",
+        input.c_str(),
+        patch_file.c_str(),
+        temp_file.c_str(),
+        nullptr,
+      };
+      int ret = execv(argv[0], const_cast<char* const*>(argv));
       if (ret != 0) {
         // no other thing to -> do just quit
         exit(-1);

@@ -50,8 +50,6 @@ Step::Status StepCopy::precheck() {
     return Step::Status::PACKAGE_NOT_FOUND;
   }
 
-  // TODO(p.sikorski) asserts?
-
   return Step::Status::OK;
 }
 

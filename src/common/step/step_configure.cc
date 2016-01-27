@@ -85,7 +85,6 @@ Step::Status StepConfigure::process() {
       break;
     }
     default:
-      // TODO(p.sikorski): should return unsupported, and display error
       LOG(ERROR) <<
           "Only installation, update and uninstallation is now supported";
       return Status::CONFIG_ERROR;

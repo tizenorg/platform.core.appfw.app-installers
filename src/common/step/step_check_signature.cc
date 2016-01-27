@@ -89,19 +89,17 @@ common_installer::Step::Status ValidateSignatureFile(
   *error_message += ":<" + errnum + ">";
 
   switch (result) {
-    case ValidationCore::E_SIG_REVOKED: {
+    case ValidationCore::E_SIG_REVOKED:
       LOG(ERROR) << "Certificate is revoked";
       return common_installer::Step::Status::SIGNATURE_INVALID;
-    };
-    case ValidationCore::E_SIG_DISREGARDED: {
+    case ValidationCore::E_SIG_DISREGARDED:
         if (data.isAuthorSignature()) {
           LOG(ERROR) << "Author-signiture is disregarded";
           return common_installer::Step::Status::SIGNATURE_INVALID;
         }
         LOG(WARNING) << "Signature disregarded: " << path;
         break;
-    };
-    case ValidationCore::E_SIG_NONE: {
+    case ValidationCore::E_SIG_NONE:
       if (!data.isAuthorSignature()) {
         // First distributor signature sets the privilege level
         // (wrt spec. 0620.)
@@ -114,12 +112,10 @@ common_installer::Step::Status ValidateSignatureFile(
         cert_info->author_certificate.set(data.getEndEntityCertificatePtr());
       }
       break;
-    };
-    default: {
+    default:
       LOG(ERROR) << "signature validation check failed : "
                  << validator.errorToString(result);
       return common_installer::Step::Status::SIGNATURE_INVALID;
-    };
   }
   return common_installer::Step::Status::OK;
 }

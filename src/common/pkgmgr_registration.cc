@@ -61,7 +61,7 @@ int PkgmgrForeachPrivilegeCallback(const char* privilege_name,
   return PMINFO_R_OK;
 }
 
-bool AssignPackageTags(const std::string& pkgid, manifest_x* manifest,
+bool AssignPackageTags(manifest_x* manifest,
                        common_installer::RequestMode request_mode,
                        bool is_update) {
   // this flag is actually set by preloaded app update to "true" but it is never
@@ -96,7 +96,7 @@ bool RegisterAppInPkgmgr(manifest_x* manifest,
   if (!tep_path.empty())
     manifest->tep_name = strdup(tep_path.c_str());
 
-  if (!AssignPackageTags(pkgid, manifest, request_mode, false))
+  if (!AssignPackageTags(manifest, request_mode, false))
     return false;
 
   int ret = request_mode != RequestMode::GLOBAL ?
@@ -141,7 +141,7 @@ bool UpgradeAppInPkgmgr(manifest_x* manifest,
                         const CertificateInfo& cert_info,
                         uid_t uid,
                         RequestMode request_mode) {
-  if (!AssignPackageTags(pkgid, manifest, request_mode, true))
+  if (!AssignPackageTags(manifest, request_mode, true))
     return false;
 
   int ret = request_mode != RequestMode::GLOBAL ?
