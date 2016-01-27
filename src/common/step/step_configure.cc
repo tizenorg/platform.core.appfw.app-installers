@@ -15,6 +15,7 @@
 #include "common/utils/file_util.h"
 
 namespace bf = boost::filesystem;
+namespace bs = boost::system;
 
 namespace common_installer {
 namespace configuration {
@@ -82,6 +83,20 @@ Step::Status StepConfigure::process() {
       context_->pkg_path.set(package_directory);
       context_->xml_path.set(xml_path);
       context_->pkg_type.set(kRpmPackageType);  // temporary fix as rpm
+
+      if (!bf::exists(context_->pkg_path.get())) {
+        LOG(INFO) << "[ManifestDirect] Create pkg_path("
+                  << context_->pkg_path.get()
+                  << ") for package("
+                  << context_->pkgid.get() << ")";
+        bs::error_code error;
+        bf::create_directories(package_directory, error);
+        if (error) {
+          LOG(ERROR) << "Cannot create directory: "
+                  << package_directory.string();
+          return Step::Status::APP_DIR_ERROR;
+        }
+      }
       break;
     }
     default:
