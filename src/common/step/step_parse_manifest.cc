@@ -488,11 +488,16 @@ bool StepParseManifest::FillApplicationIconPaths(application_x* app,
                                          const T& icons_info) {
   for (auto& application_icon : icons_info.icons()) {
     icon_x* icon = reinterpret_cast<icon_x*> (calloc(1, sizeof(icon_x)));
+    bf::path text;
+    if (bf::path(application_icon.path()).is_absolute()) {
+      text = application_icon.path();
+    } else {
+      text = context_->root_application_path.get()
+          / context_->pkgid.get() / "shared" / "res" / application_icon.path();
+    }
     // NOTE: name is an attribute, but the xml writer uses it as text.
     // This must be fixed in whole app-installer modules, including wgt.
     // Current implementation is just for compatibility.
-    bf::path text = context_->root_application_path.get()
-        / context_->pkgid.get() / "shared" / "res" / application_icon.path();
     icon->text = strdup(text.c_str());
     icon->name = strdup(application_icon.path().c_str());
     icon->lang = strdup(DEFAULT_LOCALE);
