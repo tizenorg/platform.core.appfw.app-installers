@@ -18,6 +18,7 @@ SET(SRCS
   step/step_check_blacklist.cc
   step/step_check_old_certificate.cc
   step/step_check_signature.cc
+  step/step_clear_data.cc
   step/step_configure.cc
   step/step_copy.cc
   step/step_copy_tep.cc

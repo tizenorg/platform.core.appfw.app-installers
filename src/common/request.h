@@ -14,6 +14,7 @@ enum class RequestType : int {
   Update,
   Uninstall,
   Reinstall,
+  Clear,
   Delta,
   Recovery,
   ManifestDirectInstall,
