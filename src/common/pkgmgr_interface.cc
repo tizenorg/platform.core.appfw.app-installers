@@ -95,6 +95,8 @@ RequestType PkgMgrInterface::GetRequestType() const {
       return RequestType::Uninstall;
     case PKGMGR_REQ_REINSTALL:
       return RequestType::Reinstall;
+    case PKGMGR_REQ_CLEAR:
+      return RequestType::Clear;
     case PKGMGR_REQ_RECOVER:
       return RequestType::Recovery;
     case PKGMGR_REQ_MANIFEST_DIRECT_INSTALL:
