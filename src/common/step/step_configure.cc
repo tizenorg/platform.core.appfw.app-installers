@@ -61,6 +61,9 @@ Step::Status StepConfigure::process() {
       context_->pkgid.set(kStrEmpty);
       context_->file_path.set(kStrEmpty);
       break;
+    case RequestType::Clear:
+      context_->pkgid.set(pkgmgr_->GetRequestInfo());
+      break;
     case RequestType::Delta:
       context_->unpacked_dir_path.set(kStrEmpty);
       context_->pkgid.set(kStrEmpty);
