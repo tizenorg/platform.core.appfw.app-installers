@@ -17,6 +17,7 @@ SET(SRCS
   step/step_check_background_category.cc
   step/step_check_old_certificate.cc
   step/step_check_signature.cc
+  step/step_clear_data.cc
   step/step_configure.cc
   step/step_copy.cc
   step/step_copy_tep.cc
