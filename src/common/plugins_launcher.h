@@ -40,13 +40,13 @@ class PluginsLauncher {
 
   template <typename... Args>
   bool RunPluginFunctionImpl(DynamicLibHandle* dl_handle, ProcessType process,
-                             ActionType action, int *result, Args&&... args) {
+                             ActionType action, int *result, Args&... args) {
     std::string name;
     if (!GetName(process, action, &name)) {
       LOG(ERROR) << "Error during getting function name";
       return false;
     }
-    return dl_handle->run(name, result, std::forward<Args>(args)...);
+    return dl_handle->run(name, result, (args)...);
   }
 
   SCOPE_LOG_TAG(PluginsLauncher)

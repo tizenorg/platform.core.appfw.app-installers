@@ -21,7 +21,7 @@ class DynamicLibHandle {
       const boost::filesystem::path& path, int flags);
 
   template <typename Ret, typename... Args>
-  bool run(const std::string& name, Ret* result, Args&&... args) {
+  bool run(const std::string& name, Ret* result, Args&... args) {
     using PluginFunctionPtr = Ret (*)(Args...);
     auto function = reinterpret_cast<PluginFunctionPtr>(GetSymbol(name));
 
@@ -30,7 +30,11 @@ class DynamicLibHandle {
       return false;
     }
 
-    *result = function(std::forward<Args>(args)...);
+    LOG(DEBUG) << "Function parameters: ";
+    using expander = int[];
+    (void)expander{0, (void(LOG(DEBUG) << ' ' << (args)), 0)...};
+
+    *result = function((args)...);
     return true;
   }
 
