@@ -28,7 +28,7 @@ bool PluginManager::GenerateUnknownTagList() {
     return false;
   }
 
-  const std::vector<std::shared_ptr<PluginInfo>> pluginInfoList =
+  const PluginsListParser::PluginList& pluginInfoList =
       list_parser_.PluginInfoList();
 
   for (std::shared_ptr<PluginInfo> pluginInfo : pluginInfoList) {
@@ -60,19 +60,66 @@ bool PluginManager::GenerateUnknownTagList() {
   return true;
 }
 
-const std::vector<std::shared_ptr<PluginInfo>>&
-PluginManager::UnknownTagList() {
-  return tags_;
+const PluginManager::TagList& PluginManager::UnknownTagList() { return tags_; }
+
+xmlDocPtr PluginManager::CreateDocPtrForPlugin(xmlDocPtr doc_ptr,
+    const std::string& tag_name) const {
+  // Make copy of document and root node
+  xmlNodePtr root_node = xmlDocGetRootElement(doc_ptr);
+  if (!root_node) {
+    LOG(ERROR) << "Original document is empty. Cannot create copy for plugin";
+    return nullptr;
+  }
+  xmlDocPtr plugin_doc_ptr = xmlCopyDoc(doc_ptr, 0);
+  xmlNodePtr plugin_root_node = xmlCopyNode(root_node, 0);
+  xmlDocSetRootElement(plugin_doc_ptr, plugin_root_node);
+
+  LOG(DEBUG) << "TAG NAME: " << tag_name;
+  // Append elements to new doc that matches the tag name
+  for (xmlNodePtr child = xmlFirstElementChild(root_node);
+       child != nullptr; child = xmlNextElementSibling(child)) {
+    LOG(DEBUG) << "TAG: " << reinterpret_cast<const char*>(child->name);
+    if (tag_name == reinterpret_cast<const char*>(child->name)) {
+      LOG(DEBUG) << "HURRAY!!!!!!!";
+      xmlAddChild(plugin_root_node, xmlCopyNode(child, 1));
+    }
+  }
+  xmlSetTreeDoc(plugin_root_node, plugin_doc_ptr);
+  return plugin_doc_ptr;
 }
 
 bool PluginManager::Launch(const boost::filesystem::path& plugin_path,
-                           ActionType action_type, const std::string& pkg_Id) {
-  // TODO(l.wartalowic) add implementation
+                           const std::string& tag_name,
+                           PluginsLauncher::ActionType action_type,
+                           const std::string& pkg_Id) {
   LOG(INFO) << "Launching plugin path:" << plugin_path << " pkgId: " << pkg_Id;
-  (void)plugin_path;
-  (void)action_type;
-  (void)pkg_Id;
-  return true;
+
+  int result = EPERM;
+
+  xmlDocPtr plugin_doc_ptr = CreateDocPtrForPlugin(xml_parser_.doc_ptr(),
+                                                   tag_name);
+  if (!plugin_doc_ptr)
+    return false;
+  PluginsLauncher::Error error = plugins_launcher_.LaunchPlugin(
+      plugin_path, plugin_doc_ptr, action_type, pkg_Id, &result);
+  xmlFreeDoc(plugin_doc_ptr);
+
+  switch (error) {
+    case PluginsLauncher::Error::Success: {
+      if (result != 0) {
+        LOG(ERROR) << "Error from plugin lib: " << plugin_path
+                   << " error code: " << result;
+        return false;
+      }
+      return true;
+    }
+    case PluginsLauncher::Error::ActionNotSupported:
+      return true;
+
+    case PluginsLauncher::Error::FailedLibHandle:
+    default:
+      return false;
+  }
 }
 
 }  // namespace common_installer
