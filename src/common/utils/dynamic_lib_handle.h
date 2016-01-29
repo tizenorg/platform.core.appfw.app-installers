@@ -17,34 +17,34 @@ namespace common_installer {
 
 class DynamicLibHandle {
  public:
-  static std::unique_ptr<DynamicLibHandle> Create(
-      const boost::filesystem::path& path, int flags);
+  DynamicLibHandle();
+  bool Create(const boost::filesystem::path& path, int flags);
 
   template <typename Ret, typename... Args>
-  bool run(const std::string& name, Ret* result, Args&&... args) {
+  bool Exec(const std::string& name, Ret* result, Args... args) {
     using PluginFunctionPtr = Ret (*)(Args...);
-    auto function = reinterpret_cast<PluginFunctionPtr>(GetSymbol(name));
+    PluginFunctionPtr function =
+        reinterpret_cast<PluginFunctionPtr>(GetSymbol(name));
 
     if (!function) {
-      LOG(ERROR) << "Failed to get symbol: " << name <<" (" << dlerror() << ")";
+      LOG(WARNING) << "Failed to get symbol: " << name << " (" << dlerror()
+                   << ")";
       return false;
     }
 
-    *result = function(std::forward<Args>(args)...);
+    LOG(DEBUG) << "Execute plugin function: " << name << "...";
+    *result = function(args...);
     return true;
   }
 
   DynamicLibHandle(DynamicLibHandle&&) = default;
   DynamicLibHandle& operator=(DynamicLibHandle&&) = default;
 
-  ~DynamicLibHandle();
+  virtual ~DynamicLibHandle();
 
   SCOPE_LOG_TAG(DynamicLibHandle)
 
  private:
-  DynamicLibHandle();
-  bool CreateImpl(const boost::filesystem::path& path, int flags);
-
   void* GetSymbol(const std::string& name);
   void* lib_handle_;
 };

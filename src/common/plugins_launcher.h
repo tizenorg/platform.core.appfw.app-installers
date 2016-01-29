@@ -13,40 +13,40 @@
 #include <string>
 #include <memory>
 
-#include "utils/dynamic_lib_handle.h"
+#include "common/utils/dynamic_lib_handle.h"
 
 namespace common_installer {
-
 
 class PluginsLauncher {
  public:
   enum class ActionType { Install, Upgrade, Uninstall };
   enum class ProcessType { PreInstall, Install, PostInstall };
 
-  bool LaunchPlugin(const boost::filesystem::path& plugin_path,
-                    xmlDocPtr docPtr, ActionType action,
-                    const std::string& pkgId, int* result);
+  enum class Error { Success, FailedLibHandle, ActionNotSupported };
+
+  Error LaunchPlugin(const boost::filesystem::path& plugin_path,
+                     xmlDocPtr docPtr, ActionType action,
+                     const std::string& pkgId, int* result);
 
  private:
-  std::string GetPath(const std::string& plugin);
-  bool GetName(ProcessType process, ActionType action, std::string* result);
+  bool FunctionName(ProcessType process, ActionType action,
+                    std::string* result);
 
-  bool RunPluginFunction(DynamicLibHandle* dl_handle, ProcessType process,
-                         ActionType action, const char *pkgId, int *result);
+  bool ExecPlugin(DynamicLibHandle& dlh, ProcessType process, ActionType action,
+                  const char* pkgId, int* result);
 
-  bool RunPluginFunction(DynamicLibHandle* dl_handle, ProcessType process,
-                         ActionType action, xmlDocPtr docPtr, const char* pkgId,
-                         int *result);
+  bool ExecPlugin(DynamicLibHandle& dlh, ProcessType process, ActionType action,
+                  xmlDocPtr docPtr, const char* pkgId, int* result);
 
   template <typename... Args>
-  bool RunPluginFunctionImpl(DynamicLibHandle* dl_handle, ProcessType process,
-                             ActionType action, int *result, Args&&... args) {
+  bool ExecPluginImpl(DynamicLibHandle& dlh, ProcessType process,
+                      ActionType action, int* result, Args&&... args) {
     std::string name;
-    if (!GetName(process, action, &name)) {
+    if (!FunctionName(process, action, &name)) {
       LOG(ERROR) << "Error during getting function name";
       return false;
     }
-    return dl_handle->run(name, result, std::forward<Args>(args)...);
+    return dlh.Exec(name, result, std::forward<Args>(args)...);
   }
 
   SCOPE_LOG_TAG(PluginsLauncher)

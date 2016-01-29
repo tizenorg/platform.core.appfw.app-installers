@@ -125,8 +125,7 @@ bool PluginsListParser::Parse() {
   return true;
 }
 
-const std::vector<std::shared_ptr<PluginInfo>>&
-PluginsListParser::PluginInfoList() {
+const PluginsListParser::PluginList& PluginsListParser::PluginInfoList() {
   return plugin_info_list_;
 }
 
