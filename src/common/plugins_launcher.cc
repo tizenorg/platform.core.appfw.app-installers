@@ -16,25 +16,25 @@ bool PluginsLauncher::LaunchPlugin(const boost::filesystem::path& plugin_path,
                                    const std::string& pkgId, int* result) {
   LOG(DEBUG) << "Installing plugin: " << plugin_path;
 
-  std::unique_ptr<DynamicLibHandle> dl_handle =
-      DynamicLibHandle::Create(plugin_path, RTLD_LAZY | RTLD_LOCAL);
-  if (!dl_handle) {
+  DynamicLibHandle dlh;
+
+  if (!dlh.Create(plugin_path, RTLD_LAZY | RTLD_LOCAL)) {
     LOG(ERROR) << "Failed to create library handle";
     return false;
   }
 
-  if (!RunPluginFunction(dl_handle.get(), ProcessType::PreInstall, action,
+  if (!ExecPlugin(&dlh, ProcessType::PreInstall, action,
                          pkgId.c_str(), result)) {
     LOG(ERROR) << "Preinstall failed";
     return false;
   }
 
-  if (!RunPluginFunction(dl_handle.get(), ProcessType::Install, action,
+  if (!ExecPlugin(&dlh, ProcessType::Install, action,
                          docPtr, pkgId.c_str(), result)) {
     LOG(ERROR) << "Install failed";
     return false;
   }
-  if (!RunPluginFunction(dl_handle.get(), ProcessType::PostInstall, action,
+  if (!ExecPlugin(&dlh, ProcessType::PostInstall, action,
                          pkgId.c_str(), result)) {
     LOG(ERROR) << "Postinstall failed";
     return false;
@@ -42,7 +42,7 @@ bool PluginsLauncher::LaunchPlugin(const boost::filesystem::path& plugin_path,
   return true;
 }
 
-bool PluginsLauncher::GetName(ProcessType process, ActionType action,
+bool PluginsLauncher::FunctionName(ProcessType process, ActionType action,
                               std::string* result) {
   static std::map<std::pair<ActionType, ProcessType>, std::string> names {
     {{ActionType::Install,   ProcessType::PreInstall},  "PKGMGR_PARSER_PLUGIN_PRE_INSTALL"},  // NOLINT
@@ -65,17 +65,17 @@ bool PluginsLauncher::GetName(ProcessType process, ActionType action,
   return true;
 }
 
-bool PluginsLauncher::RunPluginFunction(DynamicLibHandle* dl_handle,
+bool PluginsLauncher::ExecPlugin(DynamicLibHandle* dlh,
                                         ProcessType process, ActionType action,
                                         const char* pkgId, int* result) {
-  return RunPluginFunctionImpl(dl_handle, process, action, result, pkgId);
+  return ExecPluginImpl(dlh, process, action, result, pkgId);
 }
 
-bool PluginsLauncher::RunPluginFunction(DynamicLibHandle* dl_handle,
+bool PluginsLauncher::ExecPlugin(DynamicLibHandle* dlh,
                                         ProcessType process, ActionType action,
                                         xmlDocPtr docPtr, const char* pkgId,
                                         int* result) {
-  return RunPluginFunctionImpl(dl_handle, process, action, result, docPtr,
+  return ExecPluginImpl(dlh, process, action, result, docPtr,
                                pkgId);
 }
 
