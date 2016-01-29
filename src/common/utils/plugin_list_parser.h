@@ -45,10 +45,11 @@ class PluginInfo {
 /** this class parse plugin file */
 class PluginsListParser {
  public:
+  using PluginList = std::vector<std::shared_ptr<PluginInfo>>;
   explicit PluginsListParser(const std::string& path) : path_(path) {}
 
   bool Parse();
-  const std::vector<std::shared_ptr<PluginInfo>>& PluginInfoList();
+  const PluginList& PluginInfoList();
 
  private:
   enum Column { Flag, Type, Name, Path };
