@@ -10,8 +10,8 @@
 namespace common_installer {
 namespace pkgmgr {
 
-StepRunParserPlugin::StepRunParserPlugin(InstallerContext* context,
-                                         ActionType action_type)
+StepRunParserPlugin::StepRunParserPlugin(
+    InstallerContext* context, PluginsLauncher::ActionType action_type)
     : Step(context), action_type_(action_type) {}
 
 Step::Status StepRunParserPlugin::ProcessingPlugins(
@@ -39,7 +39,7 @@ Step::Status StepRunParserPlugin::ProcessingPlugins(
       return Status::ERROR;
     }
     // add plugin to array for undo process
-    if (action_type_ == ActionType::Install) {
+    if (action_type_ == PluginsLauncher::ActionType::Install) {
       installed_plugins_.push_back(plugin);
     }
   }
@@ -53,22 +53,23 @@ Step::Status StepRunParserPlugin::process() {
 }
 
 Step::Status StepRunParserPlugin::undo() {
-  if (action_type_ == ActionType::Install) {
+  if (action_type_ == PluginsLauncher::ActionType::Install) {
     if (installed_plugins_.empty()) {
       // no installed plugins
       return Status::OK;
     }
 
     for (const std::shared_ptr<PluginInfo>& plugin : installed_plugins_) {
-      if (!plugin_manager_->Launch(plugin->path(), ActionType::Uninstall,
+      if (!plugin_manager_->Launch(plugin->path(),
+                                   PluginsLauncher::ActionType::Uninstall,
                                    context_->pkgid.get())) {
         LOG(ERROR) << "Error during uninstall tag name: " << plugin->name()
                    << " path: " << plugin->path();
       }
     }
-  } else if (action_type_ == ActionType::Upgrade) {
+  } else if (action_type_ == PluginsLauncher::ActionType::Upgrade) {
     return ProcessingPlugins(context_->backup_xml_path.get());
-  } else if (action_type_ == ActionType::Uninstall) {
+  } else if (action_type_ == PluginsLauncher::ActionType::Uninstall) {
     return ProcessingPlugins(context_->xml_path.get());
   }
   return Status::OK;
