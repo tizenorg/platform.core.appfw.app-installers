@@ -10,17 +10,11 @@ namespace common_installer {
 
 DynamicLibHandle::DynamicLibHandle() : lib_handle_(nullptr) {}
 
-std::unique_ptr<DynamicLibHandle> DynamicLibHandle::Create(
-    const boost::filesystem::path& path, int flags) {
-  std::unique_ptr<DynamicLibHandle> new_handle(new DynamicLibHandle);
-  if (!new_handle->CreateImpl(path, flags)) {
-    return nullptr;
+bool DynamicLibHandle::Create(const boost::filesystem::path& path, int flags) {
+  if (lib_handle_) {
+    return true;
   }
-  return new_handle;
-}
 
-bool DynamicLibHandle::CreateImpl(const boost::filesystem::path& path,
-                                  int flags) {
   lib_handle_ = dlopen(path.c_str(), flags);
   if (!lib_handle_) {
     LOG(ERROR) << "Failed to open library: " << path << " (" << dlerror()
@@ -34,6 +28,10 @@ void* DynamicLibHandle::GetSymbol(const std::string& name) {
   return dlsym(lib_handle_, name.c_str());
 }
 
-DynamicLibHandle::~DynamicLibHandle() { dlclose(lib_handle_); }
+DynamicLibHandle::~DynamicLibHandle() {
+  if (lib_handle_) {
+    dlclose(lib_handle_);
+  }
+}
 
 }  // namespace common_installer
