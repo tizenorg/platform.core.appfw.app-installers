@@ -22,13 +22,17 @@ class DynamicLibHandle {
 
   template <typename Ret, typename... Args>
   bool run(const std::string& name, Ret* result, Args&&... args) {
-    using PluginFunctionPtr = Ret (*)(Args...);
+    using PluginFunctionPtr = Ret (*)(Args&&...);
     auto function = reinterpret_cast<PluginFunctionPtr>(GetSymbol(name));
 
     if (!function) {
       LOG(ERROR) << "Failed to get symbol: " << name <<" (" << dlerror() << ")";
       return false;
     }
+
+    LOG(DEBUG) << "Function parameters: ";
+    using expander = int[];
+    (void)expander{0, (void(LOG(DEBUG) << ' ' << (args)), 0)...};
 
     *result = function(std::forward<Args>(args)...);
     return true;

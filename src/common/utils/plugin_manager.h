@@ -12,10 +12,9 @@
 
 #include "common/utils/plugin_xml_parser.h"
 #include "common/utils/plugin_list_parser.h"
+#include "common/plugins_launcher.h"
 
 namespace common_installer {
-
-enum class ActionType { Install, Upgrade, Uninstall };
 
 /** this class manages XML and plugin lists */
 class PluginManager {
@@ -25,13 +24,14 @@ class PluginManager {
 
   bool GenerateUnknownTagList();
   const std::vector<std::shared_ptr<PluginInfo>>& UnknownTagList();
-  bool Launch(const boost::filesystem::path& pluginPath, ActionType actionType,
-              const std::string& pkgId);
+  bool Launch(const boost::filesystem::path& pluginPath,
+              PluginsLauncher::ActionType actionType, const std::string& pkgId);
 
  private:
   std::vector<std::shared_ptr<PluginInfo>> tags_;
   PluginsXmlParser xml_parser_;
   PluginsListParser list_parser_;
+  PluginsLauncher plugins_launcher_;
 };
 }  // namespace common_installer
 

@@ -12,9 +12,14 @@ bool PluginsXmlParser::Parse() {
     return false;
   }
 
+  doc_ptr_ = xmlReadFile(path_.c_str(), nullptr, 0);
+  if (!doc_ptr_) {
+    return false;
+  }
+
   WrapperXMLReader obj_reader;
 
-  xmlTextReaderPtr reader = obj_reader.Create(path_.c_str());
+  xmlTextReaderPtr reader = obj_reader.Create(doc_ptr_);
 
   if (!reader) {
     return false;
@@ -40,13 +45,6 @@ bool PluginsXmlParser::Parse() {
   }
 
   tags_.assign(tags.begin(), tags.end());
-
-  // get here, after end of a "reading" file
-  doc_ptr_ = xmlTextReaderCurrentDoc(reader);
-
-  if (!doc_ptr_) {
-    return false;
-  }
 
   return true;
 }
