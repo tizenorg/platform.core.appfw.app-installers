@@ -33,8 +33,8 @@ class PluginsXmlParser {
    public:
     WrapperXMLReader() : reader_(nullptr) {}
 
-    xmlTextReaderPtr Create(const std::string& path) {
-      reader_ = xmlReaderForFile(path.c_str(), nullptr, 0);
+    xmlTextReaderPtr Create(const xmlDocPtr doc_ptr_) {
+      reader_ = xmlReaderWalker(doc_ptr_);
       return reader_;
     }
     virtual ~WrapperXMLReader() {

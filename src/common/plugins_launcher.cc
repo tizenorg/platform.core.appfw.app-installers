@@ -11,49 +11,54 @@
 
 namespace common_installer {
 
-bool PluginsLauncher::LaunchPlugin(const boost::filesystem::path& plugin_path,
-                                   xmlDocPtr docPtr, ActionType action,
-                                   const std::string& pkgId, int* result) {
+PluginsLauncher::Error PluginsLauncher::LaunchPlugin(
+    const boost::filesystem::path& plugin_path, xmlDocPtr docPtr,
+    ActionType action, const std::string& pkgId, int* result) {
   LOG(DEBUG) << "Installing plugin: " << plugin_path;
 
-  std::unique_ptr<DynamicLibHandle> dl_handle =
-      DynamicLibHandle::Create(plugin_path, RTLD_LAZY | RTLD_LOCAL);
-  if (!dl_handle) {
+  DynamicLibHandle dlh;
+
+  if (!dlh.Create(plugin_path, RTLD_LAZY | RTLD_LOCAL)) {
     LOG(ERROR) << "Failed to create library handle";
-    return false;
+    return Error::FailedLibHandle;
   }
 
-  if (!RunPluginFunction(dl_handle.get(), ProcessType::PreInstall, action,
-                         pkgId.c_str(), result)) {
-    LOG(ERROR) << "Preinstall failed";
-    return false;
+  ProcessType process_result = ProcessType::NoProcess;
+
+  if (ExecPlugin(dlh, ProcessType::PreInstall, action, pkgId.c_str(),
+                  result)) {
+    process_result |= ProcessType::PreInstall;
   }
 
-  if (!RunPluginFunction(dl_handle.get(), ProcessType::Install, action,
-                         docPtr, pkgId.c_str(), result)) {
-    LOG(ERROR) << "Install failed";
-    return false;
+  if (ExecPlugin(dlh, ProcessType::Install, action, docPtr, pkgId.c_str(),
+                  result)) {
+    process_result |= ProcessType::Install;
   }
-  if (!RunPluginFunction(dl_handle.get(), ProcessType::PostInstall, action,
-                         pkgId.c_str(), result)) {
-    LOG(ERROR) << "Postinstall failed";
-    return false;
+
+  if (ExecPlugin(dlh, ProcessType::PostInstall, action, pkgId.c_str(),
+                  result)) {
+    process_result |= ProcessType::PostInstall;
   }
-  return true;
+
+  if (process_result == ProcessType::NoProcess) {
+    return Error::ActionNotSupported;
+  }
+
+  return Error::Success;
 }
 
-bool PluginsLauncher::GetName(ProcessType process, ActionType action,
+bool PluginsLauncher::FunctionName(ProcessType process, ActionType action,
                               std::string* result) {
   static std::map<std::pair<ActionType, ProcessType>, std::string> names {
-    {{ActionType::Install,   ProcessType::PreInstall},  "PKGMGR_PARSER_PLUGIN_PRE_INSTALL"},  // NOLINT
-    {{ActionType::Upgrade,   ProcessType::PreInstall},  "PKGMGR_PARSER_PLUGIN_PRE_UPGRADE"},  // NOLINT
-    {{ActionType::Uninstall, ProcessType::PreInstall},  "PKGMGR_PARSER_PLUGIN_PRE_UNINSTALL"},  // NOLINT
-    {{ActionType::Install,   ProcessType::Install},     "PKGMGR_PARSER_PLUGIN_INSTALL"},  // NOLINT
-    {{ActionType::Upgrade,   ProcessType::Install},     "PKGMGR_PARSER_PLUGIN_UPGRADE"},  // NOLINT
-    {{ActionType::Uninstall, ProcessType::Install},     "PKGMGR_PARSER_PLUGIN_UNINSTALL"},  // NOLINT
+    {{ActionType::Install,   ProcessType::PreInstall},  "PKGMGR_PARSER_PLUGIN_PRE_INSTALL"},   // NOLINT
+    {{ActionType::Upgrade,   ProcessType::PreInstall},  "PKGMGR_PARSER_PLUGIN_PRE_UPGRADE"},   // NOLINT
+    {{ActionType::Uninstall, ProcessType::PreInstall},  "PKGMGR_PARSER_PLUGIN_PRE_UNINSTALL"}, // NOLINT
+    {{ActionType::Install,   ProcessType::Install},     "PKGMGR_PARSER_PLUGIN_INSTALL"},       // NOLINT
+    {{ActionType::Upgrade,   ProcessType::Install},     "PKGMGR_PARSER_PLUGIN_UPGRADE"},       // NOLINT
+    {{ActionType::Uninstall, ProcessType::Install},     "PKGMGR_PARSER_PLUGIN_UNINSTALL"},     // NOLINT
     {{ActionType::Install,   ProcessType::PostInstall}, "PKGMGR_PARSER_PLUGIN_POST_INSTALL"},  // NOLINT
     {{ActionType::Upgrade,   ProcessType::PostInstall}, "PKGMGR_PARSER_PLUGIN_POST_UPGRADE"},  // NOLINT
-    {{ActionType::Uninstall, ProcessType::PostInstall}, "PKGMGR_PARSER_PLUGIN_POST_UNINSTALL"}  // NOLINT
+    {{ActionType::Uninstall, ProcessType::PostInstall}, "PKGMGR_PARSER_PLUGIN_POST_UNINSTALL"} // NOLINT
   };
 
   auto pos = names.find(std::make_pair(action, process));
@@ -65,18 +70,16 @@ bool PluginsLauncher::GetName(ProcessType process, ActionType action,
   return true;
 }
 
-bool PluginsLauncher::RunPluginFunction(DynamicLibHandle* dl_handle,
-                                        ProcessType process, ActionType action,
-                                        const char* pkgId, int* result) {
-  return RunPluginFunctionImpl(dl_handle, process, action, result, pkgId);
+bool PluginsLauncher::ExecPlugin(DynamicLibHandle& dlh, ProcessType process,
+                                 ActionType action, const char* pkgId,
+                                 int* result) {
+  return ExecPluginImpl(dlh, process, action, result, pkgId);
 }
 
-bool PluginsLauncher::RunPluginFunction(DynamicLibHandle* dl_handle,
-                                        ProcessType process, ActionType action,
-                                        xmlDocPtr docPtr, const char* pkgId,
-                                        int* result) {
-  return RunPluginFunctionImpl(dl_handle, process, action, result, docPtr,
-                               pkgId);
+bool PluginsLauncher::ExecPlugin(DynamicLibHandle& dlh, ProcessType process,
+                                 ActionType action, xmlDocPtr docPtr,
+                                 const char* pkgId, int* result) {
+  return ExecPluginImpl(dlh, process, action, result, docPtr, pkgId);
 }
 
 }  // namespace common_installer

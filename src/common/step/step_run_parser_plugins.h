@@ -18,7 +18,7 @@ namespace pkgmgr {
 class StepRunParserPlugin : public Step {
  public:
   explicit StepRunParserPlugin(InstallerContext* context,
-                               ActionType action_type);
+                               PluginsLauncher::ActionType action_type);
 
   Step::Status process() override;
   Step::Status clean() { return Status::OK; }
@@ -28,8 +28,8 @@ class StepRunParserPlugin : public Step {
   SCOPE_LOG_TAG(RunParserPlugin)
 
  private:
-  Step::Status ProcessingPlugins(const boost::filesystem::path& xml_path);
-  ActionType action_type_;
+  Step::Status ProcessPlugins(const boost::filesystem::path& xml_path);
+  PluginsLauncher::ActionType action_type_;
   std::vector<std::shared_ptr<PluginInfo>> installed_plugins_;
   std::unique_ptr<PluginManager> plugin_manager_;
 };
