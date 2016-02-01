@@ -21,11 +21,15 @@ namespace common_installer {
 AppInstaller::AppInstaller(const char* package_type, PkgMgrPtr pkgmgr)
     : pkgmgr_(pkgmgr),
       context_(new InstallerContext()) {
-  pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi(),
-                             pkgmgr->GetRequestType()));
-
   context_->pkg_type.set(package_type);
   context_->installation_mode.set(pkgmgr->GetInstallationMode());
+
+  if (context_->installation_mode.get() == InstallationMode::ONLINE) {
+    // pkgmgr signal should work only for online mode
+    // there is no one to receive it in offline mode
+    pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi(),
+                               pkgmgr->GetRequestType()));
+  }
 }
 
 AppInstaller::~AppInstaller() {
@@ -52,23 +56,25 @@ AppInstaller::Result AppInstaller::Run() {
       process_status = Step::Status::ERROR;
     }
 
-    // send START signal as soon as possible
-    if (pi_->state() == PkgmgrSignal::State::NOT_SENT) {
-      if (!context_->pkgid.get().empty()) {
-        pi_->SendStarted(context_->pkg_type.get(), context_->pkgid.get());
-      }
-    }
-
     if (process_status != Step::Status::OK) {
       LOG(ERROR) << "Error during processing";
       ret = Result::ERROR;
       break;
     }
 
-    // send installation progress
-    pi_->SendProgress(
-        current_step * kProgressRange / total_steps,
-        context_->pkg_type.get(), context_->pkgid.get());
+    if (pi_) {
+      // send START signal as soon as possible if not sent
+      if (pi_->state() == PkgmgrSignal::State::NOT_SENT) {
+        if (!context_->pkgid.get().empty()) {
+          pi_->SendStarted(context_->pkg_type.get(), context_->pkgid.get());
+        }
+      }
+
+      // send installation progress
+      pi_->SendProgress(
+          current_step * kProgressRange / total_steps,
+          context_->pkg_type.get(), context_->pkgid.get());
+    }
   }
 
   if (it != itEnd) {
@@ -100,20 +106,23 @@ AppInstaller::Result AppInstaller::Run() {
     }
   }
 
-  // send START if pkgid was not parsed
-  if (pi_->state() == PkgmgrSignal::State::NOT_SENT) {
-    pi_->SendStarted(context_->pkg_type.get(), context_->pkgid.get());
+  if (pi_) {
+    // send START if pkgid was not parsed
+    if (pi_->state() == PkgmgrSignal::State::NOT_SENT) {
+      pi_->SendStarted(context_->pkg_type.get(), context_->pkgid.get());
+    }
+    pi_->SendFinished(process_status,
+                      context_->pkg_type.get(),
+                      context_->pkgid.get());
   }
-  pi_->SendFinished(process_status,
-                    context_->pkg_type.get(),
-                    context_->pkgid.get());
   return ret;
 }
 
 void AppInstaller::HandleStepError(Step::Status result,
                                         const std::string& error) {
-  pi_->SendError(result, error, context_->pkg_type.get(),
-                                     context_->pkgid.get());
+  if (pi_)
+    pi_->SendError(result, error, context_->pkg_type.get(),
+                   context_->pkgid.get());
 }
 
 }  // namespace common_installer
