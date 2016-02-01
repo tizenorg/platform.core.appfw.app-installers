@@ -500,7 +500,13 @@ bool StepParseManifest::FillApplicationIconPaths(application_x* app,
     // Current implementation is just for compatibility.
     icon->text = strdup(text.c_str());
     icon->name = strdup(application_icon.path().c_str());
-    icon->lang = strdup(DEFAULT_LOCALE);
+    if (application_icon.lang().length() == 0)
+      icon->lang = strdup(DEFAULT_LOCALE);
+    else
+      icon->lang = strdup(application_icon.lang().c_str());
+
+    if (application_icon.dpi().length() != 0)
+      icon->dpi = strdup(application_icon.dpi().c_str());
     app->icon = g_list_append(app->icon, icon);
   }
   return true;
