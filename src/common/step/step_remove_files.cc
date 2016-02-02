@@ -38,7 +38,6 @@ Step::Status StepRemoveFiles::process() {
   bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
   if (!MoveDir(context_->pkg_path.get(), backup_path)) {
     LOG(ERROR) << "Cannot remove widget files from its location";
-    return Status::APP_DIR_ERROR;
   }
   LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
   return Status::OK;
