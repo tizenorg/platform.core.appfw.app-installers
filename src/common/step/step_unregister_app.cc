@@ -38,11 +38,6 @@ Step::Status StepUnregisterApplication::precheck() {
     return Status::MANIFEST_NOT_FOUND;
   }
 
-  if (context_->backup_xml_path.get().empty()) {
-    LOG(ERROR) << "Backup xml path was not set but is required";
-    return Status::INVALID_VALUE;
-  }
-
   // TODO(p.sikorski) check context_->uid.get()
 
   return Step::Status::OK;
@@ -73,7 +68,6 @@ Step::Status StepUnregisterApplication::process() {
   // Prepare certificate info for rollback operations
   if (!BackupCertInfo()) {
     LOG(ERROR) << "Failed to backup cert info";
-    return Status::CERT_ERROR;
   }
 
   if (!UnregisterAppInPkgmgr(context_->manifest_data.get(),
@@ -82,7 +76,6 @@ Step::Status StepUnregisterApplication::process() {
                              context_->uid.get(),
                              context_->request_mode.get())) {
     LOG(ERROR) << "Failed to unregister package into database";
-    return Status::REGISTER_ERROR;
   }
 
   // remove manifest file
