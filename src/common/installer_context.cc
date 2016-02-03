@@ -35,7 +35,8 @@ InstallerContext::InstallerContext()
       old_manifest_data(nullptr),
       uid(getuid()),
       backend_data(nullptr),
-      privilege_level(PrivilegeLevel::UNTRUSTED) {}
+      privilege_level(PrivilegeLevel::UNTRUSTED),
+      is_preload_request(false) {}
 
 InstallerContext::~InstallerContext() {
   if (manifest_data.get())

@@ -39,7 +39,7 @@ RequestMode GetRequestMode();
  *
  * \return root application path (eg. $HOME/apps_rw/)
  */
-const char *GetRootAppPath();
+const char *GetRootAppPath(bool is_preload);
 
 }  // namespace common_installer
 

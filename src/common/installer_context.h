@@ -267,6 +267,11 @@ class InstallerContext {
    * \brief installation mode (ONLINE / OFFLINE)
    */
   Property<InstallationMode> installation_mode;
+
+  /**
+   * \brief preload request received from pkgmgr_installer
+   */
+  Property<bool> is_preload_request;
 };
 
 }  // namespace common_installer

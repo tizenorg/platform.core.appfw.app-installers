@@ -32,6 +32,7 @@ Step::Status StepConfigure::process() {
   SetupRequestMode();
   SetupRequestType();
   SetupFileCreationMask();
+  SetupIsPreloadRequest();
 
   if (!SetupRootAppDirectory())
     return Status::CONFIG_ERROR;
@@ -160,7 +161,8 @@ Step::Status StepConfigure::clean() {
 
 bool StepConfigure::SetupRootAppDirectory() {
   if (context_->root_application_path.get().empty()) {
-    std::string root_app_path = GetRootAppPath();
+    std::string root_app_path =
+        GetRootAppPath(context_->is_preload_request.get());
     if (root_app_path.empty())
       return false;
 
@@ -204,6 +206,10 @@ void StepConfigure::SetupFileCreationMask() {
 
   LOG(INFO) << "Changed file creation mask from " << std::oct <<  old_mask
       << " to " << std::oct <<  new_mask;
+}
+
+void StepConfigure::SetupIsPreloadRequest() {
+  context_->is_preload_request.set(pkgmgr_->GetIsPreloadRequest());
 }
 
 }  // namespace configuration
