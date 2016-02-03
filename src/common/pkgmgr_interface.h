@@ -71,6 +71,13 @@ class PkgMgrInterface {
   bool GetIsTepMove();
 
   /**
+  * Returns True if the request is for preload. Otherwise, return false
+  *
+  * \return True if the request is for preload. Otherwise, return false
+  */
+  bool GetIsPreloadRequest();
+
+  /**
    * Get Raw pointer to pkgmgr_installer object
    * NOTE: It should not be used (PkgMgrInterface can destroy it
    *

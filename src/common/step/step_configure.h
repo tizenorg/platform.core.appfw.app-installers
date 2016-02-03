@@ -64,6 +64,7 @@ class StepConfigure : public Step {
   void SetupRequestMode();
   void SetupRequestType();
   void SetupFileCreationMask();
+  void SetupIsPreloadRequest();
 
   PkgMgrPtr pkgmgr_;
 
