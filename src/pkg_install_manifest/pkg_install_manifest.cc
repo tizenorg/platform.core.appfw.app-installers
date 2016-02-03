@@ -16,12 +16,16 @@
 
 #include "common/request.h"
 #include "common/utils/subprocess.h"
+#include "common/utils/file_util.h"
 
 namespace bf = boost::filesystem;
 namespace bpo = boost::program_options;
 namespace ci = common_installer;
 
 namespace {
+
+bf::path copied_manifest;
+bf::path original_manifest;
 
 const char kBackendDirectoryPath[] = "/etc/package-manager/backend/";
 
@@ -31,7 +35,14 @@ int InstallManifestOffline(const std::string& pkgid,
   backend_path /= type;
   ci::Subprocess backend(backend_path.string());
   backend.Run("-y", pkgid.c_str());
-  return backend.Wait();
+  int status;
+  status = backend.Wait();
+  // Workaround :
+  if (!copied_manifest.empty() && !original_manifest.empty()) {
+    // update changes of copied manifest to original manifest
+    ci::CopyFile(copied_manifest, original_manifest);
+  }
+  return status;
 }
 
 }  // namespace
@@ -70,6 +81,22 @@ int main(int argc, char** argv) {
   std::string type = package_info->type();
   if (type.empty())
     type = "tpk";
+
+  // Workaround : there are preload packages which share 'pkgid' in seperated manifests.
+  // So, before calling backend, copy manifest as {pkgid}.xml
+  if (getuid() == 0 &&
+    manifest_path.has_stem()) {
+    std::string name = manifest_path.stem().string();
+    std::string pkgid = package_info->package();
+    if (name.compare(pkgid) != 0) {
+      original_manifest = manifest_path;
+      copied_manifest = manifest_path.parent_path() / pkgid;
+      copied_manifest += ".xml";
+      LOG(WARNING) << "copied manifest : (" << copied_manifest << ")";
+      LOG(WARNING) << "org manifest : (" << original_manifest << ")";
+      ci::CopyFile(original_manifest, copied_manifest);
+    }
+  }
 
   return InstallManifestOffline(package_info->package(), type);
 }
