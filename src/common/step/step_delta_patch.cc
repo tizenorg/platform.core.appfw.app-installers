@@ -80,10 +80,10 @@ bool ApplyDeletedFiles(const delta::DeltaInfo& info, const bf::path& app_dir) {
 }
 
 bool ApplyModifiedFiles(const delta::DeltaInfo& info, const bf::path& app_dir,
-                        const bf::path& patch_dir) {
+                        const bf::path& patch_dir, bool is_preload) {
   for (auto& relative : info.modified()) {
     bf::path temp_file = ci::GenerateTemporaryPath(
-        bf::path(ci::GetRootAppPath()) / "tmp_file");
+        bf::path(ci::GetRootAppPath(is_preload)) / "tmp_file");
     bf::path patch_file = patch_dir / relative;
     bf::path input = app_dir / relative;
     if (!bf::is_regular_file(input)) {
@@ -163,10 +163,10 @@ bool ApplyAddedFiles(const delta::DeltaInfo& info, const bf::path& app_dir,
 }
 
 bool ApplyPatch(const delta::DeltaInfo& info, const bf::path& app_dir,
-                const bf::path& patch_dir) {
+                const bf::path& patch_dir, bool is_preload) {
   if (!ApplyDeletedFiles(info, app_dir))
     return false;
-  if (!ApplyModifiedFiles(info, app_dir, patch_dir))
+  if (!ApplyModifiedFiles(info, app_dir, patch_dir, is_preload))
     return false;
   if (!ApplyAddedFiles(info, app_dir, patch_dir))
     return false;
@@ -245,7 +245,7 @@ Step::Status StepDeltaPatch::process() {
   }
 
   // apply changes mentioned in delta
-  if (!ApplyPatch(*delta_info, context_->unpacked_dir_path.get(), patch_dir_))
+  if (!ApplyPatch(*delta_info, context_->unpacked_dir_path.get(), patch_dir_, context_->is_preload_request.get()))
     return Status::DELTA_ERROR;
 
   bs::error_code error;

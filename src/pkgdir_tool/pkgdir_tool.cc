@@ -44,7 +44,7 @@ enum class Action {
 const std::vector<std::pair<const char*, Action>> kEntries = {
   {"/", Action::CREATE},
   {"cache/", Action::CREATE},
-  {"data/", Action::COPY_OR_CREATE}  // compatibility -> copy data/ dir for tpk
+  {"data/", Action::CREATE}
 };
 
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
@@ -140,25 +140,15 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
   for (auto& pair : kEntries) {
     bf::path subpath = base_dir / pair.first;
     switch (pair.second) {
-    case Action::COPY_OR_CREATE: {
-      bf::path global_directory =
-          bf::path(tzplatform_getenv(TZ_SYS_RW_APP)) / pkgid / pair.first;
-      if (bf::exists(global_directory)) {
-        if (!ci::CopyDir(global_directory, subpath)) {
-          LOG(ERROR) << "Failed to copy directory: " << global_directory;
-          return false;
-        }
-        break;
-      }
-    }
-    case Action::CREATE: {
+    case Action::COPY_OR_CREATE:
+      // copy action
+    case Action::CREATE:
       bf::create_directories(subpath, error);
       if (error) {
         LOG(ERROR) << "Failed to create directory: " << subpath;
         return false;
       }
       break;
-    }
     default:
       assert(false);
     }

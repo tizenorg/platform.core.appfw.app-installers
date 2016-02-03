@@ -26,11 +26,15 @@ namespace {
 const char kBackendDirectoryPath[] = "/etc/package-manager/backend/";
 
 int InstallManifestOffline(const std::string& pkgid,
-                           const std::string& type) {
+                           const std::string& type,
+                           const std::string& preload) {
   bf::path backend_path(kBackendDirectoryPath);
   backend_path /= type;
   ci::Subprocess backend(backend_path.string());
-  backend.Run("-y", pkgid.c_str());
+  if (preload.compare("true"))
+    backend.Run("-y", pkgid.c_str(), "--preload");
+  else
+    backend.Run("-y", pkgid.c_str());
   return backend.Wait();
 }
 
@@ -71,5 +75,5 @@ int main(int argc, char** argv) {
   if (type.empty())
     type = "tpk";
 
-  return InstallManifestOffline(package_info->package(), type);
+  return InstallManifestOffline(package_info->package(), type, package_info->preload());
 }
