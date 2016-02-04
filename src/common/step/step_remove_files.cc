@@ -6,9 +6,6 @@
 
 #include <boost/system/error_code.hpp>
 
-#include "common/backup_paths.h"
-#include "common/utils/file_util.h"
-
 namespace common_installer {
 namespace filesystem {
 
@@ -35,31 +32,15 @@ Step::Status StepRemoveFiles::precheck() {
 }
 
 Step::Status StepRemoveFiles::process() {
-  bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
-  if (!MoveDir(context_->pkg_path.get(), backup_path)) {
-    LOG(ERROR) << "Cannot remove widget files from its location";
-  }
-  LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
-  return Status::OK;
-}
-
-Step::Status StepRemoveFiles::clean() {
   bs::error_code error;
-  bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
-  bf::remove_all(backup_path, error);
-  return Status::OK;
-}
+  bf::path pkg_path(context_->pkg_path.get());
+  bf::remove_all(pkg_path, error);
 
-Step::Status StepRemoveFiles::undo() {
-  bf::path backup_path = GetBackupPathForPackagePath(context_->pkg_path.get());
-  if (bf::exists(backup_path)) {
-    LOG(DEBUG) << "Restoring directory: " << context_->pkg_path.get();
-    if (!MoveDir(backup_path, context_->pkg_path.get())) {
-      LOG(ERROR) << "Cannot restore widget files";
-      return Status::APP_DIR_ERROR;
-    }
+  if (error) {
+    LOG(ERROR) << "Can't remove directory:" << context_->pkg_path.get().c_str();
+  } else {
+    LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
   }
-
   return Status::OK;
 }
 

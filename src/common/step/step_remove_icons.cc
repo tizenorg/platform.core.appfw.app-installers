@@ -10,8 +10,6 @@
 #include <cstring>
 #include <string>
 
-#include "common/backup_paths.h"
-#include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
 
 namespace common_installer {
@@ -34,14 +32,17 @@ Step::Status StepRemoveIcons::process() {
       iter != bf::directory_iterator(); ++iter) {
     if (!bf::is_regular_file(iter->path()))
       continue;
+    bs::error_code error;
     for (application_x* app :
         GListRange<application_x*>(
            context_->manifest_data.get()->application)) {
       if (app->icon) {
         std::string filename = iter->path().filename().string();
         if (filename.find(app->appid) == 0) {
-          bf::path icon_backup = GetBackupPathForIconFile(iter->path());
-          backups_.emplace_back(iter->path(), icon_backup);
+          bf::remove(filename, error);
+          if (error) {
+            LOG(WARNING) << "Failed to remove: " << filename;
+          }
         }
       }
     }
@@ -49,33 +50,5 @@ Step::Status StepRemoveIcons::process() {
   return Status::OK;
 }
 
-Step::Status StepRemoveIcons::clean() {
-  bs::error_code error;
-  if (!backups_.empty()) {
-    LOG(DEBUG) << "Clean up icons files...";
-    for (auto& pair : backups_) {
-      bf::remove(pair.first, error);
-      if (error) {
-        LOG(WARNING) << "Failed to remove: " << pair.first;
-      }
-    }
-  }
-  return Status::OK;
-}
-
-Step::Status StepRemoveIcons::undo() {
-  Step::Status ret = Status::OK;
-  if (!backups_.empty()) {
-    LOG(DEBUG) << "Restoring icons files...";
-    for (auto& pair : backups_) {
-      if (!MoveFile(pair.first, pair.second)) {
-        LOG(ERROR) << "Failed to restore: " << pair.second;
-        // We need to try to restore all icons anyway...
-        ret = Status::ICON_ERROR;
-      }
-    }
-  }
-  return ret;
-}
 }  // namespace filesystem
 }  // namespace common_installer
