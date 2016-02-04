@@ -76,6 +76,9 @@ ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 /sbin/ldconfig
 [ $1 == 0 ] && rm %{_bindir}/pkgdir_maker
 
+%posttrans
+pkgdir-tool --create --allglobalpkgs
+
 %files
 %defattr(-,root,root)
 %{_datarootdir}/app-installers/plugins_list.txt
