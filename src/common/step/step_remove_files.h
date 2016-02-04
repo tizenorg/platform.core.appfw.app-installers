@@ -19,8 +19,8 @@ class StepRemoveFiles : public Step {
   using Step::Step;
 
   Status process() override;
-  Status clean() override;
-  Status undo() override;
+  Status clean() override { return Status::OK; }
+  Status undo() override  { return Status::OK; }
   Status precheck() override;
 
   SCOPE_LOG_TAG(Remove)
