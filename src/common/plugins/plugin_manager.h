@@ -7,10 +7,11 @@
 
 #include <boost/filesystem/path.hpp>
 
+#include <pkgmgrinfo_basic.h>
 #include <string>
 #include <vector>
 
-#include "common/plugins/plugins_launcher.h"
+#include "common/plugins/plugin.h"
 #include "common/plugins/plugin_list_parser.h"
 #include "common/plugins/plugin_xml_parser.h"
 
@@ -19,33 +20,28 @@ namespace common_installer {
 /** this class manages XML and plugin lists */
 class PluginManager {
  public:
-  using TagList = std::vector<std::shared_ptr<PluginInfo>>;
-  PluginManager(const std::string& xml_path, const std::string& list_path)
-      : xml_parser_(xml_path), list_parser_(list_path) {}
+  using PluginInfoList = std::vector<std::shared_ptr<PluginInfo>>;
 
-  bool GenerateUnknownTagList();
-  const TagList& UnknownTagList();
-  bool Launch(const boost::filesystem::path& pluginPath,
-              const std::string& tag_name,
-              PluginsLauncher::ActionType actionType, const std::string& pkgId);
+  PluginManager(const std::string& xml_path,
+                const std::string& list_path,
+                manifest_x* manifest)
+      : xml_parser_(xml_path),
+        list_parser_(list_path),
+        manifest_(manifest) {}
+
+  bool LoadPlugins();
+  void RunPlugins(Plugin::ActionType action_type);
 
  private:
-  /**
-   * @brief CreateDocPtrForPlugin
-   *        Create copy of xml document with nodes only matching requested
-   *        tag_name
-   * @param doc_ptr original doc ptr of document
-   * @param tag_name name of required node/nodes
-   * @return requested copy
-   */
-  xmlDocPtr CreateDocPtrForPlugin(xmlDocPtr doc_ptr,
-                                  const std::string& tag_name) const;
+  bool GenerateUnknownTagList(std::vector<std::string>* xml_tags);
+  bool GeneratePluginInfoList(PluginInfoList* plugin_info_list);
 
-  std::vector<std::shared_ptr<PluginInfo>> tags_;
   PluginsXmlParser xml_parser_;
   PluginsListParser list_parser_;
-  PluginsLauncher plugins_launcher_;
+  manifest_x* manifest_;
+  std::vector<std::unique_ptr<Plugin>> loaded_plugins_;
 };
+
 }  // namespace common_installer
 
 #endif  // COMMON_PLUGINS_PLUGIN_MANAGER_H_
