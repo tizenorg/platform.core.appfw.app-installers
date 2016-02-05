@@ -6,117 +6,124 @@
 
 #include <boost/filesystem.hpp>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
+#include "common/plugins/plugin_factory.h"
 #include "common/plugins/plugin_list_parser.h"
 #include "common/plugins/plugin_xml_parser.h"
+#include "common/plugins/types/category_plugin.h"
+#include "common/plugins/types/metadata_plugin.h"
+#include "common/plugins/types/tag_plugin.h"
+#include "common/utils/glist_range.h"
 
 namespace common_installer {
 
-bool PluginManager::GenerateUnknownTagList() {
-  tags_.clear();
-
+bool PluginManager::GenerateUnknownTagList(
+    std::vector<std::string>* xml_tags) {
   if (!xml_parser_.Parse()) {
     LOG(ERROR) << "Parse xml function error";
     return false;
   }
 
-  std::vector<std::string> xmlTags = xml_parser_.tags_list();
+  *xml_tags = xml_parser_.tags_list();
+  return true;
+}
 
+bool PluginManager::GeneratePluginInfoList(
+    PluginManager::PluginInfoList* plugin_info_list) {
   if (!list_parser_.Parse()) {
     LOG(ERROR) << "Parse list function error";
     return false;
   }
 
-  const PluginsListParser::PluginList& pluginInfoList =
-      list_parser_.PluginInfoList();
-
-  for (std::shared_ptr<PluginInfo> pluginInfo : pluginInfoList) {
-    // find only tags
-    if (pluginInfo->type() == "tag") {
-      // check if a file exist
-      if (boost::filesystem::exists(pluginInfo->path())) {
-        for (const std::string& xmlTag : xmlTags) {
-          // if system tags included in xml tags
-          if (pluginInfo->name() == xmlTag) {
-            tags_.push_back(pluginInfo);
-            LOG(DEBUG) << "Tag: " << pluginInfo->name()
-                       << " path: " << pluginInfo->path() << "has been added";
-            break;
-          }
-        }
-      } else {
-        LOG(WARNING) << "Tag: " << pluginInfo->name()
-                     << " path: " << pluginInfo->path()
-                     << " exist in plugin list but no exist in system.";
-      }
-    }
-  }
-
-  if (tags_.empty()) {
-    LOG(INFO) << "No tags to processing";
-  }
-
+  *plugin_info_list = list_parser_.PluginInfoList();
   return true;
 }
 
-const PluginManager::TagList& PluginManager::UnknownTagList() { return tags_; }
+bool PluginManager::LoadPlugins() {
+  std::vector<std::string> xml_tags;
+  if (!GenerateUnknownTagList(&xml_tags))
+    return false;
 
-xmlDocPtr PluginManager::CreateDocPtrForPlugin(xmlDocPtr doc_ptr,
-    const std::string& tag_name) const {
-  // Make copy of document and root node
-  xmlNodePtr root_node = xmlDocGetRootElement(doc_ptr);
-  if (!root_node) {
-    LOG(ERROR) << "Original document is empty. Cannot create copy for plugin";
-    return nullptr;
-  }
-  xmlDocPtr plugin_doc_ptr = xmlCopyDoc(doc_ptr, 0);
-  xmlNodePtr plugin_root_node = xmlCopyNode(root_node, 0);
-  xmlDocSetRootElement(plugin_doc_ptr, plugin_root_node);
+  PluginInfoList plugin_info_list;
+  if (!GeneratePluginInfoList(&plugin_info_list))
+    return false;
 
-  // Append elements that matches the tag name to new doc
-  for (xmlNodePtr child = xmlFirstElementChild(root_node);
-       child != nullptr; child = xmlNextElementSibling(child)) {
-    if (tag_name == reinterpret_cast<const char*>(child->name)) {
-      xmlAddChild(plugin_root_node, xmlCopyNode(child, 1));
+  PluginFactory factory;
+
+  std::sort(xml_tags.begin(), xml_tags.end());
+
+  // This loop loads plugin which are needed according to manifest file
+  // Different pkgmgr plugin types have different condition upon which they
+  // are being loaded
+  LOG(DEBUG) << "Loading pkgmgr plugins...";
+  for (std::shared_ptr<PluginInfo> plugin_info : plugin_info_list) {
+    std::unique_ptr<Plugin> plugin;
+    if (plugin_info->type() == TagPlugin::kType) {
+      // load tag plugin only if tag exists in manifest file
+      auto iter = std::lower_bound(xml_tags.begin(), xml_tags.end(),
+                                     plugin_info->name());
+      if (iter != xml_tags.end() && *iter == plugin_info->name()) {
+        plugin = factory.CreatePluginByPluginInfo(*plugin_info);
+        if (!plugin) {
+          LOG(ERROR) << "Failed to load plugin: " << plugin_info->path()
+                     << " Plugin has been skipped.";
+        }
+      }
+    } else if (plugin_info->type() == MetadataPlugin::kType) {
+      bool done = false;
+      for (application_x* app : GListRange<application_x*>(
+           manifest_->application)) {
+        for (metadata_x* meta : GListRange<metadata_x*>(app->metadata)) {
+          if (std::string(meta->key).find(plugin_info->name()) == 0) {
+            plugin = factory.CreatePluginByPluginInfo(*plugin_info);
+            if (!plugin) {
+              LOG(ERROR) << "Failed to load plugin: " << plugin_info->path()
+                         << " Plugin has been skipped.";
+            }
+            done = true;
+            break;
+          }
+        }
+        if (done)
+          break;
+      }
+    } else if (plugin_info->type() == CategoryPlugin::kType) {
+      bool done = false;
+      for (application_x* app : GListRange<application_x*>(
+           manifest_->application)) {
+        for (const char* category : GListRange<char*>(app->category)) {
+          if (std::string(category).find(plugin_info->name()) == 0) {
+            plugin = factory.CreatePluginByPluginInfo(*plugin_info);
+            if (!plugin) {
+              LOG(ERROR) << "Failed to load plugin: " << plugin_info->path()
+                         << " Plugin has been skipped.";
+            }
+            done = true;
+            break;
+          }
+        }
+        if (done)
+          break;
+      }
+    }
+
+    if (plugin) {
+      loaded_plugins_.push_back(std::move(plugin));
+      LOG(DEBUG) << "Loaded plugin: " << plugin_info->path();
     }
   }
-  xmlSetTreeDoc(plugin_root_node, plugin_doc_ptr);
-  return plugin_doc_ptr;
+  return true;
 }
 
-bool PluginManager::Launch(const boost::filesystem::path& plugin_path,
-                           const std::string& tag_name,
-                           PluginsLauncher::ActionType action_type,
-                           const std::string& pkg_Id) {
-  LOG(INFO) << "Launching plugin path:" << plugin_path << " pkgId: " << pkg_Id;
-
-  int result = EPERM;
-
-  xmlDocPtr plugin_doc_ptr = CreateDocPtrForPlugin(xml_parser_.doc_ptr(),
-                                                   tag_name);
-  if (!plugin_doc_ptr)
-    return false;
-  PluginsLauncher::Error error = plugins_launcher_.LaunchPlugin(
-      plugin_path, plugin_doc_ptr, action_type, pkg_Id, &result);
-  xmlFreeDoc(plugin_doc_ptr);
-
-  switch (error) {
-    case PluginsLauncher::Error::Success: {
-      if (result != 0) {
-        LOG(ERROR) << "Error from plugin lib: " << plugin_path
-                   << " error code: " << result;
-        return false;
-      }
-      return true;
-    }
-    case PluginsLauncher::Error::ActionNotSupported:
-      return true;
-
-    case PluginsLauncher::Error::FailedLibHandle:
-    default:
-      return false;
+void PluginManager::RunPlugins(Plugin::ActionType action_type) {
+  LOG(DEBUG) << "Running pkgmgr plugins...";
+  for (auto& plugin : loaded_plugins_) {
+    // FIXME: Ignore if plugin failed for now, we need to keep installation
+    // working nevertheless plugins are broken
+    plugin->Run(xml_parser_.doc_ptr(), manifest_, action_type);
   }
 }
 

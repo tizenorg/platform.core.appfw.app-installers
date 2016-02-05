@@ -49,14 +49,12 @@ class PluginsListParser {
   explicit PluginsListParser(const std::string& path) : path_(path) {}
 
   bool Parse();
-  const PluginList& PluginInfoList();
+  const PluginList& PluginInfoList() const;
 
  private:
   enum Column { Flag, Type, Name, Path };
 
   PluginsListParser() {}
-  const std::string path_;
-  std::vector<std::shared_ptr<PluginInfo>> plugin_info_list_;
 
   bool ReadLinesFromFile(std::vector<std::string>* lines);
   bool ParsePluginsRawData(const std::vector<std::string>& lines);
@@ -72,6 +70,9 @@ class PluginsListParser {
   bool ValidType(const std::string& type);
   bool ValidName(const std::string& name);
   bool ValidPath(const std::string& path);
+
+  const std::string path_;
+  std::vector<std::shared_ptr<PluginInfo>> plugin_info_list_;
 };
 
 }  // namespace common_installer
