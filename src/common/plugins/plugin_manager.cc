@@ -2,14 +2,15 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
+#include "common/plugins/plugin_manager.h"
+
 #include <boost/filesystem.hpp>
 
 #include <string>
 #include <vector>
 
-#include "common/utils/plugin_list_parser.h"
-#include "common/utils/plugin_xml_parser.h"
-#include "common/utils/plugin_manager.h"
+#include "common/plugins/plugin_list_parser.h"
+#include "common/plugins/plugin_xml_parser.h"
 
 namespace common_installer {
 

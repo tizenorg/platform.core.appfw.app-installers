@@ -2,8 +2,8 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef COMMON_UTILS_PLUGIN_LIST_PARSER_H_
-#define COMMON_UTILS_PLUGIN_LIST_PARSER_H_
+#ifndef COMMON_PLUGINS_PLUGIN_LIST_PARSER_H_
+#define COMMON_PLUGINS_PLUGIN_LIST_PARSER_H_
 
 #include <boost/filesystem/path.hpp>
 
@@ -75,4 +75,5 @@ class PluginsListParser {
 };
 
 }  // namespace common_installer
-#endif  // COMMON_UTILS_PLUGIN_LIST_PARSER_H_
+
+#endif  // COMMON_PLUGINS_PLUGIN_LIST_PARSER_H_

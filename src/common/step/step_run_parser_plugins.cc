@@ -2,10 +2,10 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
+#include "common/step/step_run_parser_plugins.h"
+
 #include <string>
 #include <vector>
-
-#include "common/step/step_run_parser_plugins.h"
 
 namespace common_installer {
 namespace pkgmgr {

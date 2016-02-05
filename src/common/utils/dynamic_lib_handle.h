@@ -18,7 +18,7 @@ namespace common_installer {
 class DynamicLibHandle {
  public:
   DynamicLibHandle();
-  bool Create(const boost::filesystem::path& path, int flags);
+  bool Load(const boost::filesystem::path& path, int flags);
 
   template <typename Ret, typename... Args>
   bool Exec(const std::string& name, Ret* result, Args... args) {
