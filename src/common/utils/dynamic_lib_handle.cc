@@ -10,7 +10,7 @@ namespace common_installer {
 
 DynamicLibHandle::DynamicLibHandle() : lib_handle_(nullptr) {}
 
-bool DynamicLibHandle::Create(const boost::filesystem::path& path, int flags) {
+bool DynamicLibHandle::Load(const boost::filesystem::path& path, int flags) {
   if (lib_handle_) {
     return true;
   }
