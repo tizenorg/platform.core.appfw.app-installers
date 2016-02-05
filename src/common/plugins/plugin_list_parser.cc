@@ -2,10 +2,10 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
+#include "common/plugins/plugin_list_parser.h"
+
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-
-#include "common/utils/plugin_list_parser.h"
 
 namespace common_installer {
 

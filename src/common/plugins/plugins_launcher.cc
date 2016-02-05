@@ -2,7 +2,7 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "common/plugins_launcher.h"
+#include "common/plugins/plugins_launcher.h"
 
 #include <dlfcn.h>
 
@@ -18,7 +18,7 @@ PluginsLauncher::Error PluginsLauncher::LaunchPlugin(
 
   DynamicLibHandle dlh;
 
-  if (!dlh.Create(plugin_path, RTLD_LAZY | RTLD_LOCAL)) {
+  if (!dlh.Load(plugin_path, RTLD_LAZY | RTLD_LOCAL)) {
     LOG(ERROR) << "Failed to create library handle";
     return Error::FailedLibHandle;
   }
