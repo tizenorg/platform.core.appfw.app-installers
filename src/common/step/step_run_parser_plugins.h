@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "common/utils/plugin_manager.h"
+#include "common/plugins/plugin_manager.h"
 #include "manifest_parser/utils/logging.h"
 #include "common/step/step.h"
 

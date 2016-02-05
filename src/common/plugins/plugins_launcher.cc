@@ -2,7 +2,7 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#include "common/plugins_launcher.h"
+#include "common/plugins/plugins_launcher.h"
 
 #include <dlfcn.h>
 
