@@ -125,7 +125,7 @@ bool PluginsListParser::Parse() {
   return true;
 }
 
-const PluginsListParser::PluginList& PluginsListParser::PluginInfoList() {
+const PluginsListParser::PluginList& PluginsListParser::PluginInfoList() const {
   return plugin_info_list_;
 }
 
