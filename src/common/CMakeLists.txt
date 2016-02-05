@@ -3,10 +3,15 @@ SET(SRCS
   app_installer.cc
   backup_paths.cc
   installer_context.cc
-  plugins/plugins_launcher.cc
+  plugins/plugin_factory.cc
   plugins/plugin_manager.cc
   plugins/plugin_list_parser.cc
   plugins/plugin_xml_parser.cc
+  plugins/plugin_factory.cc
+  plugins/plugin.cc
+  plugins/types/category_plugin.cc
+  plugins/types/metadata_plugin.cc
+  plugins/types/tag_plugin.cc
   pkgmgr_interface.cc
   pkgmgr_registration.cc
   pkgmgr_signal.cc
@@ -58,7 +63,6 @@ SET(SRCS
   step/step_update_tep.cc
   step/step_remove_manifest.cc
   utils/base64.cc
-  utils/dynamic_lib_handle.cc
   utils/file_util.cc
   utils/subprocess.cc
 )

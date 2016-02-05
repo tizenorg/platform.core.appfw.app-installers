@@ -88,6 +88,7 @@ ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 %files devel
 %{_includedir}/app-installers/common/*.h
 %{_includedir}/app-installers/common/*/*.h
+%{_includedir}/app-installers/common/*/*/*.h
 %{_libdir}/pkgconfig/app-installers.pc
 
 %files tests
