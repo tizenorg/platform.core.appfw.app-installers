@@ -7,79 +7,49 @@
 #include <string>
 #include <vector>
 
+#include "common/plugins/plugin_manager.h"
+
 namespace common_installer {
 namespace pkgmgr {
 
 StepRunParserPlugin::StepRunParserPlugin(
-    InstallerContext* context, PluginsLauncher::ActionType action_type)
+    InstallerContext* context, Plugin::ActionType action_type)
     : Step(context), action_type_(action_type) {}
 
 Step::Status StepRunParserPlugin::ProcessPlugins(
-    const boost::filesystem::path& xml_path) {
+    const boost::filesystem::path& xml_path, manifest_x* manifest,
+    Plugin::ActionType action_type) {
   // PLUGINS_LIST_FILE_PATH path generated from cmake
   const std::string listPath(PLUGINS_LIST_INSTALL_FILE_PATH);
 
-  // init plugin_manager
-  plugin_manager_.reset(new PluginManager(xml_path.string(), listPath));
-
-  if (!plugin_manager_->GenerateUnknownTagList()) {
-    LOG(ERROR) << "Error during generate unknown list, no exist file, path, "
-                  "invalid data format etc, chceck log";
+  PluginManager plugin_manager(xml_path.string(), listPath, manifest);
+  if (!plugin_manager.LoadPlugins()) {
+    LOG(ERROR) << "Loading plugins failed in progress";
     return Status::ERROR;
   }
+  plugin_manager.RunPlugins(action_type);
 
-  const PluginManager::TagList& plugins = plugin_manager_->UnknownTagList();
-
-  for (const std::shared_ptr<PluginInfo>& plugin : plugins) {
-    if (!plugin_manager_->Launch(plugin->path(), plugin->name(), action_type_,
-                                 context_->pkgid.get())) {
-      LOG(ERROR) << "Error during launch tag name: " << plugin->name()
-                 << " path: " << plugin->path();
-      // some plugins do not have all methods, so no return error (skip error)
-    } else {
-      // add plugin to array for undo process
-      if (action_type_ == PluginsLauncher::ActionType::Install) {
-        installed_plugins_.push_back(plugin);
-      }
-    }
-  }
-
-  LOG(INFO) << "Successfully processing plugins";
+  LOG(INFO) << "Processing plugins done";
   return Status::OK;
 }
 
 Step::Status StepRunParserPlugin::process() {
-  return ProcessPlugins(context_->xml_path.get());
+  return ProcessPlugins(context_->xml_path.get(), context_->manifest_data.get(),
+                        action_type_);
 }
 
 Step::Status StepRunParserPlugin::undo() {
-  switch (action_type_) {
-    case PluginsLauncher::ActionType::Install: {
-      if (installed_plugins_.empty()) {
-        // no installed plugins
-        return Status::OK;
-      }
-
-      for (const std::shared_ptr<PluginInfo>& plugin : installed_plugins_) {
-        if (!plugin_manager_->Launch(plugin->path(), plugin->name(),
-                                     PluginsLauncher::ActionType::Uninstall,
-                                     context_->pkgid.get())) {
-          LOG(ERROR) << "Error during uninstall tag name: " << plugin->name()
-                     << " path: " << plugin->path();
-        }
-      }
-      return Status::OK;
-    }
-    case PluginsLauncher::ActionType::Upgrade:
-      return ProcessPlugins(context_->backup_xml_path.get());
-    case PluginsLauncher::ActionType::Uninstall:
-      return ProcessPlugins(context_->xml_path.get());
-    default:
-      return Status::ERROR;
+  // For update, we need to reread configuration of old version of widget
+  // so running whole process from beginning
+  if (action_type_ == Plugin::ActionType::Install) {
+    ProcessPlugins(context_->xml_path.get(), context_->manifest_data.get(),
+                   Plugin::ActionType::Uninstall);
+  } else if (action_type_ == Plugin::ActionType::Upgrade) {
+    ProcessPlugins(context_->backup_xml_path.get(),
+                   context_->old_manifest_data.get(),
+                   Plugin::ActionType::Upgrade);
   }
-
-  // never happen only to avoid compilation warning
-  return Status::ERROR;
+  return Status::OK;
 }
 
 }  // namespace pkgmgr
