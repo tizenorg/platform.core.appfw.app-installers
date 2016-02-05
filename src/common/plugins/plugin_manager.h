@@ -2,17 +2,17 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef COMMON_UTILS_PLUGIN_MANAGER_H_
-#define COMMON_UTILS_PLUGIN_MANAGER_H_
+#ifndef COMMON_PLUGINS_PLUGIN_MANAGER_H_
+#define COMMON_PLUGINS_PLUGIN_MANAGER_H_
 
 #include <boost/filesystem/path.hpp>
 
 #include <string>
 #include <vector>
 
-#include "common/utils/plugin_xml_parser.h"
-#include "common/utils/plugin_list_parser.h"
-#include "common/plugins_launcher.h"
+#include "common/plugins/plugins_launcher.h"
+#include "common/plugins/plugin_list_parser.h"
+#include "common/plugins/plugin_xml_parser.h"
 
 namespace common_installer {
 
@@ -48,4 +48,4 @@ class PluginManager {
 };
 }  // namespace common_installer
 
-#endif  // COMMON_UTILS_PLUGIN_MANAGER_H_
+#endif  // COMMON_PLUGINS_PLUGIN_MANAGER_H_

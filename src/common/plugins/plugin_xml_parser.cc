@@ -2,8 +2,9 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
+#include "common/plugins/plugin_xml_parser.h"
+
 #include "manifest_parser/utils/logging.h"
-#include "common/utils/plugin_xml_parser.h"
 
 namespace common_installer {
 
