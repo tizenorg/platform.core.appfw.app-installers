@@ -4,13 +4,15 @@
 
 #include "common/step/step_remove_files.h"
 
+#include <boost/filesystem/operations.hpp>
 #include <boost/system/error_code.hpp>
-
-namespace common_installer {
-namespace filesystem {
 
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
+
+
+namespace common_installer {
+namespace filesystem {
 
 Step::Status StepRemoveFiles::precheck() {
   if (!context_->manifest_data.get()) {
