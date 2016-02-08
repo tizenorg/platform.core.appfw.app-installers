@@ -4,6 +4,7 @@
 
 #include "common/step/step_remove_icons.h"
 
+#include <boost/filesystem/operations.hpp>
 #include <boost/system/error_code.hpp>
 #include <pkgmgr-info.h>
 
@@ -12,11 +13,12 @@
 
 #include "common/utils/glist_range.h"
 
-namespace common_installer {
-namespace filesystem {
-
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
+
+
+namespace common_installer {
+namespace filesystem {
 
 Step::Status StepRemoveIcons::precheck() {
   if (!context_->manifest_data.get()) {
@@ -39,7 +41,7 @@ Step::Status StepRemoveIcons::process() {
       if (app->icon) {
         std::string filename = iter->path().filename().string();
         if (filename.find(app->appid) == 0) {
-          bf::remove(filename, error);
+          bf::remove(iter->path(), error);
           if (error) {
             LOG(WARNING) << "Failed to remove: " << filename;
           }
