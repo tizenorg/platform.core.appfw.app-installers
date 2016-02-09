@@ -80,6 +80,8 @@ class StepParseManifest : public common_installer::Step {
       bool FillLabel(application_x* manifest, const T& label_list);
   template <typename T>
       bool FillMetadata(application_x* manifest, const T& meta_data_list);
+  template <typename T>
+      bool FillCategories(application_x* manifest, const T& meta_data_list);
   bool FillImage(application_x* app,
                  const tpk::parse::ApplicationImagesInfo& label_list);
   bool FillAccounts();
