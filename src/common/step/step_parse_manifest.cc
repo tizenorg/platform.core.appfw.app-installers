@@ -305,6 +305,8 @@ bool StepParseManifest::FillWidgetApplication(manifest_x* manifest) {
       return false;
     if (!FillImage(widget_app, application.app_images))
       return false;
+    if (!FillCategories(widget_app, application.categories))
+      return false;
     if (!FillMetadata(widget_app, application.meta_data))
       return false;
   }
@@ -364,6 +366,8 @@ bool StepParseManifest::FillServiceApplication(manifest_x* manifest) {
     if (!FillLabel(service_app, application.label))
       return false;
     if (!FillMetadata(service_app, application.meta_data))
+      return false;
+    if (!FillCategories(service_app, application.categories))
       return false;
     if (!FillBackgroundCategoryInfo(service_app,
         application.background_category))
@@ -440,6 +444,8 @@ bool StepParseManifest::FillUIApplication(manifest_x* manifest) {
     if (!FillImage(ui_app, application.app_images))
       return false;
     if (!FillMetadata(ui_app, application.meta_data))
+      return false;
+    if (!FillCategories(ui_app, application.categories))
       return false;
     if (!FillBackgroundCategoryInfo(ui_app, application.background_category))
       return false;
@@ -544,6 +550,16 @@ bool StepParseManifest::FillMetadata(application_x* app,
     metadata->key = strdup(meta.key().c_str());
     metadata->value = strdup(meta.val().c_str());
     app->metadata = g_list_append(app->metadata, metadata);
+  }
+  return true;
+}
+
+template <typename T>
+bool StepParseManifest::FillCategories(application_x* manifest,
+                                     const T& categories) {
+  for (auto& category : categories) {
+    manifest->category = g_list_append(manifest->category,
+                                       strdup(category.c_str()));
   }
   return true;
 }
