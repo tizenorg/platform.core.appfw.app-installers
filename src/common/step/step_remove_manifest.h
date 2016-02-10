@@ -2,8 +2,8 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef COMMON_STEP_REMOVE_MANIFEST_H_
-#define COMMON_STEP_REMOVE_MANIFEST_H_
+#ifndef COMMON_STEP_STEP_REMOVE_MANIFEST_H_
+#define COMMON_STEP_STEP_REMOVE_MANIFEST_H_
 
 #include <manifest_parser/utils/logging.h>
 
@@ -37,4 +37,4 @@ class StepRemoveManifest : public Step {
 }  // namespace pkgmgr
 }  // namespace common_installer
 
-#endif  // COMMON_STEP_REMOVE_MANIFEST_H_
+#endif  // COMMON_STEP_STEP_REMOVE_MANIFEST_H_

@@ -36,5 +36,5 @@ common_installer::Step::Status StepRemoveManifest::process() {
 }
 
 
-}  // namespace wgt
 }  // namespace pkgmgr
+}  // namespace common_installer
