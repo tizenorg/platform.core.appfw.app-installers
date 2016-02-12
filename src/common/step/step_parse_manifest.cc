@@ -272,9 +272,10 @@ bool StepParseManifest::FillWidgetApplication(manifest_x* manifest) {
     widget_app->appid = strdup(application.app_info.appid().c_str());
     widget_app->launch_mode =
         strdup(application.app_info.launch_mode().c_str());
-    widget_app->multiple = strdup(application.app_info.multiple().c_str());
-    widget_app->nodisplay =
-        strdup(application.app_info.nodisplay().c_str());
+    widget_app->multiple = strdup("false");
+    widget_app->nodisplay = strdup("true");
+    widget_app->taskmanage = strdup("false");
+    widget_app->indicatordisplay = strdup("false");
     widget_app->type = strdup("capp");
     widget_app->component_type = strdup("widgetapp");
     widget_app->hwacceleration =
@@ -395,7 +396,6 @@ bool StepParseManifest::FillUIApplication(manifest_x* manifest) {
     ui_app->nodisplay = strdup(application.app_info.nodisplay().c_str());
     ui_app->taskmanage = strdup(application.app_info.taskmanage().c_str());
     ui_app->type = strdup(application.app_info.type().c_str());
-    ui_app->component_type = strdup("uiapp");
     ui_app->ui_gadget = strdup(application.app_info.uigadget().c_str());
     ui_app->process_pool = strdup(application.app_info.process_pool().c_str());
     ui_app->submode = strdup(application.app_info.submode().c_str());
