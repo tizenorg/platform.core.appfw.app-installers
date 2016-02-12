@@ -89,6 +89,9 @@ class StepParseManifest : public common_installer::Step {
   template <typename T>
   bool FillBackgroundCategoryInfo(application_x* app,
       const T& background_category_data_list);
+  template <typename T>
+  bool FillSplashScreen(application_x* app,
+      const T& splashscreen_list);
   bool FillManifestX(manifest_x* manifest);
 
   std::unique_ptr<tpk::parse::TPKConfigParser> parser_;
