@@ -399,14 +399,18 @@ bool StepParseManifest::FillUIApplication(manifest_x* manifest) {
     ui_app->ui_gadget = strdup(application.app_info.uigadget().c_str());
     ui_app->process_pool = strdup(application.app_info.process_pool().c_str());
     ui_app->submode = strdup(application.app_info.submode().c_str());
-    ui_app->indicatordisplay =
-        strdup(application.app_info.indicator_display().c_str());
-    ui_app->effectimage_type =
-        strdup(application.app_info.effectimage_type().c_str());
-    ui_app->portraitimg =
-        strdup(application.app_info.portrait_image().c_str());
-    ui_app->landscapeimg =
-        strdup(application.app_info.landscape_image().c_str());
+    if (!application.app_info.indicator_display().empty())
+      ui_app->indicatordisplay =
+          strdup(application.app_info.indicator_display().c_str());
+    if (!application.app_info.effectimage_type().empty())
+      ui_app->effectimage_type =
+          strdup(application.app_info.effectimage_type().c_str());
+    if (!application.app_info.portrait_image().empty())
+      ui_app->portraitimg =
+          strdup(application.app_info.portrait_image().c_str());
+    if (!application.app_info.landscape_image().empty())
+      ui_app->landscapeimg =
+          strdup(application.app_info.landscape_image().c_str());
     ui_app->submode_mainid =
         strdup(application.app_info.submode_mainid().c_str());
     ui_app->hwacceleration =
@@ -448,6 +452,8 @@ bool StepParseManifest::FillUIApplication(manifest_x* manifest) {
     if (!FillCategories(ui_app, application.categories))
       return false;
     if (!FillBackgroundCategoryInfo(ui_app, application.background_category))
+      return false;
+    if (!FillSplashScreen(ui_app, application.app_splashscreens))
       return false;
   }
   return true;
@@ -560,6 +566,31 @@ bool StepParseManifest::FillCategories(application_x* manifest,
   for (auto& category : categories) {
     manifest->category = g_list_append(manifest->category,
                                        strdup(category.c_str()));
+  }
+  return true;
+}
+
+template <typename T>
+bool StepParseManifest::FillSplashScreen(application_x* app,
+                                     const T& splashscreens_info) {
+  for (auto& splash_screen : splashscreens_info.splashscreens()) {
+    splashscreen_x* splashscreen =
+        static_cast<splashscreen_x*>(calloc(1, sizeof(splashscreen_x)));
+    if (context_->is_preload_request.get() == true)
+      splashscreen->src = strdup(splash_screen.src().c_str());
+    else
+      splashscreen->src = strdup((context_->root_application_path.get()
+        / app->package / "shared" / "res" / splash_screen.src()).c_str());
+
+    splashscreen->type = strdup(splash_screen.type().c_str());
+    splashscreen->dpi = strdup(splash_screen.dpi().c_str());
+    splashscreen->orientation = strdup(splash_screen.orientation().c_str());
+    if (!splash_screen.indicatordisplay().empty())
+      splashscreen->indicatordisplay = strdup(
+          splash_screen.indicatordisplay().c_str());
+    else
+      splashscreen->indicatordisplay = strdup("true");
+    app->splashscreens = g_list_append(app->splashscreens, splashscreen);
   }
   return true;
 }
