@@ -32,14 +32,15 @@ class PluginsLauncher {
   bool FunctionName(ProcessType process, ActionType action,
                     std::string* result);
 
-  bool ExecPlugin(DynamicLibHandle& dlh, ProcessType process, ActionType action,
+  bool ExecPlugin(const DynamicLibHandle& dlh, ProcessType process,
+                  ActionType action, const char* pkgId, int* result);
+
+  bool ExecPlugin(const DynamicLibHandle& dlh, ProcessType process,
+                  ActionType action, xmlDocPtr docPtr,
                   const char* pkgId, int* result);
 
-  bool ExecPlugin(DynamicLibHandle& dlh, ProcessType process, ActionType action,
-                  xmlDocPtr docPtr, const char* pkgId, int* result);
-
   template <typename... Args>
-  bool ExecPluginImpl(DynamicLibHandle& dlh, ProcessType process,
+  bool ExecPluginImpl(const DynamicLibHandle& dlh, ProcessType process,
                       ActionType action, int* result, Args&&... args) {
     std::string name;
     if (!FunctionName(process, action, &name)) {
