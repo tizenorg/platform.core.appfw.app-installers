@@ -34,6 +34,16 @@ PkgMgrPtr PkgMgrInterface::Create(int argc, char** argv,
   return instance;
 }
 
+PkgMgrPtr PkgMgrInterface::CreateForTesting(int argc, char** argv,
+                                  AppQueryInterface* interface) {
+  PkgMgrPtr instance(new PkgMgrInterface(interface));
+  int result = instance->InitInternalForTesting(argc, argv);
+  if (result != 0)
+    return nullptr;
+
+  return instance;
+}
+
 int PkgMgrInterface::InitInternal(int argc, char** argv) {
   pi_ = pkgmgr_installer_new();
 
@@ -55,6 +65,27 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
   if (result) {
     LOG(ERROR) << "Cannot receive request. Invalid arguments?";
     // no need to free pkgmgr_installer here. it will be freed in DTOR.
+  }
+
+  is_app_installed_ = false;
+  if (query_interface_)
+    is_app_installed_ = query_interface_->IsAppInstalledByArgv(argc, argv);
+
+  return result;
+}
+
+int PkgMgrInterface::InitInternalForTesting(int argc, char** argv) {
+  pi_ = pkgmgr_installer_offline_new();
+  if (!pi_) {
+    LOG(ERROR) << "Cannot create pkgmgr_installer object. Aborting.";
+    return ENOMEM;
+  }
+  install_mode_ = InstallationMode::ONLINE;
+
+  int result = pkgmgr_installer_receive_request(pi_, argc, argv);
+  if (result) {
+    LOG(ERROR) << "Cannot receive request. Invalid arguments?";
+    return result;
   }
 
   is_app_installed_ = false;

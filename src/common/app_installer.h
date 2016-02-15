@@ -74,6 +74,9 @@ class AppInstaller {
    */
   Result Run();
 
+  // used only for testing
+  void DisableSignalForTesting();
+
  protected:
   PkgMgrPtr pkgmgr_;
   std::unique_ptr<InstallerContext> context_;

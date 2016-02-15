@@ -57,6 +57,21 @@ class PkgMgrInterface {
         AppQueryInterface* interface = nullptr);
 
   /**
+   * @brief CreateForTesting
+   *        Creates pkgmgr interface for testing without setting up dbus
+   *        connection. This method must be used in tests where this class
+   *        constantly created and destroyed to prevent crash with some time
+   *        hazard on connection.
+   *
+   * @param argc argc to parse
+   * @param argv argv to parse
+   * @param interface pointer to AppQueryInterface
+   * @return Smart pointer to the PkgMgrInterface
+   */
+  static PkgMgrPtr CreateForTesting(int argc, char** argv,
+                                    AppQueryInterface* interface);
+
+  /**
   * Returns TEP path passed from pkgmgr_installer
   *
   * \return TEP path retrieved from pkgmgr_installer
@@ -103,6 +118,9 @@ class PkgMgrInterface {
         is_app_installed_(false),
         query_interface_(interface) {}
   int InitInternal(int argc, char** argv);
+
+  // Used for testing only
+  int InitInternalForTesting(int argc, char** argv);
 
   pkgmgr_installer* pi_;
   InstallationMode install_mode_;

@@ -118,6 +118,10 @@ AppInstaller::Result AppInstaller::Run() {
   return ret;
 }
 
+void AppInstaller::DisableSignalForTesting() {
+  pi_.reset();
+}
+
 void AppInstaller::HandleStepError(Step::Status result,
                                         const std::string& error) {
   if (pi_)
