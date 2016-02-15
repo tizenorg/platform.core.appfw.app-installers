@@ -31,7 +31,6 @@ common_installer::Step::Status StepCreateStorageDirectories::process() {
     return Status::APP_DIR_ERROR;
   if (!CacheDir())
     return Status::APP_DIR_ERROR;
-
   return Status::OK;
 }
 
