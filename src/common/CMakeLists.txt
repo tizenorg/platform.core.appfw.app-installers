@@ -28,6 +28,7 @@ SET(SRCS
   step/step_copy_backup.cc
   step/step_copy_storage_directories.cc
   step/step_create_storage_directories.cc
+  step/step_create_shared_directories.cc
   step/step_delta_patch.cc
   step/step_fail.cc
   step/step_kill_apps.cc
@@ -44,6 +45,7 @@ SET(SRCS
   step/step_privilege_compatibility.cc
   step/step_remove_icons.cc
   step/step_remove_files.cc
+  step/step_remove_shared_directories.cc
   step/step_remove_temporary_directory.cc
   step/step_revoke_security.cc
   step/step_register_security.cc
