@@ -81,7 +81,7 @@ ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 %{_datarootdir}/app-installers/plugins_list.txt
 %manifest app-installers.manifest
 %{_libdir}/libapp-installers.so*
-%attr(6750,root,users) %{_bindir}/pkgdir-tool
+%attr(6750,root,root) %{_bindir}/pkgdir-tool
 %{_bindir}/pkg-install-manifest
 %license LICENSE
 

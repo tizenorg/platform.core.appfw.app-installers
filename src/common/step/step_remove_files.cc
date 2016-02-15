@@ -7,8 +7,26 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
+#include "common/pkgmgr_registration.h"
+
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
+
+namespace {
+bool SkipDirectoryIfGlobal(const bf::path& path) {
+  static const std::vector<std::string> dirs_to_ignore = {
+    {"cache"},
+    {"data"},
+    {"shared"},
+  };
+  return std::find(dirs_to_ignore.begin(), dirs_to_ignore.end(), path) !=
+      dirs_to_ignore.end();
+}
+}  // namespace
 
 
 namespace common_installer {
@@ -36,13 +54,33 @@ Step::Status StepRemoveFiles::precheck() {
 Step::Status StepRemoveFiles::process() {
   bs::error_code error;
   bf::path pkg_path(context_->pkg_path.get());
-  bf::remove_all(pkg_path, error);
 
-  if (error) {
-    LOG(ERROR) << "Can't remove directory:" << context_->pkg_path.get().c_str();
+  if (IsPackageInstalled(context_->pkgid.get(), GLOBAL_USER)) {
+    for (bf::directory_iterator itr(pkg_path); itr !=bf::directory_iterator();
+        ++itr) {
+      if (bf::is_directory(itr->status())) {
+        LOG(DEBUG) << "LEAF:" << itr->path().leaf().c_str();
+        if (SkipDirectoryIfGlobal(itr->path().leaf())) {
+          LOG(DEBUG) << "Skipping remove dir:" << itr->path().c_str();
+          continue;
+        }
+        bf::remove_all(itr->path(), error);
+        if (error) {
+          LOG(ERROR) << "Can't remove dir:" << context_->pkg_path.get().c_str();
+        }
+      }
+    }
   } else {
-    LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
+    bf::remove_all(pkg_path, error);
+    if (error) {
+      LOG(ERROR) << "Can't remove directory:" <<
+          context_->pkg_path.get().c_str();
+    } else {
+      LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
+    }
   }
+
+
   return Status::OK;
 }
 
