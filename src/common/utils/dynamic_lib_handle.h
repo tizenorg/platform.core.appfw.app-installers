@@ -21,7 +21,7 @@ class DynamicLibHandle {
   bool Load(const boost::filesystem::path& path, int flags);
 
   template <typename Ret, typename... Args>
-  bool Exec(const std::string& name, Ret* result, Args... args) {
+  bool Exec(const std::string& name, Ret* result, Args... args) const {
     using PluginFunctionPtr = Ret (*)(Args...);
     PluginFunctionPtr function =
         reinterpret_cast<PluginFunctionPtr>(GetSymbol(name));
@@ -45,7 +45,7 @@ class DynamicLibHandle {
   SCOPE_LOG_TAG(DynamicLibHandle)
 
  private:
-  void* GetSymbol(const std::string& name);
+  void* GetSymbol(const std::string& name) const;
   void* lib_handle_;
 };
 
