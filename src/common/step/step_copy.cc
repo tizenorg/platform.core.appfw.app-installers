@@ -67,7 +67,8 @@ Step::Status StepCopy::process() {
                << install_path.parent_path().string();
     return Step::Status::APP_DIR_ERROR;
   }
-  if (!MoveDir(context_->unpacked_dir_path.get(), install_path)) {
+  if (!MoveDir(context_->unpacked_dir_path.get(), install_path,
+               FSFlag::FS_MERGE_DIRECTORIES)) {
     LOG(ERROR) << "Cannot move widget directory to install path, from "
         << context_->unpacked_dir_path.get() << " to " << install_path;
     return Status::APP_DIR_ERROR;
