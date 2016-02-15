@@ -28,7 +28,6 @@
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
 
-
 namespace bf = boost::filesystem;
 namespace bpo = boost::program_options;
 namespace bs = boost::system;
@@ -39,8 +38,13 @@ namespace {
 const std::vector<const char*> kEntries = {
   {"/"},
   {"cache/"},
-  {"data/"}
+  {"data/"},
+  {"shared/"},
+  {"shared/cache/"},
+  {"shared/trusted/"}
 };
+
+
 
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
