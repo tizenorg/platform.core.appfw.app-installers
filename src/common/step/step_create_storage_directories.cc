@@ -8,6 +8,10 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <string>
+
+#include "common/utils/subprocess.h"
+
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
@@ -94,6 +98,20 @@ bool StepCreateStorageDirectories::CacheDir() {
   bf::create_directory(cache_path, error_code);
   if (error_code) {
     LOG(ERROR) << "Failed to create cache directory for package";
+    return false;
+  }
+  return true;
+}
+
+bool StepCreateStorageDirectories::UsersDir() {
+  bs::error_code error_code;
+  std::string package_id = context_->pkgid.get();
+
+  Subprocess pkgdir_tool_process("/usr/bin/pkgdir-tool");
+  pkgdir_tool_process.RunWithArgs({"create", package_id});
+  int result = pkgdir_tool_process.Wait();
+  if (!result) {
+    LOG(ERROR) << "Failed to create shared dirs for users";
     return false;
   }
   return true;
