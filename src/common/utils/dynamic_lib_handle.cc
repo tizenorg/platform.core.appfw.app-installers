@@ -24,7 +24,7 @@ bool DynamicLibHandle::Load(const boost::filesystem::path& path, int flags) {
   return true;
 }
 
-void* DynamicLibHandle::GetSymbol(const std::string& name) {
+void* DynamicLibHandle::GetSymbol(const std::string& name) const {
   return dlsym(lib_handle_, name.c_str());
 }
 
