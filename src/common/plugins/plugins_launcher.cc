@@ -70,13 +70,15 @@ bool PluginsLauncher::FunctionName(ProcessType process, ActionType action,
   return true;
 }
 
-bool PluginsLauncher::ExecPlugin(DynamicLibHandle& dlh, ProcessType process,
+bool PluginsLauncher::ExecPlugin(const DynamicLibHandle& dlh,
+                                 ProcessType process,
                                  ActionType action, const char* pkgId,
                                  int* result) {
   return ExecPluginImpl(dlh, process, action, result, pkgId);
 }
 
-bool PluginsLauncher::ExecPlugin(DynamicLibHandle& dlh, ProcessType process,
+bool PluginsLauncher::ExecPlugin(const DynamicLibHandle& dlh,
+                                 ProcessType process,
                                  ActionType action, xmlDocPtr docPtr,
                                  const char* pkgId, int* result) {
   return ExecPluginImpl(dlh, process, action, result, docPtr, pkgId);
