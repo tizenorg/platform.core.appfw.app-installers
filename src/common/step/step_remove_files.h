@@ -24,6 +24,9 @@ class StepRemoveFiles : public Step {
   Status precheck() override;
 
   SCOPE_LOG_TAG(Remove)
+
+ private:
+  bool RemoveSharedDirs();
 };
 
 }  // namespace filesystem

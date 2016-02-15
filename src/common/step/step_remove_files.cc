@@ -7,6 +7,10 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <string>
+
+#include "common/utils/subprocess.h"
+
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
 
@@ -43,7 +47,16 @@ Step::Status StepRemoveFiles::process() {
   } else {
     LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
   }
+
+  if (context_->request_mode.get() == RequestMode::GLOBAL) {
+    RemoveSharedDirs();
+  }
+
   return Status::OK;
+}
+
+bool StepRemoveFiles::RemoveSharedDirs() {
+
 }
 
 }  // namespace filesystem
