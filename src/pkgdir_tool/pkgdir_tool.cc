@@ -28,7 +28,6 @@
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
 
-
 namespace bf = boost::filesystem;
 namespace bpo = boost::program_options;
 namespace bs = boost::system;
@@ -39,7 +38,10 @@ namespace {
 const std::vector<const char*> kEntries = {
   {"/"},
   {"cache/"},
-  {"data/"}
+  {"data/"},
+  {"shared/"},
+  {"shared/cache/"},
+  {"shared/trusted/"}
 };
 
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
@@ -243,6 +245,9 @@ bool DeletePerUserDirectories(const std::string& pkgid) {
       LOG(WARNING) << "Failed to get user for home directory: " << user;
       continue;
     }
+
+    if (ci::IsPackageInstalled(pkgid, pwd->pw_uid)) continue;
+
     LOG(DEBUG) << "Deleting directories for uid: " << pwd->pw_uid << ", gid: "
                << pwd->pw_gid;
     tzplatform_set_user(pwd->pw_uid);
