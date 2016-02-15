@@ -7,6 +7,10 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <string>
+
+#include "common/utils/subprocess.h"
+
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
 
@@ -43,6 +47,7 @@ Step::Status StepRemoveFiles::process() {
   } else {
     LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
   }
+
   return Status::OK;
 }
 

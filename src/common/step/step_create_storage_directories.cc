@@ -8,6 +8,10 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <string>
+
+#include "common/utils/subprocess.h"
+
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
@@ -31,7 +35,6 @@ common_installer::Step::Status StepCreateStorageDirectories::process() {
     return Status::APP_DIR_ERROR;
   if (!CacheDir())
     return Status::APP_DIR_ERROR;
-
   return Status::OK;
 }
 
