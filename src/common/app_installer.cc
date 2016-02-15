@@ -24,11 +24,13 @@ AppInstaller::AppInstaller(const char* package_type, PkgMgrPtr pkgmgr)
   context_->pkg_type.set(package_type);
   context_->installation_mode.set(pkgmgr->GetInstallationMode());
 
-  if (context_->installation_mode.get() == InstallationMode::ONLINE) {
-    // pkgmgr signal should work only for online mode
-    // there is no one to receive it in offline mode
-    pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi(),
-                               pkgmgr->GetRequestType()));
+  if (pkgmgr->ShouldCreateSignal()) {
+    if (context_->installation_mode.get() == InstallationMode::ONLINE) {
+      // pkgmgr signal should work only for online mode
+      // there is no one to receive it in offline mode
+      pi_.reset(new PkgmgrSignal(pkgmgr.get()->GetRawPi(),
+                                 pkgmgr->GetRequestType()));
+    }
   }
 }
 

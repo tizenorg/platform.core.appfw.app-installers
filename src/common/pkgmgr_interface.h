@@ -25,6 +25,35 @@ class PkgMgrInterface;
 typedef std::shared_ptr<PkgMgrInterface> PkgMgrPtr;
 
 /**
+ * \brief The PkgmgrInstallerInterface class
+ *        Interface defining strategy for creation of pkgmgr_installer object
+ *        and PkgmgrSignal object.
+ *
+ * This interface is injected to PkgMgrInterface class to decide:
+ *  - how to create pkgmgr_installer,
+ *  - if to create PkgmgrSignal object,
+ *  - what installation mode should be set in installer context.
+ */
+class PkgmgrInstallerInterface {
+ public:
+  virtual bool CreatePkgMgrInstaller(pkgmgr_installer** installer,
+                             InstallationMode* mode) = 0;
+  virtual bool ShouldCreateSignal() const = 0;
+};
+
+/**
+ * \brief The PkgmgrInstaller class
+ *        Implementation of PkgmgrInstallerInterface that handles creation of
+ *        pkgmgr_installer class in online and offline mode.
+ */
+class PkgmgrInstaller : public PkgmgrInstallerInterface {
+ public:
+  bool CreatePkgMgrInstaller(pkgmgr_installer** installer,
+                             InstallationMode* mode);
+  bool ShouldCreateSignal() const;
+};
+
+/**
  * \brief Encapsulates pkgmgr API which handles parsing backend options
  *        and returns values/modes for installation process.
  */
@@ -49,11 +78,14 @@ class PkgMgrInterface {
    *
    * \param argc main() argc argument passed to the backend
    * \param argv main() argv argument passed to the backend
+   * \param pkgmgr_installer_interface interface defining strategy of creation
+   *                                   of pkgmgr_installer
    * \param interface pointer to AppQueryInterface
    *
    * \return Smart pointer to the PkgMgrInterface
    */
   static PkgMgrPtr Create(int argc, char** argv,
+        PkgmgrInstallerInterface* pkgmgr_installer_interface,
         AppQueryInterface* interface = nullptr);
 
   /**
@@ -92,21 +124,33 @@ class PkgMgrInterface {
   */
   InstallationMode GetInstallationMode() const { return install_mode_; }
 
+  /**
+   * @brief ShouldCreateSignal
+   *
+   *
+   * @return true if pkgmgr signal should be created
+   */
+  bool ShouldCreateSignal() const {
+    return pkgmgr_installer_interface_->ShouldCreateSignal();
+  }
 
   /** PkgMgrInstance destructor. */
   ~PkgMgrInterface();
 
  private:
-  explicit PkgMgrInterface(AppQueryInterface* interface)
+  explicit PkgMgrInterface(PkgmgrInstallerInterface* pkgmgr_installer_interface,
+                           AppQueryInterface* interface)
       : pi_(nullptr),
         install_mode_(InstallationMode::ONLINE),
         is_app_installed_(false),
+        pkgmgr_installer_interface_(pkgmgr_installer_interface),
         query_interface_(interface) {}
   int InitInternal(int argc, char** argv);
 
   pkgmgr_installer* pi_;
   InstallationMode install_mode_;
   bool is_app_installed_;
+  PkgmgrInstallerInterface* pkgmgr_installer_interface_;
 
   AppQueryInterface* query_interface_;
 

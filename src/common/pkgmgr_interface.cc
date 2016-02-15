@@ -24,9 +24,33 @@ const char kDeltaFileExtension[] = ".delta";
 
 namespace common_installer {
 
+bool PkgmgrInstaller::CreatePkgMgrInstaller(pkgmgr_installer** installer,
+                             InstallationMode* mode) {
+  *installer = pkgmgr_installer_new();
+  if (!*installer) {
+    LOG(WARNING) << "Cannot create pkgmgr_installer object. Will try offline";
+    // TODO(t.iwanek): app-installer should recognize offline installation and
+    // this information should be accesible in installation context
+    *installer = pkgmgr_installer_offline_new();
+    if (!*installer) {
+      return false;
+    }
+    *mode = InstallationMode::OFFLINE;
+  } else {
+    *mode = InstallationMode::ONLINE;
+  }
+  return true;
+}
+
+bool PkgmgrInstaller::ShouldCreateSignal() const {
+  return true;
+}
+
 PkgMgrPtr PkgMgrInterface::Create(int argc, char** argv,
-                                  AppQueryInterface* interface) {
-  PkgMgrPtr instance(new PkgMgrInterface(interface));
+    PkgmgrInstallerInterface* pkgmgr_installer_interface,
+    AppQueryInterface* interface) {
+  PkgMgrPtr instance(new PkgMgrInterface(pkgmgr_installer_interface,
+                                         interface));
   int result = instance->InitInternal(argc, argv);
   if (result != 0)
     return nullptr;
@@ -35,20 +59,10 @@ PkgMgrPtr PkgMgrInterface::Create(int argc, char** argv,
 }
 
 int PkgMgrInterface::InitInternal(int argc, char** argv) {
-  pi_ = pkgmgr_installer_new();
-
-  if (!pi_) {
-    LOG(WARNING) << "Cannot create pkgmgr_installer object. Will try offline";
-    // TODO(t.iwanek): app-installer should recognize offline installation and
-    // this information should be accesible in installation context
-    pi_ = pkgmgr_installer_offline_new();
-    if (!pi_) {
-      LOG(ERROR) << "Cannot create pkgmgr_installer object. Aborting.";
-      return ENOMEM;
-    }
-    install_mode_ = InstallationMode::OFFLINE;
-  } else {
-    install_mode_ = InstallationMode::ONLINE;
+  if (!pkgmgr_installer_interface_->CreatePkgMgrInstaller(&pi_,
+                                                          &install_mode_)) {
+    LOG(ERROR) << "Cannot create pkgmgr_installer object. Aborting.";
+    return false;
   }
 
   int result = pkgmgr_installer_receive_request(pi_, argc, argv);
