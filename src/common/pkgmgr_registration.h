@@ -137,6 +137,17 @@ bool QueryPrivilegesForPkgId(const std::string& pkg_id, uid_t uid,
  */
 bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode);
 
+/**
+ * \brief Adapter interface for external PkgMgr module used for checking
+ *        if given package is installed/registered
+ *
+ * \param pkg_id package id
+ * \param uid user id
+ *
+ * \return true if package is installed
+ */
+bool IsPackageInstalled(const std::string& pkg_id, uid_t uid);
+
 }  // namespace common_installer
 
 #endif  // COMMON_PKGMGR_REGISTRATION_H_
