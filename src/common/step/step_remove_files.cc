@@ -7,6 +7,10 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <string>
+
+#include "common/utils/subprocess.h"
+
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
 
@@ -43,7 +47,24 @@ Step::Status StepRemoveFiles::process() {
   } else {
     LOG(DEBUG) << "Removed directory: " << context_->pkg_path.get();
   }
+
+  if (context_->installation_mode.get() == InstallationMode::ONLINE) {
+    RemoveSharedDirs();
+  }
+
   return Status::OK;
+}
+
+bool StepRemoveFiles::RemoveSharedDirs() {
+  std::string package_id = context_->pkgid.get();
+  Subprocess pkgdir_tool_process("/usr/bin/pkgdir-tool");
+  pkgdir_tool_process.RunWithArgs({"delete", package_id});
+  int result = pkgdir_tool_process.Wait();
+  if (!result) {
+    LOG(ERROR) << "Failed to delete shared dirs for users";
+    return false;
+  }
+  return true;
 }
 
 }  // namespace filesystem
