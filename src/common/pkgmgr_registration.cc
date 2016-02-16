@@ -61,23 +61,31 @@ int PkgmgrForeachPrivilegeCallback(const char* privilege_name,
   return PMINFO_R_OK;
 }
 
+// "preload" : this package was installed at the binary creation.
+// "system" : this package is "preload" and is not removable.
+// "update" : this package is "preload" but is updated after first installation.
+// "removable" : this package can be removed.
+// "readonly" : this package exists in readonly location.
 bool AssignPackageTags(manifest_x* manifest,
                        common_installer::RequestMode request_mode,
                        bool is_update) {
-  // this flag is actually set by preloaded app update to "true" but it is never
-  // read anyway.
-  if (request_mode == common_installer::RequestMode::GLOBAL && is_update)
-    manifest->update = strdup("true");
-  else
-    manifest->update = strdup("false");
-  // external installation should alter this flag
-  manifest->installed_storage = strdup("installed_internal");
-
-  if (request_mode == common_installer::RequestMode::USER) {
+  if (!strcmp(manifest->preload, "true")) {
+    manifest->removable = strdup("false");
+    manifest->readonly = strdup("true");
+    manifest->system = strdup("true");
+    if (is_update)
+      manifest->update = strdup("true");
+    else
+      manifest->update = strdup("false");
+  } else {
     manifest->removable = strdup("true");
     manifest->readonly = strdup("false");
     manifest->system = strdup("false");
+    manifest->update = strdup("false");
   }
+  // external installation should alter this flag
+  manifest->installed_storage = strdup("installed_internal");
+
   return true;
 }
 
