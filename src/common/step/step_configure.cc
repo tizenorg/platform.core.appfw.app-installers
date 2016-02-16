@@ -32,7 +32,6 @@ Step::Status StepConfigure::process() {
   SetupRequestMode();
   SetupRequestType();
   SetupFileCreationMask();
-  SetupIsPreloadRequest();
 
   if (!SetupRootAppDirectory())
     return Status::CONFIG_ERROR;
@@ -139,11 +138,18 @@ Step::Status StepConfigure::process() {
 }
 
 Step::Status StepConfigure::precheck() {
+  SetupIsPreloadRequest();
+
   if (pkgmgr_->GetRequestType() != RequestType::ManifestDirectInstall &&
       pkgmgr_->GetRequestType() != RequestType::ManifestDirectUpdate) {
     if (getuid() == 0) {
-      LOG(ERROR) << "App-installer should not run with superuser!";
-      return Status::OPERATION_NOT_ALLOWED;
+      if (context_->is_preload_request.get()) {
+        LOG(INFO) << "Allowing installation from root user for"
+                     "preload request mode.";
+      } else {
+        LOG(ERROR) << "App-installer should not run with superuser!";
+        return Status::OPERATION_NOT_ALLOWED;
+      }
     }
   } else {
     LOG(INFO) << "Allowing installation from root user for"
