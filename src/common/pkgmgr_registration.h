@@ -135,7 +135,7 @@ bool QueryPrivilegesForPkgId(const std::string& pkg_id, uid_t uid,
  *
  * \return true if package is installed
  */
-bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode);
+bool IsPackageInstalled(const std::string& pkg_id, uid_t uid);
 
 }  // namespace common_installer
 
