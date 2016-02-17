@@ -505,7 +505,6 @@ bool StepParseManifest::FillApplicationIconPaths(application_x* app,
     // This must be fixed in whole app-installer modules, including wgt.
     // Current implementation is just for compatibility.
     icon->text = strdup(text.c_str());
-    icon->name = strdup(application_icon.path().c_str());
     if (application_icon.lang().empty())
       icon->lang = strdup(DEFAULT_LOCALE);
     else
@@ -569,7 +568,6 @@ bool StepParseManifest::FillImage(application_x* app,
   for (auto& app_image : image_list.images) {
     image_x* image =
         static_cast<image_x*>(calloc(1, sizeof(image_x)));
-    image->name = strdup(app_image.name().c_str());
     const std::string& lang = app_image.lang();
     if (!lang.empty())
       image->lang = strdup(lang.c_str());
