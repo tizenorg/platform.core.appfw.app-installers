@@ -20,7 +20,6 @@ namespace bs = boost::system;
 namespace common_installer {
 namespace configuration {
 
-const char kRpmPackageType[] = "rpm";
 const char kStrEmpty[] = "";
 
 StepConfigure::StepConfigure(InstallerContext* context, PkgMgrPtr pkgmgr)
@@ -85,7 +84,6 @@ Step::Status StepConfigure::process() {
       context_->unpacked_dir_path.set(package_directory);
       context_->pkg_path.set(package_directory);
       context_->xml_path.set(xml_path);
-      context_->pkg_type.set(kRpmPackageType);  // temporary fix as rpm
 
       // TODO(t.iwanek): setting privilege level here should be removed because
       // of the fact that many apps may not have PLATFORM level. User can
