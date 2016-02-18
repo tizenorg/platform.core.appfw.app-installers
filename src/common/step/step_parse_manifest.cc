@@ -164,10 +164,7 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
   manifest->version = strdup(pkg_info->version().c_str());
   manifest->installlocation = strdup(pkg_info->install_location().c_str());
   manifest->api_version = strdup(pkg_info->api_version().c_str());
-  if (context_->pkg_type.get().compare("rpm") == 0)
-    manifest->type = strdup("rpm");
-  else
-    manifest->type = strdup("tpk");
+  manifest->type = strdup("tpk");
   manifest->preload = strdup(pkg_info->preload().c_str());
 
   for (auto& pair : pkg_info->labels()) {
@@ -293,7 +290,7 @@ bool StepParseManifest::FillWidgetApplication(manifest_x* manifest) {
     widget_app->package = strdup(manifest->package);
     widget_app->support_disable = strdup(manifest->support_disable);
     manifest->application = g_list_append(manifest->application, widget_app);
-    if (strncmp(context_->pkg_type.get().c_str(), "rpm", strlen("rpm")) == 0)
+    if (bf::path(application.app_info.exec().c_str()).is_absolute())
       widget_app->exec = strdup(application.app_info.exec().c_str());
     else
       widget_app->exec = strdup((context_->root_application_path.get()
@@ -351,7 +348,7 @@ bool StepParseManifest::FillServiceApplication(manifest_x* manifest) {
     service_app->package = strdup(manifest->package);
     service_app->support_disable = strdup(manifest->support_disable);
     manifest->application = g_list_append(manifest->application, service_app);
-    if (strncmp(context_->pkg_type.get().c_str(), "rpm", strlen("rpm")) == 0)
+    if (bf::path(application.app_info.exec().c_str()).is_absolute())
       service_app->exec = strdup(application.app_info.exec().c_str());
     else
       service_app->exec = strdup((context_->root_application_path.get()
@@ -425,7 +422,7 @@ bool StepParseManifest::FillUIApplication(manifest_x* manifest) {
     ui_app->package = strdup(manifest->package);
     ui_app->support_disable = strdup(manifest->support_disable);
     manifest->application = g_list_append(manifest->application, ui_app);
-    if (strncmp(context_->pkg_type.get().c_str(), "rpm", strlen("rpm")) == 0)
+    if (bf::path(application.app_info.exec().c_str()).is_absolute())
       ui_app->exec = strdup(application.app_info.exec().c_str());
     else
       ui_app->exec = strdup((context_->root_application_path.get()
