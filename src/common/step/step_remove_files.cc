@@ -28,7 +28,6 @@ Step::Status StepRemoveFiles::precheck() {
     LOG(ERROR) << "pkg_path ("
                << context_->pkg_path.get()
                << ") path does not exist";
-  // TODO(p.sikorski) check context_->uid.get()
 
   return Step::Status::OK;
 }

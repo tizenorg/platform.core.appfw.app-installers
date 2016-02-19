@@ -45,11 +45,6 @@ class StepConfigure : public Step {
    */
   Status clean() override;
 
-  /**
-   * \brief empty method
-   *
-   * \return Status::OK
-   */
   Status undo() override { return Status::OK; }
 
   /**

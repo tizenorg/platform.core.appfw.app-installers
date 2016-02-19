@@ -30,12 +30,6 @@ class StepCopyTep : public Step {
    * \return Status::OK if success, Status::ERROR otherwise
    */
   Status process() override;
-
-  /**
-   * \brief empty method
-   *
-   * \return Status::OK
-   */
   Status clean() override { return Status::OK; }
 
   /**

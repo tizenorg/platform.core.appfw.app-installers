@@ -42,11 +42,6 @@ class StepBackupManifest : public Step {
    */
   Status undo() override;
 
-  /**
-   * \brief empty method
-   *
-   * \return Status::OK
-   */
   Status precheck() override;
 
   SCOPE_LOG_TAG(BackupManifest)

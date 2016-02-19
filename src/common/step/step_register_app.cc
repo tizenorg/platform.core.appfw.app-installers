@@ -25,7 +25,6 @@ Step::Status StepRegisterApplication::precheck() {
                << ") path does not exist";
     return Step::Status::MANIFEST_NOT_FOUND;
   }
-  // TODO(p.sikorski) check context_->uid.get()
 
   return Step::Status::OK;
 }

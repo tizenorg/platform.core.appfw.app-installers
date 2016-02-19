@@ -45,11 +45,6 @@ class StepBackupIcons : public Step {
    */
   Status undo() override;
 
-  /**
-   * \brief empty method
-   *
-   * \return Status::OK
-   */
   Status precheck() override { return Status::OK; }
 
  private:
