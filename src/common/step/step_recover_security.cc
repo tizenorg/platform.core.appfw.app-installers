@@ -29,8 +29,8 @@ Step::Status StepRecoverSecurity::RecoveryNew() {
     return Status::OK;
   std::string error_message;
   if (!UnregisterSecurityContextForManifest(
-      context_->pkgid.get(), context_->uid.get(),
-      context_->manifest_data.get(), &error_message)) {
+      context_->pkgid.get(), context_->uid.get(), context_->manifest_data.get(),
+      &error_message)) {
     LOG(ERROR) << "Unsuccessful install";
     if (!error_message.empty()) {
       LOG(ERROR) << "error_message: " << error_message;
@@ -48,7 +48,8 @@ Step::Status StepRecoverSecurity::RecoveryUpdate() {
   }
   std::string error_message;
   if (!RegisterSecurityContextForManifest(
-      context_->pkgid.get(), context_->pkg_path.get(), context_->uid.get(),
+      context_->pkgid.get(), context_->api_version.get(),
+      context_->pkg_path.get(), context_->uid.get(),
       context_->manifest_data.get(), &error_message)) {
     LOG(ERROR) << "Unsuccessful update";
     if (!error_message.empty()) {

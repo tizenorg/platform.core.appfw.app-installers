@@ -706,6 +706,7 @@ Step::Status StepParseManifest::process() {
           parser_->GetManifestData(app_keys::kManifestKey));
 
   context_->pkgid.set(info->package());
+  context_->api_version.set(info->api_version());
   context_->pkg_path.set(
       context_->root_application_path.get() / context_->pkgid.get());
 

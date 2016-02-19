@@ -194,6 +194,11 @@ class InstallerContext {
   Property<std::string> pkgid;
 
   /**
+   * \brief api-version of the package
+   */
+  Property<std::string> api_version;
+
+  /**
    * \brief package directory path containing app data
    */
   Property<boost::filesystem::path> pkg_path;
