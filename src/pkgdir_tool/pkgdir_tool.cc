@@ -8,6 +8,7 @@
 #include <boost/system/error_code.hpp>
 
 #include <manifest_parser/utils/logging.h>
+#include <vcore/Certificate.h>
 #include <pkgmgr-info.h>
 #include <pwd.h>
 #include <sys/types.h>
@@ -36,6 +37,8 @@ namespace ci = common_installer;
 
 namespace {
 
+typedef std::vector<std::tuple<std::string, std::string, std::string>> pkg_list;
+
 const std::vector<const char*> kEntries = {
   {"/"},
   {"cache/"},
@@ -51,27 +54,74 @@ bool ValidateTizenPackageId(const std::string& id) {
 }
 
 int PkgmgrListCallback(const pkgmgrinfo_pkginfo_h handle, void *user_data) {
-  auto pkgids = reinterpret_cast<std::vector<std::string>*>(user_data);
+  auto pkgs = reinterpret_cast<pkg_list*>(user_data);
   char* pkgid = nullptr;
   if (pkgmgrinfo_pkginfo_get_pkgid(handle, &pkgid) != PMINFO_R_OK) {
     return -1;
   }
-  pkgids->emplace_back(pkgid);
+  char* api_version;
+  if (pkgmgrinfo_pkginfo_get_api_version(handle, &api_version) != PMINFO_R_OK) {
+    return -1;
+  }
+  pkgmgrinfo_certinfo_h cert_handle;
+  if (pkgmgrinfo_pkginfo_create_certinfo(&cert_handle) != PMINFO_R_OK) {
+    return -1;
+  }
+  if (pkgmgrinfo_pkginfo_load_certinfo(pkgid, cert_handle, 0) != PMINFO_R_OK) {
+    pkgmgrinfo_pkginfo_destroy_certinfo(cert_handle);
+    return -1;
+  }
+  const char* author_cert;
+  if (pkgmgrinfo_pkginfo_get_cert_value(cert_handle, PMINFO_AUTHOR_SIGNER_CERT,
+      &author_cert) != PMINFO_R_OK) {
+    pkgmgrinfo_pkginfo_destroy_certinfo(cert_handle);
+    return -1;
+  }
+  if (author_cert) {
+    ValidationCore::Certificate cert(author_cert,
+        ValidationCore::Certificate::FORM_BASE64);
+    unsigned char* public_key;
+    size_t len;
+    cert.getPublicKeyDER(&public_key, &len);
+    pkgs->emplace_back(pkgid, api_version,
+        reinterpret_cast<const char*>(public_key));
+  } else {
+    pkgs->emplace_back(pkgid, std::string(), std::string());
+  }
+
+  pkgmgrinfo_pkginfo_destroy_certinfo(cert_handle);
+
   return 0;
 }
 
-std::vector<std::string> GetAllGlobalApps() {
-  std::vector<std::string> pkgids;
+pkg_list GetAllGlobalApps() {
+  pkg_list pkgs;
   if (pkgmgrinfo_pkginfo_get_usr_list(&PkgmgrListCallback,
-      &pkgids, tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) != PMINFO_R_OK) {
+      &pkgs, tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) != PMINFO_R_OK) {
     LOG(ERROR) << "Failed to query global application list";
     return {};
   }
-  return pkgids;
+  return pkgs;
+}
+
+pkg_list GetPkg(const std::string& pkgid) {
+  pkg_list pkgs;
+  pkgmgrinfo_pkginfo_h handle;
+  if (pkgmgrinfo_pkginfo_get_pkginfo(pkgid.c_str(), &handle) != PMINFO_R_OK) {
+    return {};
+  }
+  if (PkgmgrListCallback(handle, &pkgs) != 0) {
+    pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
+    return {};
+  }
+  pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
+  return pkgs;
 }
 
 bool SetPackageDirectorySmackRules(const bf::path& base_dir,
                                    const std::string& pkgid,
+                                   const std::string& author_id,
+                                   const std::string& api_version,
                                    uid_t uid) {
   if (!pkgid.empty()) {
     std::vector<std::string> privileges;
@@ -88,8 +138,9 @@ bool SetPackageDirectorySmackRules(const bf::path& base_dir,
     }
     std::string error_message;
     for (const auto& appid : appids) {
-      if (!common_installer::RegisterSecurityContext(appid, pkgid, base_dir,
-                                        uid, privileges, &error_message)) {
+      if (!common_installer::RegisterSecurityContext(appid, pkgid,
+          author_id, api_version, base_dir, uid, privileges,
+          &error_message)) {
         LOG(ERROR) << "Failed to register security context";
         if (!error_message.empty()) {
           LOG(ERROR) << "error_message: " << error_message;
@@ -124,6 +175,8 @@ bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
 }
 
 bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
+                       const std::string& author_id,
+                       const std::string& api_version,
                        uid_t uid, gid_t gid) {
   bf::path base_dir = app_dir / pkgid;
   if (bf::exists(base_dir)) {
@@ -151,13 +204,15 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
     }
   }
 
-  if (!SetPackageDirectorySmackRules(base_dir, pkgid, uid))
+  if (!SetPackageDirectorySmackRules(base_dir, pkgid, author_id, api_version,
+      uid))
     return false;
 
   return true;
 }
 
-bool CreatePerUserDirectories(const std::string& pkgid) {
+bool CreatePerUserDirectories(const std::string& pkgid,
+    const std::string& author_id, const std::string& api_version) {
   for (bf::directory_iterator iter("/home"); iter != bf::directory_iterator();
        ++iter) {
     if (!bf::is_directory(iter->path()))
@@ -174,7 +229,8 @@ bool CreatePerUserDirectories(const std::string& pkgid) {
     tzplatform_set_user(pwd->pw_uid);
     bf::path apps_rw(tzplatform_getenv(TZ_USER_APP));
     tzplatform_reset_user();
-    if (!CreateDirectories(apps_rw, pkgid, pwd->pw_uid, pwd->pw_gid)) {
+    if (!CreateDirectories(apps_rw, pkgid, author_id, api_version,
+        pwd->pw_uid, pwd->pw_gid)) {
       return false;
     }
   }
@@ -267,8 +323,9 @@ bool DeleteSkelDirectories(const std::string& pkgid) {
   return true;
 }
 
-bool PerformDirectoryCreation(const std::string& pkgid) {
-  if (!CreatePerUserDirectories(pkgid))
+bool PerformDirectoryCreation(const std::string& pkgid,
+    const std::string& author_id, const std::string& api_version) {
+  if (!CreatePerUserDirectories(pkgid, author_id, api_version))
     return false;
   if (!CreateSkelDirectories(pkgid))
     return false;
@@ -323,25 +380,26 @@ int main(int argc, char** argv) {
       return -1;
     }
   }
-  std::vector<std::string> pkgids;
+  pkg_list pkgs;
   if (allglobalpkgs) {
-    pkgids = GetAllGlobalApps();
+    pkgs = GetAllGlobalApps();
   } else {
-    pkgids.push_back(pkgid);
+    pkgs = GetPkg(pkgid);
   }
 
   assert(setuid(0) == 0);
 
   if (create_mode) {
-    for (auto& package_id : pkgids) {
-      LOG(DEBUG) << "Running for package id: " << package_id;
-      if (!PerformDirectoryCreation(package_id))
+    for (auto& p : pkgs) {
+      LOG(DEBUG) << "Running for package id: " << std::get<0>(p);
+      if (!PerformDirectoryCreation(std::get<0>(p), std::get<1>(p),
+          std::get<2>(p)))
         return -1;
     }
   } else if (delete_mode) {
-    for (auto& package_id : pkgids) {
-      LOG(DEBUG) << "Running for package id: " << package_id;
-      if (!PerformDirectoryDeletion(package_id))
+    for (auto& p : pkgs) {
+      LOG(DEBUG) << "Running for package id: " << std::get<0>(p);
+      if (!PerformDirectoryDeletion(std::get<0>(p)))
         return -1;
     }
   }

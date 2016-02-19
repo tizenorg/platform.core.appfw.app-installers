@@ -24,6 +24,8 @@ namespace common_installer {
  *
  * \param app_id id of given application
  * \param pkg_id id of given package
+ * \param author_id unique author id of given package
+ * \param api_version api-version of given package
  * \param path path of installed package
  * \param uid uid
  * \param privileges pointer to manifest structure
@@ -32,8 +34,10 @@ namespace common_installer {
  * \return true if success
  */
 bool RegisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id, const boost::filesystem::path& path, uid_t uid,
-    const std::vector<std::string>& privileges, std::string* error_message);
+    const std::string& pkg_id, const std::string& author_id,
+    const std::string& api_version, const boost::filesystem::path& path,
+    uid_t uid, const std::vector<std::string>& privileges,
+    std::string* error_message);
 
 /**
  * Adapter interface for external Security module.
@@ -60,13 +64,15 @@ bool UnregisterSecurityContext(const std::string& app_id,
  * \param pkg_id pkgid of given package
  * \param path path of installed package
  * \param uid uid
+ * \param cert_info pointer to certificate info
  * \param manifest pointer to manifest structure
  * \param error_message extra/detailed error message
  *
  * \return true if success
  */
 bool RegisterSecurityContextForManifest(const std::string& pkg_id,
-    const boost::filesystem::path& path, uid_t uid, manifest_x* manifest,
+    const boost::filesystem::path& path, uid_t uid,
+    common_installer::CertificateInfo* cert_info, manifest_x* manifest,
     std::string* error_message);
 
 /**

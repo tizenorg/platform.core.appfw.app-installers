@@ -72,6 +72,8 @@ class BackendData {
  */
 class CertificateInfo {
  public:
+  /** author_id (using public key from author certificate) */
+  Property<std::string> author_id;
   /** author_certificate */
   Property<ValidationCore::CertificatePtr> author_certificate;
   /** author_intermediate_certificate */
