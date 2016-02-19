@@ -79,6 +79,10 @@ void SetAuthorCertificate(ValidationCore::SignatureData data,
     common_installer::CertificateInfo* cert_info) {
   ValidationCore::CertificateList cert_list = data.getCertList();
   ValidationCore::CertificateList::iterator it = cert_list.begin();
+  unsigned char* public_key;
+  size_t len;
+  (*it)->getPublicKeyDER(&public_key, &len);
+  cert_info->author_id.set(reinterpret_cast<const char*>(public_key));
   cert_info->author_certificate.set(*it);
   // cert_list has at least 3 certificates: end-user, intermediate, root
   // currently pkgmgr can store only one intermediate cert, so just set
