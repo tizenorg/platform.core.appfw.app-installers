@@ -31,11 +31,6 @@ class StepCopy : public Step {
    */
   Status process() override;
 
-  /**
-   * \brief empty method
-   *
-   * \return Status::OK
-   */
   Status clean() override { return Status::OK; }
 
   /**

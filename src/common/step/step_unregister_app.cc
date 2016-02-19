@@ -38,8 +38,6 @@ Step::Status StepUnregisterApplication::precheck() {
     return Status::MANIFEST_NOT_FOUND;
   }
 
-  // TODO(p.sikorski) check context_->uid.get()
-
   return Step::Status::OK;
 }
 

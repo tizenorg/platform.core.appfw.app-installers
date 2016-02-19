@@ -30,18 +30,8 @@ class StepCheckSignature : public Step {
    */
   Status process() override;
 
-  /**
-   * \brief empty method
-   *
-   * \return Status::OK
-   */
   Status undo() override { return Status::OK; }
 
-  /**
-   * \brief empty method
-   *
-   * \return Status::OK
-   */
   Status clean() override { return Status::OK; }
 
   /**

@@ -69,9 +69,6 @@ Step::Status StepUnzip::precheck() {
     LOG(ERROR) << "root_application_path ("
                << context_->root_application_path.get()
                << ") path does not exist";
-    // TODO(p.sikorski) maybe it should be created (instead of returning error)
-    // but, if so, then it should be created in a separate step, eg.
-    // AppInstallerConfigure or something similar
     return Step::Status::INVALID_VALUE;
   }
 
