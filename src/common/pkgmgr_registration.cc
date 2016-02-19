@@ -24,11 +24,24 @@ bool RegisterAuthorCertificate(
   }
 
   const auto& cert = cert_info.author_certificate.get();
-
-  // TODO(t.iwanek): set other certificates if needed
-
   if (pkgmgr_installer_set_cert_value(handle, PM_SET_AUTHOR_SIGNER_CERT,
       const_cast<char*>(cert->getBase64().c_str())) < 0) {
+    pkgmgr_installer_destroy_certinfo_set_handle(handle);
+    LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
+    return false;
+  }
+
+  const auto& im_cert = cert_info.author_intermediate_certificate.get();
+  if (pkgmgr_installer_set_cert_value(handle, PM_SET_AUTHOR_INTERMEDIATE_CERT,
+      const_cast<char*>(im_cert->getBase64().c_str())) < 0) {
+    pkgmgr_installer_destroy_certinfo_set_handle(handle);
+    LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
+    return false;
+  }
+
+  const auto& root_cert = cert_info.author_root_certificate.get();
+  if (pkgmgr_installer_set_cert_value(handle, PM_SET_AUTHOR_ROOT_CERT,
+      const_cast<char*>(root_cert->getBase64().c_str())) < 0) {
     pkgmgr_installer_destroy_certinfo_set_handle(handle);
     LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
     return false;

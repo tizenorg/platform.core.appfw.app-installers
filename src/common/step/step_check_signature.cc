@@ -10,6 +10,7 @@
 #include <glib.h>
 #include <privilege_manager.h>
 
+#include <vcore/Certificate.h>
 #include <vcore/SignatureFinder.h>
 #include <vcore/SignatureValidator.h>
 #include <vcore/Error.h>
@@ -108,8 +109,17 @@ common_installer::Step::Status ValidateSignatureFile(
           *level = CertStoreIdToPrivilegeLevel(data.getVisibilityLevel());
         }
       } else {
-        // set author certificate to be saved in pkgmgr
-        cert_info->author_certificate.set(data.getEndEntityCertificatePtr());
+        // set author certificates to be saved in pkgmgr
+        ValidationCore::CertificateList cert_list = data.getCertList();
+        ValidationCore::CertificateList::iterator it = cert_list.begin();
+        cert_info->author_certificate.set(*it);
+        // cert_list has at least 3 certificates: end-user, intermediate, root
+        // currently pkgmgr can store only one intermediate cert, so just set
+        // first intermediate cert here.
+        ++it;
+        cert_info->author_intermediate_certificate.set(*it);
+
+        cert_info->author_root_certificate.set(data.getRootCaCertificatePtr());
       }
       break;
     default:
