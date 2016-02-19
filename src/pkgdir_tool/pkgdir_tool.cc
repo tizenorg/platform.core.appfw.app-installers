@@ -88,8 +88,10 @@ bool SetPackageDirectorySmackRules(const bf::path& base_dir,
     }
     std::string error_message;
     for (const auto& appid : appids) {
-      if (!common_installer::RegisterSecurityContext(appid, pkgid, base_dir,
-                                        uid, privileges, &error_message)) {
+      // TODO(s89.jang): set api_version, author_id for trusted directory
+      if (!common_installer::RegisterSecurityContext(appid, pkgid,
+          std::string(), std::string(), base_dir, uid, privileges,
+          &error_message)) {
         LOG(ERROR) << "Failed to register security context";
         if (!error_message.empty()) {
           LOG(ERROR) << "error_message: " << error_message;
