@@ -29,12 +29,14 @@ const std::vector<std::pair<const char*,
   {"lib/", SECURITY_MANAGER_PATH_RO},
   {"res/", SECURITY_MANAGER_PATH_RO},
   {"shared/", SECURITY_MANAGER_PATH_PUBLIC_RO},
+  {"shared/data", SECURITY_MANAGER_PATH_OWNER_RW_OTHER_RO},
+  {"shared/trusted", SECURITY_MANAGER_PATH_TRUSTED_RW},
   {"tmp/", SECURITY_MANAGER_PATH_RW}
 };
 
 bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
-    const boost::filesystem::path& path, uid_t uid,
-    const std::vector<std::string>& privileges,
+    const std::string& api_version, const boost::filesystem::path& path,
+    uid_t uid, const std::vector<std::string>& privileges,
     app_inst_req* req, std::string* error_message) {
   if (app_id.empty() || pkg_id.empty()) {
     LOG(ERROR) << "Appid or pkgid is empty. Both values must be set";
@@ -67,6 +69,18 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     return false;
   }
 
+  if (!api_version.empty()) {
+    error = security_manager_app_inst_req_set_target_version(req,
+        api_version.c_str());
+    if (error != SECURITY_MANAGER_SUCCESS) {
+      std::string errnum = boost::str(boost::format("%d") % error);
+      *error_message =
+          security_manager_strerror(static_cast<lib_retcode>(error));
+      *error_message += ":<" + errnum + ">";
+      return false;
+    }
+  }
+
   if (!path.empty()) {
     for (auto& policy : kSecurityPolicies) {
       bf::path subpath = path / policy.first;
@@ -95,7 +109,8 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
 namespace common_installer {
 
 bool RegisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id, const boost::filesystem::path& path, uid_t uid,
+    const std::string& pkg_id, const std::string& api_version,
+    const boost::filesystem::path& path, uid_t uid,
     const std::vector<std::string>& privileges, std::string* error_message) {
   app_inst_req* req;
 
@@ -110,11 +125,11 @@ bool RegisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, path, uid, privileges,
-                                                     req, error_message)) {
-      LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
-      security_manager_app_inst_req_free(req);
-      return false;
+  if (!PrepareRequest(app_id, pkg_id, api_version, path, uid, privileges,
+      req, error_message)) {
+    LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
+    security_manager_app_inst_req_free(req);
+    return false;
   }
 
   error = security_manager_app_install(req);
@@ -146,8 +161,8 @@ bool UnregisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, bf::path(), uid, {},
-                                                   req, error_message)) {
+  if (!PrepareRequest(app_id, pkg_id, std::string(), bf::path(), uid, {},
+      req, error_message)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
@@ -169,8 +184,8 @@ bool UnregisterSecurityContext(const std::string& app_id,
 }
 
 bool RegisterSecurityContextForManifest(
-    const std::string& pkg_id, const boost::filesystem::path& path,
-    uid_t uid, manifest_x* manifest, std::string* error_message) {
+    const std::string& pkg_id, const boost::filesystem::path& path, uid_t uid,
+    manifest_x* manifest, std::string* error_message) {
   std::vector<std::string> priv_vec;
   for (const char* priv : GListRange<char*>(manifest->privileges)) {
     priv_vec.emplace_back(priv);
@@ -179,7 +194,7 @@ bool RegisterSecurityContextForManifest(
     if (!app->appid) {
       return false;
     }
-    if (!RegisterSecurityContext(app->appid, pkg_id,
+    if (!RegisterSecurityContext(app->appid, pkg_id, manifest->api_version,
         path, uid, priv_vec, error_message)) {
       return false;
     }
@@ -188,7 +203,7 @@ bool RegisterSecurityContextForManifest(
 }
 
 bool UnregisterSecurityContextForManifest(const std::string& pkg_id,
-                uid_t uid, manifest_x* manifest, std::string* error_message) {
+    uid_t uid, manifest_x* manifest, std::string* error_message) {
   for (application_x* app : GListRange<application_x*>(manifest->application)) {
     if (!app->appid) {
       return false;

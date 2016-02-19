@@ -24,6 +24,7 @@ namespace common_installer {
  *
  * \param app_id id of given application
  * \param pkg_id id of given package
+ * \param api_version api-version of given package
  * \param path path of installed package
  * \param uid uid
  * \param privileges pointer to manifest structure
@@ -32,7 +33,8 @@ namespace common_installer {
  * \return true if success
  */
 bool RegisterSecurityContext(const std::string& app_id,
-    const std::string& pkg_id, const boost::filesystem::path& path, uid_t uid,
+    const std::string& pkg_id, const std::string& api_version,
+    const boost::filesystem::path& path, uid_t uid,
     const std::vector<std::string>& privileges, std::string* error_message);
 
 /**
