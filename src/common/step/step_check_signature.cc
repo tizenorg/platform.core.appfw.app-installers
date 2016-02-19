@@ -67,6 +67,37 @@ privilege_manager_visibility_e PrivilegeLevelToVisibility(
   }
 }
 
+void SetPrivilegeLevel(ValidationCore::SignatureData data,
+    common_installer::PrivilegeLevel* level) {
+  // already set
+  if (*level != common_installer::PrivilegeLevel::UNTRUSTED)
+    return;
+  *level = CertStoreIdToPrivilegeLevel(data.getVisibilityLevel());
+}
+
+void SetAuthorCertificate(ValidationCore::SignatureData data,
+    common_installer::CertificateInfo* cert_info) {
+  ValidationCore::CertificateList cert_list = data.getCertList();
+  ValidationCore::CertificateList::iterator it = cert_list.begin();
+  cert_info->author_certificate.set(*it);
+  // cert_list has at least 3 certificates: end-user, intermediate, root
+  // currently pkgmgr can store only one intermediate cert, so just set
+  // first intermediate cert here.
+  ++it;
+  cert_info->author_intermediate_certificate.set(*it);
+  cert_info->author_root_certificate.set(data.getRootCaCertificatePtr());
+}
+
+void SetDistributorCertificate(ValidationCore::SignatureData data,
+    common_installer::CertificateInfo* cert_info) {
+  ValidationCore::CertificateList cert_list = data.getCertList();
+  ValidationCore::CertificateList::iterator it = cert_list.begin();
+  cert_info->distributor_certificate.set(*it);
+  ++it;
+  cert_info->distributor_intermediate_certificate.set(*it);
+  cert_info->distributor_root_certificate.set(data.getRootCaCertificatePtr());
+}
+
 common_installer::Step::Status ValidateSignatureFile(
     const bf::path& base_path,
     const ValidationCore::SignatureFileInfo& file_info,
@@ -101,26 +132,16 @@ common_installer::Step::Status ValidateSignatureFile(
         LOG(WARNING) << "Signature disregarded: " << path;
         break;
     case ValidationCore::E_SIG_NONE:
-      if (!data.isAuthorSignature()) {
+      if (data.isAuthorSignature()) {
+        // set author certificates to be saved in pkgmgr
+        SetAuthorCertificate(data, cert_info);
+      } else if (file_info.getFileNumber() == 1) {
         // First distributor signature sets the privilege level
         // (wrt spec. 0620.)
-        if (file_info.getFileNumber() == 1 &&
-            *level == common_installer::PrivilegeLevel::UNTRUSTED) {
-          *level = CertStoreIdToPrivilegeLevel(data.getVisibilityLevel());
-        }
-      } else {
-        // set author certificates to be saved in pkgmgr
-        ValidationCore::CertificateList cert_list = data.getCertList();
-        ValidationCore::CertificateList::iterator it = cert_list.begin();
-        cert_info->author_certificate.set(*it);
-        // cert_list has at least 3 certificates: end-user, intermediate, root
-        // currently pkgmgr can store only one intermediate cert, so just set
-        // first intermediate cert here.
-        ++it;
-        cert_info->author_intermediate_certificate.set(*it);
-
-        cert_info->author_root_certificate.set(data.getRootCaCertificatePtr());
+        SetPrivilegeLevel(data, level);
+        SetDistributorCertificate(data, cert_info);
       }
+      // TODO(s89.jang): Set distributor2 certificate
       break;
     default:
       LOG(ERROR) << "signature validation check failed : "

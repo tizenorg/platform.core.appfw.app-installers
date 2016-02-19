@@ -78,6 +78,12 @@ class CertificateInfo {
   Property<ValidationCore::CertificatePtr> author_intermediate_certificate;
   /** author_root_certificate */
   Property<ValidationCore::CertificatePtr> author_root_certificate;
+  /** distributor_certificate */
+  Property<ValidationCore::CertificatePtr> distributor_certificate;
+  /** distributor_intermediate_certificate */
+  Property<ValidationCore::CertificatePtr> distributor_intermediate_certificate;
+  /** distributor_root_certificate */
+  Property<ValidationCore::CertificatePtr> distributor_root_certificate;
 };
 
 /**

@@ -14,7 +14,7 @@ namespace bf = boost::filesystem;
 
 namespace {
 
-bool RegisterAuthorCertificate(
+bool RegisterCertificate(
     const common_installer::CertificateInfo& cert_info,
     const std::string& pkgid, uid_t uid) {
   pkgmgr_instcertinfo_h handle;
@@ -23,25 +23,51 @@ bool RegisterAuthorCertificate(
     return false;
   }
 
-  const auto& cert = cert_info.author_certificate.get();
+  const auto& author_cert = cert_info.author_certificate.get();
   if (pkgmgr_installer_set_cert_value(handle, PM_SET_AUTHOR_SIGNER_CERT,
-      const_cast<char*>(cert->getBase64().c_str())) < 0) {
+      const_cast<char*>(author_cert->getBase64().c_str())) < 0) {
     pkgmgr_installer_destroy_certinfo_set_handle(handle);
     LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
     return false;
   }
 
-  const auto& im_cert = cert_info.author_intermediate_certificate.get();
+  const auto& author_im_cert = cert_info.author_intermediate_certificate.get();
   if (pkgmgr_installer_set_cert_value(handle, PM_SET_AUTHOR_INTERMEDIATE_CERT,
-      const_cast<char*>(im_cert->getBase64().c_str())) < 0) {
+      const_cast<char*>(author_im_cert->getBase64().c_str())) < 0) {
     pkgmgr_installer_destroy_certinfo_set_handle(handle);
     LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
     return false;
   }
 
-  const auto& root_cert = cert_info.author_root_certificate.get();
+  const auto& author_root_cert = cert_info.author_root_certificate.get();
   if (pkgmgr_installer_set_cert_value(handle, PM_SET_AUTHOR_ROOT_CERT,
-      const_cast<char*>(root_cert->getBase64().c_str())) < 0) {
+      const_cast<char*>(author_root_cert->getBase64().c_str())) < 0) {
+    pkgmgr_installer_destroy_certinfo_set_handle(handle);
+    LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
+    return false;
+  }
+
+  const auto& dist_cert = cert_info.distributor_certificate.get();
+  if (pkgmgr_installer_set_cert_value(handle, PM_SET_DISTRIBUTOR_SIGNER_CERT,
+      const_cast<char*>(dist_cert->getBase64().c_str())) < 0) {
+    pkgmgr_installer_destroy_certinfo_set_handle(handle);
+    LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
+    return false;
+  }
+
+  const auto& dist_im_cert =
+      cert_info.distributor_intermediate_certificate.get();
+  if (pkgmgr_installer_set_cert_value(handle,
+      PM_SET_DISTRIBUTOR_INTERMEDIATE_CERT,
+      const_cast<char*>(dist_im_cert->getBase64().c_str())) < 0) {
+    pkgmgr_installer_destroy_certinfo_set_handle(handle);
+    LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
+    return false;
+  }
+
+  const auto& dist_root_cert = cert_info.distributor_root_certificate.get();
+  if (pkgmgr_installer_set_cert_value(handle, PM_SET_DISTRIBUTOR_ROOT_CERT,
+      const_cast<char*>(dist_root_cert->getBase64().c_str())) < 0) {
     pkgmgr_installer_destroy_certinfo_set_handle(handle);
     LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
     return false;
@@ -131,7 +157,7 @@ bool RegisterAppInPkgmgr(manifest_x* manifest,
   }
 
   if (!!cert_info.author_certificate.get()) {
-    if (!RegisterAuthorCertificate(cert_info, pkgid, uid)) {
+    if (!RegisterCertificate(cert_info, pkgid, uid)) {
       LOG(ERROR) << "Failed to register author certificate";
       return false;
     }
@@ -177,7 +203,7 @@ bool UpgradeAppInPkgmgr(manifest_x* manifest,
 
   (void) pkgmgr_installer_delete_certinfo(pkgid.c_str());
   if (!!cert_info.author_certificate.get()) {
-    if (!RegisterAuthorCertificate(cert_info, pkgid, uid)) {
+    if (!RegisterCertificate(cert_info, pkgid, uid)) {
       return false;
     }
   }
