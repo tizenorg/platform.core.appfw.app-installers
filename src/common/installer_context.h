@@ -74,6 +74,10 @@ class CertificateInfo {
  public:
   /** author_certificate */
   Property<ValidationCore::CertificatePtr> author_certificate;
+  /** author_intermediate_certificate */
+  Property<ValidationCore::CertificatePtr> author_intermediate_certificate;
+  /** author_root_certificate */
+  Property<ValidationCore::CertificatePtr> author_root_certificate;
 };
 
 /**
