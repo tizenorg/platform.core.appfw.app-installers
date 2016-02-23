@@ -164,8 +164,18 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
   manifest->version = strdup(pkg_info->version().c_str());
   manifest->installlocation = strdup(pkg_info->install_location().c_str());
   manifest->api_version = strdup(pkg_info->api_version().c_str());
-  manifest->type = strdup("tpk");
   manifest->preload = strdup(pkg_info->preload().c_str());
+
+  if (pkg_info->type().empty()) {
+    common_installer::RequestType req_type = context_->request_type.get();
+    if (req_type == RequestType::ManifestDirectInstall ||
+        req_type == RequestType::ManifestDirectUpdate)
+      manifest->type = strdup("rpm");
+    else
+      manifest->type = strdup("tpk");
+  } else {
+    manifest->type = strdup(pkg_info->type().c_str());
+  }
 
   for (auto& pair : pkg_info->labels()) {
     label_x* label = reinterpret_cast<label_x*>(calloc(1, sizeof(label_x)));
