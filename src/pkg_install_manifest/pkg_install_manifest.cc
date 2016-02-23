@@ -72,8 +72,8 @@ int main(int argc, char** argv) {
     return 1;
   }
   std::string type = package_info->type();
-  if (type.empty())
-    type = "tpk";
+  if (pkg_type.empty())
+    backend_type = "tpk";
 
   return InstallManifestOffline(package_info->package(), type,
       package_info->preload());
