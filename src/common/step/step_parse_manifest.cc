@@ -599,6 +599,8 @@ bool StepParseManifest::FillSplashScreen(application_x* app,
           splash_screen.indicatordisplay().c_str());
     else
       splashscreen->indicatordisplay = strdup("true");
+    if (!splash_screen.operation().empty())
+      splashscreen->operation = strdup(splash_screen.operation().c_str());
     app->splashscreens = g_list_append(app->splashscreens, splashscreen);
   }
   return true;
