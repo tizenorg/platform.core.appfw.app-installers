@@ -26,10 +26,10 @@ namespace {
 const char kBackendDirectoryPath[] = "/etc/package-manager/backend/";
 
 int InstallManifestOffline(const std::string& pkgid,
-                           const std::string& type,
+                           const std::string& backend_type,
                            const std::string& preload) {
   bf::path backend_path(kBackendDirectoryPath);
-  backend_path /= type;
+  backend_path /= backend_type;
   ci::Subprocess backend(backend_path.string());
   if (preload == "true")
     backend.Run("-y", pkgid.c_str(), "--preload");
@@ -71,10 +71,13 @@ int main(int argc, char** argv) {
     LOG(ERROR) << "Failed to get package info";
     return 1;
   }
-  std::string type = package_info->type();
-  if (type.empty())
-    type = "tpk";
+  std::string pkg_type = package_info->type();
+  std::string backend_type;
+  if (pkg_type.empty() || pkg_type.compare("rpm") == 0)
+    backend_type = "tpk";
+  else
+    backend_type = pkg_type;
 
-  return InstallManifestOffline(package_info->package(), type,
+  return InstallManifestOffline(package_info->package(), backend_type,
       package_info->preload());
 }
