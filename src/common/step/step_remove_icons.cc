@@ -30,7 +30,8 @@ Step::Status StepRemoveIcons::precheck() {
 }
 
 Step::Status StepRemoveIcons::process() {
-  for (auto iter = bf::directory_iterator(getIconPath(context_->uid.get()));
+  for (auto iter = bf::directory_iterator(getIconPath(context_->uid.get(),
+          context_->is_preload_request.get()));
       iter != bf::directory_iterator(); ++iter) {
     if (!bf::is_regular_file(iter->path()))
       continue;

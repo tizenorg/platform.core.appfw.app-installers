@@ -23,7 +23,8 @@ namespace backup {
 
 Step::Status StepBackupIcons::process() {
   // gather icon info
-  for (auto iter = bf::directory_iterator(getIconPath(context_->uid.get()));
+  for (auto iter = bf::directory_iterator(getIconPath(context_->uid.get(),
+          context_->is_preload_request.get()));
       iter != bf::directory_iterator(); ++iter) {
     if (!bf::is_regular_file(iter->path()))
       continue;

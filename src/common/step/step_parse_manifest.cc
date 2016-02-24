@@ -93,7 +93,9 @@ bool StepParseManifest::LocateConfigFile() {
       break;
     }
     case ManifestLocation::INSTALLED: {
-      bf::path xml_path = bf::path(getUserManifestPath(context_->uid.get()))
+      bf::path xml_path =
+          bf::path(getUserManifestPath(context_->uid.get(),
+              context_->is_preload_request.get()))
           / bf::path(context_->pkgid.get());
       xml_path += ".xml";
       context_->xml_path.set(xml_path);
