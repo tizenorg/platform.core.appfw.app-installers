@@ -52,7 +52,9 @@ Step::Status StepRecoverApplication::RecoveryUpdate() {
 bool StepRecoverApplication::SetXmlPaths() {
   if (context_->pkgid.get().empty())
     return false;
-  bf::path xml_path = bf::path(getUserManifestPath(context_->uid.get()))
+  bf::path xml_path =
+      bf::path(getUserManifestPath(context_->uid.get(),
+          context_->is_preload_request.get()))
       / context_->pkgid.get();
   xml_path += ".xml";
   context_->xml_path.set(xml_path);

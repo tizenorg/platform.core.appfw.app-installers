@@ -14,6 +14,7 @@ RequestMode GetRequestMode() {
       RequestMode::GLOBAL : RequestMode::USER;
 }
 
+// Now, preload app is always installed RO location.
 const char *GetRootAppPath(bool is_preload) {
   return GetRequestMode() == RequestMode::USER ?
       tzplatform_getenv(TZ_USER_APP) : is_preload ?

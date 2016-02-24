@@ -78,7 +78,9 @@ Step::Status StepConfigure::process() {
       context_->pkgid.set(pkgmgr_->GetRequestInfo());
       bf::path package_directory =
           context_->root_application_path.get() / context_->pkgid.get();
-      bf::path xml_path = bf::path(getUserManifestPath(context_->uid.get()))
+      bf::path xml_path =
+          bf::path(getUserManifestPath(context_->uid.get(),
+              context_->is_preload_request.get()))
           / bf::path(context_->pkgid.get());
       xml_path += ".xml";
       context_->unpacked_dir_path.set(package_directory);
