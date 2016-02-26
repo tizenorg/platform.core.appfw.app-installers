@@ -70,11 +70,8 @@ make %{?_smp_mflags}
 %make_install
 
 %post
-ln -sf %{_bindir}/pkgdir-tool %{_bindir}/pkgdir_maker
 
 %postun
-/sbin/ldconfig
-[ $1 == 0 ] && rm %{_bindir}/pkgdir_maker
 
 %files
 %defattr(-,root,root)
