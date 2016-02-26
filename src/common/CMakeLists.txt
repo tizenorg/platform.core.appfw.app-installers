@@ -57,6 +57,7 @@ SET(SRCS
   step/step_update_security.cc
   step/step_update_tep.cc
   step/step_remove_manifest.cc
+  utils/base64.cc
   utils/dynamic_lib_handle.cc
   utils/file_util.cc
   utils/subprocess.cc

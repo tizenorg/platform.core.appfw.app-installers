@@ -26,6 +26,7 @@
 
 #include "common/security_registration.h"
 #include "common/pkgmgr_registration.h"
+#include "common/utils/base64.h"
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
 
@@ -85,8 +86,9 @@ int PkgmgrListCallback(const pkgmgrinfo_pkginfo_h handle, void *user_data) {
     unsigned char* public_key;
     size_t len;
     cert.getPublicKeyDER(&public_key, &len);
-    pkgs->emplace_back(pkgid, api_version,
-        reinterpret_cast<const char*>(public_key));
+    std::string author_id =
+        ci::EncodeBase64(reinterpret_cast<const char*>(public_key));
+    pkgs->emplace_back(pkgid, api_version, author_id);
   } else {
     pkgs->emplace_back(pkgid, std::string(), std::string());
   }
