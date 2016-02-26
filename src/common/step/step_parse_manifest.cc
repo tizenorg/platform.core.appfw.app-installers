@@ -215,12 +215,10 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
 bool StepParseManifest::FillAuthorInfo(manifest_x* manifest) {
   std::shared_ptr<const tpk::parse::AuthorInfo> author_info =
       std::static_pointer_cast<const tpk::parse::AuthorInfo>(
-          parser_->GetManifestData(app_keys::kAuthorKey));
+          parser_->GetManifestData(tpk::parse::AuthorInfo::Key()));
 
-  if (!author_info) {
-    LOG(ERROR) << "Author data has not been found.";
-    return false;
-  }
+  if (!author_info)
+    return true;
 
   author_x* author = reinterpret_cast<author_x*>(calloc(1, sizeof(author_x)));
   author->text = strdup(author_info->name().c_str());
@@ -690,6 +688,8 @@ bool StepParseManifest::FillManifestX(manifest_x* manifest) {
   if (!FillWidgetApplication(manifest))
     return false;
   if (!FillPrivileges(manifest))
+    return false;
+  if (!FillAuthorInfo(manifest))
     return false;
   if (!FillAccounts())
     return false;
