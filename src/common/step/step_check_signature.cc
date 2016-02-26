@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <string>
 
+#include "common/utils/base64.h"
 #include "common/utils/glist_range.h"
 #include "common/pkgmgr_registration.h"
 
@@ -82,7 +83,9 @@ void SetAuthorCertificate(ValidationCore::SignatureData data,
   unsigned char* public_key;
   size_t len;
   (*it)->getPublicKeyDER(&public_key, &len);
-  cert_info->author_id.set(reinterpret_cast<const char*>(public_key));
+  std::string author_id =
+      ci::EncodeBase64(reinterpret_cast<const char*>(public_key));
+  cert_info->author_id.set(author_id);
   cert_info->author_certificate.set(*it);
   // cert_list has at least 3 certificates: end-user, intermediate, root
   // currently pkgmgr can store only one intermediate cert, so just set
