@@ -11,6 +11,7 @@
 #include <vcore/Certificate.h>
 #include <pkgmgr-info.h>
 #include <pwd.h>
+#include <grp.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <tzplatform_config.h>
@@ -228,6 +229,11 @@ bool CreatePerUserDirectories(const std::string& pkgid,
       LOG(WARNING) << "Failed to get user for home directory: " << user;
       continue;
     }
+
+    struct group* gr = getgrgid(pwd->pw_gid);  // NOLINT
+    if (strcmp(gr->gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
+      continue;
+
     LOG(DEBUG) << "Creating directories for uid: " << pwd->pw_uid << ", gid: "
                << pwd->pw_gid << ", home: " << home_path;
     tzplatform_set_user(pwd->pw_uid);
@@ -303,6 +309,10 @@ bool DeletePerUserDirectories(const std::string& pkgid) {
       LOG(WARNING) << "Failed to get user for home directory: " << user;
       continue;
     }
+
+    struct group* gr = getgrgid(pwd->pw_gid);  // NOLINT
+    if (strcmp(gr->gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
+      continue;
 
     if (ci::IsPackageInstalled(pkgid, pwd->pw_uid)) continue;
 
