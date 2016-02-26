@@ -12,7 +12,7 @@
 
 namespace {
 const char kDataLocation[] = "data";
-const char kSharedLocation[] = "shared";
+const char kSharedResLocation[] = "shared";
 }  // namespace
 
 namespace bf = boost::filesystem;
@@ -37,7 +37,7 @@ Step::Status StepRecoverStorageDirectories::RecoveryUpdate() {
         context_->pkg_path.get());
     if (bf::exists(backup_path)) {
       MoveAppStorage(context_->pkg_path.get(), backup_path, kDataLocation);
-      MoveAppStorage(context_->pkg_path.get(), backup_path, kSharedLocation);
+      MoveAppStorage(context_->pkg_path.get(), backup_path, kSharedResLocation);
     }
   }
   return Status::OK;
