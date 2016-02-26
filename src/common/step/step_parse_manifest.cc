@@ -227,22 +227,22 @@ bool StepParseManifest::FillAuthorInfo(manifest_x* manifest) {
   return true;
 }
 
-bool StepParseManifest::FillDescription(manifest_x* manifest) {
-  std::shared_ptr<const tpk::parse::DescriptionInfo> description_info =
-      std::static_pointer_cast<const tpk::parse::DescriptionInfo>(
-          parser_->GetManifestData(app_keys::kDescriptionKey));
+bool StepParseManifest::FillDescriptionInfo(manifest_x* manifest) {
+  std::shared_ptr<const tpk::parse::DescriptionInfoList> description_info =
+      std::static_pointer_cast<const tpk::parse::DescriptionInfoList>(
+          parser_->GetManifestData(tpk::parse::DescriptionInfoList::Key()));
 
-  if (!description_info) {
-    LOG(ERROR) << "Description data has not been found.";
-    return false;
+  if (!description_info)
+    return true;
+
+  for (auto& desc : description_info->descriptions) {
+    description_x* description = reinterpret_cast<description_x*>
+        (calloc(1, sizeof(description_x)));
+    description->text = strdup(desc.description().c_str());
+    description->lang = !desc.xml_lang().empty() ?
+        strdup(desc.xml_lang().c_str()) : strdup(DEFAULT_LOCALE);
+    manifest->description = g_list_append(manifest->description, description);
   }
-
-  description_x* description = reinterpret_cast<description_x*>
-      (calloc(1, sizeof(description_x)));
-  description->text = strdup(description_info->description().c_str());
-  description->lang = !description_info->xml_lang().empty() ?
-      strdup(description_info->xml_lang().c_str()) : strdup(DEFAULT_LOCALE);
-  manifest->description = g_list_append(manifest->description, description);
   return true;
 }
 
@@ -686,6 +686,8 @@ bool StepParseManifest::FillManifestX(manifest_x* manifest) {
   if (!FillPrivileges(manifest))
     return false;
   if (!FillAuthorInfo(manifest))
+    return false;
+  if (!FillDescriptionInfo(manifest))
     return false;
   if (!FillAccounts())
     return false;
