@@ -19,7 +19,7 @@ namespace {
 
 const char kCache[] = "cache";
 const char kDataLocation[] = "data";
-const char kSharedLocation[] = "shared";
+const char kSharedResLocation[] = "shared";
 
 }  // namespace
 
@@ -61,7 +61,7 @@ common_installer::Step::Status StepCopyStorageDirectories::process() {
 
   if (!MoveAppStorage(backup_path_,
                       context_->pkg_path.get(),
-                      kSharedLocation, true)) {
+                      kSharedResLocation, true)) {
     LOG(ERROR) << "Failed to restore shared directory for widget in update";
     return Status::APP_DIR_ERROR;
   }
@@ -83,7 +83,7 @@ common_installer::Step::Status StepCopyStorageDirectories::undo() {
 
   if (!MoveAppStorage(context_->pkg_path.get(),
                       backup_path_,
-                      kSharedLocation)) {
+                      kSharedResLocation)) {
     LOG(ERROR) << "Failed to restore shared directory for package in update";
     ret = Status::APP_DIR_ERROR;
   }
