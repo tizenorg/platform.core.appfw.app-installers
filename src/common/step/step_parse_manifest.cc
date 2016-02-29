@@ -17,6 +17,7 @@
 #include <tpk_manifest_handlers/service_application_handler.h>
 #include <tpk_manifest_handlers/shortcut_handler.h>
 #include <tpk_manifest_handlers/ui_application_handler.h>
+#include <tpk_manifest_handlers/watch_application_handler.h>
 #include <tpk_manifest_handlers/widget_application_handler.h>
 
 #include <chrono>
@@ -461,6 +462,60 @@ bool StepParseManifest::FillUIApplication(manifest_x* manifest) {
     if (!FillBackgroundCategoryInfo(ui_app, application.background_category))
       return false;
     if (!FillSplashScreen(ui_app, application.app_splashscreens))
+      return false;
+  }
+  return true;
+}
+
+bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
+  auto watch_application_list =
+        std::static_pointer_cast<const tpk::parse::WatchApplicationInfoList>(
+            parser_->GetManifestData(app_keys::kWatchApplicationKey));
+  if (!watch_application_list)
+    return true;
+
+  manifest_x* manifest = context_->manifest_data.get();
+  manifest->application = g_list_append(manifest->application, watch_app);
+
+  for (const auto& watch_application : watch_application_list->items) {
+    application_x* watch_app =
+             static_cast<application_x*>(calloc(1, sizeof(application_x)));
+    watch_app->appid = strdup(watch_application.app_info.appid().c_str());
+
+    if (bf::path(watch_application.app_info.exec().c_str()).is_absolute())
+      watch_app->exec = strdup(watch_application.app_info.exec().c_str());
+    else
+      watch_app->exec = strdup(
+          (context_->root_application_path.get()
+                               / manifest->package / "bin" /
+                               watch_application.app_info.exec()).c_str());
+    watch_app->nodisplay = strdup("false");
+    watch_app->multiple = strdup("false");
+    watch_app->taskmanage = strdup("true");
+    watch_app->enabled = strdup("true");
+    watch_app->hwacceleration = strdup("default");
+    watch_app->screenreader = strdup("use-system-setting");
+    watch_app->mainapp = strdup("false");
+    watch_app->recentimage = strdup("false");
+    watch_app->launchcondition = strdup("false");
+    watch_app->indicatordisplay = strdup("true");
+    watch_app->effectimage_type = strdup("image");
+    watch_app->guestmode_visibility = strdup("true");
+    watch_app->permission_type = strdup("normal");
+    watch_app->component_type = strdup("watchapp");
+    watch_app->preload = strdup("false");
+    watch_app->submode = strdup("false");
+    watch_app->process_pool = strdup("false");
+    watch_app->autorestart = strdup("false");
+    watch_app->onboot = strdup("false");
+    watch_app->support_disable = strdup(manifest->support_disable);
+    watch_app->ui_gadget = strdup("false");
+    watch_app->launch_mode = strdup("single");
+    watch_app->ambient_support =
+        strdup(watch_application.app_info.ambient_support().c_str());
+    if (!FillLabel(watch_app, watch_application.label))
+      return false;
+    if (!FillImage(watch_app, watch_application.app_images))
       return false;
   }
   return true;
