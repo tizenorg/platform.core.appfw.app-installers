@@ -69,6 +69,8 @@ class StepParseManifest : public common_installer::Step {
   bool FillWidgetApplication(manifest_x* manifest);
   bool FillServiceApplication(manifest_x* manifest);
   bool FillUIApplication(manifest_x* manifest);
+  bool FillWatchApplication(manifest_x* manifest);
+
   template <typename T>
       bool FillAppControl(application_x* manifest, const T& app_control_list);
   template <typename T>
