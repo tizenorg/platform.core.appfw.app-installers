@@ -18,6 +18,7 @@
 #include <tpk_manifest_handlers/shortcut_handler.h>
 #include <tpk_manifest_handlers/ui_application_handler.h>
 #include <tpk_manifest_handlers/widget_application_handler.h>
+#include <tpk_manifest_handlers/watch_application_handler.h>
 
 #include <chrono>
 #include <cstdio>
@@ -149,11 +150,15 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
   auto widget_application_list =
       std::static_pointer_cast<const tpk::parse::WidgetApplicationInfoList>(
           parser_->GetManifestData(app_keys::kWidgetApplicationKey));
+  auto watch_application_list =
+      std::static_pointer_cast<const tpk::parse::WatchApplicationInfoList>(
+          parser_->GetManifestData(app_keys::kWatchApplicationKey));
 
   // mandatory check
   if (!ui_application_list && !service_application_list &&
-      !widget_application_list) {
+      !widget_application_list && !watch_application_list) {
     LOG(ERROR) << "UI Application or Service Application or Widget Application "
+                  "or Watch Application "
                   "are mandatory and has not been found.";
     return false;
   }
@@ -208,7 +213,11 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
   } else if (widget_application_list) {
     manifest->mainapp_id =
         strdup(widget_application_list->items[0].app_info.appid().c_str());
+  } else if (watch_application_list) {
+    manifest->mainapp_id =
+        strdup(watch_application_list->items[0].app_info.appid().c_str());
   }
+
   return true;
 }
 
@@ -318,6 +327,64 @@ bool StepParseManifest::FillWidgetApplication(manifest_x* manifest) {
     if (!FillCategories(widget_app, application.categories))
       return false;
     if (!FillMetadata(widget_app, application.meta_data))
+      return false;
+  }
+  return true;
+}
+
+bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
+  auto watch_application_list =
+      std::static_pointer_cast<const tpk::parse::WatchApplicationInfoList>(
+         parser_->GetManifestData(app_keys::kWatchApplicationKey));
+
+  if (!watch_application_list)
+    return true;
+
+  for (const auto& application : watch_application_list->items) {
+    bool main_app = manifest->application == nullptr;
+
+    application_x* watch_app =
+        static_cast<application_x*>(calloc(1, sizeof(application_x)));
+    watch_app->appid = strdup(application.app_info.appid().c_str());
+    watch_app->launch_mode =
+        strdup(application.app_info.launch_mode().c_str());
+    watch_app->multiple = strdup("false");
+    watch_app->nodisplay = strdup("true");
+    watch_app->taskmanage = strdup("false");
+    watch_app->indicatordisplay = strdup("false");
+    watch_app->type = strdup("capp");
+    watch_app->component_type = strdup("watchapp");
+    watch_app->hwacceleration =
+        strdup(application.app_info.hwacceleration().c_str());
+    watch_app->onboot = strdup("false");
+    watch_app->autorestart = strdup("false");
+    watch_app->mainapp = main_app ? strdup("true") : strdup("false");
+    watch_app->enabled = strdup("true");
+    watch_app->screenreader = strdup("use-system-setting");
+    watch_app->recentimage = strdup("false");
+    watch_app->launchcondition = strdup("false");
+    watch_app->guestmode_visibility = strdup("true");
+    watch_app->permission_type = strdup("normal");
+    watch_app->ambient_support = strdup("false");
+    watch_app->package = strdup(manifest->package);
+    watch_app->support_disable = strdup(manifest->support_disable);
+    manifest->application = g_list_append(manifest->application, watch_app);
+    if (bf::path(application.app_info.exec().c_str()).is_absolute())
+      watch_app->exec = strdup(application.app_info.exec().c_str());
+    else
+      watch_app->exec = strdup((context_->root_application_path.get()
+                            / manifest->package / "bin"
+                            / application.app_info.exec()).c_str());
+
+    if (!FillApplicationIconPaths(watch_app, application.app_icons))
+      return false;
+    if (!FillLabel(watch_app, application.label))
+      return false;
+    if (!FillImage(watch_app, application.app_images))
+      return false;
+    if (!FillCategories(watch_app, application.categories))
+      return false;
+    if (!FillMetadata(watch_app, application.meta_data))
       return false;
   }
   return true;
@@ -688,6 +755,8 @@ bool StepParseManifest::FillManifestX(manifest_x* manifest) {
   if (!FillServiceApplication(manifest))
     return false;
   if (!FillWidgetApplication(manifest))
+    return false;
+  if (!FillWatchApplication(manifest))
     return false;
   if (!FillPrivileges(manifest))
     return false;
