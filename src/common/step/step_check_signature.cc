@@ -268,14 +268,16 @@ Step::Status StepCheckSignature::process() {
   // TODO(t.iwanek): refactoring, move to wgt backend
   bool is_webapp = context_->pkg_type.get() == "wgt";
   error_message.clear();
-  if (!ValidatePrivilegeLevel(level, is_webapp,
-      context_->manifest_data.get()->api_version,
-      context_->manifest_data.get()->privileges, &error_message)) {
-    if (!error_message.empty()) {
-      LOG(ERROR) << "error_message: " << error_message;
-      on_error(Status::SIGNATURE_ERROR, error_message);
+  if (!context_->is_preload_request.get()) {
+    if (!ValidatePrivilegeLevel(level, is_webapp,
+        context_->manifest_data.get()->api_version,
+        context_->manifest_data.get()->privileges, &error_message)) {
+      if (!error_message.empty()) {
+        LOG(ERROR) << "error_message: " << error_message;
+        on_error(Status::SIGNATURE_ERROR, error_message);
+      }
+      return Status::SIGNATURE_ERROR;
     }
-    return Status::SIGNATURE_ERROR;
   }
 
   LOG(INFO) << "Signature done";
