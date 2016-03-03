@@ -97,6 +97,12 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     for (auto& policy : kSecurityPolicies) {
       bf::path subpath = path / policy.first;
       if (bf::exists(subpath)) {
+        if (policy.second == SECURITY_MANAGER_PATH_TRUSTED_RW &&
+            author_id.empty()) {
+          LOG(WARNING) << "the path " << policy.first
+              << " exists, but author_id is empty";
+          continue;
+        }
         error = security_manager_app_inst_req_add_path(req, subpath.c_str(),
                                                        policy.second);
         if (error != SECURITY_MANAGER_SUCCESS) {
