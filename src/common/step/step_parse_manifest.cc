@@ -339,6 +339,8 @@ bool StepParseManifest::FillServiceApplication(manifest_x* manifest) {
     application_x* service_app =
         static_cast<application_x*>(calloc(1, sizeof(application_x)));
     service_app->appid = strdup(application.app_info.appid().c_str());
+    service_app->multiple = strdup(application.app_info.multiple().c_str());
+    service_app->taskmanage = strdup(application.app_info.taskmanage().c_str());
     service_app->autorestart =
         strdup(application.app_info.auto_restart().c_str());
     service_app->onboot = strdup(application.app_info.on_boot().c_str());
