@@ -25,6 +25,8 @@ namespace common_installer {
 namespace filesystem {
 
 common_installer::Step::Status StepCreateStorageDirectories::process() {
+  if (context_->request_mode.get() == RequestMode::GLOBAL)
+    return Status::OK;
   if (!ShareDir())
     return Status::APP_DIR_ERROR;
   if (!PrivateDir())
