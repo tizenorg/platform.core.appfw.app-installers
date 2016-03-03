@@ -190,7 +190,9 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
   }
 
   bs::error_code error;
-  for (auto& entry : kEntries) {
+  std::vector<const char*> dirs(
+      kEntries.begin(), kEntries.end() - (author_id.empty() ? 1 : 0));
+  for (auto& entry : dirs) {
     bf::path subpath = base_dir / entry;
     bf::create_directories(subpath, error);
     if (error) {
@@ -411,13 +413,13 @@ int main(int argc, char** argv) {
       LOG(DEBUG) << "Running for package id: " << std::get<0>(p);
       if (!PerformDirectoryCreation(std::get<0>(p), std::get<1>(p),
           std::get<2>(p)))
-        return -1;
+        continue;
     }
   } else if (delete_mode) {
     for (auto& p : pkgs) {
       LOG(DEBUG) << "Running for package id: " << std::get<0>(p);
       if (!PerformDirectoryDeletion(std::get<0>(p)))
-        return -1;
+        continue;
     }
   }
   return 0;
