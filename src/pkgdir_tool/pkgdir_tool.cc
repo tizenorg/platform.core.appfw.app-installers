@@ -46,9 +46,9 @@ const std::vector<const char*> kEntries = {
   {"data/"},
   {"shared/"},
   {"shared/cache/"},
-  {"shared/trusted/"}
 };
 
+const char kTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
 
@@ -190,8 +190,9 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
   }
 
   bs::error_code error;
-  std::vector<const char*> dirs(
-      kEntries.begin(), kEntries.end() - (author_id.empty() ? 1 : 0));
+  std::vector<const char*> dirs(kEntries);
+  if (!author_id.empty())
+    dirs.push_back(kTrustedDir);
   for (auto& entry : dirs) {
     bf::path subpath = base_dir / entry;
     bf::create_directories(subpath, error);
