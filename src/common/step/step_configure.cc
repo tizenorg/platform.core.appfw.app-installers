@@ -85,13 +85,6 @@ Step::Status StepConfigure::process() {
       context_->unpacked_dir_path.set(package_directory);
       context_->pkg_path.set(package_directory);
       context_->xml_path.set(xml_path);
-
-      // TODO(t.iwanek): setting privilege level here should be removed because
-      // of the fact that many apps may not have PLATFORM level. User can
-      // malform platform xml or just reinstall app with direct-manifest
-      // installation mode and gain "system" background category
-      context_->privilege_level.set(PrivilegeLevel::PLATFORM);
-
       break;
     }
     default:

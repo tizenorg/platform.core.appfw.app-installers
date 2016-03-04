@@ -262,6 +262,9 @@ Step::Status StepCheckSignature::process() {
     }
   }
 
+  if (context_->is_preload_request.get())
+    level = PrivilegeLevel::PLATFORM;
+
   LOG(INFO) << "Privilege level: " << PrivilegeLevelToString(level);
   context_->privilege_level.set(level);
 
