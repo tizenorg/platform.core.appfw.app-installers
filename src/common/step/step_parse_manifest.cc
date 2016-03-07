@@ -311,6 +311,9 @@ bool StepParseManifest::FillWidgetApplication(manifest_x* manifest) {
     widget_app->guestmode_visibility = strdup("true");
     widget_app->permission_type = strdup("normal");
     widget_app->ambient_support = strdup("false");
+    widget_app->effectimage_type = strdup("image");
+    widget_app->submode = strdup("false");
+    widget_app->process_pool = strdup("false");
     widget_app->package = strdup(manifest->package);
     widget_app->support_disable = strdup(manifest->support_disable);
     manifest->application = g_list_append(manifest->application, widget_app);
@@ -357,6 +360,7 @@ bool StepParseManifest::FillServiceApplication(manifest_x* manifest) {
     service_app->component_type = strdup("svcapp");
     service_app->mainapp = strdup("false");
     service_app->enabled = strdup("true");
+    service_app->nodisplay = strdup("true");
     service_app->hwacceleration = strdup("default");
     service_app->screenreader = strdup("use-system-setting");
     service_app->recentimage = strdup("false");
@@ -498,7 +502,7 @@ bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
     watch_app->nodisplay = strdup("false");
     watch_app->multiple = strdup("false");
     watch_app->type = strdup(watch_application.app_info.type().c_str());
-    watch_app->taskmanage = strdup("true");
+    watch_app->taskmanage = strdup("false");
     watch_app->enabled = strdup("true");
     watch_app->hwacceleration = strdup("default");
     watch_app->screenreader = strdup("use-system-setting");
