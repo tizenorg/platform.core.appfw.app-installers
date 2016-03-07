@@ -59,13 +59,13 @@ bool MetadataPlugin::Run(xmlDocPtr /*doc_ptr*/, manifest_x* manifest,
     return false;
   std::string name = GetFunctionName(action_type);
   for (application_x* app : GListRange<application_x*>(manifest->application)) {
-    // pack all metadata starting with key + '/' to list that will
+    // pack all metadata starting with key to list that will
     // be sent to the plugin.
     // e.g. all http://developer.samsung.com/tizen/metadata/profile/*
     //   will be packed for http://developer.samsung.com/tizen/metadata/profile
     GList* md_list = nullptr;
     for (metadata_x* meta : GListRange<metadata_x*>(app->metadata)) {
-      std::string sub_key_prefix = plugin_info_.name() + "/";
+      const std::string& sub_key_prefix = plugin_info_.name();
       if (meta->key && meta->value &&
           std::string(meta->key).find(sub_key_prefix) == 0) {
         __metadata_t* md = reinterpret_cast<__metadata_t*>(
@@ -75,10 +75,13 @@ bool MetadataPlugin::Run(xmlDocPtr /*doc_ptr*/, manifest_x* manifest,
         md_list = g_list_append(md_list, md);
       }
     }
+
+    // skip application if it has no given metadata
+    if (!md_list)
+      continue;
+
     int result = 0;
-    Exec(name, &result, md_list, tag.c_str(),
-         ActionTypeToPkgmgrActionType(action_type),
-         manifest->package, app->appid);
+    Exec(name, &result, manifest->package, app->appid, md_list);
     if (result) {
       LOG(ERROR) << "Function: " << name << " of plugin "
                  << plugin_info_.path() << " failed";

@@ -58,13 +58,13 @@ bool CategoryPlugin::Run(xmlDocPtr /*doc_ptr*/, manifest_x* manifest,
     return false;
   std::string name = GetFunctionName(action_type);
   for (application_x* app : GListRange<application_x*>(manifest->application)) {
-    // pack all categories starting with key + '/' to list that will
+    // pack all categories starting with key to list that will
     // be sent to the plugin.
     // e.g. all http://tizen.org/category/antivirus/*
     //   will be packed for http://tizen.org/category/antivirus
     GList* category_list = nullptr;
     for (const char* category : GListRange<char*>(app->category)) {
-      std::string sub_key_prefix = plugin_info_.name() + "/";
+      const std::string& sub_key_prefix = plugin_info_.name();
       if (std::string(category).find(sub_key_prefix) == 0) {
         __category_t* c = reinterpret_cast<__category_t*>(
             calloc(1, sizeof(__category_t)));
@@ -72,10 +72,13 @@ bool CategoryPlugin::Run(xmlDocPtr /*doc_ptr*/, manifest_x* manifest,
         category_list = g_list_append(category_list, c);
       }
     }
+
+    // skip application if it has no given category
+    if (!category_list)
+      continue;
+
     int result = 0;
-    Exec(name, &result, category_list, tag.c_str(),
-         ActionTypeToPkgmgrActionType(action_type),
-         manifest->package, app->appid);
+    Exec(name, &result, manifest->package, app->appid, category_list);
     if (result) {
       LOG(ERROR) << "Function: " << name << " of plugin "
                  << plugin_info_.path() << " failed";
