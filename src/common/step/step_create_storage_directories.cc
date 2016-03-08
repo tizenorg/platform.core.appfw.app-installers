@@ -8,6 +8,12 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <string>
+#include <vector>
+
+#include "common/shared_dirs.h"
+#include "common/utils/glist_range.h"
+
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
@@ -32,6 +38,8 @@ common_installer::Step::Status StepCreateStorageDirectories::process() {
   if (!PrivateDir())
     return Status::APP_DIR_ERROR;
   if (!CacheDir())
+    return Status::APP_DIR_ERROR;
+  if (!ExtStorageDir())
     return Status::APP_DIR_ERROR;
   return Status::OK;
 }
@@ -99,6 +107,43 @@ bool StepCreateStorageDirectories::CacheDir() {
   }
   return true;
 }
+
+bool StepCreateStorageDirectories::ExtStorageDir() {
+  auto manifest = context_->manifest_data.get();
+  std::vector<std::string> priv_vec;
+  for (const char* priv : GListRange<char*>(manifest->privileges)) {
+    priv_vec.emplace_back(priv);
+  }
+
+  if (std::find(priv_vec.begin(), priv_vec.end(), "externalstorage.appdata") ==
+      priv_vec.end()) return true;
+
+  auto pkg_list = CreatePkgInformationList({ context_->pkgid.get()});
+  if (pkg_list.empty()) return false;
+
+  pkg_info pkg = *pkg_list.begin();
+
+  switch (context_->request_mode.get()) {
+    case RequestMode::GLOBAL: {
+      if (!PerformExternalDirectoryCreationForAllUsers(pkg.pkg_id,
+                                                       pkg.author_id,
+                                                       pkg.api_version))
+        return false;
+    }
+    break;
+    case RequestMode::USER: {
+      if (!PerformExternalDirectoryCreationForUser(getuid(),
+                                                   pkg.pkg_id,
+                                                   pkg.author_id,
+                                                   pkg.api_version))
+        return false;
+    }
+    break;
+  }
+
+  return true;
+}
+
 
 }  // namespace filesystem
 }  // namespace common_installer
