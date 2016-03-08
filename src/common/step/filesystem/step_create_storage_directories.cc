@@ -8,6 +8,12 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <string>
+#include <vector>
+
+#include "common/shared_dirs.h"
+#include "common/utils/glist_range.h"
+
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
 
