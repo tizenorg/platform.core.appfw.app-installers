@@ -3,6 +3,7 @@ SET(SRCS
   app_installer.cc
   backup_paths.cc
   installer_context.cc
+  shared_dirs.cc
   plugins/plugin_factory.cc
   plugins/plugin_manager.cc
   plugins/plugin_list_parser.cc
