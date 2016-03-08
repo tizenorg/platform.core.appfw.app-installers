@@ -17,6 +17,7 @@
 #include "common/utils/glist_range.h"
 
 namespace bf = boost::filesystem;
+namespace ci = common_installer;
 
 namespace {
 
@@ -37,7 +38,8 @@ const std::vector<std::pair<const char*,
 
 bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     const std::string& author_id, const std::string& api_version,
-    const std::string& preload, const boost::filesystem::path& path,
+    ci::SecurityAppInstallType sec_install_type,
+    const boost::filesystem::path& path,
     uid_t uid, const std::vector<std::string>& privileges,
     app_inst_req* req, std::string* error_message) {
   if (app_id.empty() || pkg_id.empty()) {
@@ -94,14 +96,21 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     }
   }
 
-  if (!preload.empty()) {
+  if (sec_install_type != ci::SecurityAppInstallType::None) {
     app_install_type type;
-    if (preload == "true")
-      type = SM_APP_INSTALL_PRELOADED;
-    else if (uid == GLOBAL_USER || uid == 0)
-      type = SM_APP_INSTALL_GLOBAL;
-    else
-      type = SM_APP_INSTALL_LOCAL;
+
+    switch (sec_install_type) {
+      case ci::SecurityAppInstallType::Local:
+        type = SM_APP_INSTALL_LOCAL;
+        break;
+      case ci::SecurityAppInstallType::Preload:
+        type = SM_APP_INSTALL_PRELOADED;
+        break;
+      case ci::SecurityAppInstallType::Global:
+        type = SM_APP_INSTALL_GLOBAL;
+        break;
+    }
+
     LOG(INFO) << "install_type(" << type << ")";
     error = security_manager_app_inst_req_set_install_type(req, type);
     if (error != SECURITY_MANAGER_SUCCESS) {
@@ -148,7 +157,7 @@ namespace common_installer {
 
 bool RegisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, const std::string& author_id,
-    const std::string& api_version, const std::string& preload,
+    const std::string& api_version, SecurityAppInstallType type,
     const boost::filesystem::path& path, uid_t uid,
     const std::vector<std::string>& privileges,
     std::string* error_message) {
@@ -165,7 +174,7 @@ bool RegisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, author_id, api_version, preload, path, uid,
+  if (!PrepareRequest(app_id, pkg_id, author_id, api_version, type, path, uid,
       privileges, req, error_message)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
@@ -201,8 +210,9 @@ bool UnregisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, std::string(), std::string(), std::string(),
-      bf::path(), uid, {}, req, error_message)) {
+  if (!PrepareRequest(app_id, pkg_id, std::string(), std::string(),
+                      ci::SecurityAppInstallType::None, bf::path(), uid, {},
+                      req, error_message)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
@@ -235,8 +245,15 @@ bool RegisterSecurityContextForManifest(
     if (!app->appid) {
       return false;
     }
+    auto sec_app_type = (strcmp(manifest->preload, "true") == 0) ?
+            ci::SecurityAppInstallType::Preload :
+            ((uid == GLOBAL_USER || uid == 0) ?
+                ci::SecurityAppInstallType::Global :
+                ci::SecurityAppInstallType::Local);
+
     if (!RegisterSecurityContext(app->appid, pkg_id, cert_info->author_id.get(),
-        manifest->api_version, manifest->preload, path, uid, priv_vec, error_message)) {
+        manifest->api_version, sec_app_type, path, uid, priv_vec,
+        error_message)) {
       return false;
     }
   }
