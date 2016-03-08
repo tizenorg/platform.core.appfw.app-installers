@@ -17,9 +17,11 @@
 #include <tzplatform_config.h>
 #include <sys/xattr.h>
 
+#include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <exception>
+#include <iterator>
 #include <regex>
 #include <string>
 #include <utility>
@@ -38,7 +40,16 @@ namespace ci = common_installer;
 
 namespace {
 
-typedef std::vector<std::tuple<std::string, std::string, std::string>> pkg_list;
+struct pkg_info {
+  pkg_info(std::string pkg_id_, std::string api_version_, std::string author_) :
+    pkg_id(pkg_id_), api_version(api_version_), author_id(author_) {}
+
+  std::string pkg_id;
+  std::string api_version;
+  std::string author_id;
+};
+
+using pkg_list = std::vector<pkg_info>;
 
 const std::vector<const char*> kEntries = {
   {"/"},
@@ -360,14 +371,26 @@ bool PerformDirectoryDeletion(const std::string& pkgid) {
   return true;
 }
 
-void ExclusiveOptions(const bpo::variables_map& vm,
-                        const std::string& opt1, const std::string& opt2) {
-    if ((vm.count(opt1) && vm.count(opt2)) ||
-        (!vm.count(opt1) && !vm.count(opt2))) {
-        throw std::logic_error(std::string("Exclusive options '") +
-                               opt1 + "' and '" + opt2 + "'.");
-    }
+template<typename ... Arguments>
+void ExclusiveOptions(const bpo::variables_map& vm, Arguments... args) {
+  std::vector<std::string> exclusive_options {args...};
+  sort(exclusive_options.begin(), exclusive_options.end());
+  std::vector<std::string> given_options;
+  std::transform(vm.begin(), vm.end(), std::back_inserter(given_options),
+          [](bpo::variables_map::value_type const &pair) {return pair.first;});
+  sort(given_options.begin(), given_options.end());
+
+  std::vector<std::string> options_intersection;
+  std::set_intersection(exclusive_options.begin(), exclusive_options.end(),
+                        given_options.begin(), given_options.end(),
+                        back_inserter(options_intersection));
+  if (options_intersection.size() > 1) {
+    std::string exception = std::string("Exclusive options :") +
+        options_intersection[0] + " " + options_intersection[1];
+    throw std::logic_error(exception);
+  }
 }
+
 
 }  // namespace
 
@@ -375,13 +398,15 @@ int main(int argc, char** argv) {
   bpo::options_description options("Allowed options");
   options.add_options()
       ("create", "create per user diretories for global package")
+      ("create-external-storage",
+          "create per user diretories for global package on external storage")
       ("delete", "delete per user diretories for global package")
       ("allglobalpkgs", "install directories for all global applications")
       ("pkgid", bpo::value<std::string>(), "package ID");
   bpo::variables_map opt_map;
   try {
     bpo::store(bpo::parse_command_line(argc, argv, options), opt_map);
-    ExclusiveOptions(opt_map, "create", "delete");
+    ExclusiveOptions(opt_map, "create", "create-external-storage", "delete");
     ExclusiveOptions(opt_map, "pkgid", "allglobalpkgs");
     bpo::notify(opt_map);
   } catch(const std::exception& error) {
@@ -390,6 +415,7 @@ int main(int argc, char** argv) {
   }
 
   bool create_mode = opt_map.count("create") != 0;
+  bool create_external_mode = opt_map.count("create-external-storage") != 0;
   bool delete_mode = opt_map.count("delete") != 0;
   bool allglobalpkgs = opt_map.count("allglobalpkgs") != 0;
   std::string pkgid;
@@ -411,15 +437,18 @@ int main(int argc, char** argv) {
 
   if (create_mode) {
     for (auto& p : pkgs) {
-      LOG(DEBUG) << "Running for package id: " << std::get<0>(p);
-      if (!PerformDirectoryCreation(std::get<0>(p), std::get<1>(p),
-          std::get<2>(p)))
+      LOG(DEBUG) << "Running for package id: " << p.pkg_id;
+      if (!PerformDirectoryCreation(p.pkg_id, p.api_version,
+          p.author_id))
+
+      if (!PerformDirectoryCreation(p.pkg_id, p.api_version,
+                                    p.author_id))
         continue;
     }
   } else if (delete_mode) {
     for (auto& p : pkgs) {
-      LOG(DEBUG) << "Running for package id: " << std::get<0>(p);
-      if (!PerformDirectoryDeletion(std::get<0>(p)))
+      LOG(DEBUG) << "Running for package id: " << p.pkg_id;
+      if (!PerformDirectoryDeletion(p.pkg_id))
         continue;
     }
   }
