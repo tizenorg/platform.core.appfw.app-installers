@@ -16,6 +16,8 @@
 
 namespace common_installer {
 
+enum class SecurityAppInstallType { None, Local, Global, Preload };
+
 /**
  * Adapter interface for external Security module.
  *
@@ -35,7 +37,7 @@ namespace common_installer {
  */
 bool RegisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, const std::string& author_id,
-    const std::string& api_version, const std::string& preload,
+    const std::string& api_version, SecurityAppInstallType type,
     const boost::filesystem::path& path, uid_t uid,
     const std::vector<std::string>& privileges,
     std::string* error_message);
