@@ -4,11 +4,13 @@
 // found in the LICENSE file.
 
 #include <cstdio>
+#include <fstream>
 
 #include "common/app_installer.h"
 #include "common/installer_context.h"
 #include "common/pkgmgr_interface.h"
 #include "common/pkgmgr_signal.h"
+#include "common/utils/file_util.h"
 
 namespace {
 
@@ -117,6 +119,16 @@ AppInstaller::Result AppInstaller::Run() {
                       context_->pkg_type.get(),
                       context_->pkgid.get());
   }
+
+  if (context_->installation_mode.get() == InstallationMode::OFFLINE &&
+      context_->is_preload_request.get() &&
+      process_status != Step::Status::OK) {
+    std::fstream info_file("/tmp/.preload_install_error",
+        std::ios::out | std::ios::app);
+    info_file << context_->pkgid.get() << std::endl;
+    info_file.close();
+  }
+
   return ret;
 }
 
