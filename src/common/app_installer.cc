@@ -9,6 +9,7 @@
 #include "common/installer_context.h"
 #include "common/pkgmgr_interface.h"
 #include "common/pkgmgr_signal.h"
+#include "common/utils/file_util.h"
 
 namespace {
 
@@ -117,6 +118,14 @@ AppInstaller::Result AppInstaller::Run() {
                       context_->pkg_type.get(),
                       context_->pkgid.get());
   }
+
+  if (context_->installation_mode.get() == InstallationMode::OFFLINE &&
+      context_->is_preload_request.get() &&
+      process_status != Step::Status::OK) {
+    if (!CreateDir("/tmp/.preload-tpk/.error"))
+      LOG(ERROR) << "Unable to create error directory";
+  }
+
   return ret;
 }
 
