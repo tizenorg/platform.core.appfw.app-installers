@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "common/step/step_check_signature.h"
+#include "common/step/security/step_check_signature.h"
 
 namespace bf = boost::filesystem;
 
