@@ -806,7 +806,7 @@ Step::Status StepParseManifest::process() {
   }
 
   if (!context_->tep_path.get().empty())
-    manifest->tep_name = context_->tep_path.get().c_str();
+    manifest->tep_name = (char *)context_->tep_path.get().c_str();
 
   // write pkgid for recovery file
   if (context_->recovery_info.get().recovery_file) {
