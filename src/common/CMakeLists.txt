@@ -24,6 +24,7 @@ SET(SRCS
   step/step_create_icons.cc
   step/step_check_background_category.cc
   step/step_check_blacklist.cc
+  step/step_check_removable.cc
   step/step_check_old_certificate.cc
   step/step_check_signature.cc
   step/step_clear_data.cc
