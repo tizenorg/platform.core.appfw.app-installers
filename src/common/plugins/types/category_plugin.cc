@@ -84,6 +84,7 @@ bool CategoryPlugin::Run(xmlDocPtr /*doc_ptr*/, manifest_x* manifest,
     }
     g_list_free_full(category_list, &ClearCategoryDetail);
   }
+  return true;
 }
 
 }  // namespace common_installer
