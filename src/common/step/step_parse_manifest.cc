@@ -445,6 +445,8 @@ bool StepParseManifest::FillUIApplication(manifest_x* manifest) {
     ui_app->ambient_support = strdup("false");
     ui_app->package = strdup(manifest->package);
     ui_app->support_disable = strdup(manifest->support_disable);
+    ui_app->splash_screen_display =
+        strdup(application.app_info.splash_screen_display().c_str());
     manifest->application = g_list_append(manifest->application, ui_app);
     if (bf::path(application.app_info.exec().c_str()).is_absolute())
       ui_app->exec = strdup(application.app_info.exec().c_str());
