@@ -239,7 +239,8 @@ class InstallerContext {
 
   /**
    * \brief root directory of installation of all packages for user
-   *        (/home/${USER}/apps_rw/) or tizenglobalapp user (/usr/apps/)
+   *        (${TZ_USER_HOME}/${USER}/apps_rw/) or
+   *        tizenglobalapp user (${TZ_SYS_RO_APP} or ${TZ_SYS_RW_APP})
    */
   Property<boost::filesystem::path> root_application_path;
 

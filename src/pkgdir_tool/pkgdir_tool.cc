@@ -221,8 +221,8 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
 
 bool CreatePerUserDirectories(const std::string& pkgid,
     const std::string& author_id, const std::string& api_version) {
-  for (bf::directory_iterator iter("/home"); iter != bf::directory_iterator();
-       ++iter) {
+  for (bf::directory_iterator iter(tzplatform_getenv(TZ_USER_HOME));
+       iter != bf::directory_iterator(); ++iter) {
     if (!bf::is_directory(iter->path()))
       return false;
     const bf::path& home_path = iter->path();
@@ -301,8 +301,8 @@ bool DeleteDirectories(const bf::path& app_dir, const std::string& pkgid) {
 }
 
 bool DeletePerUserDirectories(const std::string& pkgid) {
-  for (bf::directory_iterator iter("/home"); iter != bf::directory_iterator();
-       ++iter) {
+  for (bf::directory_iterator iter(tzplatform_getenv(TZ_USER_HOME));
+       iter != bf::directory_iterator(); ++iter) {
     if (!bf::is_directory(iter->path()))
       return false;
     const bf::path& home_path = iter->path();
