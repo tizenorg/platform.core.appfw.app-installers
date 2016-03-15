@@ -26,7 +26,7 @@ TEST_F(SignatureValidatorTest, HandlesInitializedSignatureDir) {
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
   common_installer::CertificateInfo cert_info;
   std::string error;
-  EXPECT_EQ(ValidateSignatures(*signature_file, &level, &cert_info, &error),
+  EXPECT_EQ(ValidateSignatures(*signature_file, &level, &cert_info, true, &error),
             Step::Status::OK);
 }
 
@@ -37,7 +37,7 @@ TEST_F(SignatureValidatorTest, HandlesBadSignatureDir) {
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
   common_installer::CertificateInfo cert_info;
   std::string error;
-  EXPECT_EQ(ValidateSignatures(*signature_file, &level, &cert_info, &error),
+  EXPECT_EQ(ValidateSignatures(*signature_file, &level, &cert_info, true, &error),
             Step::Status::ERROR);
 }
 

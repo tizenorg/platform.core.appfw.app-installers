@@ -47,7 +47,7 @@ class StepCheckSignature : public Step {
 // Exposed for tests
 Step::Status ValidateSignatures(const boost::filesystem::path& base_path,
     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
-    std::string* error_message);
+    bool check_reference, std::string* error_message);
 
 }  // namespace security
 }  // namespace common_installer
