@@ -110,7 +110,7 @@ common_installer::Step::Status ValidateSignatureFile(
     const ValidationCore::SignatureFileInfo& file_info,
     common_installer::PrivilegeLevel* level,
     common_installer::CertificateInfo* cert_info,
-    std::string* error_message) {
+    bool check_reference, std::string* error_message) {
   bf::path path = base_path / file_info.getFileName();
   LOG(INFO) << "Processing signature: " << path;
 
@@ -119,7 +119,7 @@ common_installer::Step::Status ValidateSignatureFile(
   ValidationCore::VCerr result = validator.check(
       base_path.string(),  // app content path for checking hash of file ref.
       true,                // ocsp check flag
-      true,                // file reference hash check flag
+      check_reference,     // file reference hash check flag
       data);               // output signature data
 
   std::string errnum =
@@ -199,7 +199,7 @@ namespace security {
 
 Step::Status ValidateSignatures(const bf::path& base_path,
     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
-    std::string* error_message) {
+    bool check_reference, std::string* error_message) {
   // Find signature files
   ValidationCore::SignatureFileInfoSet signature_files;
   ValidationCore::SignatureFinder signature_finder(base_path.string());
@@ -214,7 +214,7 @@ Step::Status ValidateSignatures(const bf::path& base_path,
   for (auto& file_info : signature_files) {
     std::string error;
     Step::Status status = ValidateSignatureFile(base_path, file_info, level,
-                                                cert_info, &error);
+                                        cert_info, check_reference, &error);
     if (status != Step::Status::OK) {
       *error_message = error;
       return status;
@@ -241,9 +241,15 @@ Step::Status StepCheckSignature::precheck() {
 Step::Status StepCheckSignature::process() {
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
   std::string error_message;
+  bool check_reference = true;
+  if (context_->uid.get() == 0 &&
+      (context_->request_type.get()== ci::RequestType::ManifestDirectInstall ||
+      context_->request_type.get() == ci::RequestType::ManifestDirectUpdate))
+    check_reference = false;
   Status status =
       ValidateSignatures(context_->unpacked_dir_path.get(), &level,
-                         &context_->certificate_info.get(), &error_message);
+                         &context_->certificate_info.get(), check_reference,
+                         &error_message);
   if (status != Status::OK) {
     on_error(status, error_message);
     return status;
