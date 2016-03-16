@@ -495,7 +495,7 @@ bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
           (context_->root_application_path.get()
                                / manifest->package / "bin" /
                                watch_application.app_info.exec()).c_str());
-    watch_app->nodisplay = strdup("false");
+    watch_app->nodisplay = strdup("true");
     watch_app->multiple = strdup("false");
     watch_app->type = strdup(watch_application.app_info.type().c_str());
     watch_app->taskmanage = strdup("false");
