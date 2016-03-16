@@ -202,17 +202,16 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
                                               strdup(profile.c_str()));
     }
   }
-  return true;
-}
 
-bool StepParseManifest::FillPackageMainApp(manifest_x* manifest) {
-  // if no widget-application declared to be main app then take first one
-  if (!manifest->mainapp_id) {
-    application_x* first_app =
-        *GListRange<application_x*>(manifest->application).begin();
-    manifest->mainapp_id = strdup(first_app->appid);
-    free(const_cast<char*>(first_app->mainapp));
-    first_app->mainapp = strdup("true");
+  if (ui_application_list) {
+    manifest->mainapp_id =
+        strdup(ui_application_list->items[0].app_info.appid().c_str());
+  } else if (service_application_list) {
+    manifest->mainapp_id =
+        strdup(service_application_list->items[0].app_info.appid().c_str());
+  } else if (widget_application_list) {
+    manifest->mainapp_id =
+        strdup(widget_application_list->items[0].app_info.appid().c_str());
   }
   return true;
 }
@@ -277,11 +276,7 @@ bool StepParseManifest::FillWidgetApplication(manifest_x* manifest) {
 
   for (const auto& application : widget_application_list->items) {
     // if there is no app yet, set this app as mainapp
-    bool main_app = application.app_info.main() == "true";
-    if (main_app && manifest->mainapp_id) {
-      LOG(ERROR) << "Main application already set";
-      return false;
-    }
+    bool main_app = manifest->application == nullptr;
 
     application_x* widget_app =
         static_cast<application_x*>(calloc(1, sizeof(application_x)));
@@ -298,12 +293,7 @@ bool StepParseManifest::FillWidgetApplication(manifest_x* manifest) {
         strdup(application.app_info.hwacceleration().c_str());
     widget_app->onboot = strdup("false");
     widget_app->autorestart = strdup("false");
-    if (main_app) {
-      widget_app->mainapp = strdup("true");
-      manifest->mainapp_id = strdup(widget_app->appid);
-    } else {
-      widget_app->mainapp = strdup("false");
-    }
+    widget_app->mainapp = main_app ? strdup("true") : strdup("false");
     widget_app->enabled = strdup("true");
     widget_app->screenreader = strdup("use-system-setting");
     widget_app->recentimage = strdup("false");
@@ -343,6 +333,9 @@ bool StepParseManifest::FillServiceApplication(manifest_x* manifest) {
     return true;
 
   for (const auto& application : service_application_list->items) {
+    // if there is no app yet, set this app as mainapp
+    bool main_app = manifest->application == nullptr;
+
     application_x* service_app =
         static_cast<application_x*>(calloc(1, sizeof(application_x)));
     service_app->appid = strdup(application.app_info.appid().c_str());
@@ -355,7 +348,7 @@ bool StepParseManifest::FillServiceApplication(manifest_x* manifest) {
     service_app->process_pool =
         strdup(application.app_info.process_pool().c_str());
     service_app->component_type = strdup("svcapp");
-    service_app->mainapp = strdup("false");
+    service_app->mainapp = main_app ? strdup("true") : strdup("false");
     service_app->enabled = strdup("true");
     service_app->hwacceleration = strdup("default");
     service_app->screenreader = strdup("use-system-setting");
@@ -405,6 +398,9 @@ bool StepParseManifest::FillUIApplication(manifest_x* manifest) {
     return true;
 
   for (const auto& application : ui_application_list->items) {
+    // if there is no app yet, set this app as mainapp
+    bool main_app = manifest->application == nullptr;
+
     application_x* ui_app =
         static_cast<application_x*>(calloc(1, sizeof(application_x)));
     ui_app->appid = strdup(application.app_info.appid().c_str());
@@ -435,7 +431,7 @@ bool StepParseManifest::FillUIApplication(manifest_x* manifest) {
     ui_app->onboot = strdup("false");
     ui_app->autorestart = strdup("false");
     ui_app->component_type = strdup("uiapp");
-    ui_app->mainapp = strdup("false");
+    ui_app->mainapp = main_app ? strdup("true") : strdup("false");
     ui_app->enabled = strdup("true");
     ui_app->screenreader = strdup("use-system-setting");
     ui_app->recentimage = strdup("false");
@@ -751,8 +747,6 @@ bool StepParseManifest::FillManifestX(manifest_x* manifest) {
   if (!FillWidgetApplication(manifest))
     return false;
   if (!FillWatchApplication(manifest))
-    return false;
-  if (!FillPackageMainApp(manifest))
     return false;
   if (!FillPrivileges(manifest))
     return false;
