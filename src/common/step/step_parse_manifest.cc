@@ -212,6 +212,9 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
   } else if (widget_application_list) {
     manifest->mainapp_id =
         strdup(widget_application_list->items[0].app_info.appid().c_str());
+  } else if (watch_application_list) {
+    manifest->mainapp_id =
+        strdup(watch_application_list->items[0].app_info.appid().c_str());
   }
   return true;
 }
@@ -484,6 +487,8 @@ bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
     return true;
 
   for (const auto& watch_application : watch_application_list->items) {
+    bool main_app = manifest->application == nullptr;
+
     application_x* watch_app =
              static_cast<application_x*>(calloc(1, sizeof(application_x)));
     watch_app->appid = strdup(watch_application.app_info.appid().c_str());
@@ -502,7 +507,7 @@ bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
     watch_app->enabled = strdup("true");
     watch_app->hwacceleration = strdup("default");
     watch_app->screenreader = strdup("use-system-setting");
-    watch_app->mainapp = strdup("false");
+    watch_app->mainapp = main_app ? strdup("true") : strdup("false");
     watch_app->recentimage = strdup("false");
     watch_app->launchcondition = strdup("false");
     watch_app->indicatordisplay = strdup("true");
