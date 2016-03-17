@@ -36,8 +36,8 @@ const std::vector<std::pair<const char*,
 
 bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     const std::string& author_id, const std::string& api_version,
-    const boost::filesystem::path& path, uid_t uid,
-    const std::vector<std::string>& privileges,
+    const std::string& preload, const boost::filesystem::path& path,
+    uid_t uid, const std::vector<std::string>& privileges,
     app_inst_req* req, std::string* error_message) {
   if (app_id.empty() || pkg_id.empty()) {
     LOG(ERROR) << "Appid or pkgid is empty. Both values must be set";
@@ -93,6 +93,25 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     }
   }
 
+  if (!preload.empty()) {
+    app_install_type type;
+    if (preload == "true")
+      type = SM_APP_INSTALL_PRELOADED;
+    else if (uid == GLOBAL_USER || uid == 0)
+      type = SM_APP_INSTALL_GLOBAL;
+    else
+      type = SM_APP_INSTALL_LOCAL;
+    LOG(INFO) << "install_type(" << type << ")";
+    error = security_manager_app_inst_req_set_install_type(req, type);
+    if (error != SECURITY_MANAGER_SUCCESS) {
+      std::string errnum = boost::str(boost::format("%d") % error);
+      *error_message =
+          security_manager_strerror(static_cast<lib_retcode>(error));
+      *error_message += ":<" + errnum + ">";
+      return false;
+    }
+  }
+
   if (!path.empty()) {
     for (auto& policy : kSecurityPolicies) {
       bf::path subpath = path / policy.first;
@@ -128,8 +147,9 @@ namespace common_installer {
 
 bool RegisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, const std::string& author_id,
-    const std::string& api_version, const boost::filesystem::path& path,
-    uid_t uid, const std::vector<std::string>& privileges,
+    const std::string& api_version, const std::string& preload,
+    const boost::filesystem::path& path, uid_t uid,
+    const std::vector<std::string>& privileges,
     std::string* error_message) {
   app_inst_req* req;
 
@@ -144,7 +164,7 @@ bool RegisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, author_id, api_version, path, uid,
+  if (!PrepareRequest(app_id, pkg_id, author_id, api_version, preload, path, uid,
       privileges, req, error_message)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
@@ -180,8 +200,8 @@ bool UnregisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, std::string(), std::string(), bf::path(),
-      uid, {}, req, error_message)) {
+  if (!PrepareRequest(app_id, pkg_id, std::string(), std::string(), std::string(),
+      bf::path(), uid, {}, req, error_message)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
@@ -215,7 +235,7 @@ bool RegisterSecurityContextForManifest(
       return false;
     }
     if (!RegisterSecurityContext(app->appid, pkg_id, cert_info->author_id.get(),
-        manifest->api_version, path, uid, priv_vec, error_message)) {
+        manifest->api_version, manifest->preload, path, uid, priv_vec, error_message)) {
       return false;
     }
   }

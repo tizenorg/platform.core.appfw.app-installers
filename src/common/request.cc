@@ -18,7 +18,7 @@ RequestMode GetRequestMode() {
 const char *GetRootAppPath(bool is_preload) {
   return GetRequestMode() == RequestMode::USER ?
       tzplatform_getenv(TZ_USER_APP) : is_preload ?
-      tzplatform_getenv(TZ_SYS_RO_APP) :tzplatform_getenv(TZ_SYS_RW_APP);
+      tzplatform_getenv(TZ_SYS_RO_APP) : tzplatform_getenv(TZ_SYS_RW_APP);
 }
 
 }  // namespace common_installer

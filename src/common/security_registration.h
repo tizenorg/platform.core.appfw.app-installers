@@ -35,8 +35,9 @@ namespace common_installer {
  */
 bool RegisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, const std::string& author_id,
-    const std::string& api_version, const boost::filesystem::path& path,
-    uid_t uid, const std::vector<std::string>& privileges,
+    const std::string& api_version, const std::string& preload,
+    const boost::filesystem::path& path, uid_t uid,
+    const std::vector<std::string>& privileges,
     std::string* error_message);
 
 /**
