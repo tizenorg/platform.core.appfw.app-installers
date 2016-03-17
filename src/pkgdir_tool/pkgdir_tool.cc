@@ -38,7 +38,8 @@ namespace ci = common_installer;
 
 namespace {
 
-typedef std::vector<std::tuple<std::string, std::string, std::string>> pkg_list;
+typedef std::vector<std::tuple<std::string, std::string,
+    std::string, std::string>> pkg_list;
 
 const std::vector<const char*> kEntries = {
   {"/"},
@@ -67,6 +68,10 @@ int PkgmgrListCallback(const pkgmgrinfo_pkginfo_h handle, void *user_data) {
   if (pkgmgrinfo_pkginfo_get_api_version(handle, &api_version) != PMINFO_R_OK) {
     return -1;
   }
+  bool is_preload = false;
+  if (pkgmgrinfo_pkginfo_is_preload(handle, &is_preload) != PMINFO_R_OK) {
+    return -1;
+  }
   pkgmgrinfo_certinfo_h cert_handle;
   if (pkgmgrinfo_pkginfo_create_certinfo(&cert_handle) != PMINFO_R_OK) {
     return -1;
@@ -89,9 +94,11 @@ int PkgmgrListCallback(const pkgmgrinfo_pkginfo_h handle, void *user_data) {
     cert.getPublicKeyDER(&public_key, &len);
     std::string author_id =
         ci::EncodeBase64(reinterpret_cast<const char*>(public_key));
-    pkgs->emplace_back(pkgid, api_version, author_id);
+    pkgs->emplace_back(pkgid, api_version, author_id,
+        is_preload ? "true" : "false");
   } else {
-    pkgs->emplace_back(pkgid, std::string(), std::string());
+    pkgs->emplace_back(pkgid, std::string(), std::string(),
+        is_preload ? "true" : "false");
   }
 
   pkgmgrinfo_pkginfo_destroy_certinfo(cert_handle);
@@ -127,6 +134,7 @@ bool SetPackageDirectorySmackRules(const bf::path& base_dir,
                                    const std::string& pkgid,
                                    const std::string& author_id,
                                    const std::string& api_version,
+                                   const std::string& preload,
                                    uid_t uid) {
   if (!pkgid.empty()) {
     std::vector<std::string> privileges;
@@ -144,7 +152,7 @@ bool SetPackageDirectorySmackRules(const bf::path& base_dir,
     std::string error_message;
     for (const auto& appid : appids) {
       if (!common_installer::RegisterSecurityContext(appid, pkgid,
-          author_id, api_version, base_dir, uid, privileges,
+          author_id, api_version, preload, base_dir, uid, privileges,
           &error_message)) {
         LOG(ERROR) << "Failed to register security context";
         if (!error_message.empty()) {
@@ -182,6 +190,7 @@ bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
 bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
                        const std::string& author_id,
                        const std::string& api_version,
+                       const std::string& preload,
                        uid_t uid, gid_t gid) {
   bf::path base_dir = app_dir / pkgid;
   if (bf::exists(base_dir)) {
@@ -213,14 +222,15 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
   }
 
   if (!SetPackageDirectorySmackRules(base_dir, pkgid, author_id, api_version,
-      uid))
+      preload, uid))
     return false;
 
   return true;
 }
 
 bool CreatePerUserDirectories(const std::string& pkgid,
-    const std::string& author_id, const std::string& api_version) {
+    const std::string& author_id, const std::string& api_version,
+    const std::string& preload) {
   for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
        iter != bf::directory_iterator(); ++iter) {
     if (!bf::is_directory(iter->path()))
@@ -242,7 +252,7 @@ bool CreatePerUserDirectories(const std::string& pkgid,
     tzplatform_set_user(pwd->pw_uid);
     bf::path apps_rw(tzplatform_getenv(TZ_USER_APP));
     tzplatform_reset_user();
-    if (!CreateDirectories(apps_rw, pkgid, author_id, api_version,
+    if (!CreateDirectories(apps_rw, pkgid, author_id, api_version, preload,
         pwd->pw_uid, pwd->pw_gid)) {
       return false;
     }
@@ -344,8 +354,9 @@ bool DeleteSkelDirectories(const std::string& pkgid) {
 }
 
 bool PerformDirectoryCreation(const std::string& pkgid,
-    const std::string& author_id, const std::string& api_version) {
-  if (!CreatePerUserDirectories(pkgid, author_id, api_version))
+    const std::string& author_id, const std::string& api_version,
+    const std::string& preload) {
+  if (!CreatePerUserDirectories(pkgid, author_id, api_version, preload))
     return false;
   if (!CreateSkelDirectories(pkgid))
     return false;
@@ -413,7 +424,7 @@ int main(int argc, char** argv) {
     for (auto& p : pkgs) {
       LOG(DEBUG) << "Running for package id: " << std::get<0>(p);
       if (!PerformDirectoryCreation(std::get<0>(p), std::get<1>(p),
-          std::get<2>(p)))
+          std::get<2>(p), std::get<3>(p)))
         continue;
     }
   } else if (delete_mode) {
