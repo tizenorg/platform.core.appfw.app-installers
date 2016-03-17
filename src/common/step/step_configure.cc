@@ -163,6 +163,7 @@ bool StepConfigure::SetupRootAppDirectory() {
       return false;
     }
   }
+  LOG(INFO) << "AppDir(" << context_->root_application_path.get() << ")";
   return true;
 }
 
