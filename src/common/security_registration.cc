@@ -164,8 +164,8 @@ bool RegisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, author_id, api_version, preload, path, uid,
-      privileges, req, error_message)) {
+  if (!PrepareRequest(app_id, pkg_id, author_id, api_version, preload, path,
+                      uid, privileges, req, error_message)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
@@ -200,8 +200,8 @@ bool UnregisterSecurityContext(const std::string& app_id,
     return false;
   }
 
-  if (!PrepareRequest(app_id, pkg_id, std::string(), std::string(), std::string(),
-      bf::path(), uid, {}, req, error_message)) {
+  if (!PrepareRequest(app_id, pkg_id, std::string(), std::string(),
+                      std::string(), bf::path(), uid, {}, req, error_message)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_app_inst_req_free(req);
     return false;
@@ -235,7 +235,8 @@ bool RegisterSecurityContextForManifest(
       return false;
     }
     if (!RegisterSecurityContext(app->appid, pkg_id, cert_info->author_id.get(),
-        manifest->api_version, manifest->preload, path, uid, priv_vec, error_message)) {
+        manifest->api_version, manifest->preload, path, uid, priv_vec,
+        error_message)) {
       return false;
     }
   }
