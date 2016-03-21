@@ -14,6 +14,7 @@
 #include <fstream>
 
 #include "common/app_query_interface.h"
+#include "common/pkgmgr_signal.h"
 
 namespace bf = boost::filesystem;
 
@@ -152,6 +153,12 @@ bool PkgMgrInterface::GetIsPreloadRequest() {
   return (pkgmgr_installer_get_is_preload(pi_) == 1)?
       true:(install_mode_ == InstallationMode::OFFLINE)?
       true:false;
+}
+
+std::unique_ptr<PkgmgrSignal> PkgMgrInterface::CreatePkgmgrSignal() const {
+  if (!pkgmgr_installer_interface_->ShouldCreateSignal())
+    return nullptr;
+  return std::unique_ptr<PkgmgrSignal>(new PkgmgrSignal(pi_, GetRequestType()));
 }
 
 }  // namespace common_installer
