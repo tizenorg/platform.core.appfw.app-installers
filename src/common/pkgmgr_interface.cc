@@ -7,6 +7,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem.hpp>
 
+#include <tzplatform_config.h>
 
 #include <memory>
 #include <string>
@@ -69,6 +70,15 @@ int PkgMgrInterface::InitInternal(int argc, char** argv) {
   if (result) {
     LOG(ERROR) << "Cannot receive request. Invalid arguments?";
     // no need to free pkgmgr_installer here. it will be freed in DTOR.
+  }
+
+  if (getuid() == 0) {
+    result = pkgmgr_installer_set_uid(pi_,
+        tzplatform_getuid(TZ_SYS_GLOBALAPP_USER));
+    if (result) {
+      LOG(ERROR) << "Cannot set uid.";
+      return false;
+    }
   }
 
   is_app_installed_ = false;

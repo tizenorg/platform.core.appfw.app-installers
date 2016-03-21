@@ -125,6 +125,7 @@ Step::Status StepConfigure::precheck() {
       if (context_->is_preload_request.get()) {
         LOG(INFO) << "Allowing installation from root user for "
                      "preload request mode.";
+        context_->uid.set(tzplatform_getuid(TZ_SYS_GLOBALAPP_USER));
       } else {
         LOG(ERROR) << "App-installer should not run with superuser!";
         return Status::OPERATION_NOT_ALLOWED;
