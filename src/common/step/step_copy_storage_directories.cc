@@ -52,6 +52,8 @@ common_installer::Step::Status StepCopyStorageDirectories::precheck() {
 }
 
 common_installer::Step::Status StepCopyStorageDirectories::process() {
+  if (context_->request_mode.get() == RequestMode::GLOBAL)
+    return Status::OK;
   if (!MoveAppStorage(backup_path_,
                       context_->pkg_path.get(),
                       kDataLocation)) {
