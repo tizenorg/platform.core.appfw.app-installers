@@ -21,6 +21,7 @@ enum class InstallationMode {
   OFFLINE
 };
 
+class PkgmgrSignal;
 class PkgMgrInterface;
 typedef std::shared_ptr<PkgMgrInterface> PkgMgrPtr;
 
@@ -49,8 +50,8 @@ class PkgmgrInstallerInterface {
 class PkgmgrInstaller : public PkgmgrInstallerInterface {
  public:
   bool CreatePkgMgrInstaller(pkgmgr_installer** installer,
-                             InstallationMode* mode);
-  bool ShouldCreateSignal() const;
+                             InstallationMode* mode) override;
+  bool ShouldCreateSignal() const override;
 };
 
 /**
@@ -132,14 +133,11 @@ class PkgMgrInterface {
   InstallationMode GetInstallationMode() const { return install_mode_; }
 
   /**
-   * @brief ShouldCreateSignal
+   * @brief CreatePkgmgrSignal
    *
-   *
-   * @return true if pkgmgr signal should be created
+   * @return creates pkgmgr signal
    */
-  bool ShouldCreateSignal() const {
-    return pkgmgr_installer_interface_->ShouldCreateSignal();
-  }
+  std::unique_ptr<PkgmgrSignal> CreatePkgmgrSignal() const;
 
   /** PkgMgrInstance destructor. */
   ~PkgMgrInterface();

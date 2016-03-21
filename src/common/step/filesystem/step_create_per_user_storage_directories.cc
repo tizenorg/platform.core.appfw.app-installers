@@ -61,17 +61,15 @@ bool StepCreatePerUserStorageDirectories::CreateExternalStorageDir() {
       case RequestMode::GLOBAL: {
         LOG(DEBUG) << "Creating external directories for all users";
         PerformExternalDirectoryCreationForAllUsers(pkg.pkg_id,
-                                                         pkg.author_id,
-                                                         pkg.api_version);
+                                                    pkg.author_id);
       }
       break;
       case RequestMode::USER: {
         LOG(DEBUG) << "Creating external directories for user: "
             << context_->uid.get();
         PerformExternalDirectoryCreationForUser(context_->uid.get(),
-                                                     pkg.pkg_id,
-                                                     pkg.author_id,
-                                                     pkg.api_version);
+                                                pkg.pkg_id,
+                                                pkg.author_id);
       }
       break;
     }

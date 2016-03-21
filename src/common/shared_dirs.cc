@@ -195,7 +195,6 @@ bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
 
 bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
                        const std::string& author_id,
-                       const std::string& api_version,
                        uid_t uid, gid_t gid, const bool set_permissions) {
   bf::path base_dir = app_dir / pkgid;
   if (bf::exists(base_dir)) {
@@ -241,7 +240,7 @@ bf::path GetDirectoryPathForStorage(uid_t user, std::string apps_prefix) {
 }
 
 bool CreateUserDirectories(uid_t user, const std::string& pkgid,
-    const std::string& author_id, const std::string& api_version,
+    const std::string& author_id,
     const std::string& apps_prefix, const bool set_permissions) {
 
   struct passwd* pwd = getpwuid(user);  // NOLINT
@@ -258,7 +257,7 @@ bool CreateUserDirectories(uid_t user, const std::string& pkgid,
              << pwd->pw_gid;
 
   bf::path apps_rw = GetDirectoryPathForStorage(user, apps_prefix);
-  if (!CreateDirectories(apps_rw, pkgid, author_id, api_version,
+  if (!CreateDirectories(apps_rw, pkgid, author_id,
       pwd->pw_uid, pwd->pw_gid, set_permissions)) {
     return false;
   }
@@ -382,11 +381,10 @@ std::string GetDirectoryPathForExternalStorage() {
 
 bool PerformInternalDirectoryCreationForUser(uid_t user,
                                              const std::string& pkgid,
-                                             const std::string& author_id,
-                                             const std::string& api_version) {
+                                             const std::string& author_id) {
   const char* internal_storage_prefix = tzplatform_getenv(TZ_SYS_HOME);
   const bool set_permissions = true;
-  if (!CreateUserDirectories(user, pkgid, author_id, api_version,
+  if (!CreateUserDirectories(user, pkgid, author_id,
                              internal_storage_prefix, set_permissions))
     return false;
   return true;
@@ -394,8 +392,7 @@ bool PerformInternalDirectoryCreationForUser(uid_t user,
 
 bool PerformExternalDirectoryCreationForUser(uid_t user,
                                              const std::string& pkgid,
-                                             const std::string& author_id,
-                                             const std::string& api_version) {
+                                             const std::string& author_id) {
   const char* storage_path = tzplatform_mkpath(TZ_SYS_MEDIA,
                                                kExternalStorageDirPrefix);
   const bool set_permissions = false;
@@ -404,15 +401,14 @@ bool PerformExternalDirectoryCreationForUser(uid_t user,
     return false;
   }
 
-  if (CreateUserDirectories(user, pkgid, author_id, api_version,
+  if (CreateUserDirectories(user, pkgid, author_id,
                             storage_path, set_permissions)) {
   }
   return true;
 }
 
 bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 const std::string& author_id,
-                                                 const std::string& api_ver) {
+                                                 const std::string& author_id) {
   for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
       iter != bf::directory_iterator();
          ++iter) {
@@ -431,8 +427,7 @@ bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
 
     if (!PerformInternalDirectoryCreationForUser(pwd->pw_uid,
                                                  pkgid,
-                                                 author_id,
-                                                 api_ver))
+                                                 author_id))
       LOG(ERROR) << "Could not create internal storage directories for user: "
         << user.c_str();
   }
@@ -440,12 +435,10 @@ bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
 }
 
 bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 const std::string& author_id,
-                                                 const std::string& api_ver) {
+                                                 const std::string& author_id) {
   for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
       iter != bf::directory_iterator();
          ++iter) {
-
     try {
       if (!bf::is_directory(iter->path())) continue;
     }
@@ -466,8 +459,7 @@ bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
 
     if (!PerformExternalDirectoryCreationForUser(pwd->pw_uid,
                                                  pkgid,
-                                                 author_id,
-                                                 api_ver))
+                                                 author_id))
       LOG(WARNING) << "Could not create external storage directories for user: "
         << user.c_str();
   }

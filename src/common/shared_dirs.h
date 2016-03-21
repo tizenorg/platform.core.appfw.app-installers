@@ -30,7 +30,6 @@ using PkgList = std::vector<PkgInfo>;
  *
  * \param pkgid id of package
  * \param author_id id of author
- * \param api_version api version
  * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
@@ -38,15 +37,13 @@ using PkgList = std::vector<PkgInfo>;
  */
 bool PerformInternalDirectoryCreationForUser(uid_t uid,
                                              const std::string& pkgid,
-                                             const std::string& author_id,
-                                             const std::string& api_version);
+                                             const std::string& author_id);
 
 /**
  * \brief Performs a creation of directories for specific user in external storage
  *
  * \param pkgid id of package
  * \param author_id id of author
- * \param api_version api version
  * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
@@ -54,38 +51,33 @@ bool PerformInternalDirectoryCreationForUser(uid_t uid,
  */
 bool PerformExternalDirectoryCreationForUser(uid_t uid,
                                              const std::string& pkgid,
-                                             const std::string& author_id,
-                                             const std::string& api_version);
+                                             const std::string& author_id);
 
 /**
  * \brief Performs a creation of directories in internal storage
  *
  * \param pkgid id of package
  * \param author_id id of author
- * \param api_version api version
  * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
  *
  */
 bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 const std::string& author_id,
-                                                 const std::string& apiversion);
+                                                 const std::string& author_id);
 
 /**
  * \brief Performs a creation of directories in external storage (eg. SD card)
  *
  * \param pkgid id of package
  * \param author_id id of author
- * \param api_version api version
  * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
  *
  */
 bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 const std::string& author_id,
-                                                 const std::string& apiversion);
+                                                 const std::string& author_id);
 
 /**
  * \brief Performs deletion of directories

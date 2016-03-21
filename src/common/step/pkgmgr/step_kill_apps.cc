@@ -6,9 +6,9 @@
 
 #include <app_manager.h>
 #include <app_manager_extension.h>
+#include <sys/time.h>
 
 #include <string>
-#include <sys/time.h>
 
 #include "common/utils/glist_range.h"
 
@@ -47,7 +47,7 @@ bool KillApp(const std::string& appid) {
       LOG(DEBUG) << "kill waiting count (" << i << ")";
       break;
     }
-    usleep(100000); // 100msec
+    usleep(100000);  // 100msec
     if (i == 10)
       LOG(ERROR) << "kill timeout";
   }

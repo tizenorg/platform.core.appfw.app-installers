@@ -97,7 +97,7 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
   }
 
   if (sec_install_type != ci::SecurityAppInstallType::None) {
-    app_install_type type;
+    app_install_type type = SM_APP_INSTALL_NONE;
 
     switch (sec_install_type) {
       case ci::SecurityAppInstallType::Local:
@@ -108,6 +108,10 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
         break;
       case ci::SecurityAppInstallType::Global:
         type = SM_APP_INSTALL_GLOBAL;
+        break;
+      case ci::SecurityAppInstallType::None:
+        break;
+      default:
         break;
     }
 

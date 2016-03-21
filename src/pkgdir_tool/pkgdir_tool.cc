@@ -134,14 +134,12 @@ int main(int argc, char** argv) {
 
   auto dir_operation = ParseDirectoryOptions(opt_map);
   auto pkgs = GetPackageListFromArgs(opt_map);
-  auto create_skel_dirs = true;
 
   for (auto& p : pkgs) {
     switch (dir_operation) {
       case DirectoryOperation::CREATE_INTERNAL: {
         LOG(DEBUG) << "Running directory creation for package id: " << p.pkg_id;
         ci::PerformInternalDirectoryCreationForAllUsers(p.pkg_id,
-                                                        p.api_version,
                                                         p.author_id);
         const std::string pkg_path = ci::GetDirectoryPathForInternalStorage();
         ci::SetPackageDirectorySmackRulesForAllUsers(pkg_path,

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a apache 2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef COMMON_RDS_STEP_RDS_MODIFY_H_
-#define COMMON_RDS_STEP_RDS_MODIFY_H_
+#ifndef COMMON_STEP_RDS_STEP_RDS_MODIFY_H_
+#define COMMON_STEP_RDS_STEP_RDS_MODIFY_H_
 
 #include <boost/filesystem.hpp>
 #include <common/step/step.h>
@@ -93,4 +93,4 @@ class StepRDSModify : public Step {
 }  // namespace rds
 }  // namespace common_installer
 
-#endif  // COMMON_RDS_STEP_RDS_MODIFY_H_
+#endif  // COMMON_STEP_RDS_STEP_RDS_MODIFY_H_
