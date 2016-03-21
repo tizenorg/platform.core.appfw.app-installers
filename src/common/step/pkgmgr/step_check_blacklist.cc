@@ -13,6 +13,8 @@ namespace common_installer {
 namespace pkgmgr {
 
 Step::Status StepCheckBlacklist::process() {
+  if (context_->installation_mode.get() == InstallationMode::OFFLINE)
+    return Status::OK;
   bool result;
   pkgmgr_client* pc = pkgmgr_client_new(PC_REQUEST);
   if (!pc)
