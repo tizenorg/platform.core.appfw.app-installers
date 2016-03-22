@@ -177,6 +177,10 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
     if (req_type == RequestType::ManifestDirectInstall ||
         req_type == RequestType::ManifestDirectUpdate)
       manifest->type = strdup("rpm");
+      if (context_->is_preload_request.get() == false) {
+        LOG(ERROR) << "Non-preload rpm installation not allowed";
+        return false;
+      }
     else
       manifest->type = strdup("tpk");
   } else {

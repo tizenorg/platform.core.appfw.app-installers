@@ -285,6 +285,11 @@ class InstallerContext {
    * \brief preload request received from pkgmgr_installer
    */
   Property<bool> is_preload_request;
+
+  /**
+   * \brief force-remove request received from pkgmgr_installer
+   */
+  Property<bool> force_remove;
 };
 
 }  // namespace common_installer
