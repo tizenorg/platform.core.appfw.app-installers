@@ -56,7 +56,6 @@ SET(SRCS
   step/security/step_check_background_category.cc
   step/security/step_check_old_certificate.cc
   step/security/step_check_signature.cc
-  step/security/step_privilege_compatibility.cc
   step/security/step_recover_security.cc
   step/security/step_register_security.cc
   step/security/step_revoke_security.cc
@@ -84,7 +83,6 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   CERT_SVC_DEPS_VCORE_DEPS
   MINIZIP_DEPS
   ZLIB_DEPS
-  PRIVILEGE_CHECKER_DEPS
   APPMANAGER_DEPS
   DELTA_MANIFEST_HANDLERS_DEPS
   TPK_MANIFEST_HANDLERS_DEPS
