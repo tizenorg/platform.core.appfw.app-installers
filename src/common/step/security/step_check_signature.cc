@@ -8,7 +8,6 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/format.hpp>
 #include <glib.h>
-#include <privilege_manager.h>
 
 #include <vcore/Certificate.h>
 #include <vcore/SignatureFinder.h>
@@ -51,20 +50,6 @@ common_installer::PrivilegeLevel CertStoreIdToPrivilegeLevel(
       return common_installer::PrivilegeLevel::PLATFORM;
     default:
       return common_installer::PrivilegeLevel::UNTRUSTED;
-  }
-}
-
-privilege_manager_visibility_e PrivilegeLevelToVisibility(
-    common_installer::PrivilegeLevel level) {
-  switch (level) {
-    case common_installer::PrivilegeLevel::PUBLIC:
-      return PRVMGR_PACKAGE_VISIBILITY_PUBLIC;
-    case common_installer::PrivilegeLevel::PARTNER:
-      return PRVMGR_PACKAGE_VISIBILITY_PARTNER;
-    case common_installer::PrivilegeLevel::PLATFORM:
-      return PRVMGR_PACKAGE_VISIBILITY_PLATFORM;
-    default:
-      assert(false && "Not reached");
   }
 }
 
@@ -158,40 +143,6 @@ common_installer::Step::Status ValidateSignatureFile(
   return common_installer::Step::Status::OK;
 }
 
-bool ValidatePrivilegeLevel(common_installer::PrivilegeLevel level,
-    bool is_webapp, const char* api_version, GList* privileges,
-    std::string* error_message) {
-  if (level == common_installer::PrivilegeLevel::UNTRUSTED) {
-    if (privileges) {
-      LOG(ERROR) << "Untrusted application cannot declare privileges";
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  char* error = nullptr;
-  int status = PRVMGR_ERR_NONE;
-  // Do the privilege check only if the package has privileges
-  if (privileges) {
-    status = privilege_manager_verify_privilege(api_version,
-        is_webapp ? PRVMGR_PACKAGE_TYPE_WRT : PRVMGR_PACKAGE_TYPE_CORE,
-        privileges, PrivilegeLevelToVisibility(level), &error);
-  }
-  if (status != PRVMGR_ERR_NONE) {
-    std::string errnum =
-                   boost::str(boost::format("%d") % status);
-    LOG(ERROR) << "Error while verifing privilege level: "
-               << error << " <" << errnum << ">";
-    *error_message = error;
-    *error_message += ":<" + errnum + ">";
-    free(error);
-    return false;
-  }
-  LOG(INFO) << "Privilege level checked";
-  return true;
-}
-
 }  // namespace
 
 namespace common_installer {
@@ -273,21 +224,6 @@ Step::Status StepCheckSignature::process() {
 
   LOG(INFO) << "Privilege level: " << PrivilegeLevelToString(level);
   context_->privilege_level.set(level);
-
-  // TODO(t.iwanek): refactoring, move to wgt backend
-  bool is_webapp = context_->pkg_type.get() == "wgt";
-  error_message.clear();
-  if (!context_->is_preload_request.get()) {
-    if (!ValidatePrivilegeLevel(level, is_webapp,
-        context_->manifest_data.get()->api_version,
-        context_->manifest_data.get()->privileges, &error_message)) {
-      if (!error_message.empty()) {
-        LOG(ERROR) << "error_message: " << error_message;
-        on_error(Status::SIGNATURE_ERROR, error_message);
-      }
-      return Status::SIGNATURE_ERROR;
-    }
-  }
 
   LOG(INFO) << "Signature done";
   return Status::OK;
