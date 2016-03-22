@@ -13,8 +13,10 @@ namespace common_installer {
 namespace pkgmgr {
 
 Step::Status StepCheckRemovable::process() {
-  pkgmgrinfo_pkginfo_h handle;
+  if (context_->force_remove.get())
+      return Status::OK;
 
+  pkgmgrinfo_pkginfo_h handle;
   int ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(context_->pkgid.get().c_str(),
       context_->uid.get(), &handle);
   if (ret != PMINFO_R_OK) {

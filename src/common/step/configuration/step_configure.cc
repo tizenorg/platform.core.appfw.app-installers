@@ -52,6 +52,7 @@ Step::Status StepConfigure::process() {
       }
       break;
     case RequestType::Uninstall:
+      SetupIsForceRemoval();
       context_->pkgid.set(pkgmgr_->GetRequestInfo());
       context_->file_path.set(kStrEmpty);
       break;
@@ -197,6 +198,10 @@ void StepConfigure::SetupFileCreationMask() {
 
 void StepConfigure::SetupIsPreloadRequest() {
   context_->is_preload_request.set(pkgmgr_->GetIsPreloadRequest());
+}
+
+void StepConfigure::SetupIsForceRemoval() {
+  context_->force_remove.set(pkgmgr_->GetIsForceRemoval());
 }
 
 }  // namespace configuration
