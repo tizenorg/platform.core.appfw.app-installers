@@ -110,6 +110,13 @@ class PkgMgrInterface {
   bool GetIsPreloadRequest();
 
   /**
+  * Returns True if the request is for force-remove. Otherwise, return false
+  *
+  * \return True if the request is for force-remove. Otherwise, return false
+  */
+  bool GetIsForceRemoval();
+
+  /**
    * Get Raw pointer to pkgmgr_installer object
    * NOTE: It should not be used (PkgMgrInterface can destroy it
    *
