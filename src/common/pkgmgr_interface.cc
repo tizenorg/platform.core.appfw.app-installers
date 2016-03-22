@@ -154,4 +154,9 @@ bool PkgMgrInterface::GetIsPreloadRequest() {
       true:false;
 }
 
+bool PkgMgrInterface::GetIsForceRemoval() {
+  // root only
+  return (getuid() == 0 && pkgmgr_installer_get_force_removal(pi_) == 1);
+}
+
 }  // namespace common_installer
