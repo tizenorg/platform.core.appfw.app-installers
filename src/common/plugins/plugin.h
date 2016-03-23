@@ -38,7 +38,7 @@ class Plugin {
         reinterpret_cast<PluginFunctionPtr>(GetSymbol(name));
 
     if (!function) {
-      LOG(WARNING) << "Failed to get symbol: " << name << " (" << dlerror()
+      LOG(WARNING) << "Skip to execute symbol: " << name << " (" << dlerror()
                    << ")";
       return false;
     }
