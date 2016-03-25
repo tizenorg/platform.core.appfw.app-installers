@@ -51,6 +51,8 @@ SET(SRCS
   step/pkgmgr/step_unregister_app.cc
   step/pkgmgr/step_update_app.cc
   step/pkgmgr/step_update_tep.cc
+  step/pkgmgr/step_disable_app.cc
+  step/pkgmgr/step_enable_app.cc
   step/recovery/step_open_recovery_file.cc
   step/recovery/step_recovery.cc
   step/security/step_check_background_category.cc

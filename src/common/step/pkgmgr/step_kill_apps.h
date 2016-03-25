@@ -22,6 +22,14 @@ class StepKillApps : public Step {
  public:
   using Step::Step;
 
+  enum class PackageStatus {
+    NORMAL, // Package will be updated, uninstalled, delta
+    DISABLE //Package will be disabled
+  };
+
+  explicit StepKillApps(common_installer::InstallerContext *context,
+      PackageStatus package_status);
+
   /**
    * \brief main logic for killing applications
    *
@@ -39,6 +47,10 @@ class StepKillApps : public Step {
   Status precheck() override;
 
   SCOPE_LOG_TAG(KillApps)
+
+ private:
+  PackageStatus package_status_;
+
 };
 
 }  // namespace pkgmgr

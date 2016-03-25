@@ -88,6 +88,10 @@ Step::Status StepConfigure::process() {
       context_->xml_path.set(xml_path);
       break;
     }
+    case RequestType::Disable:
+    case RequestType::Enable:
+      context_->pkgid.set(pkgmgr_->GetRequestInfo());
+      break;
     default:
       LOG(ERROR) <<
           "Only installation, update and uninstallation is now supported";

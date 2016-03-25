@@ -45,18 +45,31 @@ bool KillApp(const std::string& appid) {
 namespace common_installer {
 namespace pkgmgr {
 
+StepKillApps::StepKillApps(
+    InstallerContext* context, PackageStatus package_status)
+    :Step(context),
+      package_status_(package_status) {
+}
+
 Step::Status StepKillApps::process() {
-  manifest_x* old_manifest = context_->old_manifest_data.get() ?
-      context_->old_manifest_data.get() : context_->manifest_data.get();
-  for (application_x* app :
-       GListRange<application_x*>(old_manifest->application)) {
-    (void) KillApp(app->appid);
+  if (package_status_ == PackageStatus::NORMAL) {
+    manifest_x* old_manifest = context_->old_manifest_data.get() ?
+        context_->old_manifest_data.get() : context_->manifest_data.get();
+    for (application_x* app :
+         GListRange<application_x*>(old_manifest->application)) {
+      (void) KillApp(app->appid);
+    }
+  } else {
+    //package_status_ == disable
+    //retrieve appid from pkg db with given pkgid
+
+    //for each appid, run killapp
   }
   return Status::OK;
 }
 
 Step::Status StepKillApps::precheck() {
-  if (!context_->manifest_data.get() && !context_->old_manifest_data.get()) {
+  if (package_status_ == PackageStatus::NORMAL && !context_->manifest_data.get() && !context_->old_manifest_data.get()) {
     LOG(ERROR) << "manifest_data is empty";
     return Status::ERROR;
   }
