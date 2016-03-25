@@ -18,7 +18,9 @@ enum class RequestType : int {
   Delta,
   Recovery,
   ManifestDirectInstall,
-  ManifestDirectUpdate
+  ManifestDirectUpdate,
+  Disable,
+  Enable
 };
 
 /** Request mode (USER vs GLOBAL) */
