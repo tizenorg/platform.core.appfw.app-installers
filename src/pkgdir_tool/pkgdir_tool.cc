@@ -227,23 +227,28 @@ bool CreatePerUserDirectories(const std::string& pkgid,
       return false;
     const bf::path& home_path = iter->path();
     std::string user = home_path.filename().string();
-    struct passwd* pwd = getpwnam(user.c_str());  // NOLINT
-    if (!pwd) {
+    char buf[1024] = {0, };
+    struct passwd pwd, *pwd_result;
+
+    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
+    if (ret != 0 || pwd_result == NULL) {
       LOG(WARNING) << "Failed to get user for home directory: " << user;
       continue;
     }
 
-    struct group* gr = getgrgid(pwd->pw_gid);  // NOLINT
-    if (strcmp(gr->gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
+    struct group gr, *gr_result;
+    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
+    if (ret != 0 || gr_result == NULL ||
+        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
       continue;
 
-    LOG(DEBUG) << "Creating directories for uid: " << pwd->pw_uid << ", gid: "
-               << pwd->pw_gid << ", home: " << home_path;
-    tzplatform_set_user(pwd->pw_uid);
+    LOG(DEBUG) << "Creating directories for uid: " << pwd.pw_uid << ", gid: "
+               << pwd.pw_gid << ", home: " << home_path;
+    tzplatform_set_user(pwd.pw_uid);
     bf::path apps_rw(tzplatform_getenv(TZ_USER_APP));
     tzplatform_reset_user();
     if (!CreateDirectories(apps_rw, pkgid, author_id, api_version,
-        pwd->pw_uid, pwd->pw_gid)) {
+        pwd.pw_uid, pwd.pw_gid)) {
       return false;
     }
   }
@@ -307,21 +312,27 @@ bool DeletePerUserDirectories(const std::string& pkgid) {
       return false;
     const bf::path& home_path = iter->path();
     std::string user = home_path.filename().string();
-    struct passwd* pwd = getpwnam(user.c_str());  // NOLINT
-    if (!pwd) {
+    char buf[1024] = {0, };
+    struct passwd pwd, *pwd_result;
+
+    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
+    if (ret != 0 || pwd_result == NULL) {
       LOG(WARNING) << "Failed to get user for home directory: " << user;
       continue;
     }
 
-    struct group* gr = getgrgid(pwd->pw_gid);  // NOLINT
-    if (strcmp(gr->gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
+    struct group gr, *gr_result;
+
+    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
+    if (ret != 0 || gr_result == NULL ||
+        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
       continue;
 
-    if (ci::IsPackageInstalled(pkgid, pwd->pw_uid)) continue;
+    if (ci::IsPackageInstalled(pkgid, pwd.pw_uid)) continue;
 
-    LOG(DEBUG) << "Deleting directories for uid: " << pwd->pw_uid << ", gid: "
-               << pwd->pw_gid;
-    tzplatform_set_user(pwd->pw_uid);
+    LOG(DEBUG) << "Deleting directories for uid: " << pwd.pw_uid << ", gid: "
+               << pwd.pw_gid;
+    tzplatform_set_user(pwd.pw_uid);
     bf::path apps_rw(tzplatform_getenv(TZ_USER_APP));
     tzplatform_reset_user();
     if (!DeleteDirectories(apps_rw, pkgid)) {
