@@ -128,6 +128,10 @@ RequestType PkgMgrInterface::GetRequestType() const {
         return RequestType::ManifestDirectInstall;
       else
         return RequestType::ManifestDirectUpdate;
+    case PKGMGR_REQ_DISABLE_PKG:
+      return RequestType::Disable;
+    case PKGMGR_REQ_ENABLE_PKG:
+      return RequestType::Enable;
     default:
       return RequestType::Unknown;
   }
