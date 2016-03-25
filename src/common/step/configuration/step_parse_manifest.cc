@@ -291,7 +291,7 @@ bool StepParseManifest::FillWidgetApplication(manifest_x* manifest) {
     widget_app->launch_mode =
         strdup(application.app_info.launch_mode().c_str());
     widget_app->multiple = strdup("false");
-    widget_app->nodisplay = strdup("false");
+    widget_app->nodisplay = strdup("true");
     widget_app->taskmanage = strdup("false");
     widget_app->indicatordisplay = strdup("false");
     widget_app->type = strdup("capp");
@@ -506,7 +506,7 @@ bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
           (context_->root_application_path.get()
                                / manifest->package / "bin" /
                                watch_application.app_info.exec()).c_str());
-    watch_app->nodisplay = strdup("false");
+    watch_app->nodisplay = strdup("true");
     watch_app->multiple = strdup("false");
     watch_app->type = strdup(watch_application.app_info.type().c_str());
     watch_app->taskmanage = strdup("false");
