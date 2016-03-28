@@ -120,21 +120,28 @@ Step::Status StepConfigure::process() {
 Step::Status StepConfigure::precheck() {
   SetupIsPreloadRequest();
 
-  if (pkgmgr_->GetRequestType() != RequestType::ManifestDirectInstall &&
-      pkgmgr_->GetRequestType() != RequestType::ManifestDirectUpdate) {
-    if (getuid() == 0) {
-      if (context_->is_preload_request.get()) {
-        LOG(INFO) << "Allowing installation from root user for "
-                     "preload request mode.";
-        context_->uid.set(tzplatform_getuid(TZ_SYS_GLOBALAPP_USER));
-      } else {
-        LOG(ERROR) << "App-installer should not run with superuser!";
-        return Status::OPERATION_NOT_ALLOWED;
-      }
+  if (getuid() == 0) {
+    context_->uid.set(tzplatform_getuid(TZ_SYS_GLOBALAPP_USER));
+    if (pkgmgr_->GetRequestType() == RequestType::ManifestDirectInstall ||
+        pkgmgr_->GetRequestType() == RequestType::ManifestDirectUpdate) {
+      LOG(INFO) << "Allowing installation from root user for "
+                   "manifest direct mode.";
+    } else if (context_->is_preload_request.get()) {
+      LOG(INFO) << "Allowing installation from root user for "
+                   "preload request mode.";
+    } else {
+      LOG(ERROR) << "App-installer should not run with superuser!";
+      return Status::OPERATION_NOT_ALLOWED;
     }
   } else {
-    LOG(INFO) << "Allowing installation from root user for "
-                 "manifest direct request mode.";
+    if (pkgmgr_->GetRequestType() == RequestType::ManifestDirectInstall ||
+        pkgmgr_->GetRequestType() == RequestType::ManifestDirectUpdate) {
+      LOG(ERROR) << "Non-root user cannot request manifest direct mode.";
+      return Status::OPERATION_NOT_ALLOWED;
+    } else if (context_->is_preload_request.get()) {
+      LOG(ERROR) << "Non-root user cannot request preload request mode.";
+      return Status::OPERATION_NOT_ALLOWED;
+    }
   }
   return Status::OK;
 }
