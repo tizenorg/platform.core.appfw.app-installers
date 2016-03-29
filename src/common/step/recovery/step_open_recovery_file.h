@@ -14,7 +14,7 @@
 namespace common_installer {
 namespace recovery {
 
-class StepOpenRecoveryFile : public Step {
+class __attribute__ ((visibility ("default"))) StepOpenRecoveryFile : public Step {
  public:
   using Step::Step;
 

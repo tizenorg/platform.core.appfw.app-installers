@@ -17,7 +17,7 @@ namespace backup {
  * \brief Step responsbile for backing manifest file during update and
  *        uninstallation. Used by WGT and TPK backend
  */
-class StepBackupManifest : public Step {
+class __attribute__ ((visibility ("default"))) StepBackupManifest : public Step {
  public:
   using Step::Step;
 

@@ -19,7 +19,7 @@ namespace common_installer {
  *
  * \return backup path
  */
-boost::filesystem::path GetBackupPathForPackagePath(
+__attribute__ ((visibility ("default"))) boost::filesystem::path GetBackupPathForPackagePath(
     const boost::filesystem::path& pkg_path);
 
 /**
@@ -30,7 +30,7 @@ boost::filesystem::path GetBackupPathForPackagePath(
  *
  * \return backup path
  */
-boost::filesystem::path GetBackupPathForManifestFile(
+__attribute__ ((visibility ("default"))) boost::filesystem::path GetBackupPathForManifestFile(
     const boost::filesystem::path& manfest_path);
 
 /**
@@ -41,14 +41,14 @@ boost::filesystem::path GetBackupPathForManifestFile(
  *
  * \return backup path
  */
-boost::filesystem::path GetBackupPathForIconFile(
+__attribute__ ((visibility ("default"))) boost::filesystem::path GetBackupPathForIconFile(
     const boost::filesystem::path& icon_path);
 
 /**
  * @brief GetIconFileBackupExtension
  * @return extension for backup icon files
  */
-std::string GetIconFileBackupExtension();
+__attribute__ ((visibility ("default"))) std::string GetIconFileBackupExtension();
 
 }  // namespace common_installer
 

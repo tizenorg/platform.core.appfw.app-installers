@@ -63,6 +63,8 @@ cp %{SOURCE1000} .
 cp %{SOURCE1001} .
 
 %build
+export CFLAGS+=" -fvisibility=hidden"
+export CXXFLAGS+=" -fvisibility=hidden"
 %cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type}
 make %{?_smp_mflags}
 

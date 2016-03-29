@@ -20,7 +20,7 @@ namespace backup {
  *\brief Step responsible for backuping icons during update and uninstallation.
  *       Used by TPK and WGT backend
  */
-class StepBackupIcons : public Step {
+class __attribute__ ((visibility ("default"))) StepBackupIcons : public Step {
  public:
   using Step::Step;
 

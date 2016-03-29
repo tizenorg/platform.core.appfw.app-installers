@@ -30,7 +30,7 @@ namespace filesystem {
  * * TZ_SER_APPS/tmpdir  (/{HOME}/apps_rw/tmpuniquedir)
  * InstallerContext::unpacked_dir_path points to this location.
  */
-class StepUnzip : public Step {
+class __attribute__ ((visibility ("default"))) StepUnzip : public Step {
  public:
   using Step::Step;
   Status process() override;

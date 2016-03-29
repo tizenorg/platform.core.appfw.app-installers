@@ -27,7 +27,7 @@ namespace common_installer {
  * * installation end,
  * * installation progress.
  */
-class PkgmgrSignal {
+class __attribute__ ((visibility ("default"))) PkgmgrSignal {
  public:
   enum class State {
     NOT_SENT,

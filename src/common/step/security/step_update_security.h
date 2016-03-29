@@ -12,7 +12,7 @@
 namespace common_installer {
 namespace security {
 
-class StepUpdateSecurity : public Step {
+class __attribute__ ((visibility ("default"))) StepUpdateSecurity : public Step {
  public:
   using Step::Step;
 

@@ -5,15 +5,15 @@
 #ifndef COMMON_UTILS_BYTE_SIZE_LITERALS_H_
 #define COMMON_UTILS_BYTE_SIZE_LITERALS_H_
 
-constexpr unsigned long long operator"" _kB(unsigned long long v) {  // NOLINT
+__attribute__ ((visibility ("default"))) constexpr unsigned long long operator"" _kB(unsigned long long v) {  // NOLINT
   return v * (1 << 10);
 }
 
-constexpr unsigned long long operator"" _MB(unsigned long long v) {  // NOLINT
+__attribute__ ((visibility ("default"))) constexpr unsigned long long operator"" _MB(unsigned long long v) {  // NOLINT
   return v * (1 << 20);
 }
 
-constexpr unsigned long long operator"" _GB(unsigned long long v) {  // NOLINT
+__attribute__ ((visibility ("default"))) constexpr unsigned long long operator"" _GB(unsigned long long v) {  // NOLINT
   return v * (1 << 30);
 }
 

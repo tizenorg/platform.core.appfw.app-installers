@@ -23,7 +23,7 @@ namespace security {
  * security rules for the app before update
  * gets restored
  */
-class StepRecoverSecurity : public recovery::StepRecovery {
+class __attribute__ ((visibility ("default"))) StepRecoverSecurity : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 

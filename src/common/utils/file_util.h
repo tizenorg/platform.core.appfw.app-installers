@@ -9,49 +9,49 @@
 
 namespace common_installer {
 
-enum FSFlag {
+enum __attribute__ ((visibility ("default"))) FSFlag {
   FS_NONE              = 0,
   FS_MERGE_DIRECTORIES = (1 << 0)
 };
 
-bool CreateDir(const boost::filesystem::path& path);
+__attribute__ ((visibility ("default"))) bool CreateDir(const boost::filesystem::path& path);
 
-bool CopyDir(const boost::filesystem::path& src,
+__attribute__ ((visibility ("default"))) bool CopyDir(const boost::filesystem::path& src,
              const boost::filesystem::path& dst, FSFlag flags = FS_NONE);
 
-bool CopyFile(const boost::filesystem::path& src,
+__attribute__ ((visibility ("default"))) bool CopyFile(const boost::filesystem::path& src,
              const boost::filesystem::path& dst);
 
-bool MoveDir(const boost::filesystem::path& src,
+__attribute__ ((visibility ("default"))) bool MoveDir(const boost::filesystem::path& src,
              const boost::filesystem::path& dst, FSFlag flags = FS_NONE);
 
-bool MoveFile(const boost::filesystem::path& src,
+__attribute__ ((visibility ("default"))) bool MoveFile(const boost::filesystem::path& src,
               const boost::filesystem::path& dst);
 
-bool SetDirPermissions(const boost::filesystem::path& path,
+__attribute__ ((visibility ("default"))) bool SetDirPermissions(const boost::filesystem::path& path,
                        boost::filesystem::perms permissions);
 
-int64_t GetUnpackedPackageSize(const boost::filesystem::path& path);
+__attribute__ ((visibility ("default"))) int64_t GetUnpackedPackageSize(const boost::filesystem::path& path);
 
-boost::filesystem::path GenerateTmpDir(const boost::filesystem::path& app_path);
+__attribute__ ((visibility ("default"))) boost::filesystem::path GenerateTmpDir(const boost::filesystem::path& app_path);
 
-boost::filesystem::path GenerateTemporaryPath(
+__attribute__ ((visibility ("default"))) boost::filesystem::path GenerateTemporaryPath(
     const boost::filesystem::path& path);
 
-bool ExtractToTmpDir(const char* zip_path,
+__attribute__ ((visibility ("default"))) bool ExtractToTmpDir(const char* zip_path,
                      const boost::filesystem::path& tmp_dir);
 
-bool ExtractToTmpDir(const char* zip_path,
+__attribute__ ((visibility ("default"))) bool ExtractToTmpDir(const char* zip_path,
                      const boost::filesystem::path& tmp_dir,
                      const std::string& filter_prefix);
 
-bool CheckPathInZipArchive(const char* zip_archive_path,
+__attribute__ ((visibility ("default"))) bool CheckPathInZipArchive(const char* zip_archive_path,
                            const boost::filesystem::path& relative_zip_path,
                            bool* found);
 
-bool HasDirectoryClimbing(const boost::filesystem::path& path);
+__attribute__ ((visibility ("default"))) bool HasDirectoryClimbing(const boost::filesystem::path& path);
 
-boost::filesystem::path MakeRelativePath(const boost::filesystem::path& input,
+__attribute__ ((visibility ("default"))) boost::filesystem::path MakeRelativePath(const boost::filesystem::path& input,
                                          const boost::filesystem::path& base);
 
 }  // namespace common_installer

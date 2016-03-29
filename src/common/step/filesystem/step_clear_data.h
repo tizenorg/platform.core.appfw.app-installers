@@ -19,7 +19,7 @@ namespace filesystem {
  * \brief Step responsible removing data/ directory in pkgmgr clear request
  *        Used by WGT and TPK backend
  */
-class StepClearData : public Step {
+class __attribute__ ((visibility ("default"))) StepClearData : public Step {
  public:
   using Step::Step;
 

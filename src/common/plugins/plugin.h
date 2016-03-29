@@ -24,7 +24,7 @@ namespace common_installer {
  *        of .so shared object from file system. Run() function is being
  *        overloaded in subclasses to accommodate plugin differences.
  */
-class Plugin {
+class __attribute__ ((visibility ("default"))) Plugin {
  public:
   enum class ActionType { Install, Upgrade, Uninstall };
   enum class ProcessType { Pre, Main, Post };
@@ -77,7 +77,7 @@ class Plugin {
  * @param action input action type
  * @return pkgmgr action type or -1 if error
  */
-int ActionTypeToPkgmgrActionType(common_installer::Plugin::ActionType action);
+__attribute__ ((visibility ("default"))) int ActionTypeToPkgmgrActionType(common_installer::Plugin::ActionType action);
 
 }  // namespace common_installer
 

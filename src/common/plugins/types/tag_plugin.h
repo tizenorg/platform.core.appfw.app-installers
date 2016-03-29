@@ -15,7 +15,7 @@
 
 namespace common_installer {
 
-class TagPlugin : public Plugin {
+class __attribute__ ((visibility ("default"))) TagPlugin : public Plugin {
  public:
   static const char kType[];
 

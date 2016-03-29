@@ -27,7 +27,7 @@ namespace filesystem {
  * For recovery of update installation, all icons of applications of package are
  * restored to its previous locations.
  */
-class StepRecoverIcons : public recovery::StepRecovery {
+class __attribute__ ((visibility ("default"))) StepRecoverIcons : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 

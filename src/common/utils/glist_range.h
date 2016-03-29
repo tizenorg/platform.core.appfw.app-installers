@@ -13,7 +13,7 @@
 // Range with mutable forward iterator based on GList
 // supporting language foreach construct
 template<typename T>
-class GListRange {
+class __attribute__ ((visibility ("default"))) GListRange {
  public:
   class Iterator {
    public:
