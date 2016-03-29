@@ -31,11 +31,11 @@ class StepRecoverIcons : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 
-  Status RecoveryNew() override;
-  Status RecoveryUpdate() override;
+  __attribute__ ((visibility ("default"))) Status RecoveryNew() override;
+  __attribute__ ((visibility ("default"))) Status RecoveryUpdate() override;
 
  private:
-  bool TryGatherIcons();
+  __attribute__ ((visibility ("default"))) bool TryGatherIcons();
 
   std::set<std::pair<boost::filesystem::path, boost::filesystem::path>>
       icons_;

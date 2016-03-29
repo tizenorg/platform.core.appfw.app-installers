@@ -36,9 +36,9 @@ typedef std::shared_ptr<PkgMgrInterface> PkgMgrPtr;
  */
 class PkgmgrInstallerInterface {
  public:
-  virtual bool CreatePkgMgrInstaller(pkgmgr_installer** installer,
+  __attribute__ ((visibility ("default"))) virtual bool CreatePkgMgrInstaller(pkgmgr_installer** installer,
                              InstallationMode* mode) = 0;
-  virtual bool ShouldCreateSignal() const = 0;
+  __attribute__ ((visibility ("default"))) virtual bool ShouldCreateSignal() const = 0;
 };
 
 /**
@@ -48,9 +48,9 @@ class PkgmgrInstallerInterface {
  */
 class PkgmgrInstaller : public PkgmgrInstallerInterface {
  public:
-  bool CreatePkgMgrInstaller(pkgmgr_installer** installer,
+  __attribute__ ((visibility ("default"))) bool CreatePkgMgrInstaller(pkgmgr_installer** installer,
                              InstallationMode* mode);
-  bool ShouldCreateSignal() const;
+  __attribute__ ((visibility ("default"))) bool ShouldCreateSignal() const;
 };
 
 /**
@@ -64,14 +64,14 @@ class PkgMgrInterface {
    *
    * \return request type retrieved from pkgmgr_installer
    */
-  RequestType GetRequestType() const;
+  __attribute__ ((visibility ("default"))) RequestType GetRequestType() const;
 
   /**
    * Returns Request info passed from pkgmgr_installer
    *
    * \return request info retrieved from pkgmgr_installer
    */
-  const char *GetRequestInfo() const;
+  __attribute__ ((visibility ("default"))) const char *GetRequestInfo() const;
 
   /**
    * Creates PkgMgrInterface
@@ -93,28 +93,28 @@ class PkgMgrInterface {
   *
   * \return TEP path retrieved from pkgmgr_installer
   */
-  boost::filesystem::path GetTepPath() const;
+  __attribute__ ((visibility ("default"))) boost::filesystem::path GetTepPath() const;
 
   /**
   * Returns True if TEP file should be moved. Otherwise, return false
   *
   * \return True if TEP file should be moved. Otherwise, return false
   */
-  bool GetIsTepMove();
+  __attribute__ ((visibility ("default"))) bool GetIsTepMove();
 
   /**
   * Returns True if the request is for preload. Otherwise, return false
   *
   * \return True if the request is for preload. Otherwise, return false
   */
-  bool GetIsPreloadRequest();
+  __attribute__ ((visibility ("default"))) bool GetIsPreloadRequest();
 
   /**
   * Returns True if the request is for force-remove. Otherwise, return false
   *
   * \return True if the request is for force-remove. Otherwise, return false
   */
-  bool GetIsForceRemoval();
+  __attribute__ ((visibility ("default"))) bool GetIsForceRemoval();
 
   /**
    * Get Raw pointer to pkgmgr_installer object
@@ -145,14 +145,14 @@ class PkgMgrInterface {
   ~PkgMgrInterface();
 
  private:
-  explicit PkgMgrInterface(PkgmgrInstallerInterface* pkgmgr_installer_interface,
+  __attribute__ ((visibility ("default"))) explicit PkgMgrInterface(PkgmgrInstallerInterface* pkgmgr_installer_interface,
                            AppQueryInterface* interface)
       : pi_(nullptr),
         install_mode_(InstallationMode::ONLINE),
         is_app_installed_(false),
         pkgmgr_installer_interface_(pkgmgr_installer_interface),
         query_interface_(interface) {}
-  int InitInternal(int argc, char** argv);
+  __attribute__ ((visibility ("default"))) int InitInternal(int argc, char** argv);
 
   pkgmgr_installer* pi_;
   InstallationMode install_mode_;

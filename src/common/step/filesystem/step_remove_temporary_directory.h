@@ -24,14 +24,14 @@ class StepRemoveTemporaryDirectory : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 
-  Status RecoveryNew() override;
-  Status RecoveryUpdate() override;
+  __attribute__ ((visibility ("default"))) Status RecoveryNew() override;
+  __attribute__ ((visibility ("default"))) Status RecoveryUpdate() override;
  private:
   /**
    * @brief RemoveFiles
    * Removes all the temporary files
    */
-  void RemoveFiles();
+  __attribute__ ((visibility ("default"))) void RemoveFiles();
 
   SCOPE_LOG_TAG(RemoveTemporaryDirectory)
 };

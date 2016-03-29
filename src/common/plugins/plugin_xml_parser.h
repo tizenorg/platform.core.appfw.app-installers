@@ -16,28 +16,28 @@ namespace common_installer {
 /** this class parse xml file*/
 class PluginsXmlParser {
  public:
-  explicit PluginsXmlParser(const std::string& path)
+  __attribute__ ((visibility ("default"))) explicit PluginsXmlParser(const std::string& path)
       : path_(path), doc_ptr_(nullptr) {}
-  ~PluginsXmlParser();
-  bool Parse();
-  const std::vector<std::string>& tags_list();
-  xmlDocPtr doc_ptr();
+  __attribute__ ((visibility ("default"))) ~PluginsXmlParser();
+  __attribute__ ((visibility ("default"))) bool Parse();
+  __attribute__ ((visibility ("default"))) const std::vector<std::string>& tags_list();
+  __attribute__ ((visibility ("default"))) xmlDocPtr doc_ptr();
 
  private:
   const std::string path_;
   xmlDocPtr doc_ptr_;
   std::vector<std::string> tags_;
-  int NextChildElement(xmlTextReaderPtr reader, int depth);
+  __attribute__ ((visibility ("default"))) int NextChildElement(xmlTextReaderPtr reader, int depth);
 
   class WrapperXMLReader {
    public:
-    WrapperXMLReader() : reader_(nullptr) {}
+    __attribute__ ((visibility ("default"))) WrapperXMLReader() : reader_(nullptr) {}
 
-    xmlTextReaderPtr Create(const xmlDocPtr doc_ptr_) {
+    __attribute__ ((visibility ("default"))) xmlTextReaderPtr Create(const xmlDocPtr doc_ptr_) {
       reader_ = xmlReaderWalker(doc_ptr_);
       return reader_;
     }
-    virtual ~WrapperXMLReader() {
+    __attribute__ ((visibility ("default"))) virtual ~WrapperXMLReader() {
       if (reader_) {
         xmlFreeTextReader(reader_);
       }

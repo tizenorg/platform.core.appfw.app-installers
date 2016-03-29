@@ -27,10 +27,10 @@ class StepRecoverSecurity : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 
-  Status RecoveryNew() override;
-  Status RecoveryUpdate() override;
+  __attribute__ ((visibility ("default"))) Status RecoveryNew() override;
+  __attribute__ ((visibility ("default"))) Status RecoveryUpdate() override;
  private:
-  bool Check();
+  __attribute__ ((visibility ("default"))) bool Check();
 
   SCOPE_LOG_TAG(RecoverSecurity)
 };

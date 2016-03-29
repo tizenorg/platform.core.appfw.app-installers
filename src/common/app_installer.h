@@ -41,10 +41,10 @@ class AppInstaller {
    * \param package_type package type
    * \param pkgmgr pointer to PkgMgrInterface object
    */
-  explicit AppInstaller(const char* package_type, PkgMgrPtr pkgmgr);
+  __attribute__ ((visibility ("default"))) explicit AppInstaller(const char* package_type, PkgMgrPtr pkgmgr);
 
   /** virtual desctructor */
-  virtual ~AppInstaller();
+  __attribute__ ((visibility ("default"))) virtual ~AppInstaller();
 
   /**
    * \brief Adds new step to installer by specified type
@@ -59,7 +59,7 @@ class AppInstaller {
    * \param args argument list
    */
   template<class StepT, class... Args>
-  void AddStep(Args&&... args) {
+  __attribute__ ((visibility ("default"))) void AddStep(Args&&... args) {
     std::unique_ptr<Step> step(
         new StepT(context_.get(), std::forward<Args>(args)...));
     step->on_error.connect(
@@ -72,7 +72,7 @@ class AppInstaller {
    *
    * \return Result of the run (eg Result:OK)
    */
-  Result Run();
+  __attribute__ ((visibility ("default"))) Result Run();
 
  protected:
   PkgMgrPtr pkgmgr_;
@@ -84,7 +84,7 @@ class AppInstaller {
   // data used to send signal
   std::unique_ptr<PkgmgrSignal> pi_;
 
-  void HandleStepError(Step::Status result, const std::string& error);
+  __attribute__ ((visibility ("default"))) void HandleStepError(Step::Status result, const std::string& error);
 
   SCOPE_LOG_TAG(AppInstaller)
 

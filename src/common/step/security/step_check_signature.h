@@ -28,24 +28,24 @@ class StepCheckSignature : public Step {
    *
    * \return Status::OK if signature correct, Status:ERROR otherwise
    */
-  Status process() override;
+  __attribute__ ((visibility ("default"))) Status process() override;
 
-  Status undo() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status undo() override { return Status::OK; }
 
-  Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
 
   /**
    * \brief checks if unpacked dir is available
    *
    * \return Status::OK if available, Status::ERRO otherwise
    */
-  Status precheck() override;
+  __attribute__ ((visibility ("default"))) Status precheck() override;
 
   SCOPE_LOG_TAG(Signature)
 };
 
 // Exposed for tests
-Step::Status ValidateSignatures(const boost::filesystem::path& base_path,
+__attribute__ ((visibility ("default"))) Step::Status ValidateSignatures(const boost::filesystem::path& base_path,
     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
     bool check_reference, std::string* error_message);
 

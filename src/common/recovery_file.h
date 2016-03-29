@@ -45,10 +45,10 @@ class RecoveryFile {
       const boost::filesystem::path& path);
 
   /** Desctructor */
-  ~RecoveryFile();
+  __attribute__ ((visibility ("default"))) ~RecoveryFile();
 
   /** Detaching object from given recovery file */
-  void Detach();
+  __attribute__ ((visibility ("default"))) void Detach();
 
   /**
    * Checks if object is detached from file
@@ -56,61 +56,61 @@ class RecoveryFile {
    * \return true if detached
    *
    */
-  bool is_detached() const;
+  __attribute__ ((visibility ("default"))) bool is_detached() const;
 
   /**
    * setter for unpacked dir
    *
    * \param unpacked_dir new unpacked_dir value
    */
-  void set_unpacked_dir(const boost::filesystem::path& unpacked_dir);
+  __attribute__ ((visibility ("default"))) void set_unpacked_dir(const boost::filesystem::path& unpacked_dir);
 
   /**
    * setter for pkgid
    *
    * \param pkgid new pkgid value
    */
-  void set_pkgid(const std::string& pkgid);
+  __attribute__ ((visibility ("default"))) void set_pkgid(const std::string& pkgid);
 
   /**
    * setter for request type
    *
    * \param new request type value
    */
-  void set_type(RequestType type);
+  __attribute__ ((visibility ("default"))) void set_type(RequestType type);
 
   /**
    * getter for unpacked dir
    *
    * \return current unpacked_dir
    */
-  const boost::filesystem::path& unpacked_dir() const;
+  __attribute__ ((visibility ("default"))) const boost::filesystem::path& unpacked_dir() const;
 
   /**
    * getter for pkgid
    *
    * * \return current pkgid
    */
-  const std::string& pkgid() const;
+  __attribute__ ((visibility ("default"))) const std::string& pkgid() const;
 
   /**
    * getter for request type
    *
    * \return current request type
    */
-  RequestType type() const;
+  __attribute__ ((visibility ("default"))) RequestType type() const;
 
   /**
    * Transaction of current RecoveryFile content into recovery file
    *
    * \return true if success
    */
-  bool WriteAndCommitFileContent();
+  __attribute__ ((visibility ("default"))) bool WriteAndCommitFileContent();
 
  private:
-  RecoveryFile(const boost::filesystem::path& path, bool load);
+  __attribute__ ((visibility ("default"))) RecoveryFile(const boost::filesystem::path& path, bool load);
 
-  bool ReadFileContent();
+  __attribute__ ((visibility ("default"))) bool ReadFileContent();
 
   RequestType type_;
   boost::filesystem::path unpacked_dir_;

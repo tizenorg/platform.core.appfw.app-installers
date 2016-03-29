@@ -17,13 +17,13 @@ class StepUnregisterApplication : public Step {
  public:
   using Step::Step;
 
-  Step::Status process() override;
-  Step::Status clean() override { return Status::OK; }
-  Step::Status undo() override;
-  Status precheck() override;
+  __attribute__ ((visibility ("default"))) Step::Status process() override;
+  __attribute__ ((visibility ("default"))) Step::Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Step::Status undo() override;
+  __attribute__ ((visibility ("default"))) Status precheck() override;
 
  private:
-  bool BackupCertInfo();
+  __attribute__ ((visibility ("default"))) bool BackupCertInfo();
 
   SCOPE_LOG_TAG(Unregister)
 };

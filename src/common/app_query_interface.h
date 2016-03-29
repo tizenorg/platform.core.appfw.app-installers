@@ -14,7 +14,7 @@ namespace common_installer {
 class AppQueryInterface {
  public:
   /** virtual destructor (for inheritance) */
-  virtual ~AppQueryInterface() { }
+  __attribute__ ((visibility ("default"))) virtual ~AppQueryInterface() { }
 
   /**
    * \brief abstract method for checking if package is installed based
@@ -25,7 +25,7 @@ class AppQueryInterface {
    *
    * \return true if package is installed
    */
-  virtual bool IsAppInstalledByArgv(int argc, char** argv) = 0;
+  __attribute__ ((visibility ("default"))) virtual bool IsAppInstalledByArgv(int argc, char** argv) = 0;
 };
 
 }  // namespace common_installer

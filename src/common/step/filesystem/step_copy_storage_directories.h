@@ -28,28 +28,28 @@ class StepCopyStorageDirectories : public common_installer::Step {
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status process() override;
-  Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
 
   /**
    * \brief restores original content of data and shared dirs
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status undo() override;
+  __attribute__ ((visibility ("default"))) Status undo() override;
 
   /**
    * \brief checks if needed paths/data are provided
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status precheck() override;
+  __attribute__ ((visibility ("default"))) Status precheck() override;
 
  protected:
-  bool MoveAppStorage(const boost::filesystem::path& in_src,
+  __attribute__ ((visibility ("default"))) bool MoveAppStorage(const boost::filesystem::path& in_src,
                       const boost::filesystem::path& in_dst,
                       const char *key, bool merge_dirs = false);
-  bool CacheDir();
+  __attribute__ ((visibility ("default"))) bool CacheDir();
   boost::filesystem::path backup_path_;
   SCOPE_LOG_TAG(CopyStorageDirectories)
 };

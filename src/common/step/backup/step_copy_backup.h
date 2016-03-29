@@ -29,34 +29,34 @@ class StepCopyBackup : public Step {
    *
    * \return Status::OK
    */
-  Status process() override;
+  __attribute__ ((visibility ("default"))) Status process() override;
 
   /**
    * \brief removing backup files
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status clean() override;
+  __attribute__ ((visibility ("default"))) Status clean() override;
 
   /**
    * \brief Restoring original pacakge files
    *
    * \return Status::OK if success, Status::Error otherwise
    */
-  Status undo() override;
+  __attribute__ ((visibility ("default"))) Status undo() override;
 
   /**
    * \brief checks if necessary paths are available
    *
    * \return Status::OK if success, Status::Error otherwise
    */
-  Status precheck() override;
+  __attribute__ ((visibility ("default"))) Status precheck() override;
 
  private:
-  bool Backup();
-  bool NewContent();
-  bool CleanBackupDirectory();
-  bool RollbackApplicationDirectory();
+  __attribute__ ((visibility ("default"))) bool Backup();
+  __attribute__ ((visibility ("default"))) bool NewContent();
+  __attribute__ ((visibility ("default"))) bool CleanBackupDirectory();
+  __attribute__ ((visibility ("default"))) bool RollbackApplicationDirectory();
 
   boost::filesystem::path install_path_;
   boost::filesystem::path backup_path_;

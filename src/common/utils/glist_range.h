@@ -24,36 +24,36 @@ class GListRange {
     typedef std::size_t difference_type;
     typedef std::forward_iterator_tag iterator_category;
 
-    explicit Iterator(std::nullptr_t ptr = nullptr) : ptr_(ptr) { }
+    __attribute__ ((visibility ("default"))) explicit Iterator(std::nullptr_t ptr = nullptr) : ptr_(ptr) { }
     explicit Iterator(GList* ptr) : ptr_(ptr) { }
     explicit operator bool() const {
       return ptr_;
     }
-    const reference& operator*() const {
+    __attribute__ ((visibility ("default"))) const reference& operator*() const {
       return reinterpret_cast<const T&>(ptr_->data);
     }
-    reference& operator*() {
+    __attribute__ ((visibility ("default"))) reference& operator*() {
       return reinterpret_cast<T&>(ptr_->data);
     }
-    const_pointer operator->() const {
+    __attribute__ ((visibility ("default"))) const_pointer operator->() const {
       return reinterpret_cast<pointer>(&ptr_->data);
     }
-    pointer operator->() {
+    __attribute__ ((visibility ("default"))) pointer operator->() {
       return reinterpret_cast<pointer>(&ptr_->data);
     }
-    Iterator& operator++() {
+    __attribute__ ((visibility ("default"))) Iterator& operator++() {
       ptr_ = g_list_next(ptr_);
       return *this;
     }
-    Iterator operator++(int) {
+    __attribute__ ((visibility ("default"))) Iterator operator++(int) {
       Iterator iter(ptr_);
       ptr_ = g_list_next(ptr_);
       return iter;
     }
-    bool operator==(const Iterator& other) const {
+    __attribute__ ((visibility ("default"))) bool operator==(const Iterator& other) const {
       return ptr_ == other.ptr_;
     }
-    bool operator!=(const Iterator& other) const {
+    __attribute__ ((visibility ("default"))) bool operator!=(const Iterator& other) const {
       return !this->operator==(other);
     }
 
@@ -61,11 +61,11 @@ class GListRange {
     GList* ptr_;
   };
 
-  explicit GListRange(GList* list) : list_(list) {  }
-  Iterator begin() {
+  __attribute__ ((visibility ("default"))) explicit GListRange(GList* list) : list_(list) {  }
+  __attribute__ ((visibility ("default"))) Iterator begin() {
     return Iterator(list_);
   }
-  Iterator end() {
+  __attribute__ ((visibility ("default"))) Iterator end() {
     return Iterator();
   }
 

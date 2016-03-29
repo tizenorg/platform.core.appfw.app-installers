@@ -32,15 +32,15 @@ class StepCreateIcons : public Step {
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status process() override;
-  Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
   /**
    * \brief removes icons from system
    *
    * \return Status::OK
    */
-  Status undo() override;
-  Status precheck() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status undo() override;
+  __attribute__ ((visibility ("default"))) Status precheck() override { return Status::OK; }
 
  private:
   std::vector<boost::filesystem::path> icons_;

@@ -26,23 +26,23 @@ class StepBackupManifest : public Step {
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status process() override;
+  __attribute__ ((visibility ("default"))) Status process() override;
 
   /**
    * \brief removes backup file after successful update/deinstallation
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status clean() override;
+  __attribute__ ((visibility ("default"))) Status clean() override;
 
   /**
    * \brief restores backup manifest.
    *
    * \return Status:OK if success, Status::ERROR othewise
    */
-  Status undo() override;
+  __attribute__ ((visibility ("default"))) Status undo() override;
 
-  Status precheck() override;
+  __attribute__ ((visibility ("default"))) Status precheck() override;
 
   SCOPE_LOG_TAG(BackupManifest)
 };

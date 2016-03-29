@@ -41,7 +41,7 @@ class PkgmgrSignal {
    * \param pi pointer for pkgmgr_installer structure
    * \param req_type request type
    */
-  explicit PkgmgrSignal(pkgmgr_installer* pi, RequestType req_type);
+  __attribute__ ((visibility ("default"))) explicit PkgmgrSignal(pkgmgr_installer* pi, RequestType req_type);
 
   /**
    * "start" Signal sending
@@ -51,7 +51,7 @@ class PkgmgrSignal {
    *
    * \return true if success
    */
-  bool SendStarted(
+  __attribute__ ((visibility ("default"))) bool SendStarted(
       const std::string& type = std::string(),
       const std::string& pkgid = std::string());
 
@@ -63,7 +63,7 @@ class PkgmgrSignal {
    *
    * \return true if success
    */
-  bool SendProgress(int progress,
+  __attribute__ ((visibility ("default"))) bool SendProgress(int progress,
       const std::string& type = std::string(),
       const std::string& pkgid = std::string());
 
@@ -75,7 +75,7 @@ class PkgmgrSignal {
    *
    * \return true if success
    */
-  bool SendFinished(
+  __attribute__ ((visibility ("default"))) bool SendFinished(
       Step::Status result,
       const std::string& type = std::string(),
       const std::string& pkgid = std::string());
@@ -87,31 +87,31 @@ class PkgmgrSignal {
    *
    * \return true if success
    */
-  bool SendError(Step::Status result,
+  __attribute__ ((visibility ("default"))) bool SendError(Step::Status result,
       const std::string& error_message,
       const std::string& type = std::string(),
       const std::string& pkgid = std::string());
 
-  bool IsFinished() const;
+  __attribute__ ((visibility ("default"))) bool IsFinished() const;
 
   /**
    * Getter of state of the object
    *
    *\return current state
    */
-  State state() const { return state_; }
+  __attribute__ ((visibility ("default"))) State state() const { return state_; }
 
  private:
-  bool SendSignal(
+  __attribute__ ((visibility ("default"))) bool SendSignal(
       const char* key,
       const char* value,
       const std::string& type = std::string(),
       const std::string& pkgid = std::string()) const;
-  const char* GetResultKey(Step::Status result) const;
-  bool SendAppids(const std::string& type, const std::string& pkgid) const;
+  __attribute__ ((visibility ("default"))) const char* GetResultKey(Step::Status result) const;
+  __attribute__ ((visibility ("default"))) bool SendAppids(const std::string& type, const std::string& pkgid) const;
 
   pkgmgr_installer* pi_;
-  static State state_;
+  __attribute__ ((visibility ("default"))) static State state_;
   RequestType request_type_;
   bool error_message_sent_;
 

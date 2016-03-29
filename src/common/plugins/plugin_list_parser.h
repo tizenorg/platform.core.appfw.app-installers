@@ -28,12 +28,12 @@ namespace common_installer {
 /** this class include information about plugin */
 class PluginInfo {
  public:
-  PluginInfo(int flag, const std::string& type, const std::string& name,
+  __attribute__ ((visibility ("default"))) PluginInfo(int flag, const std::string& type, const std::string& name,
              const boost::filesystem::path& path);
-  int flag() const;
-  const std::string& type() const;
-  const std::string& name() const;
-  const boost::filesystem::path& path() const;
+  __attribute__ ((visibility ("default"))) int flag() const;
+  __attribute__ ((visibility ("default"))) const std::string& type() const;
+  __attribute__ ((visibility ("default"))) const std::string& name() const;
+  __attribute__ ((visibility ("default"))) const boost::filesystem::path& path() const;
 
  private:
   int flag_;
@@ -46,30 +46,30 @@ class PluginInfo {
 class PluginsListParser {
  public:
   using PluginList = std::vector<std::shared_ptr<PluginInfo>>;
-  explicit PluginsListParser(const std::string& path) : path_(path) {}
+  __attribute__ ((visibility ("default"))) explicit PluginsListParser(const std::string& path) : path_(path) {}
 
-  bool Parse();
-  const PluginList& PluginInfoList() const;
+  __attribute__ ((visibility ("default"))) bool Parse();
+  __attribute__ ((visibility ("default"))) const PluginList& PluginInfoList() const;
 
  private:
   enum Column { Flag, Type, Name, Path };
 
-  PluginsListParser() {}
+  __attribute__ ((visibility ("default"))) PluginsListParser() {}
 
-  bool ReadLinesFromFile(std::vector<std::string>* lines);
-  bool ParsePluginsRawData(const std::vector<std::string>& lines);
-  bool SplitPluginLine(const std::string& line,
+  __attribute__ ((visibility ("default"))) bool ReadLinesFromFile(std::vector<std::string>* lines);
+  __attribute__ ((visibility ("default"))) bool ParsePluginsRawData(const std::vector<std::string>& lines);
+  __attribute__ ((visibility ("default"))) bool SplitPluginLine(const std::string& line,
                        std::vector<std::string>* parts);
 
-  std::string ExtractRaw(const std::string& data, const std::regex& re_extract);
-  std::string ExtractFlag(const std::string& flag);
-  std::string ExtractType(const std::string& type);
-  std::string ExtractName(const std::string& name);
-  std::string ExtractPath(const std::string& path);
-  bool ValidFlag(const std::string& flag);
-  bool ValidType(const std::string& type);
-  bool ValidName(const std::string& name);
-  bool ValidPath(const std::string& path);
+  __attribute__ ((visibility ("default"))) std::string ExtractRaw(const std::string& data, const std::regex& re_extract);
+  __attribute__ ((visibility ("default"))) std::string ExtractFlag(const std::string& flag);
+  __attribute__ ((visibility ("default"))) std::string ExtractType(const std::string& type);
+  __attribute__ ((visibility ("default"))) std::string ExtractName(const std::string& name);
+  __attribute__ ((visibility ("default"))) std::string ExtractPath(const std::string& path);
+  __attribute__ ((visibility ("default"))) bool ValidFlag(const std::string& flag);
+  __attribute__ ((visibility ("default"))) bool ValidType(const std::string& type);
+  __attribute__ ((visibility ("default"))) bool ValidName(const std::string& name);
+  __attribute__ ((visibility ("default"))) bool ValidPath(const std::string& path);
 
   const std::string path_;
   std::vector<std::shared_ptr<PluginInfo>> plugin_info_list_;

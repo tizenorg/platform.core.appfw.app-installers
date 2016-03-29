@@ -31,13 +31,13 @@ struct SingleAccountInfo {
 class AccountInfo {
  public:
   /** \brief Constructor */
-  AccountInfo() {}
+  __attribute__ ((visibility ("default"))) AccountInfo() {}
   /**
    * \brief Accounts list getter
    *
    * \return accounts list
    */
-  const std::vector<SingleAccountInfo>& accounts() const {
+  __attribute__ ((visibility ("default"))) const std::vector<SingleAccountInfo>& accounts() const {
     return accounts_;
   }
 
@@ -46,7 +46,7 @@ class AccountInfo {
    *
    * \param single_account account to be added
    */
-  void set_account(const SingleAccountInfo& single_account) {
+  __attribute__ ((visibility ("default"))) void set_account(const SingleAccountInfo& single_account) {
     accounts_.push_back(single_account);
   }
  private:

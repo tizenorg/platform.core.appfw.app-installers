@@ -22,10 +22,10 @@ class StepRemoveIcons : public Step {
  public:
   using Step::Step;
 
-  Status process() override;
-  Status clean() override { return Status::OK; }
-  Status undo() override { return Status::OK; }
-  Status precheck() override;
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status undo() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status precheck() override;
 
   SCOPE_LOG_TAG(RemoveIcons)
 };

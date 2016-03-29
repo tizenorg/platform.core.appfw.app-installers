@@ -29,16 +29,16 @@ class StepCreateStorageDirectories : public common_installer::Step {
  public:
   using Step::Step;
 
-  Status process() override;
-  Status clean() override { return Status::OK; }
-  Status undo() override { return Status::OK; }
-  Status precheck() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status undo() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status precheck() override { return Status::OK; }
 
  protected:
-  bool ShareDir();
-  bool SubShareDir();
-  bool PrivateDir();
-  bool CacheDir();
+  __attribute__ ((visibility ("default"))) bool ShareDir();
+  __attribute__ ((visibility ("default"))) bool SubShareDir();
+  __attribute__ ((visibility ("default"))) bool PrivateDir();
+  __attribute__ ((visibility ("default"))) bool CacheDir();
 
   SCOPE_LOG_TAG(CreateStorageDirectories)
 };

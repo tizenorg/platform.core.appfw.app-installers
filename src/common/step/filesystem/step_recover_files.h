@@ -25,11 +25,11 @@ class StepRecoverFiles : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 
-  Status RecoveryNew() override;
-  Status RecoveryUpdate() override;
+  __attribute__ ((visibility ("default"))) Status RecoveryNew() override;
+  __attribute__ ((visibility ("default"))) Status RecoveryUpdate() override;
 
  private:
-  bool SetPackagePath();
+  __attribute__ ((visibility ("default"))) bool SetPackagePath();
 
   SCOPE_LOG_TAG(RecoverBackup)
 };

@@ -13,14 +13,14 @@ namespace common_installer {
 
 class MetadataPlugin : public Plugin {
  public:
-  static const char kType[];
+  __attribute__ ((visibility ("default"))) static const char kType[];
 
   static std::unique_ptr<MetadataPlugin> Create(const PluginInfo& plugin_info);
-  bool Run(xmlDocPtr doc_ptr, manifest_x* manifest,
+  __attribute__ ((visibility ("default"))) bool Run(xmlDocPtr doc_ptr, manifest_x* manifest,
            ActionType action_type) override;
 
  private:
-  std::string GetFunctionName(ActionType action) const;
+  __attribute__ ((visibility ("default"))) std::string GetFunctionName(ActionType action) const;
 
   using Plugin::Plugin;
 

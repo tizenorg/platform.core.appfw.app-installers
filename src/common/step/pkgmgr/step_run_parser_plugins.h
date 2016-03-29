@@ -20,16 +20,16 @@ namespace pkgmgr {
 
 class StepRunParserPlugin : public Step {
  public:
-  explicit StepRunParserPlugin(InstallerContext* context,
+  __attribute__ ((visibility ("default"))) explicit StepRunParserPlugin(InstallerContext* context,
                                Plugin::ActionType action_type);
 
-  Step::Status process() override;
-  Step::Status clean() { return Status::OK; }
-  Step::Status undo() override;
-  Step::Status precheck() { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Step::Status process() override;
+  __attribute__ ((visibility ("default"))) Step::Status clean() { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Step::Status undo() override;
+  __attribute__ ((visibility ("default"))) Step::Status precheck() { return Status::OK; }
 
  private:
-  Step::Status ProcessPlugins(const boost::filesystem::path& xml_path,
+  __attribute__ ((visibility ("default"))) Step::Status ProcessPlugins(const boost::filesystem::path& xml_path,
                               manifest_x* manifest,
                               Plugin::ActionType action_type);
 

@@ -33,7 +33,7 @@ namespace common_installer {
  *
  * \return true if success
  */
-bool RegisterSecurityContext(const std::string& app_id,
+__attribute__ ((visibility ("default"))) bool RegisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, const std::string& author_id,
     const std::string& api_version, const std::string& preload,
     const boost::filesystem::path& path, uid_t uid,
@@ -53,7 +53,7 @@ bool RegisterSecurityContext(const std::string& app_id,
  *
  * \return true if success
  */
-bool UnregisterSecurityContext(const std::string& app_id,
+__attribute__ ((visibility ("default"))) bool UnregisterSecurityContext(const std::string& app_id,
     const std::string& pkg_id, uid_t uid, std::string* error_message);
 
 /**
@@ -71,7 +71,7 @@ bool UnregisterSecurityContext(const std::string& app_id,
  *
  * \return true if success
  */
-bool RegisterSecurityContextForManifest(const std::string& pkg_id,
+__attribute__ ((visibility ("default"))) bool RegisterSecurityContextForManifest(const std::string& pkg_id,
     const boost::filesystem::path& path, uid_t uid,
     common_installer::CertificateInfo* cert_info, manifest_x* manifest,
     std::string* error_message);
@@ -89,7 +89,7 @@ bool RegisterSecurityContextForManifest(const std::string& pkg_id,
  *
  * \return true if success
  */
-bool UnregisterSecurityContextForManifest(const std::string& pkg_id, uid_t uid,
+__attribute__ ((visibility ("default"))) bool UnregisterSecurityContextForManifest(const std::string& pkg_id, uid_t uid,
     manifest_x* manifest, std::string* error_message);
 
 }  // namespace common_installer

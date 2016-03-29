@@ -51,7 +51,7 @@ using ShortcutListInfo = std::vector<ShortcutInfo>;
 class ExtraManifestData {
  public:
   /** Constructor */
-  ExtraManifestData() {}
+  __attribute__ ((visibility ("default"))) ExtraManifestData() {}
 
   Property<AccountInfo> account_info;
   Property<ShortcutListInfo> shortcut_info;
@@ -64,7 +64,7 @@ class ExtraManifestData {
 class BackendData {
  public:
   /** virtual destructor */
-  virtual ~BackendData() { }
+  __attribute__ ((visibility ("default"))) virtual ~BackendData() { }
 };
 
 /**
@@ -95,7 +95,7 @@ class CertificateInfo {
 class RecoveryInfo {
  public:
   /** default constructor */
-  RecoveryInfo() { }
+  __attribute__ ((visibility ("default"))) RecoveryInfo() { }
 
   /**
    * Constructor.
@@ -128,7 +128,7 @@ enum class PrivilegeLevel : int {
  *
  * \return true, if required_level <= allowed_level
  */
-bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
+__attribute__ ((visibility ("default"))) bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
                    PrivilegeLevel allowed_level);
 
 /**
@@ -138,7 +138,7 @@ bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
  *
  * \return translated level (to string)
  */
-const char* PrivilegeLevelToString(PrivilegeLevel level);
+__attribute__ ((visibility ("default"))) const char* PrivilegeLevelToString(PrivilegeLevel level);
 
 // TODO(p.sikorski@samsung.com) this class should be divided into:
 //  Base Context class
@@ -157,10 +157,10 @@ const char* PrivilegeLevelToString(PrivilegeLevel level);
 class InstallerContext {
  public:
   /** Constructor */
-  InstallerContext();
+  __attribute__ ((visibility ("default"))) InstallerContext();
 
   /** Destructor */
-  ~InstallerContext();
+  __attribute__ ((visibility ("default"))) ~InstallerContext();
 
   /**
    * \brief package type (string representing name of backend)

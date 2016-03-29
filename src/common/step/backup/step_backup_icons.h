@@ -29,26 +29,26 @@ class StepBackupIcons : public Step {
    *
    * \return Status::OK, if successful backup, Status::ERROR otherwise
    */
-  Status process() override;
+  __attribute__ ((visibility ("default"))) Status process() override;
 
   /**
    * \brief removes backup files after successful update/deinstallation
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status clean() override;
+  __attribute__ ((visibility ("default"))) Status clean() override;
 
   /**
    * \brief restores backup icons.
    *
    * \return Status:OK if success, Status::ERROR othewise
    */
-  Status undo() override;
+  __attribute__ ((visibility ("default"))) Status undo() override;
 
-  Status precheck() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status precheck() override { return Status::OK; }
 
  private:
-  void RemoveBackupIcons();
+  __attribute__ ((visibility ("default"))) void RemoveBackupIcons();
 
   std::vector<std::pair<boost::filesystem::path, boost::filesystem::path>>
       icons_;

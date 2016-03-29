@@ -27,7 +27,7 @@ class StepCheckBackgroundCategory : public common_installer::Step {
  public:
   using Step::Step;
 
-  explicit StepCheckBackgroundCategory(
+  __attribute__ ((visibility ("default"))) explicit StepCheckBackgroundCategory(
       common_installer::InstallerContext* context);
 
   /**
@@ -36,58 +36,58 @@ class StepCheckBackgroundCategory : public common_installer::Step {
    * \return Status::ERROR when "system" detected,
    *         Status::OK otherwise
    */
-  Status process() override;
+  __attribute__ ((visibility ("default"))) Status process() override;
 
-  Status clean() override { return Status::OK; }
-  Status undo() override { return Status::OK; }
-  Status precheck() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status undo() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status precheck() override { return Status::OK; }
 
  protected:
-  virtual bool GetBackgroundSupport() = 0;
+  __attribute__ ((visibility ("default"))) virtual bool GetBackgroundSupport() = 0;
 
  private:
-  GList* CopyValuesToBackgroundCategory(
+  __attribute__ ((visibility ("default"))) GList* CopyValuesToBackgroundCategory(
       const BackgroundCatSet& values, GList* backgroundCategories) const;
-  bool IsTrustedCert(common_installer::PrivilegeLevel privilege) const;
-  bool ShouldSendFail(common_installer::PrivilegeLevel privilege,
+  __attribute__ ((visibility ("default"))) bool IsTrustedCert(common_installer::PrivilegeLevel privilege) const;
+  __attribute__ ((visibility ("default"))) bool ShouldSendFail(common_installer::PrivilegeLevel privilege,
                       const BackgroundCatSet& background_categories) const;
-  bool ShouldSendAll(const utils::VersionNumber& version,
+  __attribute__ ((visibility ("default"))) bool ShouldSendAll(const utils::VersionNumber& version,
                      bool background_support,
                      common_installer::PrivilegeLevel privilege,
                      const BackgroundCatSet& background_categories) const;
-  bool ShouldSendSystem(common_installer::PrivilegeLevel privilege,
+  __attribute__ ((visibility ("default"))) bool ShouldSendSystem(common_installer::PrivilegeLevel privilege,
                         const BackgroundCatSet& background_categories) const;
-  bool ShouldSendKnown(const utils::VersionNumber& version,
+  __attribute__ ((visibility ("default"))) bool ShouldSendKnown(const utils::VersionNumber& version,
                        bool background_support,
                        common_installer::PrivilegeLevel privilege,
                        const BackgroundCatSet& background_categories) const;
-  bool ShouldSendUnknown(common_installer::PrivilegeLevel privilege,
+  __attribute__ ((visibility ("default"))) bool ShouldSendUnknown(common_installer::PrivilegeLevel privilege,
                          const BackgroundCatSet& background_categories) const;
 
-  common_installer::Step::Status DoSendFail(
+  __attribute__ ((visibility ("default"))) common_installer::Step::Status DoSendFail(
       common_installer::PrivilegeLevel privilege,
       const BackgroundCatSet& background_categories) const;
-  void DoSendAll(const utils::VersionNumber& version,
+  __attribute__ ((visibility ("default"))) void DoSendAll(const utils::VersionNumber& version,
                  bool background_support,
                  common_installer::PrivilegeLevel privilege,
                  const BackgroundCatSet& background_categories,
                  application_x* app) const;
-  void DoSendSystem(common_installer::PrivilegeLevel privilege,
+  __attribute__ ((visibility ("default"))) void DoSendSystem(common_installer::PrivilegeLevel privilege,
                     const BackgroundCatSet& background_categories,
                     application_x* app) const;
-  void DoSendKnown(const utils::VersionNumber& version,
+  __attribute__ ((visibility ("default"))) void DoSendKnown(const utils::VersionNumber& version,
                    bool background_support,
                    common_installer::PrivilegeLevel privilege,
                    const BackgroundCatSet& background_categories,
                    application_x* app) const;
-  void DoSendUnknown(common_installer::PrivilegeLevel privilege,
+  __attribute__ ((visibility ("default"))) void DoSendUnknown(common_installer::PrivilegeLevel privilege,
                      const BackgroundCatSet& background_categories,
                      application_x* app) const;
 
-  void GetBackgroundCategories(
+  __attribute__ ((visibility ("default"))) void GetBackgroundCategories(
       const application_x& app,
       BackgroundCatSet* background_categories) const;
-  void RemoveContextBackgroundCategories(application_x* app) const;
+  __attribute__ ((visibility ("default"))) void RemoveContextBackgroundCategories(application_x* app) const;
 
   const BackgroundCatSet known_background_categories_;
   const BackgroundCatSet not_unknown_background_categories_;

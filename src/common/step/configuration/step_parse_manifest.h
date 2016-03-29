@@ -48,53 +48,53 @@ class StepParseManifest : public common_installer::Step {
     BACKUP   // store in context as old version application information (update)
   };
 
-  explicit StepParseManifest(common_installer::InstallerContext* context,
+  __attribute__ ((visibility ("default"))) explicit StepParseManifest(common_installer::InstallerContext* context,
       ManifestLocation manifest_location, StoreLocation store_location);
 
-  Status process() override;
-  Status clean() override { return Status::OK; }
-  Status undo() override { return Status::OK; }
-  Status precheck() override;
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status undo() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status precheck() override;
 
  protected:
-  bool LocateConfigFile();
+  __attribute__ ((visibility ("default"))) bool LocateConfigFile();
   boost::filesystem::path path_;
 
  private:
-  bool FillInstallationInfo(manifest_x* manifest);
-  bool FillPackageInfo(manifest_x* manifest);
-  bool FillAuthorInfo(manifest_x* manifest);
-  bool FillDescriptionInfo(manifest_x* manifest);
-  bool FillPrivileges(manifest_x* manifest);
-  bool FillWidgetApplication(manifest_x* manifest);
-  bool FillServiceApplication(manifest_x* manifest);
-  bool FillUIApplication(manifest_x* manifest);
-  bool FillWatchApplication(manifest_x* manifest);
+  __attribute__ ((visibility ("default"))) bool FillInstallationInfo(manifest_x* manifest);
+  __attribute__ ((visibility ("default"))) bool FillPackageInfo(manifest_x* manifest);
+  __attribute__ ((visibility ("default"))) bool FillAuthorInfo(manifest_x* manifest);
+  __attribute__ ((visibility ("default"))) bool FillDescriptionInfo(manifest_x* manifest);
+  __attribute__ ((visibility ("default"))) bool FillPrivileges(manifest_x* manifest);
+  __attribute__ ((visibility ("default"))) bool FillWidgetApplication(manifest_x* manifest);
+  __attribute__ ((visibility ("default"))) bool FillServiceApplication(manifest_x* manifest);
+  __attribute__ ((visibility ("default"))) bool FillUIApplication(manifest_x* manifest);
+  __attribute__ ((visibility ("default"))) bool FillWatchApplication(manifest_x* manifest);
 
   template <typename T>
-      bool FillAppControl(application_x* manifest, const T& app_control_list);
+      __attribute__ ((visibility ("default"))) bool FillAppControl(application_x* manifest, const T& app_control_list);
   template <typename T>
-      bool FillDataControl(application_x* manifest, const T& data_control_list);
+      __attribute__ ((visibility ("default"))) bool FillDataControl(application_x* manifest, const T& data_control_list);
   template <typename T>
-      bool FillApplicationIconPaths(application_x* manifest,
+      __attribute__ ((visibility ("default"))) bool FillApplicationIconPaths(application_x* manifest,
                                     const T& icons_info);
   template <typename T>
-      bool FillLabel(application_x* manifest, const T& label_list);
+      __attribute__ ((visibility ("default"))) bool FillLabel(application_x* manifest, const T& label_list);
   template <typename T>
-      bool FillMetadata(application_x* manifest, const T& meta_data_list);
+      __attribute__ ((visibility ("default"))) bool FillMetadata(application_x* manifest, const T& meta_data_list);
   template <typename T>
-      bool FillCategories(application_x* manifest, const T& meta_data_list);
-  bool FillImage(application_x* app,
+      __attribute__ ((visibility ("default"))) bool FillCategories(application_x* manifest, const T& meta_data_list);
+  __attribute__ ((visibility ("default"))) bool FillImage(application_x* app,
                  const tpk::parse::ApplicationImagesInfo& label_list);
-  bool FillAccounts();
-  bool FillShortcuts();
+  __attribute__ ((visibility ("default"))) bool FillAccounts();
+  __attribute__ ((visibility ("default"))) bool FillShortcuts();
   template <typename T>
-  bool FillBackgroundCategoryInfo(application_x* app,
+  __attribute__ ((visibility ("default"))) bool FillBackgroundCategoryInfo(application_x* app,
       const T& background_category_data_list);
   template <typename T>
-  bool FillSplashScreen(application_x* app,
+  __attribute__ ((visibility ("default"))) bool FillSplashScreen(application_x* app,
       const T& splashscreen_list);
-  bool FillManifestX(manifest_x* manifest);
+  __attribute__ ((visibility ("default"))) bool FillManifestX(manifest_x* manifest);
 
   std::unique_ptr<tpk::parse::TPKConfigParser> parser_;
   ManifestLocation manifest_location_;

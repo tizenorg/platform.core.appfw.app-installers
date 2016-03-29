@@ -18,10 +18,10 @@ class StepOpenRecoveryFile : public Step {
  public:
   using Step::Step;
 
-  Status process() override;
-  Status clean() override { return Status::OK; }
-  Status undo() override;
-  Status precheck() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status undo() override;
+  __attribute__ ((visibility ("default"))) Status precheck() override { return Status::OK; }
 
   SCOPE_LOG_TAG(OpenRecoveryFile)
 };

@@ -23,8 +23,8 @@ class StepRecoverStorageDirectories : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 
-  Status RecoveryNew() override { return Status::OK; }
-  Status RecoveryUpdate() override;
+  __attribute__ ((visibility ("default"))) Status RecoveryNew() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status RecoveryUpdate() override;
  private:
   /**
    * @brief moves directories
@@ -33,7 +33,7 @@ class StepRecoverStorageDirectories : public recovery::StepRecovery {
    * @param key directory name
    * @return true if operation successful
    */
-  bool MoveAppStorage(const boost::filesystem::path& in_src,
+  __attribute__ ((visibility ("default"))) bool MoveAppStorage(const boost::filesystem::path& in_src,
                       const boost::filesystem::path& in_dst,
                       const char *key);
 

@@ -27,16 +27,16 @@ class StepKillApps : public Step {
    *
    * \return Status::OK
    */
-  Status process() override;
-  Status clean() override { return Status::OK; }
-  Status undo() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status undo() override { return Status::OK; }
 
   /**
    * \brief checks if neccessary data is provided
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status precheck() override;
+  __attribute__ ((visibility ("default"))) Status precheck() override;
 
   SCOPE_LOG_TAG(KillApps)
 };

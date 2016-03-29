@@ -17,16 +17,16 @@ namespace common_installer {
 
 class TagPlugin : public Plugin {
  public:
-  static const char kType[];
+  __attribute__ ((visibility ("default"))) static const char kType[];
 
   static std::unique_ptr<TagPlugin> Create(const PluginInfo& plugin_info);
 
-  bool Run(xmlDocPtr doc_ptr, manifest_x* manifest,
+  __attribute__ ((visibility ("default"))) bool Run(xmlDocPtr doc_ptr, manifest_x* manifest,
            ActionType action_type) override;
 
  private:
   using Plugin::Plugin;
-  std::string GetFunctionName(ProcessType process, ActionType action) const;
+  __attribute__ ((visibility ("default"))) std::string GetFunctionName(ProcessType process, ActionType action) const;
 
   /**
    * @brief CreateDocPtrForPlugin
@@ -36,7 +36,7 @@ class TagPlugin : public Plugin {
    * @param tag_name name of required node/nodes
    * @return requested copy
    */
-  xmlDocPtr CreateDocPtrForPlugin(xmlDocPtr doc_ptr,
+  __attribute__ ((visibility ("default"))) xmlDocPtr CreateDocPtrForPlugin(xmlDocPtr doc_ptr,
                                   const std::string& tag_name) const;
 
   SCOPE_LOG_TAG(TagPlugin)

@@ -27,13 +27,13 @@ class StepRecovery : public Step {
  public:
   using Step::Step;
 
-  Status process() override;
-  Status clean() override { return Status::OK; }
-  Status undo() override { return Status::OK; }
-  Status precheck() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status undo() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status precheck() override { return Status::OK; }
 
-  virtual Status RecoveryNew() = 0;
-  virtual Status RecoveryUpdate() = 0;
+  __attribute__ ((visibility ("default"))) virtual Status RecoveryNew() = 0;
+  __attribute__ ((visibility ("default"))) virtual Status RecoveryUpdate() = 0;
 };
 
 }  // namespace recovery

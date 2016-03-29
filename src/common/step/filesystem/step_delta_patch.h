@@ -36,13 +36,13 @@ namespace filesystem {
  */
 class StepDeltaPatch : public Step {
  public:
-  explicit StepDeltaPatch(InstallerContext* context,
+  __attribute__ ((visibility ("default"))) explicit StepDeltaPatch(InstallerContext* context,
                           const std::string& delta_root = "");
 
-  Status process() override;
-  Status clean() override { return Status::OK; }
-  Status undo() override;
-  Status precheck() override;
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status undo() override;
+  __attribute__ ((visibility ("default"))) Status precheck() override;
 
  private:
   boost::filesystem::path patch_dir_;

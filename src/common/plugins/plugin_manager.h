@@ -22,19 +22,19 @@ class PluginManager {
  public:
   using PluginInfoList = std::vector<std::shared_ptr<PluginInfo>>;
 
-  PluginManager(const std::string& xml_path,
+  __attribute__ ((visibility ("default"))) PluginManager(const std::string& xml_path,
                 const std::string& list_path,
                 manifest_x* manifest)
       : xml_parser_(xml_path),
         list_parser_(list_path),
         manifest_(manifest) {}
 
-  bool LoadPlugins();
-  void RunPlugins(Plugin::ActionType action_type);
+  __attribute__ ((visibility ("default"))) bool LoadPlugins();
+  __attribute__ ((visibility ("default"))) void RunPlugins(Plugin::ActionType action_type);
 
  private:
-  bool GenerateUnknownTagList(std::vector<std::string>* xml_tags);
-  bool GeneratePluginInfoList(PluginInfoList* plugin_info_list);
+  __attribute__ ((visibility ("default"))) bool GenerateUnknownTagList(std::vector<std::string>* xml_tags);
+  __attribute__ ((visibility ("default"))) bool GeneratePluginInfoList(PluginInfoList* plugin_info_list);
 
   PluginsXmlParser xml_parser_;
   PluginsListParser list_parser_;

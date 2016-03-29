@@ -9,7 +9,7 @@
 
 namespace common_installer {
 
-std::string EncodeBase64(const std::string& val);
+__attribute__ ((visibility ("default"))) std::string EncodeBase64(const std::string& val);
 
 }  // namespace common_installer
 

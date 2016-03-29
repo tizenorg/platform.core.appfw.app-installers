@@ -27,7 +27,7 @@ namespace common_installer {
  *
  * \return true if success
  */
-bool RegisterAppInPkgmgr(manifest_x* manifest,
+__attribute__ ((visibility ("default"))) bool RegisterAppInPkgmgr(manifest_x* manifest,
                          const boost::filesystem::path& xml_path,
                          const std::string& pkgid,
                          const CertificateInfo& cert_info,
@@ -48,7 +48,7 @@ bool RegisterAppInPkgmgr(manifest_x* manifest,
  *
  * \return true if success
  */
-bool UpgradeAppInPkgmgr(manifest_x* manifest,
+__attribute__ ((visibility ("default"))) bool UpgradeAppInPkgmgr(manifest_x* manifest,
                         const boost::filesystem::path& xml_path,
                         const std::string& pkgid,
                         const CertificateInfo& cert_info,
@@ -66,7 +66,7 @@ bool UpgradeAppInPkgmgr(manifest_x* manifest,
  *
  * \return true if success
  */
-bool UpdateTepInfoInPkgmgr(const boost::filesystem::path& tep_path,
+__attribute__ ((visibility ("default"))) bool UpdateTepInfoInPkgmgr(const boost::filesystem::path& tep_path,
                            const std::string& pkgid,
                            uid_t uid,
                            RequestMode request_mode);
@@ -82,7 +82,7 @@ bool UpdateTepInfoInPkgmgr(const boost::filesystem::path& tep_path,
  *
  * \return true if success
  */
-bool UnregisterAppInPkgmgr(manifest_x* manifest,
+__attribute__ ((visibility ("default"))) bool UnregisterAppInPkgmgr(manifest_x* manifest,
                            const boost::filesystem::path& xml_path,
                            const std::string& pkgid,
                            uid_t uid,
@@ -97,7 +97,7 @@ bool UnregisterAppInPkgmgr(manifest_x* manifest,
  *
  * \return returns certificate information
  */
-std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
+__attribute__ ((visibility ("default"))) std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
                                               uid_t uid);
 
 /**
@@ -110,7 +110,7 @@ std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
  *
  * \return true if success
  */
-bool QueryAppidsForPkgId(const std::string& pkg_id,
+__attribute__ ((visibility ("default"))) bool QueryAppidsForPkgId(const std::string& pkg_id,
                          std::vector<std::string>* result, uid_t uid);
 
 /**
@@ -123,7 +123,7 @@ bool QueryAppidsForPkgId(const std::string& pkg_id,
  *
  * \return true if success
  */
-bool QueryPrivilegesForPkgId(const std::string& pkg_id, uid_t uid,
+__attribute__ ((visibility ("default"))) bool QueryPrivilegesForPkgId(const std::string& pkg_id, uid_t uid,
                              std::vector<std::string>* result);
 
 /**
@@ -135,7 +135,7 @@ bool QueryPrivilegesForPkgId(const std::string& pkg_id, uid_t uid,
  *
  * \return true if package is installed
  */
-bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode);
+__attribute__ ((visibility ("default"))) bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode);
 
 /**
  * \brief Adapter interface for external PkgMgr module used for checking
@@ -146,7 +146,7 @@ bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode);
  *
  * \return true if package is installed
  */
-bool IsPackageInstalled(const std::string& pkg_id, uid_t uid);
+__attribute__ ((visibility ("default"))) bool IsPackageInstalled(const std::string& pkg_id, uid_t uid);
 
 }  // namespace common_installer
 

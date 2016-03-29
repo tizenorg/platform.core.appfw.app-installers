@@ -75,22 +75,22 @@ class Step {
     boost::signals2::signal<void(Step::Status result, const std::string&)>;
 
   /** Standard constructor */
-  explicit Step(InstallerContext* context) : context_(context) { }
+  __attribute__ ((visibility ("default"))) explicit Step(InstallerContext* context) : context_(context) { }
 
   /** Virtual "empty" destructor */
-  virtual ~Step() { }
+  __attribute__ ((visibility ("default"))) virtual ~Step() { }
 
   /** Handles the job to be done */
-  virtual Status process() = 0;
+  __attribute__ ((visibility ("default"))) virtual Status process() = 0;
 
   /** Undos the step's work after failure */
-  virtual Status undo() = 0;
+  __attribute__ ((visibility ("default"))) virtual Status undo() = 0;
 
   /** Removes temporary data of the step after success */
-  virtual Status clean() = 0;
+  __attribute__ ((visibility ("default"))) virtual Status clean() = 0;
 
   /** Checks the input data used during process method */
-  virtual Status precheck() = 0;
+  __attribute__ ((visibility ("default"))) virtual Status precheck() = 0;
 
   StepErrorSignal on_error;
 

@@ -16,13 +16,13 @@
 template<typename Type>
 class Property {
  public:
-  Property() {}
-  Property(const Type &val): value_(val) { } // NOLINT
-  Property(Type &&val): value_(std::move(val)) { } // NOLINT
-  const Type& get() const { return value_; }
-  Type& get() { return value_; }
-  void set(const Type &val) { value_ = val; }
-  void set(Type &&val) { value_ = std::move(val); }
+  __attribute__ ((visibility ("default"))) Property() {}
+  __attribute__ ((visibility ("default"))) Property(const Type &val): value_(val) { } // NOLINT
+  __attribute__ ((visibility ("default"))) Property(Type &&val): value_(std::move(val)) { } // NOLINT
+  __attribute__ ((visibility ("default"))) const Type& get() const { return value_; }
+  __attribute__ ((visibility ("default"))) Type& get() { return value_; }
+  __attribute__ ((visibility ("default"))) void set(const Type &val) { value_ = val; }
+  __attribute__ ((visibility ("default"))) void set(Type &&val) { value_ = std::move(val); }
  private:
   Type value_;
 };

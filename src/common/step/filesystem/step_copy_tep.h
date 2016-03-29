@@ -29,22 +29,22 @@ class StepCopyTep : public Step {
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status process() override;
-  Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
 
   /**
    * \brief removes files from final package destination
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status undo() override;
+  __attribute__ ((visibility ("default"))) Status undo() override;
 
   /**
    * \brief checks if necessary paths/data are provided
    *
    * \return Status::OK if success, Status::ERROR otherwise
    */
-  Status precheck() override;
+  __attribute__ ((visibility ("default"))) Status precheck() override;
 
   SCOPE_LOG_TAG(CopyTEP)
 };

@@ -26,10 +26,10 @@ class StepCheckOldCertificate : public Step {
    *
    * \return Status::OK if certificates are OK. ERROR otherwise
    */
-  Status process() override;
-  Status undo() override { return Status::OK; }
-  Status clean() override { return Status::OK; }
-  Status precheck() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status process() override;
+  __attribute__ ((visibility ("default"))) Status undo() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status clean() override { return Status::OK; }
+  __attribute__ ((visibility ("default"))) Status precheck() override { return Status::OK; }
 
   SCOPE_LOG_TAG(CheckOldCertificate)
 };
