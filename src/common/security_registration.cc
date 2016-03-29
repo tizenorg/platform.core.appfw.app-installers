@@ -30,6 +30,7 @@ const std::vector<std::pair<const char*,
   {"res/", SECURITY_MANAGER_PATH_RO},
   {"shared/", SECURITY_MANAGER_PATH_PUBLIC_RO},
   {"shared/data", SECURITY_MANAGER_PATH_OWNER_RW_OTHER_RO},
+  {"shared/cache", SECURITY_MANAGER_PATH_OWNER_RW_OTHER_RO},
   {"shared/trusted", SECURITY_MANAGER_PATH_TRUSTED_RW},
   {"tmp/", SECURITY_MANAGER_PATH_RW}
 };
