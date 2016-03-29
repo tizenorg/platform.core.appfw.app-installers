@@ -68,6 +68,13 @@ bool StepCreateStorageDirectories::SubShareDir() {
     return false;
   }
 
+  bf::path shared_cache_path = shared_path / kCache;
+  bf::create_directory(shared_cache_path, error_code);
+  if (error_code) {
+    LOG(ERROR) << "Failed to create shared/cache directory for package";
+    return false;
+  }
+
   return true;
 }
 
