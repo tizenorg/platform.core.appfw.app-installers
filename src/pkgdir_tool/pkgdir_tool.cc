@@ -89,7 +89,7 @@ int PkgmgrListCallback(const pkgmgrinfo_pkginfo_h handle, void *user_data) {
     cert.getPublicKeyDER(&public_key, &len);
     std::string author_id =
         ci::EncodeBase64(reinterpret_cast<const char*>(public_key));
-    pkgs->emplace_back(pkgid, api_version, author_id);
+    pkgs->emplace_back(pkgid, author_id, api_version);
   } else {
     pkgs->emplace_back(pkgid, std::string(), std::string());
   }
