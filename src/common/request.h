@@ -32,14 +32,14 @@ enum class RequestMode : int {
  *
  * \return request mode
  */
-RequestMode GetRequestMode();
+__attribute__ ((visibility ("default"))) RequestMode GetRequestMode();
 
 /**
  * Get apps root path for current request (GLOBAL/USER)
  *
  * \return root application path (eg. $HOME/apps_rw/)
  */
-const char *GetRootAppPath(bool is_preload);
+__attribute__ ((visibility ("default"))) const char *GetRootAppPath(bool is_preload);
 
 }  // namespace common_installer
 

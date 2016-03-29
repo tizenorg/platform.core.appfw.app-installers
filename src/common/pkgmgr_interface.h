@@ -16,12 +16,12 @@
 
 namespace common_installer {
 
-enum class InstallationMode {
+__attribute__ ((visibility ("default"))) enum class InstallationMode {
   ONLINE,
   OFFLINE
 };
 
-class PkgMgrInterface;
+__attribute__ ((visibility ("default"))) class PkgMgrInterface;
 typedef std::shared_ptr<PkgMgrInterface> PkgMgrPtr;
 
 /**
@@ -34,7 +34,7 @@ typedef std::shared_ptr<PkgMgrInterface> PkgMgrPtr;
  *  - if to create PkgmgrSignal object,
  *  - what installation mode should be set in installer context.
  */
-class PkgmgrInstallerInterface {
+__attribute__ ((visibility ("default"))) class PkgmgrInstallerInterface {
  public:
   virtual bool CreatePkgMgrInstaller(pkgmgr_installer** installer,
                              InstallationMode* mode) = 0;
@@ -46,7 +46,7 @@ class PkgmgrInstallerInterface {
  *        Implementation of PkgmgrInstallerInterface that handles creation of
  *        pkgmgr_installer class in online and offline mode.
  */
-class PkgmgrInstaller : public PkgmgrInstallerInterface {
+__attribute__ ((visibility ("default"))) class PkgmgrInstaller : public PkgmgrInstallerInterface {
  public:
   bool CreatePkgMgrInstaller(pkgmgr_installer** installer,
                              InstallationMode* mode);
@@ -57,7 +57,7 @@ class PkgmgrInstaller : public PkgmgrInstallerInterface {
  * \brief Encapsulates pkgmgr API which handles parsing backend options
  *        and returns values/modes for installation process.
  */
-class PkgMgrInterface {
+__attribute__ ((visibility ("default"))) class PkgMgrInterface {
  public:
   /**
    * Returns Request type passed from pkgmgr_installer

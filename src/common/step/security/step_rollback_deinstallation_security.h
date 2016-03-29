@@ -14,7 +14,7 @@ namespace security {
 
 // Step that is used during uninstallation to rollback security changes if
 // deinstallation fails
-class StepRollbackDeinstallationSecurity : public Step {
+__attribute__ ((visibility ("default"))) class StepRollbackDeinstallationSecurity : public Step {
  public:
   using Step::Step;
 

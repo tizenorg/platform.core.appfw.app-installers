@@ -14,7 +14,7 @@
 namespace common_installer {
 
 /** this class parse xml file*/
-class PluginsXmlParser {
+__attribute__ ((visibility ("default"))) class PluginsXmlParser {
  public:
   explicit PluginsXmlParser(const std::string& path)
       : path_(path), doc_ptr_(nullptr) {}

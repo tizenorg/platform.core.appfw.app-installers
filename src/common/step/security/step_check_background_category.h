@@ -23,7 +23,7 @@ typedef std::set<std::string> BackgroundCatSet;
  * \brief This step check background category value and modify it depending on
  *        required version, cert level, background support, and value itself
  */
-class StepCheckBackgroundCategory : public common_installer::Step {
+__attribute__ ((visibility ("default"))) class StepCheckBackgroundCategory : public common_installer::Step {
  public:
   using Step::Step;
 

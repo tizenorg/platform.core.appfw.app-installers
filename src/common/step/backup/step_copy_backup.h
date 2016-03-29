@@ -20,7 +20,7 @@ namespace backup {
  *        update or uninstallation and copying new content of the package.
  *        Used by WGT and TPK backend
  */
-class StepCopyBackup : public Step {
+__attribute__ ((visibility ("default"))) class StepCopyBackup : public Step {
  public:
   using Step::Step;
 

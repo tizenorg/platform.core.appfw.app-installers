@@ -35,7 +35,7 @@ namespace configuration {
  * StoreLocation for its purpose but main goal of this step parsing tpk
  * manifest doesn't change.
  */
-class StepParseManifest : public common_installer::Step {
+__attribute__ ((visibility ("default"))) class StepParseManifest : public common_installer::Step {
  public:
   enum class ManifestLocation {
     PACKAGE,    // parse manifest file from unpacking diretory

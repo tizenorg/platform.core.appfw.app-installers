@@ -18,7 +18,7 @@ namespace configuration {
  * \brief step used to indicate wrong request provided to the backend.
  *        Used by TPK and WGT.
  */
-class StepFail : public Step {
+__attribute__ ((visibility ("default"))) class StepFail : public Step {
  public:
   using Step::Step;
 

@@ -15,7 +15,7 @@ namespace security {
 // Step that is used during installation to rollback security changes if
 // installation fails. Those changes cannot be reverted in StepSecurity
 // because its to early. We need to remove package files first.
-class StepRollbackInstallationSecurity : public Step {
+__attribute__ ((visibility ("default"))) class StepRollbackInstallationSecurity : public Step {
  public:
   using Step::Step;
 

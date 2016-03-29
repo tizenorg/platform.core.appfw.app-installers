@@ -19,7 +19,7 @@ namespace security {
  * \brief Step responsible for checking signature of given package.
  *        Used by WGT and TPK backend
  */
-class StepCheckSignature : public Step {
+__attribute__ ((visibility ("default"))) class StepCheckSignature : public Step {
  public:
   using Step::Step;
 
@@ -45,7 +45,7 @@ class StepCheckSignature : public Step {
 };
 
 // Exposed for tests
-Step::Status ValidateSignatures(const boost::filesystem::path& base_path,
+__attribute__ ((visibility ("default"))) Step::Status ValidateSignatures(const boost::filesystem::path& base_path,
     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
     bool check_reference, std::string* error_message);
 

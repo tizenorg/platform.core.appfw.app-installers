@@ -11,7 +11,7 @@ namespace common_installer {
  *        configuring app-installer steps.
  *        Eg. it is used to check, if package is to be installed or updated
  */
-class AppQueryInterface {
+__attribute__ ((visibility ("default"))) class AppQueryInterface {
  public:
   /** virtual destructor (for inheritance) */
   virtual ~AppQueryInterface() { }

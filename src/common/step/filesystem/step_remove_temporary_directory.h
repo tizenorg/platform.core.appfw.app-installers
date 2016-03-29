@@ -20,7 +20,7 @@ namespace filesystem {
  * path to temporary unpack directory and its content get
  * deleted
  */
-class StepRemoveTemporaryDirectory : public recovery::StepRecovery {
+__attribute__ ((visibility ("default"))) class StepRemoveTemporaryDirectory : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 

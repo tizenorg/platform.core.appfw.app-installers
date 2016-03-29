@@ -12,7 +12,7 @@
 
 namespace common_installer {
 
-class PluginFactory {
+__attribute__ ((visibility ("default"))) class PluginFactory {
  public:
   std::unique_ptr<Plugin> CreatePluginByPluginInfo(
       const PluginInfo& plugin_info);

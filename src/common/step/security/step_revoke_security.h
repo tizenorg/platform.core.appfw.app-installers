@@ -15,7 +15,7 @@ namespace security {
 // Step that is used during uninstallation
 // Security rules are revoked on cleanup as until that point we need to keep
 // package files present for rollback
-class StepRevokeSecurity : public Step {
+__attribute__ ((visibility ("default"))) class StepRevokeSecurity : public Step {
  public:
   using Step::Step;
 

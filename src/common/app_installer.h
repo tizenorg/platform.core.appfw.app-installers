@@ -24,7 +24,7 @@ namespace common_installer {
  *        the lists of steps and runs each of the step in the configured
  *        order.
  */
-class AppInstaller {
+__attribute__ ((visibility ("default"))) class AppInstaller {
  public:
   /** Enumeration of possible returned Results */
   enum class Result {

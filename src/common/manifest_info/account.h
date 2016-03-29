@@ -15,7 +15,7 @@ namespace common_installer {
 /**
  * \brief Used to store information about single account
  */
-struct SingleAccountInfo {
+__attribute__ ((visibility ("default"))) struct SingleAccountInfo {
   bool multiple_account_support;
   std::vector<std::pair<std::string, std::string>> names;
   std::vector<std::pair<std::string, std::string>> icon_paths;
@@ -28,7 +28,7 @@ struct SingleAccountInfo {
 /**
  * \brief Holds information about all accounts
  */
-class AccountInfo {
+__attribute__ ((visibility ("default"))) class AccountInfo {
  public:
   /** \brief Constructor */
   AccountInfo() {}

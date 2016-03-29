@@ -18,7 +18,7 @@
 namespace common_installer {
 namespace pkgmgr {
 
-class StepRunParserPlugin : public Step {
+__attribute__ ((visibility ("default"))) class StepRunParserPlugin : public Step {
  public:
   explicit StepRunParserPlugin(InstallerContext* context,
                                Plugin::ActionType action_type);

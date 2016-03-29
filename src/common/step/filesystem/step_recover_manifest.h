@@ -21,7 +21,7 @@ namespace filesystem {
  * For recovering update installation, the old manifest of package is restored
  * to its location.
  */
-class StepRecoverManifest : public recovery::StepRecovery {
+__attribute__ ((visibility ("default"))) class StepRecoverManifest : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 

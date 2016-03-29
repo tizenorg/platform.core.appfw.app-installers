@@ -18,7 +18,7 @@ namespace pkgmgr {
  *        is being updated, uninstalled
  *
  */
-class StepKillApps : public Step {
+__attribute__ ((visibility ("default"))) class StepKillApps : public Step {
  public:
   using Step::Step;
 

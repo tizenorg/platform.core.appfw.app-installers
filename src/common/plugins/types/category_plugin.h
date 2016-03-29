@@ -11,7 +11,7 @@
 
 namespace common_installer {
 
-class CategoryPlugin : public Plugin {
+__attribute__ ((visibility ("default"))) class CategoryPlugin : public Plugin {
  public:
   static const char kType[];
 

@@ -20,7 +20,7 @@ namespace pkgmgr {
  * app get unregistered with pkgmgr. In case of unsuccessful
  * update app in state before update gets re-registered
  */
-class StepRecoverApplication : public recovery::StepRecovery {
+__attribute__ ((visibility ("default"))) class StepRecoverApplication : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
   Status RecoveryNew() override;

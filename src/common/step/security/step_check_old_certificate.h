@@ -17,7 +17,7 @@ namespace security {
  * \brief step responsible for checking and comparing certificates of
  *        current and new version of application. Used by WGT and TPK
  */
-class StepCheckOldCertificate : public Step {
+__attribute__ ((visibility ("default"))) class StepCheckOldCertificate : public Step {
  public:
   using Step::Step;
 

@@ -10,7 +10,7 @@
 
 namespace common_installer {
 
-class Subprocess {
+__attribute__ ((visibility ("default"))) class Subprocess {
  public:
   explicit Subprocess(const std::string& program);
 

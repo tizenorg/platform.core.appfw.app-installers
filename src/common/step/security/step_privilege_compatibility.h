@@ -17,7 +17,7 @@ namespace security {
  * @brief This step converts privileges declared in package manifest to the
  *        privileges for current platform version
  */
-class StepPrivilegeCompatibility : public Step {
+__attribute__ ((visibility ("default"))) class StepPrivilegeCompatibility : public Step {
  public:
   using Step::Step;
 

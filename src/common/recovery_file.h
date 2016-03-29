@@ -22,7 +22,7 @@ namespace recovery {
  * It dumps information to recover file regarding current status of handled
  * request.
  */
-class RecoveryFile {
+__attribute__ ((visibility ("default"))) class RecoveryFile {
  public:
   /**
    * Creates new RecoveryFile object for given file

@@ -41,7 +41,7 @@ namespace common_installer {
  * It is an abstract base class that demands the definition of
  * 4 methods: process, precheck, undo and clean.
  */
-class Step {
+__attribute__ ((visibility ("default"))) class Step {
  public:
   /** Possible code returned by process, undo, clean, precheck methods. */
   enum class Status {

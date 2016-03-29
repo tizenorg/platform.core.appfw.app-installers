@@ -11,7 +11,7 @@
 
 namespace common_installer {
 
-class MetadataPlugin : public Plugin {
+__attribute__ ((visibility ("default"))) class MetadataPlugin : public Plugin {
  public:
   static const char kType[];
 

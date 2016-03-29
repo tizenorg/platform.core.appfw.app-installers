@@ -19,7 +19,7 @@ namespace filesystem {
  *        to the proper location during update or deinstallation.
  *        Used by TPK and WGT
  */
-class StepCopyStorageDirectories : public common_installer::Step {
+__attribute__ ((visibility ("default"))) class StepCopyStorageDirectories : public common_installer::Step {
  public:
   using Step::Step;
 

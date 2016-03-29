@@ -30,7 +30,7 @@ namespace common_installer {
 
 // TODO(t.iwanek): this structure should be unified for manifest handlers of
 // wgt and tpk packages
-struct ShortcutInfo {
+__attribute__ ((visibility ("default"))) struct ShortcutInfo {
   std::string app_id;
   std::string extra_data;
   std::string extra_key;
@@ -48,7 +48,7 @@ using ShortcutListInfo = std::vector<ShortcutInfo>;
  * and used during generation of platform manifest (for data that are not
  * available within manifest_x structure
  */
-class ExtraManifestData {
+__attribute__ ((visibility ("default"))) class ExtraManifestData {
  public:
   /** Constructor */
   ExtraManifestData() {}
@@ -61,7 +61,7 @@ class ExtraManifestData {
  * \brief Base class that is used within specific backends to keep additional
  *        information regarding package
  */
-class BackendData {
+__attribute__ ((visibility ("default"))) class BackendData {
  public:
   /** virtual destructor */
   virtual ~BackendData() { }
@@ -70,7 +70,7 @@ class BackendData {
 /**
  * \brief Class represents certificate information
  */
-class CertificateInfo {
+__attribute__ ((visibility ("default"))) class CertificateInfo {
  public:
   /** author_id (using public key from author certificate) */
   Property<std::string> author_id;
@@ -92,7 +92,7 @@ class CertificateInfo {
  * \brief Class used for recovery situation.
  *        It holds pointer to RecoveryFile object.
  */
-class RecoveryInfo {
+__attribute__ ((visibility ("default"))) class RecoveryInfo {
  public:
   /** default constructor */
   RecoveryInfo() { }
@@ -128,7 +128,7 @@ enum class PrivilegeLevel : int {
  *
  * \return true, if required_level <= allowed_level
  */
-bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
+__attribute__ ((visibility ("default"))) bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
                    PrivilegeLevel allowed_level);
 
 /**
@@ -138,7 +138,7 @@ bool SatifiesPrivilegeLevel(PrivilegeLevel required_level,
  *
  * \return translated level (to string)
  */
-const char* PrivilegeLevelToString(PrivilegeLevel level);
+__attribute__ ((visibility ("default"))) const char* PrivilegeLevelToString(PrivilegeLevel level);
 
 // TODO(p.sikorski@samsung.com) this class should be divided into:
 //  Base Context class
@@ -154,7 +154,7 @@ const char* PrivilegeLevelToString(PrivilegeLevel level);
  *        “pointers” to ContextInstaller (pointer is initialized in Step
  *        constructor).
  */
-class InstallerContext {
+__attribute__ ((visibility ("default"))) class InstallerContext {
  public:
   /** Constructor */
   InstallerContext();

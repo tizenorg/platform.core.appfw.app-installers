@@ -26,7 +26,7 @@
 namespace common_installer {
 
 /** this class include information about plugin */
-class PluginInfo {
+__attribute__ ((visibility ("default"))) class PluginInfo {
  public:
   PluginInfo(int flag, const std::string& type, const std::string& name,
              const boost::filesystem::path& path);
@@ -43,7 +43,7 @@ class PluginInfo {
 };
 
 /** this class parse plugin file */
-class PluginsListParser {
+__attribute__ ((visibility ("default"))) class PluginsListParser {
  public:
   using PluginList = std::vector<std::shared_ptr<PluginInfo>>;
   explicit PluginsListParser(const std::string& path) : path_(path) {}

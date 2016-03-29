@@ -13,7 +13,7 @@
 namespace common_installer {
 namespace pkgmgr {
 
-class StepUnregisterApplication : public Step {
+__attribute__ ((visibility ("default"))) class StepUnregisterApplication : public Step {
  public:
   using Step::Step;
 

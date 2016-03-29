@@ -16,7 +16,7 @@ namespace pkgmgr {
 /**
  * \brief Step responsbile for removing manifest file during uninstallation
  */
-class StepRemoveManifest : public Step {
+__attribute__ ((visibility ("default"))) class StepRemoveManifest : public Step {
  public:
   using Step::Step;
 

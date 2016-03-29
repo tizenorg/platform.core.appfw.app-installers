@@ -10,7 +10,7 @@
 namespace common_installer {
 namespace pkgmgr {
 
-class StepCheckBlacklist : public Step {
+__attribute__ ((visibility ("default"))) class StepCheckBlacklist : public Step {
  public:
   using Step::Step;
 
