@@ -5,6 +5,8 @@
 #ifndef COMMON_STEP_SECURITY_STEP_CHECK_SIGNATURE_H_
 #define COMMON_STEP_SECURITY_STEP_CHECK_SIGNATURE_H_
 
+#include <boost/filesystem/path.hpp>
+
 #include <manifest_parser/utils/logging.h>
 
 #include <string>
@@ -40,6 +42,9 @@ class StepCheckSignature : public Step {
    * \return Status::OK if available, Status::ERRO otherwise
    */
   Status precheck() override;
+
+ protected:
+  virtual boost::filesystem::path GetSignatureRoot() const;
 
  private:
   Status CheckSignatures(bool check_reference, bool is_preload,
