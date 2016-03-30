@@ -82,6 +82,7 @@ make %{?_smp_mflags}
 %attr(6750,root,root) %{_bindir}/pkgdir-tool
 %attr(6755,root,root) %{_sysconfdir}/gumd/useradd.d/20_pkgdir-tool-add.post
 %{_bindir}/pkg-install-manifest
+%{_bindir}/pkg_initdb
 %license LICENSE
 
 %files devel

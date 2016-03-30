@@ -8,7 +8,10 @@
 
 #include <pkgmgr-info.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <tzplatform_config.h>
+
 #include <string>
 
 #include "common/request.h"
@@ -145,8 +148,11 @@ Step::Status StepConfigure::precheck() {
   } else {
     if (pkgmgr_->GetRequestType() == RequestType::ManifestDirectInstall ||
         pkgmgr_->GetRequestType() == RequestType::ManifestDirectUpdate) {
-      LOG(ERROR) << "Non-root user cannot request manifest direct mode.";
-      return Status::OPERATION_NOT_ALLOWED;
+      if (context_->is_preload_request.get()) {
+        LOG(ERROR) << "Direct manifest installation/update that is run from "
+                      "non-root user cannot be a preload request";
+        return Status::OPERATION_NOT_ALLOWED;
+      }
     } else if (context_->is_preload_request.get()) {
       LOG(ERROR) << "Non-root user cannot request preload request mode.";
       return Status::OPERATION_NOT_ALLOWED;
