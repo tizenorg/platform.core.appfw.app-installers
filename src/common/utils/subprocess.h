@@ -23,10 +23,15 @@ class Subprocess {
       const std::vector<std::string>& args = std::vector<std::string>());
   int Wait();
 
+  void set_uid(int uid) {
+    uid_ = uid;
+  }
+
  private:
   std::string program_;
   int pid_;
   bool started_;
+  int uid_;
 };
 
 }  // namespace common_installer

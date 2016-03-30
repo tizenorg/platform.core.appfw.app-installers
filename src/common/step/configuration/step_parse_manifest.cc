@@ -657,7 +657,7 @@ bool StepParseManifest::FillSplashScreen(application_x* app,
   for (auto& splash_screen : splashscreens_info.splashscreens()) {
     splashscreen_x* splashscreen =
         static_cast<splashscreen_x*>(calloc(1, sizeof(splashscreen_x)));
-    if (context_->is_preload_request.get() == true)
+    if (context_->is_preload_request.get())
       splashscreen->src = strdup(splash_screen.src().c_str());
     else
       splashscreen->src = strdup((context_->root_application_path.get()
