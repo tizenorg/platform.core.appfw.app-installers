@@ -17,7 +17,8 @@ namespace common_installer {
 Subprocess::Subprocess(const std::string& program)
     : program_(program),
       pid_(0),
-      started_(false) {
+      started_(false),
+      uid_(-1) {
 }
 
 bool Subprocess::RunWithArgs(const std::vector<std::string>& args) {
@@ -33,6 +34,8 @@ bool Subprocess::RunWithArgs(const std::vector<std::string>& args) {
       argv[i] = args[i - 1].c_str();
     }
     argv[args.size() + 1] = nullptr;
+    if (uid_ != -1)
+      setuid(uid_);
     execvp(argv[0], const_cast<char* const*>(argv.get()));
     LOG(ERROR) << "Failed to execv";
     return false;

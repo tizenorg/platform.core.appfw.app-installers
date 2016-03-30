@@ -8,7 +8,10 @@
 
 #include <pkgmgr-info.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <tzplatform_config.h>
+
 #include <string>
 
 #include "common/request.h"
@@ -123,18 +126,24 @@ Step::Status StepConfigure::precheck() {
   if (pkgmgr_->GetRequestType() != RequestType::ManifestDirectInstall &&
       pkgmgr_->GetRequestType() != RequestType::ManifestDirectUpdate) {
     if (getuid() == 0) {
-      if (context_->is_preload_request.get()) {
-        LOG(INFO) << "Allowing installation from root user for "
-                     "preload request mode.";
-        context_->uid.set(tzplatform_getuid(TZ_SYS_GLOBALAPP_USER));
-      } else {
-        LOG(ERROR) << "App-installer should not run with superuser!";
-        return Status::OPERATION_NOT_ALLOWED;
-      }
+      LOG(ERROR) << "App-installer should not run with superuser!";
+      return Status::OPERATION_NOT_ALLOWED;
+    } else if (context_->is_preload_request.get()) {
+      LOG(ERROR) << "Preload flag may be set only when running request as root";
+      return Status::OPERATION_NOT_ALLOWED;
     }
   } else {
-    LOG(INFO) << "Allowing installation from root user for "
-                 "manifest direct request mode.";
+    if (getuid() == 0) {
+      LOG(INFO) << "Allowing installation from root user for "
+                   "preload request mode.";
+      context_->uid.set(tzplatform_getuid(TZ_SYS_GLOBALAPP_USER));
+      if (context_->installation_mode.get() == InstallationMode::ONLINE
+          && !context_->is_preload_request.get())
+        setuid(context_->uid.get());
+    } else if (context_->is_preload_request.get()) {
+      LOG(ERROR) << "Preload flag may be set only when running request as root";
+      return Status::OPERATION_NOT_ALLOWED;
+    }
   }
   return Status::OK;
 }

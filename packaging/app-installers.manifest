@@ -4,6 +4,7 @@
         </request>
         <assign>
                 <filesystem path="/usr/bin/pkgdir-tool" exec_label="User" />
+                <filesystem path="/usr/bin/pkg-initdb" exec_label="User" />
                 <filesystem path="/usr/bin/pkg-install-manifest" exec_label="User" />
         </assign>
 </manifest>
