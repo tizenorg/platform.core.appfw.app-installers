@@ -5,7 +5,6 @@
 #include "common/step/security/step_check_signature.h"
 
 #include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
 #include <glib.h>
 
 #include <cassert>
@@ -53,11 +52,15 @@ Step::Status StepCheckSignature::precheck() {
   return Step::Status::OK;
 }
 
+boost::filesystem::path StepCheckSignature::GetSignatureRoot() const {
+  return context_->unpacked_dir_path.get();
+}
+
 Step::Status StepCheckSignature::CheckSignatures(bool check_reference,
                                                  bool is_preload,
                                                  PrivilegeLevel* level) {
   std::string error_message;
-  if (!ValidateSignatures(context_->unpacked_dir_path.get(), level,
+  if (!ValidateSignatures(GetSignatureRoot(), level,
                          &context_->certificate_info.get(), check_reference,
                          is_preload, &error_message)) {
     on_error(Status::CERT_ERROR, error_message);
@@ -104,7 +107,7 @@ Step::Status StepCheckSignature::process() {
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
   bool check_reference = true;
   if (getuid() == 0 &&
-      (context_->request_type.get()== ci::RequestType::ManifestDirectInstall ||
+      (context_->request_type.get() == ci::RequestType::ManifestDirectInstall ||
       context_->request_type.get() == ci::RequestType::ManifestDirectUpdate))
     check_reference = false;
   bool is_preload = context_->is_preload_request.get();
