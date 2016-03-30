@@ -80,6 +80,7 @@ make %{?_smp_mflags}
 %{_libdir}/libapp-installers.so*
 %attr(6750,root,root) %{_bindir}/pkgdir-tool
 %{_bindir}/pkg-install-manifest
+%{_bindir}/pkg-initdb
 %license LICENSE
 
 %files devel
