@@ -27,11 +27,11 @@ const char kBackendDirectoryPath[] = "/etc/package-manager/backend/";
 
 int InstallManifestOffline(const std::string& pkgid,
                            const std::string& type,
-                           const std::string& preload) {
+                           bool preload) {
   bf::path backend_path(kBackendDirectoryPath);
   backend_path /= type;
   ci::Subprocess backend(backend_path.string());
-  if (preload == "true")
+  if (preload)
     backend.Run("-y", pkgid.c_str(), "--preload");
   else
     backend.Run("-y", pkgid.c_str());
@@ -44,6 +44,7 @@ int main(int argc, char** argv) {
   bpo::options_description options("Allowed options");
   options.add_options()
       ("xml-path,x", bpo::value<std::string>()->required(), "xml package path")
+      ("preload", "run backend with preload flag")
       ("help,h", "display this help message");
   bpo::variables_map opt_map;
   try {
@@ -58,6 +59,7 @@ int main(int argc, char** argv) {
     return -1;
   }
 
+  bool preload = opt_map.count("preload") != 0;
   bf::path manifest_path(opt_map["xml-path"].as<std::string>());
   tpk::parse::TPKConfigParser parser;
   if (!parser.ParseManifest(manifest_path)) {
@@ -75,6 +77,5 @@ int main(int argc, char** argv) {
   if (type.empty())
     type = "tpk";
 
-  return InstallManifestOffline(package_info->package(), type,
-      package_info->preload());
+  return InstallManifestOffline(package_info->package(), type, preload);
 }

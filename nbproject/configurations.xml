@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="97">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="src">
+        <df name="common">
+          <df name="step">
+            <in>step_backup_icons.cc</in>
+            <in>step_backup_manifest.cc</in>
+            <in>step_check_old_certificate.cc</in>
+            <in>step_check_signature.cc</in>
+            <in>step_configure.cc</in>
+            <in>step_copy.cc</in>
+            <in>step_copy_backup.cc</in>
+            <in>step_copy_storage_directories.cc</in>
+            <in>step_copy_tep.cc</in>
+            <in>step_create_icons.cc</in>
+            <in>step_create_storage_directories.cc</in>
+            <in>step_delta_patch.cc</in>
+            <in>step_fail.cc</in>
+            <in>step_generate_xml.cc</in>
+            <in>step_kill_apps.cc</in>
+            <in>step_old_manifest.cc</in>
+            <in>step_open_recovery_file.cc</in>
+            <in>step_parse.cc</in>
+            <in>step_privilege_compatibility.cc</in>
+            <in>step_recover_application.cc</in>
+            <in>step_recover_files.cc</in>
+            <in>step_recover_icons.cc</in>
+            <in>step_recover_manifest.cc</in>
+            <in>step_recover_security.cc</in>
+            <in>step_recover_storage_directories.cc</in>
+            <in>step_recovery.cc</in>
+            <in>step_register_app.cc</in>
+            <in>step_register_security.cc</in>
+            <in>step_remove_files.cc</in>
+            <in>step_remove_icons.cc</in>
+            <in>step_remove_temporary_directory.cc</in>
+            <in>step_revoke_security.cc</in>
+            <in>step_rollback_deinstallation_security.cc</in>
+            <in>step_rollback_installation_security.cc</in>
+            <in>step_unregister_app.cc</in>
+            <in>step_unzip.cc</in>
+            <in>step_update_app.cc</in>
+            <in>step_update_security.cc</in>
+            <in>step_update_tep.cc</in>
+          </df>
+          <df name="utils">
+            <in>file_util.cc</in>
+            <in>string_util.cc</in>
+          </df>
+          <in>app_installer.cc</in>
+          <in>backup_paths.cc</in>
+          <in>installer_context.cc</in>
+          <in>pkgmgr_interface.cc</in>
+          <in>pkgmgr_registration.cc</in>
+          <in>pkgmgr_signal.cc</in>
+          <in>recovery_file.cc</in>
+          <in>request.cc</in>
+          <in>security_registration.cc</in>
+        </df>
+        <df name="pkgdir_maker">
+          <in>pkgdir_maker.cc</in>
+        </df>
+        <df name="tpk">
+          <df name="step">
+            <in>step_create_symbolic_link.cc</in>
+            <in>step_parse.cc</in>
+            <in>step_parse_recovery.cc</in>
+          </df>
+          <in>tpk_app_query_interface.cc</in>
+          <in>tpk_backend.cc</in>
+          <in>tpk_installer.cc</in>
+        </df>
+        <df name="unit_tests">
+          <in>signature_unittest.cc</in>
+          <in>smoke_test.cc</in>
+        </df>
+        <df name="wgt">
+          <df name="step">
+            <in>step_add_default_privileges.cc</in>
+            <in>step_check_settings_level.cc</in>
+            <in>step_create_symbolic_link.cc</in>
+            <in>step_encrypt_resources.cc</in>
+            <in>step_parse.cc</in>
+            <in>step_parse_recovery.cc</in>
+            <in>step_rds_modify.cc</in>
+            <in>step_rds_parse.cc</in>
+            <in>step_remove_encryption_data.cc</in>
+            <in>step_wgt_copy_storage_directories.cc</in>
+            <in>step_wgt_create_icons.cc</in>
+            <in>step_wgt_create_storage_directories.cc</in>
+            <in>step_wgt_resource_directory.cc</in>
+          </df>
+          <in>rds_parser.cc</in>
+          <in>wgt_app_query_interface.cc</in>
+          <in>wgt_backend.cc</in>
+          <in>wgt_installer.cc</in>
+        </df>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>CMakeLists.txt</itemPath>
+      <itemPath>Makefile</itemPath>
+      <itemPath>nbproject/private/launcher.properties</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <ccTool>
+            <standard>8</standard>
+            <incDir>
+              <pElem>../app-installer-build/local/BUILD-ROOTS/scratch.aarch64.0/usr/include</pElem>
+              <pElem>../app-installer-build/local/BUILD-ROOTS/scratch.aarch64.0/usr/include/boost</pElem>
+              <pElem>../app-installer-build/local/BUILD-ROOTS/scratch.aarch64.0/usr/include/cert-svc</pElem>
+              <pElem>../app-installer-build/local/BUILD-ROOTS/scratch.aarch64.0/usr/include/pkgmgr</pElem>
+              <pElem>../app-installer-build/local/BUILD-ROOTS/scratch.aarch64.0/usr/include/minizip</pElem>
+              <pElem>../manifest-parser-build/local/BUILD-ROOTS/scratch.aarch64.0/usr/include/boost</pElem>
+              <pElem>../manifest-parser-build/local/BUILD-ROOTS/scratch.aarch64.0/usr/include</pElem>
+            </incDir>
+          </ccTool>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand>cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=${IDE_CC} -DCMAKE_CXX_COMPILER=${IDE_CXX} -DCMAKE_C_FLAGS_DEBUG="-g3 -gdwarf-2" -DCMAKE_CXX_FLAGS_DEBUG="-g3 -gdwarf-2" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .</preBuildCommand>
+        </preBuild>
+      </makefileType>
+      <item path="src/common/app_installer.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/backup_paths.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/installer_context.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/pkgmgr_interface.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/pkgmgr_registration.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/pkgmgr_signal.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/recovery_file.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/request.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/security_registration.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_backup_icons.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_backup_manifest.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_check_old_certificate.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_check_signature.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_configure.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/step/step_copy.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/step/step_copy_backup.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_copy_storage_directories.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_copy_tep.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/step/step_create_icons.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_create_storage_directories.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_delta_patch.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_fail.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/step/step_generate_xml.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_kill_apps.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/step/step_old_manifest.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_open_recovery_file.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_parse.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/step/step_privilege_compatibility.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_recover_application.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_recover_files.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_recover_icons.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_recover_manifest.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_recover_security.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_recover_storage_directories.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_recovery.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/step/step_register_app.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_register_security.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_remove_files.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_remove_icons.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_remove_temporary_directory.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_revoke_security.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_rollback_deinstallation_security.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_rollback_installation_security.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_unregister_app.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_unzip.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/step/step_update_app.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/step/step_update_security.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/common/step/step_update_tep.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/utils/file_util.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/common/utils/string_util.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/pkgdir_maker/pkgdir_maker.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/tpk/step/step_create_symbolic_link.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/tpk/step/step_parse.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/tpk/step/step_parse_recovery.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/tpk/tpk_app_query_interface.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/tpk/tpk_backend.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/tpk/tpk_installer.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/unit_tests/signature_unittest.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/unit_tests/smoke_test.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/wgt/rds_parser.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_add_default_privileges.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_check_settings_level.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_create_symbolic_link.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_encrypt_resources.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_parse.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_parse_recovery.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_rds_modify.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_rds_parse.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_remove_encryption_data.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_wgt_copy_storage_directories.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_wgt_create_icons.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_wgt_create_storage_directories.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/wgt/step/step_wgt_resource_directory.cc"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="src/wgt/wgt_app_query_interface.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/wgt/wgt_backend.cc" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/wgt/wgt_installer.cc" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

@@ -24,6 +24,7 @@ SET(CMAKE_CXX_FLAGS_CCOV       "-O0 -std=c++11 -g --coverage")
 # Targets
 SET(TARGET_LIBNAME_COMMON "app-installers")
 SET(TARGET_PKGDIR_TOOL "pkgdir-tool")
+SET(TARGET_PKG_INITDB "pkg_initdb")
 SET(TARGET_PKG_INSTALL_MANIFEST "pkg-install-manifest")
 
 ADD_DEFINITIONS("-Wall")

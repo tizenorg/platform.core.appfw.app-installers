@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="97">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name=".idea">
+      </df>
+      <df name=".settings">
+      </df>
+      <df name="cmake">
+        <df name="Modules">
+        </df>
+      </df>
+      <df name="CMakeFiles">
+        <df name="2.8.12.2">
+          <df name="CompilerIdC">
+            <in>CMakeCCompilerId.c</in>
+          </df>
+          <df name="CompilerIdCXX">
+            <in>CMakeCXXCompilerId.cpp</in>
+          </df>
+        </df>
+        <df name="CMakeTmp">
+        </df>
+      </df>
+      <df name="packaging">
+      </df>
+      <df name="src">
+        <df name="CMakeFiles">
+        </df>
+        <df name="common">
+          <df name="CMakeFiles">
+          </df>
+          <df name="manifest_info">
+            <in>account.h</in>
+          </df>
+          <df name="step">
+            <in>step.h</in>
+            <in>step_backup_icons.cc</in>
+            <in>step_backup_icons.h</in>
+            <in>step_backup_manifest.cc</in>
+            <in>step_backup_manifest.h</in>
+            <in>step_check_background_category.cc</in>
+            <in>step_check_background_category.h</in>
+            <in>step_check_old_certificate.cc</in>
+            <in>step_check_old_certificate.h</in>
+            <in>step_check_signature.cc</in>
+            <in>step_check_signature.h</in>
+            <in>step_configure.cc</in>
+            <in>step_configure.h</in>
+            <in>step_copy.cc</in>
+            <in>step_copy.h</in>
+            <in>step_copy_backup.cc</in>
+            <in>step_copy_backup.h</in>
+            <in>step_copy_storage_directories.cc</in>
+            <in>step_copy_storage_directories.h</in>
+            <in>step_copy_tep.cc</in>
+            <in>step_copy_tep.h</in>
+            <in>step_create_icons.cc</in>
+            <in>step_create_icons.h</in>
+            <in>step_create_storage_directories.cc</in>
+            <in>step_create_storage_directories.h</in>
+            <in>step_delta_patch.cc</in>
+            <in>step_delta_patch.h</in>
+            <in>step_fail.cc</in>
+            <in>step_fail.h</in>
+            <in>step_generate_xml.cc</in>
+            <in>step_generate_xml.h</in>
+            <in>step_kill_apps.cc</in>
+            <in>step_kill_apps.h</in>
+            <in>step_old_manifest.cc</in>
+            <in>step_old_manifest.h</in>
+            <in>step_open_recovery_file.cc</in>
+            <in>step_open_recovery_file.h</in>
+            <in>step_parse.cc</in>
+            <in>step_parse.h</in>
+            <in>step_privilege_compatibility.cc</in>
+            <in>step_privilege_compatibility.h</in>
+            <in>step_recover_application.cc</in>
+            <in>step_recover_application.h</in>
+            <in>step_recover_files.cc</in>
+            <in>step_recover_files.h</in>
+            <in>step_recover_icons.cc</in>
+            <in>step_recover_icons.h</in>
+            <in>step_recover_manifest.cc</in>
+            <in>step_recover_manifest.h</in>
+            <in>step_recover_security.cc</in>
+            <in>step_recover_security.h</in>
+            <in>step_recover_storage_directories.cc</in>
+            <in>step_recover_storage_directories.h</in>
+            <in>step_recovery.cc</in>
+            <in>step_recovery.h</in>
+            <in>step_register_app.cc</in>
+            <in>step_register_app.h</in>
+            <in>step_register_security.cc</in>
+            <in>step_register_security.h</in>
+            <in>step_remove_files.cc</in>
+            <in>step_remove_files.h</in>
+            <in>step_remove_icons.cc</in>
+            <in>step_remove_icons.h</in>
+            <in>step_remove_temporary_directory.cc</in>
+            <in>step_remove_temporary_directory.h</in>
+            <in>step_revoke_security.cc</in>
+            <in>step_revoke_security.h</in>
+            <in>step_rollback_deinstallation_security.cc</in>
+            <in>step_rollback_deinstallation_security.h</in>
+            <in>step_rollback_installation_security.cc</in>
+            <in>step_rollback_installation_security.h</in>
+            <in>step_unregister_app.cc</in>
+            <in>step_unregister_app.h</in>
+            <in>step_unzip.cc</in>
+            <in>step_unzip.h</in>
+            <in>step_update_app.cc</in>
+            <in>step_update_app.h</in>
+            <in>step_update_security.cc</in>
+            <in>step_update_security.h</in>
+            <in>step_update_tep.cc</in>
+            <in>step_update_tep.h</in>
+          </df>
+          <df name="utils">
+            <in>byte_size_literals.h</in>
+            <in>file_util.cc</in>
+            <in>file_util.h</in>
+            <in>glist_range.h</in>
+            <in>macros.h</in>
+            <in>property.h</in>
+            <in>string_util.cc</in>
+          </df>
+          <in>app_installer.cc</in>
+          <in>app_installer.h</in>
+          <in>app_query_interface.h</in>
+          <in>backup_paths.cc</in>
+          <in>backup_paths.h</in>
+          <in>installer_context.cc</in>
+          <in>installer_context.h</in>
+          <in>pkgmgr_interface.cc</in>
+          <in>pkgmgr_interface.h</in>
+          <in>pkgmgr_registration.cc</in>
+          <in>pkgmgr_registration.h</in>
+          <in>pkgmgr_signal.cc</in>
+          <in>pkgmgr_signal.h</in>
+          <in>recovery_file.cc</in>
+          <in>recovery_file.h</in>
+          <in>request.cc</in>
+          <in>request.h</in>
+          <in>security_registration.cc</in>
+          <in>security_registration.h</in>
+        </df>
+        <df name="pkgdir_maker">
+          <in>pkgdir_maker.cc</in>
+        </df>
+        <df name="pkgdir_tool">
+          <in>pkgdir_tool.cc</in>
+        </df>
+        <df name="tpk">
+          <df name="step">
+            <in>step_check_tpk_background_category.cc</in>
+            <in>step_check_tpk_background_category.h</in>
+            <in>step_create_symbolic_link.cc</in>
+            <in>step_create_symbolic_link.h</in>
+            <in>step_parse.cc</in>
+            <in>step_parse.h</in>
+            <in>step_parse_recovery.cc</in>
+            <in>step_parse_recovery.h</in>
+          </df>
+          <in>tpk_app_query_interface.cc</in>
+          <in>tpk_app_query_interface.h</in>
+          <in>tpk_backend.cc</in>
+          <in>tpk_installer.cc</in>
+          <in>tpk_installer.h</in>
+        </df>
+        <df name="unit_tests">
+          <df name="test_samples">
+            <df name="bad_signatures">
+            </df>
+            <df name="good_signatures">
+            </df>
+            <df name="smoke">
+              <df name="delta_dir">
+              </df>
+            </df>
+          </df>
+          <in>signature_unittest.cc</in>
+          <in>smoke_test.cc</in>
+        </df>
+        <df name="wgt">
+          <df name="step">
+            <in>step_add_default_privileges.cc</in>
+            <in>step_add_default_privileges.h</in>
+            <in>step_check_settings_level.cc</in>
+            <in>step_check_settings_level.h</in>
+            <in>step_check_wgt_background_category.cc</in>
+            <in>step_check_wgt_background_category.h</in>
+            <in>step_create_symbolic_link.cc</in>
+            <in>step_create_symbolic_link.h</in>
+            <in>step_encrypt_resources.cc</in>
+            <in>step_encrypt_resources.h</in>
+            <in>step_parse.cc</in>
+            <in>step_parse.h</in>
+            <in>step_parse_recovery.cc</in>
+            <in>step_parse_recovery.h</in>
+            <in>step_rds_modify.cc</in>
+            <in>step_rds_modify.h</in>
+            <in>step_rds_parse.cc</in>
+            <in>step_rds_parse.h</in>
+            <in>step_remove_encryption_data.cc</in>
+            <in>step_remove_encryption_data.h</in>
+            <in>step_wgt_copy_storage_directories.cc</in>
+            <in>step_wgt_copy_storage_directories.h</in>
+            <in>step_wgt_create_icons.cc</in>
+            <in>step_wgt_create_icons.h</in>
+            <in>step_wgt_create_storage_directories.cc</in>
+            <in>step_wgt_create_storage_directories.h</in>
+            <in>step_wgt_resource_directory.cc</in>
+            <in>step_wgt_resource_directory.h</in>
+          </df>
+          <in>rds_parser.cc</in>
+          <in>rds_parser.h</in>
+          <in>wgt_app_query_interface.cc</in>
+          <in>wgt_app_query_interface.h</in>
+          <in>wgt_backend.cc</in>
+          <in>wgt_backend_data.h</in>
+          <in>wgt_installer.cc</in>
+          <in>wgt_installer.h</in>
+        </df>
+      </df>
+      <df name="tools">
+      </df>
+    </df>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>2</platform>
+      </toolsSet>
+      <compile>
+        <compiledirpicklist>
+          <compiledirpicklistitem>.</compiledirpicklistitem>
+          <compiledirpicklistitem>${AUTO_FOLDER}</compiledirpicklistitem>
+        </compiledirpicklist>
+        <compiledir>${AUTO_FOLDER}</compiledir>
+        <compilecommandpicklist>
+          <compilecommandpicklistitem>${MAKE} ${ITEM_NAME}.o</compilecommandpicklistitem>
+          <compilecommandpicklistitem>${AUTO_COMPILE}</compilecommandpicklistitem>
+        </compilecommandpicklist>
+        <compilecommand>${AUTO_COMPILE}</compilecommand>
+      </compile>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <rundir>.</rundir>
+        <buildfirst>false</buildfirst>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+  </confs>
+</configurationDescriptor>

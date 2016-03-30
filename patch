@@ -1,0 +1,58 @@
+diff --git a/src/common/certificate_validation.cc b/src/common/certificate_validation.cc
+index 9fb02ef..bc15752 100644
+--- a/src/common/certificate_validation.cc
++++ b/src/common/certificate_validation.cc
+@@ -4,11 +4,18 @@
+ 
+ #include "common/certificate_validation.h"
+ 
++#include <algorithm>
++#include <regex>
++
+ #include <boost/format.hpp>
+ #include <vcore/SignatureValidator.h>
+ 
+ #include "common/utils/base64.h"
+ 
++
++extern static const char* SIGNATURE_AUTHOR;
++extern static const char* REGEXP_DISTRIBUTOR_SIGNATURE;
++
+ namespace bf = boost::filesystem;
+ namespace ci = common_installer;
+ 
+@@ -155,6 +162,15 @@ bool ValidateSignatureFile(
+   return true;
+ }
+ 
++bool CheckAuthorSignature(const ValidationCore::SignatureFileInfo& file_info) {
++  return file_info.getFileName().find(SIGNATURE_AUTHOR) != std::string::npos;
++}
++
++bool CheckDistSignature(const ValidationCore::SignatureFileInfo& file_info) {
++  std::regex distributor_regex(REGEXP_DISTRIBUTOR_SIGNATURE);
++  return std::regex_search(file_info.getFileName(), distributor_regex);
++}
++
+ bool ValidateSignatures(const bf::path& base_path,
+     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
+     bool check_reference, std::string* error_message) {
+@@ -168,6 +184,18 @@ bool ValidateSignatures(const bf::path& base_path,
+   }
+   LOG(INFO) << "Number of signature files: " << signature_files.size();
+ 
++  // file_info.getFileName()
++  int author_signatures = std::count_if(
++      signature_files.begin(), signature_files.end(), CheckAuthorSignature);
++
++  int distributor_signatures = std::count_if(
++      signature_files.begin(), signature_files.end(), CheckDistSignature);
++
++  if (!author_signatures || !distributor_signatures) {
++    LOG(ERROR) << "Author or distribuor signature is mmissing.";
++    return false;
++  }
++
+   // Read xml schema for signatures
+   for (auto& file_info : signature_files) {
+     std::string error;

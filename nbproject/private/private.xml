@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <code-assistance-data xmlns="http://www.netbeans.org/ns/make-project-private/1">
+        <code-model-enabled>true</code-model-enabled>
+    </code-assistance-data>
+    <data xmlns="http://www.netbeans.org/ns/make-project-private/1">
+        <activeConfTypeElem>0</activeConfTypeElem>
+        <activeConfIndexElem>0</activeConfIndexElem>
+    </data>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/app_installer.cc</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/step/step_check_signature.h</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/app_installer.h</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/step/step_generate_xml.h</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/pkgmgr_interface.h</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/installer_context.h</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/unit_tests/signature_unittest.cc</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/tpk/tpk_installer.cc</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/wgt/wgt_installer.cc</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/step/step_check_signature.cc</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/unit_tests/CMakeLists.txt</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/step/step.h</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/pkgmgr_signal.h</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/pkgmgr_signal.cc</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/installer_context.cc</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/CMakeLists.txt</file>
+            <file>file:/home/a.szulakiewi/devel/app-installers/src/common/pkgmgr_registration.cc</file>
+        </group>
+    </open-files>
+    <preferences xmlns="http://www.netbeans.org/ns/auxiliary-configuration-preferences/1">
+        <module name="org-netbeans-modules-cnd-discovery">
+            <property name="rootFolder" value="/home/a.szulakiewi/devel/app-installers"/>
+            <property name="make-log-file" value="/home/a.szulakiewi/devel/app-installers"/>
+        </module>
+    </preferences>
+</project-private>

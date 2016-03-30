@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="cdt.managedbuild.toolchain.gnu.base.2091261174">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.base.2091261174" moduleId="org.eclipse.cdt.core.settings" name="Default">
+				<externalSettings>
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/home/a.szulakiewi/devel/app-installers-build/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/cert-svc"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/home/a.szulakiewi/devel/app-installers-build/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/pkgmgr"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/home/a.szulakiewi/devel/manifest-parser-build/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/boost"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/home/a.szulakiewi/devel/app-installers-build/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/boost"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/home/a.szulakiewi/devel/app-installers-build/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/minizip"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/home/a.szulakiewi/devel/manifest-parser-build/local/BUILD-ROOTS/scratch.armv7l.0/usr/include"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="includePath" name="/home/a.szulakiewi/devel/app-installers-build/local/BUILD-ROOTS/scratch.armv7l.0/usr/include"/>
+					</externalSetting>
+				</externalSettings>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="cdt.managedbuild.toolchain.gnu.base.2091261174" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="cdt.managedbuild.toolchain.gnu.base.2091261174.676699597" name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.base.562819608" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.1937966647" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
+							<builder id="cdt.managedbuild.target.gnu.builder.base.2030861252" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1604429692" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.377337061" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
+								<option id="gnu.cpp.compiler.option.include.paths.515032677" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/boost"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/cert-svc"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/pkgmgr"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/minizip"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/dbus-1.0"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.582959824" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.804808293" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
+								<option id="gnu.c.compiler.option.include.paths.377216563" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/boost"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/cert-svc"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/pkgmgr"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/minizip"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/manifest_parser"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/dbus-1.0"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.973432666" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1961812235" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.569644466" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1241161638" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.base.653558233" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
+								<option id="gnu.both.asm.option.include.paths.1901355856" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/boost"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/cert-svc"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/pkgmgr"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/minizip"/>
+									<listOptionValue builtIn="false" value="/home/a.szulakiewi/devel/build-root/local/BUILD-ROOTS/scratch.armv7l.0/usr/include/manifest_parser"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1845760447" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
+				<externalSettings containerId="crosswalk-tizen;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+				<externalSettings containerId="manifest-parser;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+				<externalSettings containerId="pkgmgr-info;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+				<externalSettings containerId="pkgmgr-server;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+				<externalSettings containerId="pkgmgr-tool;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+				<externalSettings containerId="tpk-backend;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting/>
+				</externalSettings>
+				<externalSettings containerId="webapi-plugins;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+				<externalSettings containerId="wgt-backend;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier"/>
+			</storageModule>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="app-installers.null.1943285507" name="app-installers"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/app-installers"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.2091261174;cdt.managedbuild.toolchain.gnu.base.2091261174.676699597;cdt.managedbuild.tool.gnu.c.compiler.base.804808293;cdt.managedbuild.tool.gnu.c.compiler.input.973432666">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1294900359;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1294900359.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1115652696;cdt.managedbuild.tool.gnu.c.compiler.input.592308714">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1294900359;org.eclipse.linuxtools.cdt.autotools.core.configuration.build.1294900359.;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.291333484;cdt.managedbuild.tool.gnu.cpp.compiler.input.302951172">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.2091261174;cdt.managedbuild.toolchain.gnu.base.2091261174.676699597;cdt.managedbuild.tool.gnu.cpp.compiler.base.377337061;cdt.managedbuild.tool.gnu.cpp.compiler.input.582959824">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+</cproject>
