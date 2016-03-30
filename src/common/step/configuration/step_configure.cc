@@ -123,18 +123,23 @@ Step::Status StepConfigure::precheck() {
   if (pkgmgr_->GetRequestType() != RequestType::ManifestDirectInstall &&
       pkgmgr_->GetRequestType() != RequestType::ManifestDirectUpdate) {
     if (getuid() == 0) {
-      if (context_->is_preload_request.get()) {
-        LOG(INFO) << "Allowing installation from root user for "
-                     "preload request mode.";
-        context_->uid.set(tzplatform_getuid(TZ_SYS_GLOBALAPP_USER));
-      } else {
+      if (!context_->is_preload_request.get()) {
         LOG(ERROR) << "App-installer should not run with superuser!";
         return Status::OPERATION_NOT_ALLOWED;
       }
+
+      LOG(INFO) << "Allowing installation from root user for "
+                   "preload request mode.";
+      context_->uid.set(tzplatform_getuid(TZ_SYS_GLOBALAPP_USER));
     }
   } else {
-    LOG(INFO) << "Allowing installation from root user for "
-                 "manifest direct request mode.";
+    // Preload flag if being set override security checks. Therefore we should
+    // accept preload flag only for direct installation and root user
+    if (context_->is_preload_request.get()) {
+      LOG(ERROR) << "Preload flag may be used only when running from root with "
+                    "direct install and direct update manifest";
+      return Status::OPERATION_NOT_ALLOWED;
+    }
   }
   return Status::OK;
 }
