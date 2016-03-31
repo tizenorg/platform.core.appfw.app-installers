@@ -18,7 +18,7 @@
 namespace common_installer {
 
 /** this class manages XML and plugin lists */
-class PluginManager {
+class __attribute__ ((visibility ("default"))) PluginManager {
  public:
   using PluginInfoList = std::vector<std::shared_ptr<PluginInfo>>;
 

@@ -21,7 +21,7 @@ namespace filesystem {
  * For recovering update installation, old package files are restored to its
  * original locations.
  */
-class StepRecoverFiles : public recovery::StepRecovery {
+class __attribute__ ((visibility ("default"))) StepRecoverFiles : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 

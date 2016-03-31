@@ -19,7 +19,7 @@ namespace filesystem {
  * Part of Recovery Mode. Is responsible for restoring data and shared
  * directories in case partial update occurs.
  */
-class StepRecoverStorageDirectories : public recovery::StepRecovery {
+class __attribute__ ((visibility ("default"))) StepRecoverStorageDirectories : public recovery::StepRecovery {
  public:
   using StepRecovery::StepRecovery;
 

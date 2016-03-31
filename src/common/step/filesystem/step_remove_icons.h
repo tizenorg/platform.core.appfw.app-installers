@@ -18,7 +18,7 @@
 namespace common_installer {
 namespace filesystem {
 
-class StepRemoveIcons : public Step {
+class __attribute__ ((visibility ("default"))) StepRemoveIcons : public Step {
  public:
   using Step::Step;
 

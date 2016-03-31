@@ -20,7 +20,7 @@ namespace filesystem {
  *        final installed package destination during INSTALLATION/UPDATE.
  *        Used by WGT and TPK
  */
-class StepCopyTep : public Step {
+class __attribute__ ((visibility ("default"))) StepCopyTep : public Step {
  public:
   using Step::Step;
 

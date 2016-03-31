@@ -10,7 +10,7 @@
 namespace common_installer {
 namespace pkgmgr {
 
-class StepCheckRemovable : public Step {
+class __attribute__ ((visibility ("default"))) StepCheckRemovable : public Step {
  public:
   using Step::Step;
 

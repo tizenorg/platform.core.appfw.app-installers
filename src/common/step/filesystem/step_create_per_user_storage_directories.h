@@ -22,7 +22,7 @@ namespace filesystem {
  *
  * * Other methods are empty.
  */
-class StepCreatePerUserStorageDirectories : public common_installer::Step {
+class __attribute__ ((visibility ("default"))) StepCreatePerUserStorageDirectories : public common_installer::Step {
  public:
   using Step::Step;
 

@@ -24,7 +24,7 @@ namespace filesystem {
  *
  */
 
-class StepRemovePerUserStorageDirectories : public common_installer::Step {
+class __attribute__ ((visibility ("default"))) StepRemovePerUserStorageDirectories : public common_installer::Step {
  public:
   using Step::Step;
 

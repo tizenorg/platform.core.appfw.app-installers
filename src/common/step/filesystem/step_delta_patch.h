@@ -34,7 +34,7 @@ namespace filesystem {
  *  5) Normal update flow proceeds as if it it was normal update installation
  *     (as the unpacked_dir contains full new version of package).
  */
-class StepDeltaPatch : public Step {
+class __attribute__ ((visibility ("default"))) StepDeltaPatch : public Step {
  public:
   explicit StepDeltaPatch(InstallerContext* context,
                           const std::string& delta_root = "");

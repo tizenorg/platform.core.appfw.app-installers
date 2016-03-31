@@ -23,7 +23,7 @@ namespace recovery {
  * instead of:
  *  - process().
  */
-class StepRecovery : public Step {
+class __attribute__ ((visibility ("default"))) StepRecovery : public Step {
  public:
   using Step::Step;
 

@@ -25,7 +25,7 @@ namespace filesystem {
  *   * TZ_SYS_RW/PKGID/<new-dir> (/usr/apps/PKGID/<new-dir>)
  *   * TZ_SER_APPS/PKGID/<new-dir>  (/{HOME}/apps_rw/PKGID/<new-dir>)
  */
-class StepCreateStorageDirectories : public common_installer::Step {
+class __attribute__ ((visibility ("default"))) StepCreateStorageDirectories : public common_installer::Step {
  public:
   using Step::Step;
 

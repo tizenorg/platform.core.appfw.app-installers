@@ -23,7 +23,7 @@ namespace filesystem {
  * \brief Step responsible for creating icons for applications used during
  *        installation and update. Used by WGT and TPK backend
  */
-class StepCreateIcons : public Step {
+class __attribute__ ((visibility ("default"))) StepCreateIcons : public Step {
  public:
   using Step::Step;
 

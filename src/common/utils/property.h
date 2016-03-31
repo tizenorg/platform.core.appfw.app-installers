@@ -14,7 +14,7 @@
  *  It uses operator() overloading.
  */
 template<typename Type>
-class Property {
+class __attribute__ ((visibility ("default"))) Property {
  public:
   Property() {}
   Property(const Type &val): value_(val) { } // NOLINT

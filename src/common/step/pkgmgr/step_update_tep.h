@@ -13,7 +13,7 @@
 namespace common_installer {
 namespace pkgmgr {
 
-class StepUpdateTep : public Step {
+class __attribute__ ((visibility ("default"))) StepUpdateTep : public Step {
  public:
   using Step::Step;
 

@@ -11,7 +11,7 @@
 namespace common_installer {
 namespace pkgmgr {
 
-class StepRegisterApplication : public Step {
+class __attribute__ ((visibility ("default"))) StepRegisterApplication : public Step {
  public:
   using Step::Step;
 

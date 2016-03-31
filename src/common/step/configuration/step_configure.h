@@ -21,7 +21,7 @@ namespace configuration {
  *
  * Based on started request, process fills InstallerContext with proper data.
  */
-class StepConfigure : public Step {
+class __attribute__ ((visibility ("default"))) StepConfigure : public Step {
  public:
   /**
    * \brief Constuctor
