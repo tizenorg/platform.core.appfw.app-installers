@@ -696,6 +696,50 @@ bool StepParseManifest::FillImage(application_x* app,
   return true;
 }
 
+bool StepParseManifest::FillAccounts() {
+  std::shared_ptr<const tpk::parse::AccountInfo> account_info =
+      std::static_pointer_cast<const tpk::parse::AccountInfo>(
+        parser_->GetManifestData(app_keys::kAccountKey));
+  if (!account_info)
+    return true;
+
+  AccountInfo info;
+  for (auto& account : account_info->accounts()) {
+    SingleAccountInfo single_info;
+    single_info.capabilities = account.capabilities;
+    single_info.icon_paths = account.icon_paths;
+    single_info.multiple_account_support = account.multiple_account_support;
+    single_info.names = account.labels;
+    // appid has the same value as package
+    single_info.appid =  account.app_id;
+    single_info.providerid = account.provider_id;
+    info.set_account(single_info);
+  }
+  context_->manifest_plugins_data.get().account_info.set(info);
+  return true;
+}
+
+bool StepParseManifest::FillShortcuts() {
+  std::shared_ptr<const tpk::parse::ShortcutListInfo> shortcut_info =
+      std::static_pointer_cast<const tpk::parse::ShortcutListInfo>(
+        parser_->GetManifestData(app_keys::kShortcutListKey));
+  if (!shortcut_info)
+    return true;
+
+  ShortcutListInfo list;
+  for (auto& shortcut : shortcut_info->shortcuts) {
+    ShortcutInfo single_info;
+    single_info.app_id = shortcut.app_id;
+    single_info.extra_data = shortcut.extra_data;
+    single_info.extra_key = shortcut.extra_key;
+    single_info.icon = shortcut.icon;
+    single_info.labels =  shortcut.labels;
+    list.push_back(single_info);
+  }
+  context_->manifest_plugins_data.get().shortcut_info.set(list);
+  return true;
+}
+
 template <typename T>
 bool StepParseManifest::FillBackgroundCategoryInfo(application_x* app,
     const T& background_category_data_list) {
@@ -725,6 +769,10 @@ bool StepParseManifest::FillManifestX(manifest_x* manifest) {
   if (!FillAuthorInfo(manifest))
     return false;
   if (!FillDescriptionInfo(manifest))
+    return false;
+  if (!FillAccounts())
+    return false;
+  if (!FillShortcuts())
     return false;
   return true;
 }
