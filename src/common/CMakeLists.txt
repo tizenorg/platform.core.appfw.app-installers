@@ -16,6 +16,7 @@ SET(SRCS
   pkgmgr_interface.cc
   pkgmgr_registration.cc
   pkgmgr_signal.cc
+  rds_parser.cc
   recovery_file.cc
   request.cc
   security_registration.cc
@@ -52,6 +53,8 @@ SET(SRCS
   step/pkgmgr/step_unregister_app.cc
   step/pkgmgr/step_update_app.cc
   step/pkgmgr/step_update_tep.cc
+  step/rds/step_rds_modify.cc
+  step/rds/step_rds_parse.cc
   step/recovery/step_open_recovery_file.cc
   step/recovery/step_recovery.cc
   step/security/step_check_background_category.cc
