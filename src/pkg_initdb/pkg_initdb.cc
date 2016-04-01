@@ -12,6 +12,9 @@
 #include <sys/types.h>
 #include <tzplatform_config.h>
 
+#include <tpk_manifest_handlers/package_handler.h>
+#include <tpk_manifest_handlers/tpk_config_parser.h>
+
 #include <string>
 #include <iostream>
 
@@ -27,6 +30,22 @@ namespace {
 const uid_t kUserRoot = 0;
 const uid_t kGlobalUser = tzplatform_getuid(TZ_SYS_GLOBALAPP_USER);
 const char kPkgInstallManifestPath[] = "/usr/bin/pkg-install-manifest";
+const char kBackendDirectoryPath[] = "/etc/package-manager/backend/";
+
+int InstallManifestOffline(const std::string& pkgid,
+                           const std::string& type,
+                           uid_t uid,
+                           bool preload) {
+  bf::path backend_path(kBackendDirectoryPath);
+  backend_path /= type;
+  ci::Subprocess backend(backend_path.string());
+  backend.set_uid(uid);
+  if (preload)
+    backend.Run("-y", pkgid.c_str(), "--preload");
+  else
+    backend.Run("-y", pkgid.c_str());
+  return backend.Wait();
+}
 
 bool IsGlobal(uid_t uid) {
   return uid == kUserRoot || uid == kGlobalUser;
@@ -38,14 +57,24 @@ void InitdbLoadDirectory(uid_t uid, const bf::path& directory, bool preload) {
        ++iter) {
     if (!bf::is_regular_file(iter->path()))
       continue;
-    std::cerr << "Running for: " << iter->path();
-    ci::Subprocess pkg_install_manifest(kPkgInstallManifestPath);
-    pkg_install_manifest.set_uid(uid);
-    if (preload)
-      pkg_install_manifest.Run("-x", iter->path().c_str(), "--preload");
-    else
-      pkg_install_manifest.Run("-x", iter->path().c_str());
-    pkg_install_manifest.Wait();
+
+    tpk::parse::TPKConfigParser parser;
+    if (!parser.ParseManifest(iter->path())) {
+      std::cerr << "Failed to parse tizen manifest file: "
+                << parser.GetErrorMessage();
+      continue;
+    }
+    auto package_info = std::static_pointer_cast<const tpk::parse::PackageInfo>(
+        parser.GetManifestData(tpk::parse::PackageInfo::key()));
+    if (!package_info) {
+      std::cerr << "Failed to get package info";
+      continue;
+    }
+    std::string type = package_info->type();
+    if (type.empty())
+      type = "tpk";
+
+    InstallManifestOffline(package_info->package(), type, uid, preload);
   }
 }
 
