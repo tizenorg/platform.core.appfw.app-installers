@@ -8,6 +8,7 @@
 #include <app_manager_extension.h>
 
 #include <string>
+#include <sys/time.h>
 
 #include "common/utils/glist_range.h"
 
@@ -35,6 +36,22 @@ bool KillApp(const std::string& appid) {
     app_context_destroy(app_context);
     return false;
   }
+
+  // temporary fix, check running status again
+  for (int i = 0; i < 10; i++) {
+    if (app_manager_is_running(appid.c_str(), &is_running)
+      != APP_MANAGER_ERROR_NONE)
+      LOG(ERROR) << "app_manager_is_running failed, check again!";
+
+    if (!is_running) {
+      LOG(DEBUG) << "kill waiting count (" << i << ")";
+      break;
+    }
+    usleep(100000); // 100msec
+    if (i == 10)
+      LOG(ERROR) << "kill timeout";
+  }
+
   LOG(DEBUG) << "Application '" << appid << "' has been killed";
   app_context_destroy(app_context);
   return true;
