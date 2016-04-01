@@ -65,6 +65,21 @@ class BackendData {
  public:
   /** virtual destructor */
   virtual ~BackendData() { }
+
+  /**
+   * \brief Property of vector of files to add
+   */
+  Property<std::vector<std::string>> files_to_add;
+
+  /**
+   * \brief Property of vector of files to modify
+   */
+  Property<std::vector<std::string>> files_to_modify;
+
+  /**
+   * \brief Property of vector of files to delete
+   */
+  Property<std::vector<std::string>> files_to_delete;
 };
 
 /**
@@ -290,6 +305,21 @@ class InstallerContext {
    * \brief force-remove request received from pkgmgr_installer
    */
   Property<bool> force_remove;
+
+  /**
+  * \brief Property of vector of files to add
+  */
+  Property<std::vector<std::string>> files_to_add;
+
+  /**
+  * \brief Property of vector of files to modify
+  */
+  Property<std::vector<std::string>> files_to_modify;
+
+  /**
+  * \brief Property of vector of files to delete
+  */
+  Property<std::vector<std::string>> files_to_delete;
 };
 
 }  // namespace common_installer
