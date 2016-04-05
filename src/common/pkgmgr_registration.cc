@@ -166,22 +166,6 @@ bool RegisterAppInPkgmgr(manifest_x* manifest,
   return true;
 }
 
-bool UpdateTepInfoInPkgmgr(const bf::path& tep_path, const std::string& pkgid,
-                        uid_t uid, RequestMode request_mode) {
-  int ret = request_mode != RequestMode::GLOBAL ?
-        pkgmgr_parser_usr_update_tep(
-            pkgid.c_str(), tep_path.string().c_str(), uid) :
-        pkgmgr_parser_update_tep(
-            pkgid.c_str(), tep_path.string().c_str());
-
-  if (ret != 0) {
-    LOG(ERROR) << "Failed to upgrade tep info: " << pkgid;
-    return false;
-  }
-
-  return true;
-}
-
 bool UpgradeAppInPkgmgr(manifest_x* manifest,
                         const bf::path& xml_path,
                         const std::string& pkgid,
