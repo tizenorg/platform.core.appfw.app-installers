@@ -86,8 +86,6 @@ class StepParseManifest : public common_installer::Step {
       bool FillCategories(application_x* manifest, const T& meta_data_list);
   bool FillImage(application_x* app,
                  const tpk::parse::ApplicationImagesInfo& label_list);
-  bool FillAccounts();
-  bool FillShortcuts();
   template <typename T>
   bool FillBackgroundCategoryInfo(application_x* app,
       const T& background_category_data_list);
