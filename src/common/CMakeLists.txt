@@ -52,7 +52,6 @@ SET(SRCS
   step/pkgmgr/step_run_parser_plugins.cc
   step/pkgmgr/step_unregister_app.cc
   step/pkgmgr/step_update_app.cc
-  step/pkgmgr/step_update_tep.cc
   step/rds/step_rds_modify.cc
   step/rds/step_rds_parse.cc
   step/recovery/step_open_recovery_file.cc
