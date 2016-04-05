@@ -166,22 +166,6 @@ bool RegisterAppInPkgmgr(manifest_x* manifest,
   return true;
 }
 
-bool UpdateTepInfoInPkgmgr(const bf::path& tep_path, const std::string& pkgid,
-                        uid_t uid, RequestMode request_mode) {
-  int ret = request_mode != RequestMode::GLOBAL ?
-        pkgmgr_parser_usr_update_tep(
-            pkgid.c_str(), tep_path.string().c_str(), uid) :
-        pkgmgr_parser_update_tep(
-            pkgid.c_str(), tep_path.string().c_str());
-
-  if (ret != 0) {
-    LOG(ERROR) << "Failed to upgrade tep info: " << pkgid;
-    return false;
-  }
-
-  return true;
-}
-
 bool UpgradeAppInPkgmgr(manifest_x* manifest,
                         const bf::path& xml_path,
                         const std::string& pkgid,
@@ -263,6 +247,25 @@ std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
   return old_author_certificate;
 }
 
+std::string QueryTepPath(const std::string& pkgid, uid_t uid) {
+  pkgmgrinfo_pkginfo_h package_info;
+  if (pkgmgrinfo_pkginfo_get_usr_pkginfo(pkgid.c_str(), uid, &package_info)
+      != PMINFO_R_OK)
+    return false;
+  char* tep_name = nullptr;
+  int ret = pkgmgrinfo_pkginfo_get_tep_name(package_info, &tep_name);
+  if (ret != PMINFO_R_OK) {
+    LOG(DEBUG) << "pkgmgrinfo_pkginfo_get_tep_name failed with error: "
+               << ret;
+    pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
+    return {};
+  }
+  std::string tep_name_value;
+  if (tep_name)
+    tep_name_value = tep_name;
+  pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
+  return tep_name_value;
+}
 
 bool QueryAppidsForPkgId(const std::string& pkg_id,
                          std::vector<std::string>* result, uid_t uid) {

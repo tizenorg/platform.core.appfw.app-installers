@@ -56,22 +56,6 @@ bool UpgradeAppInPkgmgr(manifest_x* manifest,
                         RequestMode request_mode);
 
 /**
- * \brief Adapter interface for external PkgMgr module used for updating
- *        tep info about package within pkgmgr
- *
- * \param tep_path path of tep file
- * \param pkgid package pkgid
- * \param uid user id
- * \param request_mode current request mode
- *
- * \return true if success
- */
-bool UpdateTepInfoInPkgmgr(const boost::filesystem::path& tep_path,
-                           const std::string& pkgid,
-                           uid_t uid,
-                           RequestMode request_mode);
-
-/**
  * \brief Adapter interface for external PkgMgr module used for deregistering
  *        package into pkgmgr
  *
@@ -99,6 +83,16 @@ bool UnregisterAppInPkgmgr(manifest_x* manifest,
  */
 std::string QueryCertificateAuthorCertificate(const std::string& pkgid,
                                               uid_t uid);
+
+/**
+ * \brief Adapter interface for external PkgMgr module used for getting
+ *        tizen extension package path for given package
+ *
+ * @param pkgid package id
+ * @param uid user id
+ * @return path or empty
+ */
+std::string QueryTepPath(const std::string& pkgid, uid_t uid);
 
 /**
  * \brief Adapter interface for external PkgMgr module used for getting

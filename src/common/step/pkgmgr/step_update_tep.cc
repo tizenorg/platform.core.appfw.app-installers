@@ -5,17 +5,13 @@
 #include "common/step/pkgmgr/step_update_tep.h"
 
 #include <pkgmgr-info.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include <boost/filesystem.hpp>
-#include <vcore/Certificate.h>
 
-#include <cassert>
-#include <cstdio>
 #include <cstring>
 #include <string>
 
+#include "common/backup_paths.h"
 #include "common/pkgmgr_registration.h"
 #include "common/utils/file_util.h"
 
@@ -25,22 +21,40 @@ namespace common_installer {
 namespace pkgmgr {
 
 Step::Status StepUpdateTep::process() {
-  if (context_->tep_path.get().empty())
-    return Status::OK;
+  bf::path old_tep;
+  if (context_->old_manifest_data.get()->tep_name)
+    old_tep = context_->old_manifest_data.get()->tep_name;
+  if (!old_tep.empty() && context_->tep_path.get().empty()) {
+    // preserve old tep location during update if no new is given
+    context_->manifest_data.get()->tep_name = strdup(old_tep.c_str());
 
-  if (!UpdateTepInfoInPkgmgr(context_->tep_path.get(),
-                          context_->pkgid.get(),
-                          context_->uid.get(),
-                          context_->request_mode.get())) {
-    LOG(ERROR) << "Cannot update tep info for application";
-    return Status::REGISTER_ERROR;
+    bf::path old_tep_location =
+        GetBackupPathForPackagePath(
+            context_->pkg_path.get()) / "res" / old_tep.filename();
+    bf::path new_tep_location = old_tep;
+    if (!MoveFile(old_tep_location, new_tep_location)) {
+      LOG(ERROR) << "Failed to copy tep file";
+      return Status::APP_DIR_ERROR;
+    }
   }
-
-  LOG(INFO) << "Successfully update the tep info for application";
   return Status::OK;
 }
 
 Step::Status StepUpdateTep::undo() {
+  bf::path old_tep;
+  if (context_->old_manifest_data.get()->tep_name)
+    old_tep = context_->old_manifest_data.get()->tep_name;
+  if (!old_tep.empty() && context_->tep_path.get().empty()) {
+    // restore old tep location during update rollback
+    bf::path old_tep_location =
+        GetBackupPathForPackagePath(
+            context_->pkg_path.get()) / "res" / old_tep.filename();
+    bf::path new_tep_location = old_tep;
+    if (!MoveFile(new_tep_location, old_tep_location)) {
+      LOG(ERROR) << "Failed to copy tep file";
+      return Status::APP_DIR_ERROR;
+    }
+  }
   return Status::OK;
 }
 

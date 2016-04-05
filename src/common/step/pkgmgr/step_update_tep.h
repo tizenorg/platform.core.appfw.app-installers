@@ -10,6 +10,8 @@
 #include "common/installer_context.h"
 #include "common/step/step.h"
 
+#include <boost/filesystem/path.hpp>
+
 namespace common_installer {
 namespace pkgmgr {
 
@@ -20,7 +22,7 @@ class StepUpdateTep : public Step {
   Status process() override;
   Status clean() override { return Status::OK; }
   Status undo() override;
-  Status precheck() override { return Status::OK; };
+  Status precheck() override { return Status::OK; }
 
   SCOPE_LOG_TAG(UpdateTep)
 };
