@@ -33,6 +33,7 @@
 #include "common/app_installer.h"
 #include "common/backup_paths.h"
 #include "common/installer_context.h"
+#include "common/pkgmgr_registration.h"
 #include "common/step/step.h"
 #include "common/utils/glist_range.h"
 
@@ -763,8 +764,13 @@ Step::Status StepParseManifest::process() {
     return Step::Status::PARSE_ERROR;
   }
 
-  if (!context_->tep_path.get().empty())
-    manifest->tep_name = strdup(context_->tep_path.get().c_str());
+  if (manifest_location_ == ManifestLocation::INSTALLED) {
+    // recovery tep value for installed package
+    std::string old_tep =
+        QueryTepPath(context_->pkgid.get(), context_->uid.get());
+    if (!old_tep.empty())
+      manifest->tep_name = strdup(old_tep.c_str());
+  }
 
   // write pkgid for recovery file
   if (context_->recovery_info.get().recovery_file) {

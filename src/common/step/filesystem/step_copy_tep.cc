@@ -47,7 +47,6 @@ Step::Status StepCopyTep::process() {
 
   bf::path tep_path =
       context_->pkg_path.get() / "res" / context_->tep_path.get().filename();
-  bs::error_code error;
 
   if (context_->is_tep_move.get()) {
     if (!MoveFile(context_->tep_path.get(), tep_path)) {
@@ -62,6 +61,8 @@ Step::Status StepCopyTep::process() {
     }
   }
   context_->tep_path.set(tep_path);
+  context_->manifest_data.get()->tep_name =
+      strdup(context_->tep_path.get().c_str());
 
   return Step::Status::OK;
 }
