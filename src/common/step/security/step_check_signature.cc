@@ -242,7 +242,7 @@ Step::Status StepCheckSignature::process() {
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
   std::string error_message;
   bool check_reference = true;
-  if (context_->uid.get() == 0 &&
+  if (getuid() == 0 &&
       (context_->request_type.get()== ci::RequestType::ManifestDirectInstall ||
       context_->request_type.get() == ci::RequestType::ManifestDirectUpdate))
     check_reference = false;
