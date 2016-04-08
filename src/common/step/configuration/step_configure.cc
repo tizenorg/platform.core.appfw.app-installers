@@ -73,6 +73,15 @@ Step::Status StepConfigure::process() {
       context_->file_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);
       break;
+    case RequestType::MountInstall:
+    case RequestType::MountUpdate:
+      context_->file_path.set(pkgmgr_->GetRequestInfo());
+      context_->pkgid.set(kStrEmpty);
+      if (!pkgmgr_->GetTepPath().empty()) {
+        context_->tep_path.set(pkgmgr_->GetTepPath());
+        context_->is_tep_move.set(pkgmgr_->GetIsTepMove());
+      }
+      break;
     case RequestType::ManifestDirectInstall:
     case RequestType::ManifestDirectUpdate: {
       context_->pkgid.set(pkgmgr_->GetRequestInfo());
