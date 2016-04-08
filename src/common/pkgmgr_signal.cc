@@ -27,6 +27,8 @@ const std::map<ci::RequestType, const char*> kEventStr = {
   {ci::RequestType::Uninstall, PKGMGR_INSTALLER_UNINSTALL_EVENT_STR},
   {ci::RequestType::Update, PKGMGR_INSTALLER_UPGRADE_EVENT_STR},
   {ci::RequestType::Delta, PKGMGR_INSTALLER_UPGRADE_EVENT_STR},
+  {ci::RequestType::MountInstall, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
+  {ci::RequestType::MountUpdate, PKGMGR_INSTALLER_UPGRADE_EVENT_STR},
   {ci::RequestType::ManifestDirectInstall, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
   {ci::RequestType::ManifestDirectUpdate, PKGMGR_INSTALLER_UPGRADE_EVENT_STR}
 };

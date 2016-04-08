@@ -23,6 +23,7 @@ SET(SRCS
   step/backup/step_backup_icons.cc
   step/backup/step_backup_manifest.cc
   step/backup/step_copy_backup.cc
+  step/configuration/step_block_cross_update.cc
   step/configuration/step_configure.cc
   step/configuration/step_fail.cc
   step/configuration/step_parse_manifest.cc
@@ -42,7 +43,11 @@ SET(SRCS
   step/filesystem/step_remove_icons.cc
   step/filesystem/step_remove_per_user_storage_directories.cc
   step/filesystem/step_remove_temporary_directory.cc
+  step/filesystem/step_remove_zip_image.cc
   step/filesystem/step_unzip.cc
+  step/mount/step_mount_install.cc
+  step/mount/step_mount_unpacked.cc
+  step/mount/step_mount_update.cc
   step/pkgmgr/step_check_blacklist.cc
   step/pkgmgr/step_check_removable.cc
   step/pkgmgr/step_kill_apps.cc
