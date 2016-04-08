@@ -5,6 +5,10 @@
 #ifndef COMMON_REQUEST_H_
 #define COMMON_REQUEST_H_
 
+#include <boost/filesystem/path.hpp>
+
+#include <string>
+
 namespace common_installer {
 
 /** Request type received from pkgmgr_installer */
@@ -17,6 +21,8 @@ enum class RequestType : int {
   Clear,
   Delta,
   Recovery,
+  MountInstall,
+  MountUpdate,
   ManifestDirectInstall,
   ManifestDirectUpdate
 };
@@ -40,6 +46,19 @@ RequestMode GetRequestMode();
  * \return root application path (eg. $HOME/apps_rw/)
  */
 const char *GetRootAppPath(bool is_preload);
+
+/**
+ * @brief GetZipPackageLocation
+ *        Returns location where zip package file must be copied during package
+ *        installation.
+ *
+ * @param pkgid package if of package
+ * @param is_preload true if path is being obtained for preload request
+ *
+ * @return full path of zip package location
+ */
+boost::filesystem::path GetZipPackageLocation(const std::string& pkgid,
+                                              bool is_preload);
 
 }  // namespace common_installer
 

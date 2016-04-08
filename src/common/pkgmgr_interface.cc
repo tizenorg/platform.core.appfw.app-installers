@@ -129,6 +129,11 @@ RequestType PkgMgrInterface::GetRequestType() const {
         return RequestType::ManifestDirectInstall;
       else
         return RequestType::ManifestDirectUpdate;
+    case PKGMGR_REQ_MOUNT_INSTALL:
+      if (!is_app_installed_)
+        return RequestType::MountInstall;
+      else
+        return RequestType::MountUpdate;
     default:
       return RequestType::Unknown;
   }
