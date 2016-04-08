@@ -43,6 +43,11 @@ SET(SRCS
   step/filesystem/step_remove_per_user_storage_directories.cc
   step/filesystem/step_remove_temporary_directory.cc
   step/filesystem/step_unzip.cc
+  step/mount/step_mount_install.cc
+  step/mount/step_mount_rollback.cc
+  step/mount/step_mount_unpacked.cc
+  step/mount/step_mount_update.cc
+  step/mount/step_umount_rollback.cc
   step/pkgmgr/step_check_blacklist.cc
   step/pkgmgr/step_check_removable.cc
   step/pkgmgr/step_kill_apps.cc
