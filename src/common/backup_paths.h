@@ -50,6 +50,29 @@ boost::filesystem::path GetBackupPathForIconFile(
  */
 std::string GetIconFileBackupExtension();
 
+/**
+ * \brief Helper function for getting backup path of zip (used for recovery)
+ *        based on zip path
+ *
+ * \param zip_path path to zip file
+ *
+ * \return backup path of zip
+ */
+boost::filesystem::path GetBackupPathForZipFile(
+    const boost::filesystem::path& zip_path);
+
+/**
+ * @brief GetMountLocation
+ *        Returns the mount point of zip package. This location is used to
+ *        mount package.
+ *
+ * @param pkg_path package path for which zip mount location is being obtained
+ *
+ * @return full path of package mount point
+ */
+boost::filesystem::path GetMountLocation(
+    const boost::filesystem::path& pkg_path);
+
 }  // namespace common_installer
 
 #endif  // COMMON_BACKUP_PATHS_H_

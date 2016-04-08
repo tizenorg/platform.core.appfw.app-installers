@@ -6,6 +6,14 @@
 #include <tzplatform_config.h>
 #include <unistd.h>
 
+namespace bf = boost::filesystem;
+
+namespace {
+
+const char kImageDir[] = "image";
+
+}  // namespace
+
 namespace common_installer {
 
 RequestMode GetRequestMode() {
@@ -19,6 +27,17 @@ const char *GetRootAppPath(bool is_preload) {
   return GetRequestMode() == RequestMode::USER ?
       tzplatform_getenv(TZ_USER_APP) : is_preload ?
       tzplatform_getenv(TZ_SYS_RO_APP) : tzplatform_getenv(TZ_SYS_RW_APP);
+}
+
+boost::filesystem::path GetZipPackageLocation(const std::string& pkgid,
+                                              bool is_preload) {
+  bf::path zip_location = GetRequestMode() == RequestMode::USER ?
+        tzplatform_getenv(TZ_USER_APPROOT) : is_preload ?
+        tzplatform_getenv(TZ_SYS_RO_DESKTOP_APP) :
+            tzplatform_getenv(TZ_SYS_RW_DESKTOP_APP);
+  zip_location /= kImageDir;
+  zip_location /= pkgid;
+  return zip_location;
 }
 
 }  // namespace common_installer
