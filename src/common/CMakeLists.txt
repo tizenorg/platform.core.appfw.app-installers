@@ -34,6 +34,7 @@ SET(SRCS
   step/filesystem/step_create_per_user_storage_directories.cc
   step/filesystem/step_create_storage_directories.cc
   step/filesystem/step_delta_patch.cc
+  step/filesystem/step_prepare_package_directory.cc
   step/filesystem/step_recover_files.cc
   step/filesystem/step_recover_icons.cc
   step/filesystem/step_recover_manifest.cc
@@ -43,6 +44,9 @@ SET(SRCS
   step/filesystem/step_remove_per_user_storage_directories.cc
   step/filesystem/step_remove_temporary_directory.cc
   step/filesystem/step_unzip.cc
+  step/mount/step_mount_install.cc
+  step/mount/step_mount_unpacked.cc
+  step/mount/step_mount_update.cc
   step/pkgmgr/step_check_blacklist.cc
   step/pkgmgr/step_check_removable.cc
   step/pkgmgr/step_kill_apps.cc

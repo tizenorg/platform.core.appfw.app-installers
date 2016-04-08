@@ -38,4 +38,12 @@ std::string GetIconFileBackupExtension() {
   return ".bck";
 }
 
+boost::filesystem::path GetZipPackageLocation(const bf::path& pkg_path) {
+  return pkg_path / ".zip";
+}
+
+boost::filesystem::path GetMountLocation(const bf::path& pkg_path) {
+  return pkg_path / ".pkg";
+}
+
 }  // namespace common_installer
