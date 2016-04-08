@@ -45,6 +45,7 @@ class Step {
  public:
   /** Possible code returned by process, undo, clean, precheck methods. */
   enum class Status {
+    IMAGE_ERROR = -200,  // TODO(t.iwanek): fix value of error code...
     UNZIP_ERROR = PKGCMD_ERRCODE_UNZIP_ERROR,
     SECURITY_ERROR = PKGCMD_ERRCODE_SECURITY_ERROR,
     REGISTER_ERROR = PKGCMD_ERRCODE_REGISTER_ERROR,
