@@ -5,6 +5,10 @@
 #ifndef COMMON_REQUEST_H_
 #define COMMON_REQUEST_H_
 
+#include <boost/filesystem/path.hpp>
+
+#include <string>
+
 namespace common_installer {
 
 /** Request type received from pkgmgr_installer */
@@ -17,6 +21,8 @@ enum class RequestType : int {
   Clear,
   Delta,
   Recovery,
+  MountInstall,
+  MountUpdate,
   ManifestDirectInstall,
   ManifestDirectUpdate
 };
