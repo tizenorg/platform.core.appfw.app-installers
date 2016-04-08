@@ -68,6 +68,7 @@ SET(SRCS
   step/security/step_rollback_deinstallation_security.cc
   step/security/step_rollback_installation_security.cc
   step/security/step_update_security.cc
+  tzip_interface.cc
   utils/base64.cc
   utils/file_util.cc
   utils/subprocess.cc
