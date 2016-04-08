@@ -6,6 +6,8 @@
 #include <tzplatform_config.h>
 #include <unistd.h>
 
+namespace bf = boost::filesystem;
+
 namespace common_installer {
 
 RequestMode GetRequestMode() {

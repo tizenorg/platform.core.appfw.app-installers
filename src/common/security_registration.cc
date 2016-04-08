@@ -24,16 +24,18 @@ namespace {
 const std::vector<std::pair<const char*,
                             app_install_path_type>> kSecurityPolicies = {
   {"/", SECURITY_MANAGER_PATH_PUBLIC_RO},
-  {"bin/", SECURITY_MANAGER_PATH_RO},
-  {"data/", SECURITY_MANAGER_PATH_RW},
-  {"cache/", SECURITY_MANAGER_PATH_RW},
-  {"lib/", SECURITY_MANAGER_PATH_RO},
-  {"res/", SECURITY_MANAGER_PATH_RO},
-  {"shared/", SECURITY_MANAGER_PATH_PUBLIC_RO},
+  {"bin", SECURITY_MANAGER_PATH_RO},
+  {"data", SECURITY_MANAGER_PATH_RW},
+  {"cache", SECURITY_MANAGER_PATH_RW},
+  {"lib", SECURITY_MANAGER_PATH_RO},
+  {"res", SECURITY_MANAGER_PATH_RO},
+  {"shared", SECURITY_MANAGER_PATH_PUBLIC_RO},
   {"shared/data", SECURITY_MANAGER_PATH_OWNER_RW_OTHER_RO},
   {"shared/cache", SECURITY_MANAGER_PATH_OWNER_RW_OTHER_RO},
   {"shared/trusted", SECURITY_MANAGER_PATH_TRUSTED_RW},
-  {"tmp/", SECURITY_MANAGER_PATH_RW}
+  {"tep", SECURITY_MANAGER_PATH_RO},
+  {".image", SECURITY_MANAGER_PATH_RO},
+  {"tmp", SECURITY_MANAGER_PATH_RW}
 };
 
 bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
@@ -130,6 +132,11 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     for (auto& policy : kSecurityPolicies) {
       bf::path subpath = path / policy.first;
       if (bf::exists(subpath)) {
+        if (bf::is_symlink(subpath)) {
+          LOG(DEBUG) << "Path " << subpath << " is a symlink."
+                     << "Path will not be registered";
+          continue;
+        }
         if (policy.second == SECURITY_MANAGER_PATH_TRUSTED_RW &&
             author_id.empty()) {
           LOG(WARNING) << "the path " << policy.first

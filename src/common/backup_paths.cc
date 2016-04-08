@@ -4,9 +4,13 @@
 
 #include "common/backup_paths.h"
 
+#include <tzplatform_config.h>
+
 namespace bf = boost::filesystem;
 
 namespace {
+
+const char kImageDir[] = ".image";
 
 boost::filesystem::path GetBackupPath(
     const boost::filesystem::path& pkg_path) {
@@ -36,6 +40,20 @@ boost::filesystem::path GetBackupPathForIconFile(
 
 std::string GetIconFileBackupExtension() {
   return ".bck";
+}
+
+boost::filesystem::path GetBackupPathForZipFile(const bf::path& zip_path) {
+  return GetBackupPath(zip_path);
+}
+
+boost::filesystem::path GetMountLocation(const bf::path& pkg_path) {
+  return pkg_path / ".pkg";
+}
+
+boost::filesystem::path GetZipPackageLocation(
+    const boost::filesystem::path& pkg_path,
+    const std::string& pkgid) {
+  return pkg_path / kImageDir / pkgid;
 }
 
 }  // namespace common_installer
