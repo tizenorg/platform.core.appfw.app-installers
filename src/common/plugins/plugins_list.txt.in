@@ -1,7 +1,6 @@
 flag="0x00000001";type="tag";name="shortcut-list";path="/etc/package-manager/parserlib/libshortcut-list.so"
 flag="0x00000002";type="tag";name="account";path="/etc/package-manager/parserlib/libaccount.so"
 flag="0x00000004";type="tag";name="notifications";path="/etc/package-manager/parserlib/libnotifications.so"
-flag="0x00000008";type="tag";name="privileges";path="/etc/package-manager/parserlib/libprivileges.so"
 flag="0x00000010";type="tag";name="ime";path="/etc/package-manager/parserlib/libime.so"
 flag="0x00000020";type="category";name="http://tizen.org/category/downloadable_font";path="/etc/package-manager/parserlib/category/libdownloadable_font.so"
 flag="0x00000040";type="metadata";name="http://developer.samsung.com/tizen/metadata/sticker";path="/etc/package-manager/parserlib/metadata/libsticker.so"
