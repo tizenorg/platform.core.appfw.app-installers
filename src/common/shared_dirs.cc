@@ -231,10 +231,15 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
 }
 
 bf::path GetDirectoryPathForStorage(uid_t user, std::string apps_prefix) {
-  struct passwd* pwd = getpwuid(user);  // NOLINT
+  struct passwd pwd, *pwd_result;
+  char buf[1024] = {0, };
+
+  int ret = getpwuid_r(user, &pwd, buf, sizeof(buf), &pwd_result);
+  if (ret != 0 || pwd_result == NULL)
+    return {};
 
   bf::path apps_rw;
-  apps_rw = bf::path(apps_prefix.c_str()) / pwd->pw_name / "apps_rw";
+  apps_rw = bf::path(apps_prefix.c_str()) / pwd.pw_name / "apps_rw";
 
   return apps_rw;
 }
@@ -242,23 +247,27 @@ bf::path GetDirectoryPathForStorage(uid_t user, std::string apps_prefix) {
 bool CreateUserDirectories(uid_t user, const std::string& pkgid,
     const std::string& author_id,
     const std::string& apps_prefix, const bool set_permissions) {
+  char buf[1024] = {0, };
 
-  struct passwd* pwd = getpwuid(user);  // NOLINT
-  if (!pwd) {
+  struct passwd pwd, *pwd_result;
+  int ret = getpwuid_r(user, &pwd, buf, sizeof(buf), &pwd_result);
+  if (ret != 0 || pwd_result == NULL) {
     LOG(WARNING) << "Failed to get user for home directory: " << user;
     return false;
   }
 
-  struct group* gr = getgrgid(pwd->pw_gid);  // NOLINT
-  if (strcmp(gr->gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
+  struct group gr, *gr_result;
+  ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
+  if (ret != 0
+      || strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
     return false;
 
-  LOG(DEBUG) << "Creating directories for uid: " << pwd->pw_uid << ", gid: "
-             << pwd->pw_gid;
+  LOG(DEBUG) << "Creating directories for uid: " << pwd.pw_uid << ", gid: "
+             << pwd.pw_gid;
 
   bf::path apps_rw = GetDirectoryPathForStorage(user, apps_prefix);
   if (!CreateDirectories(apps_rw, pkgid, author_id,
-      pwd->pw_uid, pwd->pw_gid, set_permissions)) {
+      pwd.pw_uid, pwd.pw_gid, set_permissions)) {
     return false;
   }
   return true;
@@ -315,6 +324,8 @@ bool DeleteDirectories(const bf::path& app_dir, const std::string& pkgid) {
 }
 
 bool DeletePerUserDirectories(const std::string& pkgid) {
+  char buf[1024] = {0, };
+
   for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
       iter != bf::directory_iterator();
        ++iter) {
@@ -322,21 +333,24 @@ bool DeletePerUserDirectories(const std::string& pkgid) {
       return false;
     const bf::path& home_path = iter->path();
     std::string user = home_path.filename().string();
-    struct passwd* pwd = getpwnam(user.c_str());  // NOLINT
-    if (!pwd) {
+    struct passwd pwd, *pwd_result;
+    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
+    if (ret != 0 || pwd_result == NULL) {
       LOG(WARNING) << "Failed to get user for home directory: " << user;
       continue;
     }
 
-    struct group* gr = getgrgid(pwd->pw_gid);  // NOLINT
-    if (strcmp(gr->gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
+    struct group gr, *gr_result;
+    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
+    if (ret != 0 || gr_result == NULL ||
+        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
       continue;
 
-    if (ci::IsPackageInstalled(pkgid, pwd->pw_uid)) continue;
+    if (ci::IsPackageInstalled(pkgid, pwd.pw_uid)) continue;
 
-    LOG(DEBUG) << "Deleting directories for uid: " << pwd->pw_uid << ", gid: "
-               << pwd->pw_gid;
-    tzplatform_set_user(pwd->pw_uid);
+    LOG(DEBUG) << "Deleting directories for uid: " << pwd.pw_uid << ", gid: "
+               << pwd.pw_gid;
+    tzplatform_set_user(pwd.pw_uid);
     bf::path apps_rw(tzplatform_getenv(TZ_USER_APP));
     tzplatform_reset_user();
     if (!DeleteDirectories(apps_rw, pkgid)) {
@@ -409,6 +423,8 @@ bool PerformExternalDirectoryCreationForUser(uid_t user,
 
 bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
                                                  const std::string& author_id) {
+  char buf[1024] = {0, };
+
   for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
       iter != bf::directory_iterator();
          ++iter) {
@@ -417,15 +433,18 @@ bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
     const bf::path& home_path = iter->path();
     std::string user = home_path.filename().string();
 
-    struct passwd* pwd = getpwnam(user.c_str());  // NOLINT
-    if (!pwd)
+    struct passwd pwd, *pwd_result;
+    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
+    if (ret != 0 || pwd_result == NULL)
       continue;
 
-    struct group* gr = getgrgid(pwd->pw_gid);  // NOLINT
-    if (strcmp(gr->gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
+    struct group gr, *gr_result;
+    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
+    if (ret != 0 ||
+        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
       continue;
 
-    if (!PerformInternalDirectoryCreationForUser(pwd->pw_uid,
+    if (!PerformInternalDirectoryCreationForUser(pwd.pw_uid,
                                                  pkgid,
                                                  author_id))
       LOG(ERROR) << "Could not create internal storage directories for user: "
@@ -436,6 +455,8 @@ bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
 
 bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
                                                  const std::string& author_id) {
+  char buf[1024] = {0, };
+
   for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
       iter != bf::directory_iterator();
          ++iter) {
@@ -449,15 +470,18 @@ bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
     const bf::path& home_path = iter->path();
     std::string user = home_path.filename().string();
 
-    struct passwd* pwd = getpwnam(user.c_str());  // NOLINT
-    if (!pwd)
+    struct passwd pwd, *pwd_result;
+    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
+    if (ret != 0 || pwd_result == NULL)
       continue;
 
-    struct group* gr = getgrgid(pwd->pw_gid);  // NOLINT
-    if (strcmp(gr->gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
+    struct group gr, *gr_result;
+    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
+    if (ret != 0 ||
+        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
       continue;
 
-    if (!PerformExternalDirectoryCreationForUser(pwd->pw_uid,
+    if (!PerformExternalDirectoryCreationForUser(pwd.pw_uid,
                                                  pkgid,
                                                  author_id))
       LOG(WARNING) << "Could not create external storage directories for user: "
@@ -483,6 +507,8 @@ bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_path,
                                               const std::string& pkg_id,
                                               const std::string& author_id,
                                               const std::string& api_version) {
+  char buf[1024] = {0, };
+
   for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
       iter != bf::directory_iterator();
          ++iter) {
@@ -491,15 +517,16 @@ bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_path,
     const bf::path& home_path = iter->path();
     std::string user = home_path.filename().string();
 
-    struct passwd* pwd = getpwnam(user.c_str());  // NOLINT
-    if (!pwd) {
+    struct passwd pwd, *pwd_result;
+    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
+    if (ret != 0 || pwd_result == NULL) {
       LOG(WARNING) << "Failed to get user for home directory: " << user;
       return false;
     }
 
     std::string path = pkg_path + "/" + user + "apps_rw";
 
-    if (!SetPackageDirectorySmackRulesForUser(pwd->pw_uid,
+    if (!SetPackageDirectorySmackRulesForUser(pwd.pw_uid,
                                               path,
                                               pkg_id,
                                               author_id,
