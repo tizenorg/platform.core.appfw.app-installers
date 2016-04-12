@@ -154,7 +154,7 @@ bool PkgmgrSignal::SendAppids(const std::string& type,
   if (!QueryAppidsForPkgId(pkgid, &appids, getuid()))
     return true;
   for (auto& appid : appids) {
-    if (!pkgmgr_installer_send_app_uninstall_signal(pi_, type.c_str(),
+    if (pkgmgr_installer_send_app_uninstall_signal(pi_, type.c_str(),
                                                     pkgid.c_str(),
                                                     appid.c_str()))
       return false;
