@@ -4,6 +4,9 @@
 
 #include "common/certificate_validation.h"
 
+#include <algorithm>
+#include <regex>
+
 #include <boost/format.hpp>
 #include <vcore/SignatureValidator.h>
 
@@ -13,6 +16,10 @@ namespace bf = boost::filesystem;
 namespace ci = common_installer;
 
 namespace {
+
+const char kSignatureAuthor[] = "author-signature.xml";
+const char kRegexDistributorSignature[] = "(signature)([1-9][0-9]*)(\\.xml)";
+
 
 bool SetAuthorCertificate(ValidationCore::SignatureData data,
     common_installer::CertificateInfo* cert_info) {
@@ -155,6 +162,15 @@ bool ValidateSignatureFile(
   return true;
 }
 
+bool CheckAuthorSignature(const ValidationCore::SignatureFileInfo& file_info) {
+  return file_info.getFileName().find(kSignatureAuthor) != std::string::npos;
+}
+
+bool CheckDistSignature(const ValidationCore::SignatureFileInfo& file_info) {
+  std::regex distributor_regex(kRegexDistributorSignature);
+  return std::regex_search(file_info.getFileName(), distributor_regex);
+}
+
 bool ValidateSignatures(const bf::path& base_path,
     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
     bool check_reference, std::string* error_message) {
@@ -167,6 +183,17 @@ bool ValidateSignatures(const bf::path& base_path,
     return false;
   }
   LOG(INFO) << "Number of signature files: " << signature_files.size();
+
+  bool author_signatures = std::any_of(
+      signature_files.begin(), signature_files.end(), CheckAuthorSignature);
+
+  bool distributor_signatures = std::any_of(
+      signature_files.begin(), signature_files.end(), CheckDistSignature);
+
+  if (!author_signatures || !distributor_signatures) {
+    LOG(ERROR) << "Author or distribuor signature is missing.";
+    return false;
+  }
 
   // Read xml schema for signatures
   for (auto& file_info : signature_files) {
