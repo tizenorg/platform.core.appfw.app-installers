@@ -14,6 +14,7 @@
 #include <vector>
 #include <algorithm>
 
+#include "common/pkgmgr_registration.h"
 #include "common/utils/glist_range.h"
 
 namespace bf = boost::filesystem;
@@ -271,6 +272,19 @@ bool UnregisterSecurityContextForManifest(const std::string& pkg_id,
       return false;
     }
     if (!UnregisterSecurityContext(app->appid, pkg_id, uid, error_message)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool UnregisterSecurityContextForPkgId(const std::string &pkg_id,
+    uid_t uid, std::string* error_message) {
+  std::vector<std::string> appids;
+  if (!QueryAppidsForPkgId(pkg_id, &appids, uid))
+    return false;
+  for (auto& appid : appids) {
+    if (!UnregisterSecurityContext(appid, pkg_id, uid, error_message)) {
       return false;
     }
   }

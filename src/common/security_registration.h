@@ -94,6 +94,21 @@ bool RegisterSecurityContextForManifest(const std::string& pkg_id,
 bool UnregisterSecurityContextForManifest(const std::string& pkg_id, uid_t uid,
     manifest_x* manifest, std::string* error_message);
 
+/**
+ * Adapter interface for external Security module.
+ *
+ * Adapter interface for external Security module used for unregistering
+ * package from security context
+ *
+ * \param pkg_id pkgid of given package
+ * \param uid uid
+ * \param error_message extra/detailed error message
+ *
+ * \return true if success
+ */
+bool UnregisterSecurityContextForPkgId(const std::string& pkg_id, uid_t uid,
+    std::string* error_message);
+
 }  // namespace common_installer
 
 #endif  // COMMON_SECURITY_REGISTRATION_H_

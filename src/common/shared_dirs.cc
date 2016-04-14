@@ -353,6 +353,13 @@ bool DeletePerUserDirectories(const std::string& pkgid) {
 
     if (ci::IsPackageInstalled(pkgid, pwd.pw_uid)) continue;
 
+    std::string error_message;
+    if (!ci::UnregisterSecurityContextForPkgId(pkgid, pwd.pw_uid,
+        &error_message)) {
+      LOG(WARNING) << "Failure on unregistering security context for pkg: "
+                   << pkgid << ", uid: " << pwd.pw_uid;
+    }
+
     LOG(DEBUG) << "Deleting directories for uid: " << pwd.pw_uid << ", gid: "
                << pwd.pw_gid;
     tzplatform_set_user(pwd.pw_uid);
