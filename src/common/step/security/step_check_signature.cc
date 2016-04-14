@@ -271,6 +271,13 @@ Step::Status StepCheckSignature::process() {
   if (context_->is_preload_request.get())
     level = PrivilegeLevel::PLATFORM;
 
+  if (level == PrivilegeLevel::UNTRUSTED) {
+    std::string error_message =
+        "Unsigned applications can not be installed";
+    on_error(Status::CERT_ERROR, error_message);
+    return Status::SIGNATURE_ERROR;
+  }
+
   LOG(INFO) << "Privilege level: " << PrivilegeLevelToString(level);
   context_->privilege_level.set(level);
 
