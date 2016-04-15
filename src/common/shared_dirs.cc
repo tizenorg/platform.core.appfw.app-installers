@@ -155,9 +155,10 @@ bool SetPackageDirectorySmackRules(const bf::path& base_dir,
     }
     std::string error_message;
     for (const auto& appid : appids) {
+      bf::path pkg_dir = base_dir / pkgid;
       if (!common_installer::RegisterSecurityContext(appid, pkgid,
           author_id, api_version, ci::SecurityAppInstallType::Local,
-          base_dir, uid, privileges,
+          pkg_dir, uid, privileges,
           &error_message)) {
         LOG(ERROR) << "Failed to register security context";
         if (!error_message.empty()) {
@@ -447,11 +448,21 @@ bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
 }
 
 bool SetPackageDirectorySmackRulesForUser(uid_t uid,
-                                          const std::string& pkg_path,
                                           const std::string& pkg_id,
                                           const std::string& author_id,
                                           const std::string& api_version) {
-  return SetPackageDirectorySmackRules(pkg_path,
+  char buf[1024];
+  struct passwd pwd;
+  struct passwd *pwd_result;
+  int ret = getpwuid_r(uid, &pwd, buf, sizeof(buf), &pwd_result);
+  if (ret != 0 || pwd_result == NULL) {
+    LOG(WARNING) << "Failed to get user for home directory: " << uid;
+    return false;
+  }
+
+  std::string base_path = std::string(pwd.pw_dir) + "/apps_rw";
+
+  return SetPackageDirectorySmackRules(base_path,
                                        pkg_id,
                                        author_id,
                                        api_version,
@@ -459,8 +470,7 @@ bool SetPackageDirectorySmackRulesForUser(uid_t uid,
 }
 
 
-bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_path,
-                                              const std::string& pkg_id,
+bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_id,
                                               const std::string& author_id,
                                               const std::string& api_version) {
   char buf[1024] = {0, };
@@ -480,10 +490,7 @@ bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_path,
       return false;
     }
 
-    std::string path = pkg_path + "/" + user + "apps_rw";
-
     if (!SetPackageDirectorySmackRulesForUser(pwd.pw_uid,
-                                              path,
                                               pkg_id,
                                               author_id,
                                               api_version)) {

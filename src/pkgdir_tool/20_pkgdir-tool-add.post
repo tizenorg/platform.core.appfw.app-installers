@@ -1,0 +1,1 @@
+pkgdir-tool --create --allglobalpkgs --user=$2
