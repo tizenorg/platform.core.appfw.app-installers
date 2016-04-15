@@ -50,6 +50,7 @@ const char kCreateInternalMode[] = "create";
 const char kDeleteMode[] = "delete";
 const char kSinglePkgId[] = "pkgid";
 const char kAllPkgIds[] = "allglobalpkgs";
+const char kUserId[] = "user";
 
 template<typename ... Arguments>
 bool ExclusiveOptions(const bpo::variables_map& vm, Arguments... args) {
@@ -89,7 +90,8 @@ bpo::options_description CreateProgramOptions() {
       (kCreateInternalMode, "create per user diretories for global package")
       (kDeleteMode, "delete per user diretories for global package")
       (kAllPkgIds, "install directories for all global applications")
-      (kSinglePkgId, bpo::value<std::string>(), "package ID");
+      (kSinglePkgId, bpo::value<std::string>(), "package ID")
+      (kUserId, bpo::value<uid_t>(), "user id");
   return options;
 }
 
@@ -103,6 +105,12 @@ ci::PkgList GetPackageListFromArgs(const bpo::variables_map& opt_map) {
     pkgs.push_back(std::move(pkgid));
   }
   return ci::CreatePkgInformationList(getuid(), pkgs);
+}
+
+uid_t GetUserIdFromArgs(const bpo::variables_map& opt_map) {
+  if (opt_map.count(kUserId))
+    return opt_map[kUserId].as<uid_t>();
+  return 0;
 }
 
 bool ParseCommandLine(int argc, char** argv,
@@ -134,18 +142,27 @@ int main(int argc, char** argv) {
 
   auto dir_operation = ParseDirectoryOptions(opt_map);
   auto pkgs = GetPackageListFromArgs(opt_map);
+  auto uid = GetUserIdFromArgs(opt_map);
 
   for (auto& p : pkgs) {
     switch (dir_operation) {
       case DirectoryOperation::CREATE_INTERNAL: {
         LOG(DEBUG) << "Running directory creation for package id: " << p.pkg_id;
-        ci::PerformInternalDirectoryCreationForAllUsers(p.pkg_id,
-                                                        p.author_id);
-        const std::string pkg_path = ci::GetDirectoryPathForInternalStorage();
-        ci::SetPackageDirectorySmackRulesForAllUsers(pkg_path,
-                                                     p.pkg_id,
-                                                     p.author_id,
-                                                     p.api_version);
+        if (uid != 0) {
+          ci::PerformInternalDirectoryCreationForUser(uid,
+                                                      p.pkg_id,
+                                                      p.author_id);
+          ci::SetPackageDirectorySmackRulesForUser(uid,
+                                                   p.pkg_id,
+                                                   p.author_id,
+                                                   p.api_version);
+        } else {
+          ci::PerformInternalDirectoryCreationForAllUsers(p.pkg_id,
+                                                          p.author_id);
+          ci::SetPackageDirectorySmackRulesForAllUsers(p.pkg_id,
+                                                       p.author_id,
+                                                       p.api_version);
+        }
       }
       break;
       case DirectoryOperation::DELETE: {
