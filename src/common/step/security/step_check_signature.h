@@ -41,13 +41,13 @@ class StepCheckSignature : public Step {
    */
   Status precheck() override;
 
+ private:
+  Status CheckSignatures(bool check_reference, PrivilegeLevel* level);
+  Status CheckSignatureMismatch();
+  Status CheckPrivilegeLevel(PrivilegeLevel level);
+
   SCOPE_LOG_TAG(Signature)
 };
-
-// Exposed for tests
-Step::Status ValidateSignatures(const boost::filesystem::path& base_path,
-    PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
-    bool check_reference, std::string* error_message);
 
 }  // namespace security
 }  // namespace common_installer
