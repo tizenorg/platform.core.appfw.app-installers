@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "common/step/security/step_check_signature.h"
+#include "common/certificate_validation.h"
 
 namespace bf = boost::filesystem;
 
@@ -26,8 +26,8 @@ TEST_F(SignatureValidatorTest, HandlesInitializedSignatureDir) {
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
   common_installer::CertificateInfo cert_info;
   std::string error;
-  EXPECT_EQ(ValidateSignatures(*signature_file, &level, &cert_info, true,
-                               &error), Step::Status::OK);
+  EXPECT_TRUE(ValidateSignatures(*signature_file, &level, &cert_info, true,
+                               &error));
 }
 
 // Tests signature verifier with signature directory containing bad signatures
@@ -37,8 +37,8 @@ TEST_F(SignatureValidatorTest, HandlesBadSignatureDir) {
   PrivilegeLevel level = PrivilegeLevel::UNTRUSTED;
   common_installer::CertificateInfo cert_info;
   std::string error;
-  EXPECT_EQ(ValidateSignatures(*signature_file, &level, &cert_info, true,
-                               &error), Step::Status::ERROR);
+  EXPECT_FALSE(ValidateSignatures(*signature_file, &level, &cert_info, true,
+                               &error));
 }
 
 }  // namespace security
