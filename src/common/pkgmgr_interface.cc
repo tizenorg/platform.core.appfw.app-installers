@@ -124,6 +124,8 @@ RequestType PkgMgrInterface::GetRequestType() const {
       return RequestType::Clear;
     case PKGMGR_REQ_RECOVER:
       return RequestType::Recovery;
+    case PKGMGR_REQ_MOVE:
+      return RequestType::Move;
     case PKGMGR_REQ_MANIFEST_DIRECT_INSTALL:
       if (!is_app_installed_)
         return RequestType::ManifestDirectInstall;
