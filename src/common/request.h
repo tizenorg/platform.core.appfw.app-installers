@@ -20,6 +20,7 @@ enum class RequestType : int {
   Reinstall,
   Clear,
   Delta,
+  Move,
   Recovery,
   MountInstall,
   MountUpdate,
