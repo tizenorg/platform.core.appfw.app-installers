@@ -25,6 +25,7 @@
 #include "common/utils/property.h"
 
 #include "manifest_info/account.h"
+#include "manifest_info/ime_info.h"
 
 namespace common_installer {
 
@@ -55,6 +56,7 @@ class ExtraManifestData {
 
   Property<AccountInfo> account_info;
   Property<ShortcutListInfo> shortcut_info;
+  Property<ImeInfo> ime_info;
 };
 
 /**
