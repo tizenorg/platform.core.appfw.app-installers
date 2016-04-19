@@ -69,6 +69,10 @@ class GListRange {
     return Iterator();
   }
 
+  bool Empty() const noexcept {
+    return list_;
+  }
+
  private:
   GList* list_;
 };
