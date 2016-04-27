@@ -258,9 +258,11 @@ int64_t GetUnpackedPackageSize(const bf::path& path) {
     if (unzGetCurrentFileInfo64(zip_file, &raw_file_info, raw_file_name_in_zip,
         sizeof(raw_file_name_in_zip), nullptr, 0, nullptr, 0) != UNZ_OK) {
       LOG(ERROR) << "Failed to read file info";
+      unzClose(zip_file);
       return -1;
     }
     size += RoundUpToBlockSizeOf(raw_file_info.uncompressed_size, block_size);
+    unzGoToNextFile(zip_file);
   }
 
   // FIXME: calculate space needed for directories
