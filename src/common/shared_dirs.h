@@ -89,6 +89,7 @@ bool PerformDirectoryDeletionForAllUsers(const std::string& pkgid);
  * \brief Performs deletion of directories
  *
  * \param uid package path
+ * \param pkg_path package path
  * \param pkg_id package path
  * \param author_id package path
  * \param api_version package path
@@ -98,6 +99,7 @@ bool PerformDirectoryDeletionForAllUsers(const std::string& pkgid);
  *
  */
 bool SetPackageDirectorySmackRulesForUser(uid_t uid,
+                                          const std::string& pkg_path,
                                           const std::string& pkg_id,
                                           const std::string& author_id,
                                           const std::string& api_version);
@@ -105,6 +107,7 @@ bool SetPackageDirectorySmackRulesForUser(uid_t uid,
 /**
  * \brief Performs deletion of directories
  *
+ * \param pkg_path package path
  * \param pkg_id package path
  * \param author_id package path
  * \param api_version package path
@@ -112,7 +115,8 @@ bool SetPackageDirectorySmackRulesForUser(uid_t uid,
  * \return true if succeed, false otherwise
  *
  */
-bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_id,
+bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_path,
+                                              const std::string& pkg_id,
                                               const std::string& author_id,
                                               const std::string& api_version);
 
