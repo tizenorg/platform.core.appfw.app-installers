@@ -9,6 +9,8 @@
 #include <boost/program_options.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <glib.h>
+#include <gio/gio.h>
 #include <manifest_parser/utils/logging.h>
 #include <vcore/Certificate.h>
 #include <pkgmgr-info.h>
@@ -56,6 +58,11 @@ const char kTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
 const char kExternalStorageDirPrefix[] = "SDCardA1/apps";
+const char kDBusServiceName[] = "org.tizen.pkgdir_tool";
+const char kDBusObjectPath[] = "/org/tizen/pkgdir_tool";
+const char kDBusInterfaceName[] = "org.tizen.pkgdir_tool";
+const int32_t kPWBufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
+const int32_t kGRBufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
 
 bool ValidateTizenPackageId(const std::string& id) {
   std::regex package_regex(kPackagePattern);
@@ -281,45 +288,6 @@ bool CreateUserDirectories(uid_t user, const std::string& pkgid,
   return true;
 }
 
-bool CreateSkelDirectories(const std::string& pkgid) {
-  bf::path path = bf::path(kSkelAppDir) / pkgid;
-  LOG(DEBUG) << "Creating directories in: " << path;
-  bs::error_code error;
-  bf::create_directories(path, error);
-
-  if (error) {
-    LOG(ERROR) << "Failed to create directory: " << path;
-    return false;
-  }
-
-  // TODO(jungh.yeon) : this is hotfix.
-  for (auto& entry : kEntries) {
-    bf::path subpath = path / entry;
-    bf::create_directories(subpath, error);
-    std::string label = "User::Pkg::" + pkgid;
-    if (error && !bf::exists(subpath)) {
-      LOG(ERROR) << "Failed to create directory: " << subpath;
-      return false;
-    }
-
-    int r =
-        lsetxattr(subpath.c_str(), "security.SMACK64TRANSMUTE", "TRUE", 4, 0);
-    if (r < 0) {
-      LOG(ERROR) << "Failed to apply transmute";
-      return false;
-    }
-
-    r = lsetxattr(subpath.c_str(), "security.SMACK64",
-                  label.c_str(), label.length(), 0);
-    if (r < 0) {
-      LOG(ERROR) << "Failed to apply label";
-      return false;
-    }
-  }
-
-  return true;
-}
-
 bool DeleteDirectories(const bf::path& app_dir, const std::string& pkgid) {
   bf::path base_dir = app_dir / pkgid;
   bs::error_code error;
@@ -331,71 +299,47 @@ bool DeleteDirectories(const bf::path& app_dir, const std::string& pkgid) {
   return true;
 }
 
-bool DeletePerUserDirectories(const std::string& pkgid) {
-  char buf[1024] = {0, };
-
-  for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
-      iter != bf::directory_iterator();
-       ++iter) {
-    if (!bf::is_directory(iter->path()))
-      return false;
-    const bf::path& home_path = iter->path();
-    std::string user = home_path.filename().string();
-    struct passwd pwd;
-    struct passwd *pwd_result;
-    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == nullptr) {
-      LOG(WARNING) << "Failed to get user for home directory: " << user;
-      continue;
-    }
-
-    struct group gr;
-    struct group *gr_result;
-    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
-    if (ret != 0 || gr_result == nullptr ||
-        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
-      continue;
-
-    if (ci::IsPackageInstalled(pkgid, pwd.pw_uid)) continue;
-
-    std::string error_message;
-    if (!ci::UnregisterSecurityContextForPkgId(pkgid, pwd.pw_uid,
-        &error_message)) {
-      LOG(WARNING) << "Failure on unregistering security context for pkg: "
-                   << pkgid << ", uid: " << pwd.pw_uid;
-    }
-
-    LOG(DEBUG) << "Deleting directories for uid: " << pwd.pw_uid << ", gid: "
-               << pwd.pw_gid;
-    tzplatform_set_user(pwd.pw_uid);
-    bf::path apps_rw(tzplatform_getenv(TZ_USER_APP));
-    tzplatform_reset_user();
-    if (!DeleteDirectories(apps_rw, pkgid)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool DeleteSkelDirectories(const std::string& pkgid) {
-  bf::path path = bf::path(kSkelAppDir) / pkgid;
-  LOG(DEBUG) << "Deleting directories in: " << path;
-  bs::error_code error;
-  bf::remove_all(path, error);
-  if (error) {
-    LOG(ERROR) << "Failed to delete directory: " << path;
+bool RequestUserDirectoryOperation(const char* method,
+    const std::string& pkgid) {
+  GError* err = nullptr;
+  GDBusConnection* con = g_bus_get_sync(G_BUS_TYPE_SYSTEM, nullptr, &err);
+  if (!con || err) {
+    LOG(ERROR) << "Failed to get dbus connection: " << err->message;
+    g_error_free(err);
     return false;
   }
-  return true;
+  GDBusProxy* proxy = g_dbus_proxy_new_sync(con, G_DBUS_PROXY_FLAGS_NONE,
+      nullptr, kDBusServiceName, kDBusObjectPath, kDBusInterfaceName, nullptr,
+      &err);
+  if (!proxy || err) {
+    LOG(ERROR) << "Failed to get dbus proxy: " << err->message;
+    g_error_free(err);
+    g_object_unref(con);
+    return false;
+  }
+  GVariant* r = g_dbus_proxy_call_sync(proxy, method,
+      g_variant_new("(s)", pkgid.c_str()), G_DBUS_CALL_FLAGS_NONE, -1, nullptr,
+      &err);
+  if (!r || err) {
+    LOG(ERROR) << "Failed to request: " << err->message;
+    g_error_free(err);
+    g_object_unref(proxy);
+    g_object_unref(con);
+    return false;
+  }
+  bool result;
+  g_variant_get(r, "(b)", &result);
+
+  g_variant_unref(r);
+  g_object_unref(proxy);
+  g_object_unref(con);
+
+  return result;
 }
 
 }  // namespace
 
 namespace common_installer {
-
-bool CreateSkeletonDirectoriesForPackage(const std::string& pkgid) {
-  return CreateSkelDirectories(pkgid);
-}
 
 std::string GetDirectoryPathForInternalStorage() {
   const char* internal_storage_prefix = tzplatform_getenv(TZ_SYS_HOME);
@@ -440,8 +384,6 @@ bool PerformExternalDirectoryCreationForUser(uid_t user,
 
 bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
                                                  const std::string& author_id) {
-  char buf[1024] = {0, };
-
   for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
       iter != bf::directory_iterator();
          ++iter) {
@@ -452,13 +394,16 @@ bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
 
     struct passwd pwd;
     struct passwd *pwd_result;
-    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == nullptr)
+    char buf_pw[kPWBufSize];
+    int ret = getpwnam_r(
+        user.c_str(), &pwd, buf_pw, sizeof(buf_pw), &pwd_result);
+    if (ret != 0 || pwd_result == NULL)
       continue;
 
     struct group gr;
     struct group *gr_result;
-    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
+    char buf_gr[kGRBufSize];
+    ret = getgrgid_r(pwd.pw_gid, &gr, buf_gr, sizeof(buf_gr), &gr_result);
     if (ret != 0 ||
         strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
       continue;
@@ -474,8 +419,6 @@ bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
 
 bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
                                                  const std::string& author_id) {
-  char buf[1024] = {0, };
-
   for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
       iter != bf::directory_iterator();
          ++iter) {
@@ -491,13 +434,16 @@ bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
 
     struct passwd pwd;
     struct passwd *pwd_result;
-    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == nullptr)
+    char buf_pw[kPWBufSize];
+    int ret = getpwnam_r(
+        user.c_str(), &pwd, buf_pw, sizeof(buf_pw), &pwd_result);
+    if (ret != 0 || pwd_result == NULL)
       continue;
 
     struct group gr;
     struct group *gr_result;
-    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
+    char buf_gr[kGRBufSize];
+    ret = getgrgid_r(pwd.pw_gid, &gr, buf_gr, sizeof(buf_gr), &gr_result);
     if (ret != 0 ||
         strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
       continue;
@@ -560,13 +506,134 @@ bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_path,
   return true;
 }
 
+bool CreateSkelDirectories(const std::string& pkgid) {
+  bf::path path = bf::path(kSkelAppDir) / pkgid;
+  LOG(DEBUG) << "Creating directories in: " << path;
+  bs::error_code error;
+  bf::create_directories(path, error);
 
-bool PerformDirectoryDeletionForAllUsers(const std::string& pkgid) {
-  if (!DeletePerUserDirectories(pkgid))
+  if (error) {
+    LOG(ERROR) << "Failed to create directory: " << path;
     return false;
-  if (!DeleteSkelDirectories(pkgid))
+  }
+
+  for (auto& entry : kEntries) {
+    bf::path subpath = path / entry;
+    bf::create_directories(subpath, error);
+    if (error && !bf::exists(subpath)) {
+      LOG(ERROR) << "Failed to create directory: " << subpath;
+      return false;
+    }
+  }
+
+  std::string error_message;
+  if (!RegisterSecurityContextForPath(pkgid, path,
+      tzplatform_getuid(TZ_SYS_GLOBALAPP_USER), &error_message)) {
+    LOG(ERROR) << "Failed to register security context for path: " << path;
+    LOG(ERROR) << "error_message: " << error_message;
+    return false;
+  }
+
+  return true;
+}
+
+
+bool DeleteSkelDirectories(const std::string& pkgid) {
+  if (!DeleteDirectories(bf::path(kSkelAppDir), pkgid))
     return false;
   return true;
+}
+
+
+bool DeleteUserDirectories(const std::string& pkgid) {
+  char buf[1024] = {0, };
+
+  for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
+      iter != bf::directory_iterator();
+       ++iter) {
+    if (!bf::is_directory(iter->path()))
+      return false;
+    const bf::path& home_path = iter->path();
+    std::string user = home_path.filename().string();
+    struct passwd pwd, *pwd_result;
+    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
+    if (ret != 0 || pwd_result == NULL) {
+      LOG(WARNING) << "Failed to get user for home directory: " << user;
+      continue;
+    }
+
+    struct group gr, *gr_result;
+    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
+    if (ret != 0 || gr_result == NULL ||
+        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
+      continue;
+
+    if (ci::IsPackageInstalled(pkgid, pwd.pw_uid)) continue;
+
+    LOG(DEBUG) << "Deleting directories of " << pkgid
+               << ", for uid: " << pwd.pw_uid << ", gid: "
+               << pwd.pw_gid;
+    tzplatform_set_user(pwd.pw_uid);
+    bf::path apps_rw(tzplatform_getenv(TZ_USER_APP));
+    tzplatform_reset_user();
+    if (!DeleteDirectories(apps_rw, pkgid)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+bool CopyUserDirectories(const std::string& pkgid) {
+  char buf[1024];
+
+  for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
+      iter != bf::directory_iterator();
+       ++iter) {
+    if (!bf::is_directory(iter->path()))
+      return false;
+    const bf::path& home_path = iter->path();
+    std::string user = home_path.filename().string();
+    struct passwd pwd, *pwd_result;
+    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
+    if (ret != 0 || pwd_result == NULL) {
+      LOG(WARNING) << "Failed to get user for home directory: " << user;
+      continue;
+    }
+
+    struct group gr, *gr_result;
+    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
+    if (ret != 0 || gr_result == NULL ||
+        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
+      continue;
+
+
+    LOG(DEBUG) << "Copying directories for uid: " << pwd.pw_uid << ", gid: "
+               << pwd.pw_gid;
+    tzplatform_set_user(pwd.pw_uid);
+    bf::path apps_rw(tzplatform_getenv(TZ_USER_APP));
+    tzplatform_reset_user();
+
+    bf::path src = bf::path(kSkelAppDir) / pkgid;
+    bf::path dst = apps_rw / pkgid;
+    if (!ci::CopyDir(src, dst))
+      continue;
+    for (bf::recursive_directory_iterator iter(dst);
+        iter != bf::recursive_directory_iterator(); ++iter) {
+      if (!SetPackageDirectoryOwnerAndPermissions(iter->path(),
+          pwd.pw_uid, pwd.pw_gid))
+        return false;
+    }
+  }
+  return true;
+}
+
+bool RequestCopyUserDirectories(const std::string& pkgid) {
+  return RequestUserDirectoryOperation("CopyUserDirs", pkgid);
+}
+
+bool RequestDeleteUserDirectories(const std::string& pkgid) {
+  return RequestUserDirectoryOperation("DeleteUserDirs", pkgid);
 }
 
 ci::PkgList CreatePkgInformationList(uid_t uid,
