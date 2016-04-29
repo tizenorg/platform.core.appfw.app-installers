@@ -109,6 +109,23 @@ bool UnregisterSecurityContextForManifest(const std::string& pkg_id, uid_t uid,
 bool UnregisterSecurityContextForPkgId(const std::string& pkg_id, uid_t uid,
     std::string* error_message);
 
+/**
+ * Adapter interface for external Security module.
+ *
+ * Adapter interface for external Security module used for registering
+ * package path to security context
+ *
+ * \param pkg_id pkgid of given package
+ * \param path path for registering
+ * \param uid uid
+ * \param error_message extra/detailed error message
+ *
+ * \return true if success
+ */
+bool RegisterSecurityContextForPath(const std::string &pkg_id,
+    const boost::filesystem::path& path, uid_t uid,
+    std::string* error_message);
+
 }  // namespace common_installer
 
 #endif  // COMMON_SECURITY_REGISTRATION_H_

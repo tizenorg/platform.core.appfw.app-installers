@@ -138,6 +138,66 @@ PkgList CreatePkgInformationList(uid_t uid = getuid(),
     std::vector<std::string>());
 
 /**
+ * \brief Create skeleton directories for package
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ *
+ */
+bool CreateSkelDirectories(const std::string& pkgid);
+
+/**
+ * \brief Performs deletion of directories
+ *
+ * \param pkgid package id
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool DeleteSkelDirectories(const std::string& pkgid);
+
+/**
+ * \brief Delete per-user directories
+ *
+ * \param pkgid package id
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool DeleteUserDirectories(const std::string& pkgid);
+
+/**
+ * \brief Copy per-user directories
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ *
+ */
+bool CopyUserDirectories(const std::string& pkgid);
+
+/**
+ * \brief Request to copy per-user directories
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ *
+ */
+bool RequestCopyUserDirectories(const std::string& pkgid);
+
+/**
+ * \brief Request to delete per-user directories
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ *
+ */
+bool RequestDeleteUserDirectories(const std::string& pkgid);
+
+/**
  * \brief Returns path prefix for internal storage, typically '/home'
  *
  * \return path prefix
@@ -152,14 +212,6 @@ std::string GetDirectoryPathForInternalStorage();
  *
  */
 std::string GetDirectoryPathForExternalStorage();
-
-/**
- * \brief Create skeleton directories for package
- *
- * \return bool true if succeed, false otherwise
- *
- */
-bool CreateSkeletonDirectoriesForPackage(const std::string& pkgid);
 
 }  // namespace common_installer
 

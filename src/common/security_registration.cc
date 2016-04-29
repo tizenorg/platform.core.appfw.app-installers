@@ -163,6 +163,65 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
   return true;
 }
 
+bool PreparePathRequest(const std::string& pkg_id,
+    const boost::filesystem::path& path, uid_t uid, path_req* req,
+    std::string* error_message) {
+  if (pkg_id.empty() || path.empty()) {
+    LOG(ERROR) << "Pkgid or path is empty. Both values must be set";
+    return false;
+  }
+
+  int error = security_manager_path_req_set_pkg_id(req, pkg_id.c_str());
+  if (error != SECURITY_MANAGER_SUCCESS) {
+    std::string errnum = boost::str(boost::format("%d") % error);
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
+    *error_message += ":<" + errnum + ">";
+    return false;
+  }
+
+  error = security_manager_path_req_set_uid(req, uid);
+  if (error != SECURITY_MANAGER_SUCCESS) {
+    std::string errnum = boost::str(boost::format("%d") % error);
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
+    *error_message += ":<" + errnum + ">";
+    return false;
+  }
+
+  app_install_type type =
+      (getuid() == 0) ? SM_APP_INSTALL_PRELOADED : SM_APP_INSTALL_GLOBAL;
+
+  error = security_manager_path_req_set_install_type(req, type);
+  if (error != SECURITY_MANAGER_SUCCESS) {
+    std::string errnum = boost::str(boost::format("%d") % error);
+    *error_message =
+        security_manager_strerror(static_cast<lib_retcode>(error));
+    *error_message += ":<" + errnum + ">";
+    return false;
+  }
+
+  for (auto& policy : kSecurityPolicies) {
+    bf::path subpath = path / policy.first;
+    if (bf::exists(subpath)) {
+      if (bf::is_symlink(subpath)) {
+        LOG(DEBUG) << "Path " << subpath << " is a symlink."
+                   << "Path will not be registered";
+        continue;
+      }
+      error = security_manager_path_req_add_path(req, subpath.c_str(),
+          policy.second);
+      if (error != SECURITY_MANAGER_SUCCESS) {
+        std::string errnum = boost::str(boost::format("%d") % error);
+        *error_message =
+                  security_manager_strerror(static_cast<lib_retcode>(error));
+        *error_message += ":<" + errnum + ">";
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 namespace common_installer {
@@ -295,6 +354,43 @@ bool UnregisterSecurityContextForPkgId(const std::string &pkg_id,
       return false;
     }
   }
+  return true;
+}
+
+bool RegisterSecurityContextForPath(const std::string &pkg_id,
+    const boost::filesystem::path& path, uid_t uid,
+    std::string* error_message) {
+  path_req* req;
+  int error = security_manager_path_req_new(&req);
+  if (error != SECURITY_MANAGER_SUCCESS) {
+    LOG(ERROR)
+        << "Failed while calling security_manager_path_req_new failed "
+        << "(error code: " << error << ")";
+    std::string errnum = boost::str(boost::format("%d") % error);
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
+    *error_message += ":<" + errnum + ">";
+    return false;
+  }
+
+  if (!PreparePathRequest(pkg_id, path, uid, req, error_message)) {
+    LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
+    security_manager_path_req_free(req);
+    return false;
+  }
+
+  error = security_manager_paths_register(req);
+  if (error != SECURITY_MANAGER_SUCCESS) {
+    LOG(ERROR) << "Failed while calling security_manager_paths_register failed "
+               << "(error code: " << error << ")";
+    std::string errnum = boost::str(boost::format("%d") % error);
+    *error_message = security_manager_strerror(static_cast<lib_retcode>(error));
+    *error_message += ":<" + errnum + ">";
+    security_manager_path_req_free(req);
+    return false;
+  }
+
+  security_manager_path_req_free(req);
+
   return true;
 }
 
