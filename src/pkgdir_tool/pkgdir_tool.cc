@@ -2,162 +2,180 @@
 // Use of this source code is governed by an apache-2.0 license that can be
 // found in the LICENSE file.
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/program_options.hpp>
-#include <boost/system/error_code.hpp>
-
+#include <glib.h>
+#include <gio/gio.h>
 #include <manifest_parser/utils/logging.h>
-#include <vcore/Certificate.h>
-#include <pkgmgr-info.h>
-#include <pwd.h>
-#include <grp.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <tzplatform_config.h>
-#include <sys/xattr.h>
-
-#include <algorithm>
-#include <cassert>
-#include <cstring>
-#include <exception>
-#include <iterator>
-#include <string>
-#include <utility>
-#include <vector>
 
 #include "common/shared_dirs.h"
-#include "common/security_registration.h"
-#include "common/pkgmgr_registration.h"
-#include "common/utils/base64.h"
-#include "common/utils/file_util.h"
-#include "common/utils/glist_range.h"
 
-namespace bf = boost::filesystem;
-namespace bpo = boost::program_options;
-namespace bs = boost::system;
+#define UNUSED(expr) (void)(expr)
+
 namespace ci = common_installer;
 
 namespace {
 
-enum class DirectoryOperation {
-  NONE,
-  CREATE_INTERNAL,
-  DELETE
+const char kDBusInstropectionXml[] =
+  "<node>"
+  "  <interface name='org.tizen.pkgdir_tool'>"
+  "    <method name='CopyUserDirs'>"
+  "      <arg type='s' name='pkgid' direction='in'/>"
+  "      <arg type='b' name='result' direction='out'/>"
+  "    </method>"
+  "    <method name='DeleteUserDirs'>"
+  "      <arg type='s' name='pkgid' direction='in'/>"
+  "      <arg type='b' name='result' direction='out'/>"
+  "    </method>"
+  "  </interface>"
+  "</node>";
+const char kDBusServiceName[] = "org.tizen.pkgdir_tool";
+const char kDBusObjectPath[] = "/org/tizen/pkgdir_tool";
+
+class PkgdirToolService {
+ public:
+  PkgdirToolService();
+  ~PkgdirToolService();
+  bool Init();
+  void Run();
+
+ private:
+  void Finish();
+  void RenewTimeout(int ms);
+  void HandleMethodCall(GDBusConnection* connection,
+      const gchar* sender, const gchar* object_path,
+      const gchar* interface_name, const gchar* method_name,
+      GVariant* parameters, GDBusMethodInvocation* invocation,
+      gpointer user_data);
+  void OnBusAcquired(GDBusConnection* connection, const gchar* name,
+      gpointer user_data);
+
+  GDBusNodeInfo* node_info_;
+  guint owner_id_;
+  GMainLoop* loop_;
+  guint sid_;
 };
 
-const char kCreateInternalMode[] = "create";
-const char kDeleteMode[] = "delete";
-const char kSinglePkgId[] = "pkgid";
-const char kAllPkgIds[] = "allglobalpkgs";
+PkgdirToolService::PkgdirToolService() :
+      node_info_(nullptr), owner_id_(0), loop_(nullptr), sid_(0) {
+}
 
-template<typename ... Arguments>
-bool ExclusiveOptions(const bpo::variables_map& vm, Arguments... args) {
-  std::vector<std::string> exclusive_options {args...};
-  sort(exclusive_options.begin(), exclusive_options.end());
-  std::vector<std::string> given_options;
-  std::transform(vm.begin(), vm.end(), std::back_inserter(given_options),
-          [](const bpo::variables_map::value_type& pair) {return pair.first;});
-  sort(given_options.begin(), given_options.end());
+PkgdirToolService::~PkgdirToolService() {
+  Finish();
+}
 
-  std::vector<std::string> options_intersection;
-  std::set_intersection(exclusive_options.begin(), exclusive_options.end(),
-                        given_options.begin(), given_options.end(),
-                        back_inserter(options_intersection));
-  if (options_intersection.size() > 1) {
-    std::string exception = std::string("Exclusive options :") +
-        options_intersection[0] + " " + options_intersection[1];
-    LOG(ERROR) << exception.c_str();
+bool PkgdirToolService::Init() {
+  node_info_ = g_dbus_node_info_new_for_xml(kDBusInstropectionXml, nullptr);
+  if (!node_info_) {
+    LOG(ERROR) << "Failed to create DBus node info";
     return false;
   }
+  owner_id_ = g_bus_own_name(G_BUS_TYPE_SYSTEM, kDBusServiceName,
+      G_BUS_NAME_OWNER_FLAGS_NONE,
+      [](GDBusConnection* connection, const gchar* name,
+          gpointer user_data) {
+        reinterpret_cast<PkgdirToolService*>(user_data)->OnBusAcquired(
+            connection, name, user_data);
+      },
+      nullptr, nullptr, this, nullptr);
+
+  loop_ = g_main_loop_new(nullptr, FALSE);
+  if (!loop_) {
+    LOG(ERROR) << "Failed to create main loop";
+    return false;
+  }
+
+  RenewTimeout(5000);
+
   return true;
 }
 
-DirectoryOperation ParseDirectoryOptions(const bpo::variables_map& opt_map) {
-  if (opt_map.count(kCreateInternalMode))
-    return DirectoryOperation::CREATE_INTERNAL;
-
-  if (opt_map.count(kDeleteMode))
-    return DirectoryOperation::DELETE;
-
-  return DirectoryOperation::NONE;
+void PkgdirToolService::Run() {
+  g_main_loop_run(loop_);
 }
 
-bpo::options_description CreateProgramOptions() {
-  bpo::options_description options("Allowed options");
-  options.add_options()
-      (kCreateInternalMode, "create per user diretories for global package")
-      (kDeleteMode, "delete per user diretories for global package")
-      (kAllPkgIds, "install directories for all global applications")
-      (kSinglePkgId, bpo::value<std::string>(), "package ID");
-  return options;
+void PkgdirToolService::Finish() {
+  if (owner_id_ > 0)
+    g_bus_unown_name(owner_id_);
+  if (node_info_)
+    g_dbus_node_info_unref(node_info_);
+  if (loop_)
+    g_main_loop_unref(loop_);
 }
 
-ci::PkgList GetPackageListFromArgs(const bpo::variables_map& opt_map) {
-  bool allglobalpkgs = opt_map.count(kAllPkgIds) != 0;
-  if (allglobalpkgs) return ci::CreatePkgInformationList();
-
-  std::vector<std::string> pkgs;
-  if (opt_map.count(kSinglePkgId)) {
-    std::string pkgid = opt_map[kSinglePkgId].as<std::string>();
-    pkgs.push_back(std::move(pkgid));
-  }
-  return ci::CreatePkgInformationList(getuid(), pkgs);
+void PkgdirToolService::RenewTimeout(int ms) {
+  if (sid_)
+    g_source_remove(sid_);
+  sid_ = g_timeout_add(ms,
+      [](gpointer user_data) {
+        g_main_loop_quit(
+            reinterpret_cast<PkgdirToolService*>(user_data)->loop_);
+        return FALSE;
+      },
+      this);
 }
 
-bool ParseCommandLine(int argc, char** argv,
-                      const bpo::options_description& options,
-                      bpo::variables_map* opt_map) {
-  bpo::store(bpo::parse_command_line(argc, argv, options), *opt_map);
-  if (!ExclusiveOptions(*opt_map, kCreateInternalMode, kDeleteMode)) {
-    LOG(ERROR) << "Could not parse arguments: incorrect directory operation";
-    return false;
+void PkgdirToolService::HandleMethodCall(GDBusConnection* connection,
+    const gchar* sender, const gchar* object_path, const gchar* interface_name,
+    const gchar* method_name, GVariant* parameters,
+    GDBusMethodInvocation* invocation, gpointer user_data) {
+  UNUSED(connection);
+  UNUSED(sender);
+  UNUSED(object_path);
+  UNUSED(interface_name);
+  UNUSED(user_data);
+  char* val;
+  g_variant_get(parameters, "(s)", &val);
+  bool r = false;
+  LOG(INFO) << "Incomming method call: " << method_name;
+  if (g_strcmp0(method_name, "CopyUserDirs") == 0) {
+    r = ci::CopyUserDirectories(std::string(val));
+  } else if (g_strcmp0(method_name, "DeleteUserDirs") == 0) {
+    r = ci::DeleteUserDirectories(std::string(val));
+  } else {
+    LOG(ERROR) << "Unknown method call: " << method_name;
   }
+  g_dbus_method_invocation_return_value(invocation, g_variant_new("(b)", r));
 
-  if (!ExclusiveOptions(*opt_map, kSinglePkgId, kAllPkgIds)) {
-    LOG(ERROR) << "Could not parse arguments: incorrect pkgid or pkgid\'s";
-    return false;
+  RenewTimeout(5000);
+}
+
+void PkgdirToolService::OnBusAcquired(
+    GDBusConnection* connection, const gchar* name, gpointer user_data) {
+  UNUSED(name);
+  UNUSED(user_data);
+  GError* err = nullptr;
+  GDBusInterfaceVTable vtable = {
+    [](GDBusConnection* connection, const gchar* sender,
+        const gchar* object_path, const gchar* interface_name,
+        const gchar* method_name, GVariant* parameters,
+        GDBusMethodInvocation* invocation, gpointer user_data) {
+      reinterpret_cast<PkgdirToolService*>(user_data)->HandleMethodCall(
+          connection, sender, object_path, interface_name, method_name,
+          parameters, invocation, user_data);
+    },
+    nullptr, nullptr, {0, }
+  };
+
+  guint reg_id = g_dbus_connection_register_object(connection, kDBusObjectPath,
+      node_info_->interfaces[0], &vtable, this, nullptr, &err);
+  if (reg_id == 0) {
+    LOG(ERROR) << "Register failed";
+    if (err) {
+      LOG(ERROR) << "Error message: " << err->message;
+      g_error_free(err);
+    }
+  } else {
+    LOG(INFO) << "DBus service registered";
   }
-  bpo::notify(*opt_map);
-  return true;
 }
 
 }  // namespace
 
-
-int main(int argc, char** argv) {
-  bpo::options_description options = CreateProgramOptions();
-  bpo::variables_map opt_map;
-  if (!ParseCommandLine(argc, argv, options, &opt_map)) return -1;
-
-  assert(setuid(0) == 0);
-
-  auto dir_operation = ParseDirectoryOptions(opt_map);
-  auto pkgs = GetPackageListFromArgs(opt_map);
-
-  for (auto& p : pkgs) {
-    switch (dir_operation) {
-      case DirectoryOperation::CREATE_INTERNAL: {
-        LOG(DEBUG) << "Running directory creation for package id: " << p.pkg_id;
-        ci::PerformInternalDirectoryCreationForAllUsers(p.pkg_id,
-                                                        p.author_id);
-        const std::string pkg_path = ci::GetDirectoryPathForInternalStorage();
-        ci::SetPackageDirectorySmackRulesForAllUsers(pkg_path,
-                                                     p.pkg_id,
-                                                     p.author_id,
-                                                     p.api_version);
-
-        ci::CreateSkeletonDirectoriesForPackage(p.pkg_id);
-      }
-      break;
-      case DirectoryOperation::DELETE: {
-        LOG(DEBUG) << "Running directory deletion for package id: " << p.pkg_id;
-        ci::PerformDirectoryDeletionForAllUsers(p.pkg_id);
-      }
-      break;
-      default:
-        break;
-    }
+int main() {
+  PkgdirToolService service;
+  if (!service.Init()) {
+    LOG(ERROR) << "Failed to initialize service";
+    return -1;
   }
+  service.Run();
   return 0;
 }
