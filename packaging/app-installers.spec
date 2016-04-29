@@ -13,6 +13,7 @@ Source1001:     app-installers-tests.manifest
 
 BuildRequires:  boost-devel
 BuildRequires:  cmake
+BuildRequires:  libattr-devel
 BuildRequires:  libcap-devel
 BuildRequires:  gtest-devel
 BuildRequires:  pkgconfig(pkgmgr)
@@ -33,6 +34,7 @@ BuildRequires:  pkgconfig(security-privilege-manager)
 BuildRequires:  pkgconfig(tpk-manifest-handlers)
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(aul)
+BuildRequires:  pkgconfig(libgum)
 
 Requires: ca-certificates-tizen
 Requires: libtzplatform-config
@@ -79,7 +81,9 @@ make %{?_smp_mflags}
 %{_datarootdir}/app-installers/plugins_list.txt
 %manifest app-installers.manifest
 %{_libdir}/libapp-installers.so*
-%attr(6750,root,root) %{_bindir}/pkgdir-tool
+%attr(0750,root,root) %{_bindir}/pkgdir-tool
+%attr(0644,root,root) %{_prefix}/share/dbus-1/system-services/org.tizen.pkgdir_tool.service
+%attr(0644,root,root) %{_sysconfdir}/dbus-1/system.d/org.tizen.pkgdir_tool.conf
 %{_bindir}/pkg_initdb
 %license LICENSE
 

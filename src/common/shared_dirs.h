@@ -90,41 +90,6 @@ bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
 bool PerformDirectoryDeletionForAllUsers(const std::string& pkgid);
 
 /**
- * \brief Performs deletion of directories
- *
- * \param uid package path
- * \param pkg_path package path
- * \param pkg_id package path
- * \param author_id package path
- * \param api_version package path
- *
- *
- * \return true if succeed, false otherwise
- *
- */
-bool SetPackageDirectorySmackRulesForUser(uid_t uid,
-                                          const std::string& pkg_path,
-                                          const std::string& pkg_id,
-                                          const std::string& author_id,
-                                          const std::string& api_version);
-
-/**
- * \brief Performs deletion of directories
- *
- * \param pkg_path package path
- * \param pkg_id package path
- * \param author_id package path
- * \param api_version package path
- *
- * \return true if succeed, false otherwise
- *
- */
-bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_path,
-                                              const std::string& pkg_id,
-                                              const std::string& author_id,
-                                              const std::string& api_version);
-
-/**
  * \brief Helper function fetching information about packages
  *
  * \param pkgs  list of packages requested to fetch information about. If list
@@ -136,6 +101,66 @@ bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_path,
 PkgList CreatePkgInformationList(uid_t uid = getuid(),
                                  const std::vector<std::string>& pkgs =
     std::vector<std::string>());
+
+/**
+ * \brief Create skeleton directories for package
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ *
+ */
+bool CreateSkelDirectories(const std::string& pkgid);
+
+/**
+ * \brief Performs deletion of directories
+ *
+ * \param pkgid package id
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool DeleteSkelDirectories(const std::string& pkgid);
+
+/**
+ * \brief Delete per-user directories
+ *
+ * \param pkgid package id
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool DeleteUserDirectories(const std::string& pkgid);
+
+/**
+ * \brief Copy per-user directories
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ *
+ */
+bool CopyUserDirectories(const std::string& pkgid);
+
+/**
+ * \brief Request to copy per-user directories
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ *
+ */
+bool RequestCopyUserDirectories(const std::string& pkgid);
+
+/**
+ * \brief Request to delete per-user directories
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ *
+ */
+bool RequestDeleteUserDirectories(const std::string& pkgid);
 
 /**
  * \brief Returns path prefix for internal storage, typically '/home'
@@ -152,14 +177,6 @@ std::string GetDirectoryPathForInternalStorage();
  *
  */
 std::string GetDirectoryPathForExternalStorage();
-
-/**
- * \brief Create skeleton directories for package
- *
- * \return bool true if succeed, false otherwise
- *
- */
-bool CreateSkeletonDirectoriesForPackage(const std::string& pkgid);
 
 }  // namespace common_installer
 
