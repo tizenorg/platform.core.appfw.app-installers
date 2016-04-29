@@ -79,7 +79,9 @@ make %{?_smp_mflags}
 %{_datarootdir}/app-installers/plugins_list.txt
 %manifest app-installers.manifest
 %{_libdir}/libapp-installers.so*
-%attr(6750,root,root) %{_bindir}/pkgdir-tool
+%attr(0750,root,root) %{_bindir}/pkgdir-tool
+%attr(0644,root,root) %{_prefix}/share/dbus-1/system-services/org.tizen.pkgdir_tool.service
+%attr(0644,root,root) %{_sysconfdir}/dbus-1/system.d/org.tizen.pkgdir_tool.conf
 %{_bindir}/pkg-install-manifest
 %license LICENSE
 
