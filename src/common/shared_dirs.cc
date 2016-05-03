@@ -54,7 +54,7 @@ const std::vector<const char*> kEntries = {
 
 const char kTrustedDir[] = "shared/trusted";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
-const char kExternalStorageDirPrefix[] = "sdcard";
+const char kExternalStorageDirPrefix[] = "SdcardA1";
 
 bool ValidateTizenPackageId(const std::string& id) {
   std::regex package_regex(kPackagePattern);
