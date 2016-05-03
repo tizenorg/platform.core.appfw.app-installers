@@ -133,12 +133,6 @@ bool ValidateSignatureFile(
       LOG(ERROR) << "Certificate is revoked";
       return false;
     case ValidationCore::E_SIG_DISREGARDED:
-        if (data.isAuthorSignature()) {
-          LOG(ERROR) << "Author-signiture is disregarded";
-          return false;
-        }
-        LOG(WARNING) << "Signature disregarded: " << file_info.getFileName();
-        break;
     case ValidationCore::E_SIG_NONE:
       if (data.isAuthorSignature()) {
         // set author certificates to be saved in pkgmgr
