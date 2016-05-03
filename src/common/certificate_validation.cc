@@ -114,8 +114,7 @@ bool ValidateSignatureFile(
     common_installer::PrivilegeLevel* level,
     common_installer::CertificateInfo* cert_info,
     bool check_reference, std::string* error_message) {
-  bf::path path = base_path / file_info.getFileName();
-  LOG(INFO) << "Processing signature: " << path;
+  LOG(INFO) << "Processing signature: " << file_info.getFileName();
 
   ValidationCore::SignatureValidator validator(file_info);
   ValidationCore::SignatureData data;
@@ -138,7 +137,7 @@ bool ValidateSignatureFile(
           LOG(ERROR) << "Author-signiture is disregarded";
           return false;
         }
-        LOG(WARNING) << "Signature disregarded: " << path;
+        LOG(WARNING) << "Signature disregarded: " << file_info.getFileName();
         break;
     case ValidationCore::E_SIG_NONE:
       if (data.isAuthorSignature()) {
@@ -168,7 +167,8 @@ bool CheckAuthorSignature(const ValidationCore::SignatureFileInfo& file_info) {
 
 bool CheckDistSignature(const ValidationCore::SignatureFileInfo& file_info) {
   std::regex distributor_regex(kRegexDistributorSignature);
-  return std::regex_search(file_info.getFileName(), distributor_regex);
+  bf::path file_path(file_info.getFileName());
+  return std::regex_search(file_path.filename().string(), distributor_regex);
 }
 
 bool ValidateSignatures(const bf::path& base_path,
