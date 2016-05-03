@@ -168,7 +168,9 @@ bool CheckAuthorSignature(const ValidationCore::SignatureFileInfo& file_info) {
 
 bool CheckDistSignature(const ValidationCore::SignatureFileInfo& file_info) {
   std::regex distributor_regex(kRegexDistributorSignature);
-  return std::regex_search(file_info.getFileName(), distributor_regex);
+  std::string dist_filename =
+      (bf::path(file_info.getFileName()).filename()).string();
+  return std::regex_search(dist_filename, distributor_regex);
 }
 
 bool ValidateSignatures(const bf::path& base_path,
