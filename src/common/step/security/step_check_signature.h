@@ -42,7 +42,8 @@ class StepCheckSignature : public Step {
   Status precheck() override;
 
  private:
-  Status CheckSignatures(bool check_reference, PrivilegeLevel* level);
+  Status CheckSignatures(bool check_reference, bool is_preload,
+                         PrivilegeLevel* level);
   Status CheckSignatureMismatch();
   Status CheckPrivilegeLevel(PrivilegeLevel level);
 

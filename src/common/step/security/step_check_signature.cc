@@ -54,11 +54,12 @@ Step::Status StepCheckSignature::precheck() {
 }
 
 Step::Status StepCheckSignature::CheckSignatures(bool check_reference,
+                                                 bool is_preload,
                                                  PrivilegeLevel* level) {
   std::string error_message;
   if (!ValidateSignatures(context_->unpacked_dir_path.get(), level,
                          &context_->certificate_info.get(), check_reference,
-                         &error_message)) {
+                         is_preload, &error_message)) {
     on_error(Status::CERT_ERROR, error_message);
     return Status::CERT_ERROR;
   }
@@ -106,8 +107,8 @@ Step::Status StepCheckSignature::process() {
       (context_->request_type.get()== ci::RequestType::ManifestDirectInstall ||
       context_->request_type.get() == ci::RequestType::ManifestDirectUpdate))
     check_reference = false;
-
-  Status status = CheckSignatures(check_reference, &level);
+  bool is_preload = context_->is_preload_request.get();
+  Status status = CheckSignatures(check_reference, is_preload, &level);
   if (status != Status::OK)
     return status;
 
@@ -115,7 +116,7 @@ Step::Status StepCheckSignature::process() {
   if (status != Status::OK)
     return status;
 
-  if (context_->is_preload_request.get())
+  if (is_preload)
     level = PrivilegeLevel::PLATFORM;
 
   if (level == PrivilegeLevel::UNTRUSTED) {

@@ -173,7 +173,7 @@ bool CheckDistSignature(const ValidationCore::SignatureFileInfo& file_info) {
 
 bool ValidateSignatures(const bf::path& base_path,
     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
-    bool check_reference, std::string* error_message) {
+    bool check_reference, bool is_preload, std::string* error_message) {
   // Find signature files
   ValidationCore::SignatureFileInfoSet signature_files;
   ValidationCore::SignatureFinder signature_finder(base_path.string());
@@ -190,7 +190,7 @@ bool ValidateSignatures(const bf::path& base_path,
   bool distributor_signatures = std::any_of(
       signature_files.begin(), signature_files.end(), CheckDistSignature);
 
-  if (!author_signatures || !distributor_signatures) {
+  if (!is_preload && (!author_signatures || !distributor_signatures)) {
     LOG(ERROR) << "Author or distribuor signature is missing.";
     return false;
   }

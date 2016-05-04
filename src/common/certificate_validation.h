@@ -34,7 +34,7 @@ bool ValidateSignatureFile(
 
 bool ValidateSignatures(const boost::filesystem::path& base_path,
     PrivilegeLevel* level, common_installer::CertificateInfo* cert_info,
-    bool check_reference, std::string* error_message);
+    bool check_reference, bool is_preload, std::string* error_message);
 
 bool ValidatePrivilegeLevel(common_installer::PrivilegeLevel level,
     bool is_webapp, const char* api_version, GList* privileges,

@@ -27,7 +27,7 @@ TEST_F(SignatureValidatorTest, HandlesInitializedSignatureDir) {
   common_installer::CertificateInfo cert_info;
   std::string error;
   EXPECT_TRUE(ValidateSignatures(*signature_file, &level, &cert_info, true,
-                               &error));
+                                 false, &error));
 }
 
 // Tests signature verifier with signature directory containing bad signatures
@@ -38,7 +38,7 @@ TEST_F(SignatureValidatorTest, HandlesBadSignatureDir) {
   common_installer::CertificateInfo cert_info;
   std::string error;
   EXPECT_FALSE(ValidateSignatures(*signature_file, &level, &cert_info, true,
-                               &error));
+                                  false, &error));
 }
 
 }  // namespace security
