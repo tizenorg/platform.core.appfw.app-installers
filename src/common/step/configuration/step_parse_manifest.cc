@@ -537,6 +537,13 @@ bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
       return false;
     if (!FillApplicationIconPaths(watch_app, watch_application.app_icons))
       return false;
+    if (!FillMetadata(watch_app, watch_application.meta_data))
+      return false;
+    if (!FillCategories(watch_app, watch_application.categories))
+      return false;
+    if (!FillBackgroundCategoryInfo(watch_app,
+        watch_application.background_category))
+      return false;
     manifest->application = g_list_append(manifest->application, watch_app);
   }
   return true;
