@@ -7,14 +7,13 @@
 
 #include <boost/filesystem/path.hpp>
 
-#include <manifest_parser/utils/logging.h>
-
 #include <set>
 #include <string>
 #include <utility>
 
 #include "common/installer_context.h"
 #include "common/step/recovery/step_recovery.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 namespace filesystem {

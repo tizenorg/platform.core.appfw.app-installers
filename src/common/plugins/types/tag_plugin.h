@@ -5,13 +5,13 @@
 #ifndef COMMON_PLUGINS_TYPES_TAG_PLUGIN_H_
 #define COMMON_PLUGINS_TYPES_TAG_PLUGIN_H_
 
-#include <manifest_parser/utils/logging.h>
-
 #include <memory>
 #include <string>
 
+#include "common/utils/logger.h"
 #include "common/plugins/plugin.h"
 #include "common/plugins/plugin_list_parser.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 

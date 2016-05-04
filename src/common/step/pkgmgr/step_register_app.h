@@ -3,10 +3,9 @@
 #ifndef COMMON_STEP_PKGMGR_STEP_REGISTER_APP_H_
 #define COMMON_STEP_PKGMGR_STEP_REGISTER_APP_H_
 
-#include <manifest_parser/utils/logging.h>
-
 #include "common/installer_context.h"
 #include "common/step/step.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 namespace pkgmgr {

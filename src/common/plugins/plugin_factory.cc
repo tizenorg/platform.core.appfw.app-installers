@@ -4,11 +4,10 @@
 
 #include "common/plugins/plugin_factory.h"
 
-#include <manifest_parser/utils/logging.h>
-
 #include "common/plugins/types/category_plugin.h"
 #include "common/plugins/types/metadata_plugin.h"
 #include "common/plugins/types/tag_plugin.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 

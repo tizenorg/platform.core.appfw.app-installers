@@ -4,13 +4,13 @@
 
 #include "common/utils/subprocess.h"
 
-#include <manifest_parser/utils/logging.h>
-
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include <memory>
+
+#include "common/utils/logger.h"
 
 namespace common_installer {
 

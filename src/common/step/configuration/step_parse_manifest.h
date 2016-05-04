@@ -10,8 +10,8 @@
 #include <common/app_installer.h>
 #include <common/installer_context.h>
 #include <common/step/step.h>
+#include "common/utils/logger.h"
 
-#include <manifest_parser/utils/logging.h>
 #include <tpk_manifest_handlers/privileges_handler.h>
 #include <tpk_manifest_handlers/tpk_config_parser.h>
 #include <tpk_manifest_handlers/ui_and_service_application_infos.h>

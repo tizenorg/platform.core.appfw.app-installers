@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 
-#include "manifest_parser/utils/logging.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 

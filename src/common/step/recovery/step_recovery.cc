@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "common/step/recovery/step_recovery.h"
-
-#include <manifest_parser/utils/logging.h>
-
 #include "common/request.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 namespace recovery {

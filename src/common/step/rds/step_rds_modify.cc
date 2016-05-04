@@ -6,9 +6,8 @@
 
 #include <boost/system/error_code.hpp>
 
-#include <manifest_parser/utils/logging.h>
-
 #include <common/utils/file_util.h>
+#include "common/utils/logger.h"
 
 namespace common_installer {
 namespace rds {

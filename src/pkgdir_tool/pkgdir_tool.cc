@@ -7,7 +7,6 @@
 #include <boost/program_options.hpp>
 #include <boost/system/error_code.hpp>
 
-#include <manifest_parser/utils/logging.h>
 #include <vcore/Certificate.h>
 #include <pkgmgr-info.h>
 #include <pwd.h>
@@ -32,6 +31,7 @@
 #include "common/utils/base64.h"
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
+#include "common/utils/logger.h"
 
 namespace bf = boost::filesystem;
 namespace bpo = boost::program_options;

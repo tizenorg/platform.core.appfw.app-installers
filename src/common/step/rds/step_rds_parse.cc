@@ -4,12 +4,11 @@
 
 #include "common/step/rds/step_rds_parse.h"
 
-#include <manifest_parser/utils/logging.h>
-
 #include <memory>
 
 #include "common/installer_context.h"
 #include "common/rds_parser.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 namespace rds {

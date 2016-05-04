@@ -5,8 +5,6 @@
 #ifndef COMMON_STEP_PKGMGR_STEP_RUN_PARSER_PLUGINS_H_
 #define COMMON_STEP_PKGMGR_STEP_RUN_PARSER_PLUGINS_H_
 
-#include <manifest_parser/utils/logging.h>
-
 #include <pkgmgrinfo_basic.h>
 
 #include <string>
@@ -14,6 +12,7 @@
 
 #include "common/plugins/plugin.h"
 #include "common/step/step.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 namespace pkgmgr {

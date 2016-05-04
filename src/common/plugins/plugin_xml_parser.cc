@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 #include "common/plugins/plugin_xml_parser.h"
-
-#include "manifest_parser/utils/logging.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 

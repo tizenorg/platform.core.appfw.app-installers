@@ -5,10 +5,9 @@
 #ifndef COMMON_STEP_SECURITY_STEP_RECOVER_SECURITY_H_
 #define COMMON_STEP_SECURITY_STEP_RECOVER_SECURITY_H_
 
-#include <manifest_parser/utils/logging.h>
-
 #include "common/installer_context.h"
 #include "common/step/recovery/step_recovery.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 namespace security {

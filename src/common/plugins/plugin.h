@@ -7,7 +7,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <dlfcn.h>
-#include <manifest_parser/utils/logging.h>
+
 #include <libxml2/libxml/tree.h>
 #include <pkgmgrinfo_basic.h>
 
@@ -15,6 +15,7 @@
 #include <string>
 
 #include "common/plugins/plugin_list_parser.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 

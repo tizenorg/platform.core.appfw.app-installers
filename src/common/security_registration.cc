@@ -7,7 +7,6 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/format.hpp>
 
-#include <manifest_parser/utils/logging.h>
 #include <security-manager.h>
 
 #include <utility>
@@ -16,6 +15,7 @@
 
 #include "common/pkgmgr_registration.h"
 #include "common/utils/glist_range.h"
+#include "common/utils/logger.h"
 
 namespace bf = boost::filesystem;
 namespace ci = common_installer;

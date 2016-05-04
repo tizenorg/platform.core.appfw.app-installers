@@ -5,11 +5,10 @@
 #ifndef COMMON_STEP_CONFIGURATION_STEP_BLOCK_CROSS_UPDATE_H_
 #define COMMON_STEP_CONFIGURATION_STEP_BLOCK_CROSS_UPDATE_H_
 
-#include <manifest_parser/utils/logging.h>
 
 #include "common/installer_context.h"
-
 #include "common/step/step.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 namespace configuration {

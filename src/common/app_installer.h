@@ -6,7 +6,6 @@
 #ifndef COMMON_APP_INSTALLER_H_
 #define COMMON_APP_INSTALLER_H_
 
-#include <manifest_parser/utils/logging.h>
 #include <boost/bind.hpp>
 #include <list>
 #include <memory>
@@ -16,6 +15,7 @@
 #include "common/pkgmgr_signal.h"
 #include "common/step/step.h"
 #include "common/utils/macros.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 

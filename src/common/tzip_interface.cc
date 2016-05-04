@@ -4,13 +4,11 @@
 
 #include "common/tzip_interface.h"
 
-#include <manifest_parser/utils/logging.h>
-
 #include <boost/filesystem.hpp>
-
 #include <dbus/dbus.h>
-
 #include <cstdlib>
+
+#include "common/utils/logger.h"
 
 namespace bf = boost::filesystem;
 

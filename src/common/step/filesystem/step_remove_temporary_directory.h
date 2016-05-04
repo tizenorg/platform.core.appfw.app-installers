@@ -5,9 +5,8 @@
 #ifndef COMMON_STEP_FILESYSTEM_STEP_REMOVE_TEMPORARY_DIRECTORY_H_
 #define COMMON_STEP_FILESYSTEM_STEP_REMOVE_TEMPORARY_DIRECTORY_H_
 
-#include <manifest_parser/utils/logging.h>
-
 #include "common/step/recovery/step_recovery.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 namespace filesystem {

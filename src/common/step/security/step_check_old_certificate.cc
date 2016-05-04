@@ -4,7 +4,6 @@
 
 #include "common/step/security/step_check_old_certificate.h"
 
-#include <manifest_parser/utils/logging.h>
 #include <pkgmgr-info.h>
 #include <unistd.h>
 
@@ -12,6 +11,7 @@
 #include <string>
 
 #include "common/pkgmgr_registration.h"
+#include "common/utils/logger.h"
 
 namespace common_installer {
 namespace security {

@@ -8,7 +8,6 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <manifest_parser/utils/logging.h>
 #include <tpk_manifest_handlers/package_handler.h>
 #include <tpk_manifest_handlers/tpk_config_parser.h>
 
@@ -16,6 +15,7 @@
 
 #include "common/request.h"
 #include "common/utils/subprocess.h"
+#include "common/utils/logger.h"
 
 namespace bf = boost::filesystem;
 namespace bpo = boost::program_options;

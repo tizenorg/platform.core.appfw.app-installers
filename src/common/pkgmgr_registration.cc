@@ -4,11 +4,12 @@
 
 #include "common/pkgmgr_registration.h"
 
-#include <manifest_parser/utils/logging.h>
 #include <pkgmgr_installer.h>
 #include <pkgmgr_parser_db.h>
 #include <tzplatform_config.h>
 #include <unistd.h>
+
+#include "common/utils/logger.h"
 
 namespace bf = boost::filesystem;
 
