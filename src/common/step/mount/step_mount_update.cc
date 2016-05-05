@@ -42,6 +42,8 @@ Step::Status StepMountUpdate::process() {
   if (!CopyFile(context_->file_path.get(), zip_destination_path)) {
     return Status::APP_DIR_ERROR;
   }
+  context_->manifest_data.get()->zip_mount_file =
+      strdup(zip_destination_path.c_str());
 
   bf::path mount_point = GetMountLocation(context_->pkg_path.get());
   TzipInterface tzip_final(mount_point);
