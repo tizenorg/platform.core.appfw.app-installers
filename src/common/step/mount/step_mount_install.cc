@@ -45,6 +45,8 @@ Step::Status StepMountInstall::process() {
   if (!CopyFile(context_->file_path.get(), zip_destination_path)) {
     return Status::APP_DIR_ERROR;
   }
+  context_->manifest_data.get()->mount_point =
+      strdup(zip_destination_path.c_str());
 
   bf::path mount_point = GetMountLocation(context_->pkg_path.get());
   if (!bf::exists(mount_point)) {
