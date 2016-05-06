@@ -12,6 +12,7 @@
 #include <array>
 #include <cstring>
 #include <map>
+#include <utility>
 
 #include "common/installer_context.h"
 
@@ -112,12 +113,12 @@ bool RecoveryFile::is_detached() const {
 }
 
 void RecoveryFile::set_unpacked_dir(
-    const boost::filesystem::path& unpacked_dir) {
-  unpacked_dir_ = unpacked_dir;
+    boost::filesystem::path unpacked_dir) {
+  unpacked_dir_ = std::move(unpacked_dir);
 }
 
-void RecoveryFile::set_pkgid(const std::string& pkgid) {
-  pkgid_ = pkgid;
+void RecoveryFile::set_pkgid(std::string pkgid) {
+  pkgid_ = std::move(pkgid);
 }
 
 void RecoveryFile::set_type(RequestType type) {
