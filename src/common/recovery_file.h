@@ -63,14 +63,14 @@ class RecoveryFile {
    *
    * \param unpacked_dir new unpacked_dir value
    */
-  void set_unpacked_dir(const boost::filesystem::path& unpacked_dir);
+  void set_unpacked_dir(boost::filesystem::path unpacked_dir);
 
   /**
    * setter for pkgid
    *
    * \param pkgid new pkgid value
    */
-  void set_pkgid(const std::string& pkgid);
+  void set_pkgid(std::string pkgid);
 
   /**
    * setter for request type

@@ -21,8 +21,7 @@ class Property {
   Property(Type &&val): value_(std::move(val)) { } // NOLINT
   const Type& get() const { return value_; }
   Type& get() { return value_; }
-  void set(const Type &val) { value_ = val; }
-  void set(Type &&val) { value_ = std::move(val); }
+  void set(Type val) { value_ = std::move(val); }
  private:
   Type value_;
 };

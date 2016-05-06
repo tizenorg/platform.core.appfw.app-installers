@@ -46,8 +46,8 @@ class AccountInfo {
    *
    * \param single_account account to be added
    */
-  void set_account(const SingleAccountInfo& single_account) {
-    accounts_.push_back(single_account);
+  void set_account(SingleAccountInfo single_account) {
+    accounts_.push_back(std::move(single_account));
   }
  private:
   std::vector<SingleAccountInfo> accounts_;
