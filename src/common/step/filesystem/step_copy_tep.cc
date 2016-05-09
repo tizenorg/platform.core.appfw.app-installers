@@ -48,6 +48,15 @@ Step::Status StepCopyTep::process() {
   bf::path tep_path =
       context_->pkg_path.get() / "tep" / context_->tep_path.get().filename();
 
+  if (!bf::exists(tep_path.parent_path())) {
+    bs::error_code error;
+    bf::create_directory(tep_path.parent_path(), error);
+    if (error) {
+      LOG(ERROR) << "Cannot create tep parent directory";
+      return Status::APP_DIR_ERROR;
+    }
+  }
+
   if (context_->is_tep_move.get()) {
     if (!MoveFile(context_->tep_path.get(), tep_path)) {
       LOG(ERROR) << "Cannnot move TEP file into install path";
