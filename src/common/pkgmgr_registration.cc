@@ -73,6 +73,32 @@ bool RegisterCertificate(
     return false;
   }
 
+  const auto& dist2_cert = cert_info.distributor2_certificate.get();
+  if (pkgmgr_installer_set_cert_value(handle, PM_SET_DISTRIBUTOR2_SIGNER_CERT,
+      const_cast<char*>(dist2_cert->getBase64().c_str())) < 0) {
+    pkgmgr_installer_destroy_certinfo_set_handle(handle);
+    LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
+    return false;
+  }
+
+  const auto& dist2_im_cert =
+      cert_info.distributor2_intermediate_certificate.get();
+  if (pkgmgr_installer_set_cert_value(handle,
+      PM_SET_DISTRIBUTOR2_INTERMEDIATE_CERT,
+      const_cast<char*>(dist2_im_cert->getBase64().c_str())) < 0) {
+    pkgmgr_installer_destroy_certinfo_set_handle(handle);
+    LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
+    return false;
+  }
+
+  const auto& dist2_root_cert = cert_info.distributor2_root_certificate.get();
+  if (pkgmgr_installer_set_cert_value(handle, PM_SET_DISTRIBUTOR2_ROOT_CERT,
+      const_cast<char*>(dist2_root_cert->getBase64().c_str())) < 0) {
+    pkgmgr_installer_destroy_certinfo_set_handle(handle);
+    LOG(ERROR) << "pkgmgrInstallerSetCertValue fail";
+    return false;
+  }
+
   if (pkgmgr_installer_save_certinfo(pkgid.c_str(), handle, uid) < 0) {
     pkgmgr_installer_destroy_certinfo_set_handle(handle);
     LOG(ERROR) << "Failed to save certificate information";
