@@ -68,6 +68,25 @@ bool SetDistributorCertificate(ValidationCore::SignatureData data,
   return true;
 }
 
+bool SetDistributor2Certificate(ValidationCore::SignatureData data,
+    common_installer::CertificateInfo* cert_info) {
+  ValidationCore::CertificateList cert_list = data.getCertList();
+  ValidationCore::CertificateList::iterator it = cert_list.begin();
+  if (it == cert_list.end()) {
+    LOG(ERROR) << "No certificates in certificate list";
+    return false;
+  }
+  cert_info->distributor2_certificate.set(*it);
+  ++it;
+  if (it == cert_list.end()) {
+    LOG(ERROR) << "No intermediate certificates in certificate list";
+    return false;
+  }
+  cert_info->distributor2_intermediate_certificate.set(*it);
+  cert_info->distributor2_root_certificate.set(data.getRootCaCertificatePtr());
+  return true;
+}
+
 }  // namespace
 
 namespace common_installer {
@@ -146,8 +165,10 @@ bool ValidateSignatureFile(
         SetPrivilegeLevel(data, level);
         if (!SetDistributorCertificate(data, cert_info))
           return false;
+      } else if (file_info.getFileNumber() == 2) {
+        if (!SetDistributor2Certificate(data, cert_info))
+          return false;
       }
-      // TODO(s89.jang): Set distributor2 certificate
       break;
     default:
       LOG(ERROR) << "signature validation check failed : "
