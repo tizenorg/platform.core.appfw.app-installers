@@ -27,7 +27,7 @@ namespace bf = boost::filesystem;
 namespace {
 
 unsigned kZipBufSize = 8_kB;
-unsigned kZipMaxPath = 256;
+unsigned kZipMaxPath = PATH_MAX;
 
 int64_t GetBlockSizeForPath(const bf::path& path_in_partition) {
   struct stat stats;
