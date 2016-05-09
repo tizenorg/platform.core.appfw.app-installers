@@ -195,7 +195,7 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
       label->lang = strdup(pair.first.c_str());
     else
       label->lang = strdup(DEFAULT_LOCALE);
-    label->name = strdup(pair.second.c_str());
+    label->text = strdup(pair.second.c_str());
     manifest->label = g_list_append(manifest->label, label);
   }
 
