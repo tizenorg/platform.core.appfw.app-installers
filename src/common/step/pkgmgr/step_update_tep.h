@@ -7,10 +7,11 @@
 
 #include <manifest_parser/utils/logging.h>
 
+#include <boost/filesystem/path.hpp>
+
 #include "common/installer_context.h"
 #include "common/step/step.h"
 
-#include <boost/filesystem/path.hpp>
 
 namespace common_installer {
 namespace pkgmgr {

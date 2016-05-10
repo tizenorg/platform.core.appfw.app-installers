@@ -4,11 +4,11 @@
 
 #include "common/certificate_validation.h"
 
-#include <algorithm>
-#include <regex>
-
 #include <boost/format.hpp>
 #include <vcore/SignatureValidator.h>
+
+#include <algorithm>
+#include <regex>
 
 #include "common/utils/base64.h"
 
