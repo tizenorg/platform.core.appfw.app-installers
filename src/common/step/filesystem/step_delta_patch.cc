@@ -15,6 +15,7 @@
 #include <cstdlib>
 
 #include "common/utils/file_util.h"
+#include "common/utils/glist_range.h"
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
@@ -65,6 +66,22 @@ void RemoveStorageDirectories(const bf::path& dir) {
   bf::remove_all(dir / kCacheDir, error);
   bf::remove_all(dir / kSharedData, error);
   bf::remove_all(dir / kSharedTrusted, error);
+}
+
+void RemoveExtraIconFiles(const bf::path& dir, const bf::path& pkg_dir,
+                          manifest_x* manifest) {
+  for (application_x* app : GListRange<application_x*>(manifest->application)) {
+    if (strcmp("webapp", app->type) != 0)
+      continue;
+    auto range = GListRange<icon_x*>(app->icon);
+    auto iter = range.begin();
+    if (iter != range.end()) {
+      bs::error_code error;
+      std::string old_path((*iter)->text);
+      bf::path icon_copy = dir / old_path.substr(pkg_dir.string().size());
+      bf::remove(icon_copy, error);
+    }
+  }
 }
 
 bool ApplyDeletedFiles(const delta::DeltaInfo& info, const bf::path& app_dir) {
@@ -242,6 +259,11 @@ Step::Status StepDeltaPatch::process() {
   if (delta_root_.empty()) {
     RemoveBinarySymlinks(context_->unpacked_dir_path.get());
     RemoveStorageDirectories(context_->unpacked_dir_path.get());
+    // TODO(t.iwanek): subclass this step in wgt backend
+    RemoveExtraIconFiles(
+        context_->unpacked_dir_path.get(),
+        context_->root_application_path.get() / context_->pkgid.get(),
+        context_->old_manifest_data.get());
   }
 
   // apply changes mentioned in delta
