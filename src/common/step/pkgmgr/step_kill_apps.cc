@@ -4,56 +4,70 @@
 
 #include "common/step/pkgmgr/step_kill_apps.h"
 
-#include <app_manager.h>
-#include <app_manager_extension.h>
 #include <sys/time.h>
-
 #include <string>
+#include <systemd/sd-login.h>
 
+#include "aul.h"
 #include "common/utils/glist_range.h"
 
 namespace {
 
 bool KillApp(const std::string& appid) {
-  bool is_running = false;
-  if (app_manager_is_running(appid.c_str(), &is_running)
-      != APP_MANAGER_ERROR_NONE) {
-    LOG(ERROR) << "app_manager_is_running failed";
-    return false;
-  }
-  if (!is_running) {
-    return false;
-  }
-  app_context_h app_context;
-  if (app_manager_get_app_context(appid.c_str(), &app_context)
-      != APP_MANAGER_ERROR_NONE) {
-    LOG(ERROR) << "app_manager_get_app_context failed";
-    return false;
-  }
-  if (app_manager_terminate_app(app_context)
-      != APP_MANAGER_ERROR_NONE) {
-    LOG(ERROR) << "app_manager_terminate_app failed";
-    app_context_destroy(app_context);
-    return false;
-  }
+  uid_t *uids = NULL;
+  uid_t uid = -1;
+  int ret = -1;
+  int pid = 0;
+  int i;
+  char *state;
 
-  // temporary fix, check running status again
-  for (int i = 0; i < 10; i++) {
-    if (app_manager_is_running(appid.c_str(), &is_running)
-      != APP_MANAGER_ERROR_NONE)
-      LOG(ERROR) << "app_manager_is_running failed, check again!";
-
-    if (!is_running) {
-      LOG(DEBUG) << "kill waiting count (" << i << ")";
-      break;
+  uid = getuid();
+  if (uid == 0 || uid == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
+    ret = sd_get_uids(&uids);
+    if (ret < 0 || (ret == 0 || uids == NULL)) {
+      LOG(ERROR) << "Failed to get uids [" << ret << "]";
+      return false;
     }
-    usleep(100000);  // 100msec
-    if (i == 10)
-      LOG(ERROR) << "kill timeout";
+
+    for (i = 0; i < ret; i++) {
+      if (sd_uid_get_state(uids[i], &state) < 0) {
+        LOG(ERROR) << "Failed to get state of uid " << uids[i];
+        free(uids);
+        return false;
+      } else {
+        if (!strncmp(state, "online", 6)) {
+          uid = uids[i];
+          break;
+        }
+        LOG(ERROR) << "state of " << uids[i] << " is " << state;
+      }
+    }
+    free(uids);
+    free(state);
+
+    if (uid == -1) {
+      LOG(ERROR) << "Failed to get online uid";
+      return false;
+    }
+  }
+
+  ret = aul_app_is_running_for_uid(appid.c_str(), uid);
+  if (ret == 0)
+    return false;
+
+  pid = aul_app_get_pid_for_uid(appid.c_str(), uid);
+  if (pid < 0) {
+    LOG(ERROR) << "Failed to get pid for appid : " << appid;
+    return false;
+  }
+
+  ret = aul_terminate_pid_sync_for_uid(pid, uid);
+  if (ret != AUL_R_OK) {
+    LOG(ERROR) << "Failed to kill app : " << appid;
+    return false;
   }
 
   LOG(DEBUG) << "Application '" << appid << "' has been killed";
-  app_context_destroy(app_context);
   return true;
 }
 
