@@ -774,11 +774,17 @@ Step::Status StepParseManifest::process() {
   }
 
   if (manifest_location_ == ManifestLocation::INSTALLED) {
-    // recovery tep value for installed package
+    // recovery of tep value for installed package
     std::string old_tep =
         QueryTepPath(context_->pkgid.get(), context_->uid.get());
     if (!old_tep.empty())
       manifest->tep_name = strdup(old_tep.c_str());
+
+    // recovery of zip mount file for installed package
+    std::string zip_mount_file =
+        QueryZipMountFile(context_->pkgid.get(), context_->uid.get());
+    if (!zip_mount_file.empty())
+      manifest->zip_mount_file = strdup(zip_mount_file.c_str());
   }
 
   // write pkgid for recovery file
