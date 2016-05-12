@@ -13,13 +13,17 @@ namespace bf = boost::filesystem;
 namespace common_installer {
 namespace configuration {
 
+Step::Status StepBlockCrossUpdate::precheck() {
+  if (!context_->old_manifest_data.get()) {
+    LOG(ERROR) << "Old manifest data is missing";
+    return Status::INVALID_VALUE;
+  }
+  return Status::OK;
+}
+
 Step::Status StepBlockCrossUpdate::process() {
-  // TODO(t.iwanek): check for file is not the best method
-  // information about if package was mount-installed should be stored in pkgmgr
-  // database
   bool is_mount_installed =
-      bf::exists(GetZipPackageLocation(context_->pkg_path.get(),
-                                       context_->pkgid.get()));
+      context_->old_manifest_data.get()->zip_mount_file != nullptr;
   if (is_mount_installed) {
     if (context_->request_type.get() == RequestType::Reinstall) {
       LOG(ERROR) << "Reinstall / RDS mode is not allowed for "

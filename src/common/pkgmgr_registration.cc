@@ -306,6 +306,26 @@ std::string QueryTepPath(const std::string& pkgid, uid_t uid) {
   return tep_name_value;
 }
 
+std::string QueryZipMountFile(const std::string& pkgid, uid_t uid) {
+  pkgmgrinfo_pkginfo_h package_info;
+  if (pkgmgrinfo_pkginfo_get_usr_pkginfo(pkgid.c_str(), uid, &package_info)
+      != PMINFO_R_OK)
+    return {};
+  char* zip_mount_file = nullptr;
+  int ret = pkgmgrinfo_pkginfo_get_zip_mount_file(package_info, &zip_mount_file);
+  if (ret != PMINFO_R_OK) {
+    LOG(DEBUG) << "pkgmgrinfo_pkginfo_get_zip_mount_file failed with error: "
+               << ret;
+    pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
+    return {};
+  }
+  std::string zip_mount_file_value;
+  if (zip_mount_file)
+    zip_mount_file_value = zip_mount_file;
+  pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
+  return zip_mount_file_value;
+}
+
 bool QueryAppidsForPkgId(const std::string& pkg_id,
                          std::vector<std::string>* result, uid_t uid) {
   pkgmgrinfo_pkginfo_h package_info;

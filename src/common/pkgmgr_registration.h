@@ -96,6 +96,16 @@ std::string QueryTepPath(const std::string& pkgid, uid_t uid);
 
 /**
  * \brief Adapter interface for external PkgMgr module used for getting
+ *        zip mount path for given package
+ *
+ * @param pkgid package id
+ * @param uid user id
+ * @return path or empty
+ */
+std::string QueryZipMountFile(const std::string& pkgid, uid_t uid);
+
+/**
+ * \brief Adapter interface for external PkgMgr module used for getting
  *        list of appids for given package
  *
  * \param pkg_id[in] package pkgid
