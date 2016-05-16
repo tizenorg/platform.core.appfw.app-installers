@@ -30,6 +30,7 @@ using PkgList = std::vector<PkgInfo>;
  *
  * \param pkgid id of package
  * \param author_id id of author
+ * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
  *
@@ -43,6 +44,7 @@ bool PerformInternalDirectoryCreationForUser(uid_t uid,
  *
  * \param pkgid id of package
  * \param author_id id of author
+ * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
  *
@@ -56,6 +58,7 @@ bool PerformExternalDirectoryCreationForUser(uid_t uid,
  *
  * \param pkgid id of package
  * \param author_id id of author
+ * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
  *
@@ -68,6 +71,7 @@ bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
  *
  * \param pkgid id of package
  * \param author_id id of author
+ * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
  *
@@ -148,6 +152,14 @@ std::string GetDirectoryPathForInternalStorage();
  *
  */
 std::string GetDirectoryPathForExternalStorage();
+
+/**
+ * \brief Create skeleton directories for package
+ *
+ * \return bool true if succeed, false otherwise
+ *
+ */
+bool CreateSkeletonDirectoriesForPackage(const std::string& pkgid);
 
 }  // namespace common_installer
 
