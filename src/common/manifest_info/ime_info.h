@@ -24,27 +24,27 @@ class ImeInfo final {
   ImeInfo(ImeInfo &&) = default;
   ~ImeInfo() = default;
 
-  const std::string &uuid() const & {
+  const std::string& uuid() const & {
     return uuid_;
   }
 
-  std::string &&uuid() && noexcept {
+  std::string&& uuid() && noexcept {  // NOLINT
     return std::move(uuid_);
   }
 
-  void setUuid(const std::string &uuid) {
+  void setUuid(const std::string& uuid) {
     uuid_ = uuid;
   }
 
-  void setUuid(std::string &&uuid) noexcept {
+  void setUuid(std::string&& uuid) noexcept {  // NOLINT
     uuid_ = std::move(uuid);
   }
 
-  const LanguageList &languages() const & {
+  const LanguageList& languages() const & {
     return languages_;
   }
 
-  LanguageList &&languages() && noexcept {
+  LanguageList&& languages() && noexcept {  // NOLINT
     return std::move(languages_);
   }
 
@@ -72,13 +72,14 @@ class ImeInfo final {
     return std::end(languages_);
   }
 
-  ImeInfo &operator =(const ImeInfo &) = default;
-  ImeInfo &operator =(ImeInfo &&) = default;
+  ImeInfo& operator=(const ImeInfo&) = default;
+  ImeInfo& operator=(ImeInfo&&) = default;
 
  private:
   std::string uuid_;
   LanguageList languages_;
 };
-}
 
-#endif
+}  // namespace common_installer
+
+#endif  // COMMON_MANIFEST_INFO_IME_INFO_H_
