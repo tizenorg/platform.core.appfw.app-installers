@@ -53,6 +53,7 @@ const std::vector<const char*> kEntries = {
 };
 
 const char kTrustedDir[] = "shared/trusted";
+const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
 const char kExternalStorageDirPrefix[] = "SDCardA1/apps";
 
@@ -277,6 +278,45 @@ bool CreateUserDirectories(uid_t user, const std::string& pkgid,
   return true;
 }
 
+bool CreateSkelDirectories(const std::string& pkgid) {
+  bf::path path = bf::path(kSkelAppDir) / pkgid;
+  LOG(DEBUG) << "Creating directories in: " << path;
+  bs::error_code error;
+  bf::create_directories(path, error);
+
+  if (error) {
+    LOG(ERROR) << "Failed to create directory: " << path;
+    return false;
+  }
+
+  // TODO(jungh.yeon) : this is hotfix.
+  for (auto& entry : kEntries) {
+    bf::path subpath = path / entry;
+    bf::create_directories(subpath, error);
+    std::string label = "User::Pkg::" + pkgid;
+    if (error && !bf::exists(subpath)) {
+      LOG(ERROR) << "Failed to create directory: " << subpath;
+      return false;
+    }
+
+    int r =
+        lsetxattr(subpath.c_str(), "security.SMACK64TRANSMUTE", "TRUE", 4, 0);
+    if (r < 0) {
+      LOG(ERROR) << "Failed to apply transmute";
+      return false;
+    }
+
+    r = lsetxattr(subpath.c_str(), "security.SMACK64",
+                  label.c_str(), label.length(), 0);
+    if (r < 0) {
+      LOG(ERROR) << "Failed to apply label";
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool DeleteDirectories(const bf::path& app_dir, const std::string& pkgid) {
   bf::path base_dir = app_dir / pkgid;
   bs::error_code error;
@@ -332,9 +372,25 @@ bool DeletePerUserDirectories(const std::string& pkgid) {
   return true;
 }
 
+bool DeleteSkelDirectories(const std::string& pkgid) {
+  bf::path path = bf::path(kSkelAppDir) / pkgid;
+  LOG(DEBUG) << "Deleting directories in: " << path;
+  bs::error_code error;
+  bf::remove_all(path, error);
+  if (error) {
+    LOG(ERROR) << "Failed to delete directory: " << path;
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 namespace common_installer {
+
+bool CreateSkeletonDirectoriesForPackage(const std::string& pkgid) {
+  return CreateSkelDirectories(pkgid);
+}
 
 std::string GetDirectoryPathForInternalStorage() {
   const char* internal_storage_prefix = tzplatform_getenv(TZ_SYS_HOME);
@@ -497,6 +553,8 @@ bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_path,
 
 bool PerformDirectoryDeletionForAllUsers(const std::string& pkgid) {
   if (!DeletePerUserDirectories(pkgid))
+    return false;
+  if (!DeleteSkelDirectories(pkgid))
     return false;
   return true;
 }
