@@ -49,7 +49,7 @@ bool TranslatePrivilegesForCompatibility(manifest_x* m) {
   // set pkgmgr new list
   g_list_free_full(m->privileges, free);
   m->privileges = nullptr;
-  for (GList* l = mapped_privilege_list; l != NULL; l = l->next) {
+  for (GList* l = mapped_privilege_list; l != nullptr; l = l->next) {
     m->privileges = g_list_append(m->privileges,
                                   strdup(reinterpret_cast<char*>(l->data)));
   }

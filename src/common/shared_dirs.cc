@@ -231,11 +231,12 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
 }
 
 bf::path GetDirectoryPathForStorage(uid_t user, std::string apps_prefix) {
-  struct passwd pwd, *pwd_result;
+  struct passwd pwd;
+  struct passwd *pwd_result;
   char buf[1024] = {0, };
 
   int ret = getpwuid_r(user, &pwd, buf, sizeof(buf), &pwd_result);
-  if (ret != 0 || pwd_result == NULL)
+  if (ret != 0 || pwd_result == nullptr)
     return {};
 
   bf::path apps_rw;
@@ -249,14 +250,16 @@ bool CreateUserDirectories(uid_t user, const std::string& pkgid,
     const std::string& apps_prefix, const bool set_permissions) {
   char buf[1024] = {0, };
 
-  struct passwd pwd, *pwd_result;
+  struct passwd pwd;
+  struct passwd *pwd_result;
   int ret = getpwuid_r(user, &pwd, buf, sizeof(buf), &pwd_result);
-  if (ret != 0 || pwd_result == NULL) {
+  if (ret != 0 || pwd_result == nullptr) {
     LOG(WARNING) << "Failed to get user for home directory: " << user;
     return false;
   }
 
-  struct group gr, *gr_result;
+  struct group gr;
+  struct group *gr_result;
   ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
   if (ret != 0
       || strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
@@ -299,16 +302,18 @@ bool DeletePerUserDirectories(const std::string& pkgid) {
       return false;
     const bf::path& home_path = iter->path();
     std::string user = home_path.filename().string();
-    struct passwd pwd, *pwd_result;
+    struct passwd pwd;
+    struct passwd *pwd_result;
     int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == NULL) {
+    if (ret != 0 || pwd_result == nullptr) {
       LOG(WARNING) << "Failed to get user for home directory: " << user;
       continue;
     }
 
-    struct group gr, *gr_result;
+    struct group gr;
+    struct group *gr_result;
     ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
-    if (ret != 0 || gr_result == NULL ||
+    if (ret != 0 || gr_result == nullptr ||
         strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
       continue;
 
@@ -390,12 +395,14 @@ bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
     const bf::path& home_path = iter->path();
     std::string user = home_path.filename().string();
 
-    struct passwd pwd, *pwd_result;
+    struct passwd pwd;
+    struct passwd *pwd_result;
     int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == NULL)
+    if (ret != 0 || pwd_result == nullptr)
       continue;
 
-    struct group gr, *gr_result;
+    struct group gr;
+    struct group *gr_result;
     ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
     if (ret != 0 ||
         strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
@@ -427,12 +434,14 @@ bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
     const bf::path& home_path = iter->path();
     std::string user = home_path.filename().string();
 
-    struct passwd pwd, *pwd_result;
+    struct passwd pwd;
+    struct passwd *pwd_result;
     int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == NULL)
+    if (ret != 0 || pwd_result == nullptr)
       continue;
 
-    struct group gr, *gr_result;
+    struct group gr;
+    struct group *gr_result;
     ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
     if (ret != 0 ||
         strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
@@ -455,7 +464,7 @@ bool SetPackageDirectorySmackRulesForUser(uid_t uid,
   struct passwd pwd;
   struct passwd *pwd_result;
   int ret = getpwuid_r(uid, &pwd, buf, sizeof(buf), &pwd_result);
-  if (ret != 0 || pwd_result == NULL) {
+  if (ret != 0 || pwd_result == nullptr) {
     LOG(WARNING) << "Failed to get user for home directory: " << uid;
     return false;
   }
@@ -483,9 +492,10 @@ bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_id,
     const bf::path& home_path = iter->path();
     std::string user = home_path.filename().string();
 
-    struct passwd pwd, *pwd_result;
+    struct passwd pwd;
+    struct passwd*pwd_result;
     int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == NULL) {
+    if (ret != 0 || pwd_result == nullptr) {
       LOG(WARNING) << "Failed to get user for home directory: " << user;
       return false;
     }

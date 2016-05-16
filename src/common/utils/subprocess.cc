@@ -34,8 +34,12 @@ bool Subprocess::RunWithArgs(const std::vector<std::string>& args) {
       argv[i] = args[i - 1].c_str();
     }
     argv[args.size() + 1] = nullptr;
-    if (uid_ != -1)
-      setuid(uid_);
+    if (uid_ != -1) {
+      if (setuid(uid_)) {
+        LOG(ERROR) << "Failed to setuid";
+        return false;
+      }
+    }
     execvp(argv[0], const_cast<char* const*>(argv.get()));
     LOG(ERROR) << "Failed to execv";
     return false;

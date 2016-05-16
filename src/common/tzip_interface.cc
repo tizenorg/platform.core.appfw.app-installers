@@ -83,7 +83,7 @@ class TzipInterface::Pimpl {
   }
 
   bool UnmountZip() {
-    DBusConnection *conn = dbus_bus_get(DBUS_BUS_SYSTEM, NULL);
+    DBusConnection *conn = dbus_bus_get(DBUS_BUS_SYSTEM, nullptr);
     if (!conn) {
       return false;
     }
