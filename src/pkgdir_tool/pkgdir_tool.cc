@@ -146,6 +146,8 @@ int main(int argc, char** argv) {
                                                      p.pkg_id,
                                                      p.author_id,
                                                      p.api_version);
+
+        ci::CreateSkeletonDirectoriesForPackage(p.pkg_id);
       }
       break;
       case DirectoryOperation::DELETE: {
