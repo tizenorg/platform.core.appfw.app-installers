@@ -16,23 +16,47 @@ Step::Status StepCheckBlacklist::process() {
   if (context_->installation_mode.get() == InstallationMode::OFFLINE ||
       context_->is_preload_request.get())
     return Status::OK;
-  bool result;
+  int result;
   pkgmgr_client* pc = pkgmgr_client_new(PC_REQUEST);
+
   if (!pc)
     return Status::ERROR;
+
   int ret = context_->request_mode.get() != RequestMode::GLOBAL ?
-      pkgmgr_client_usr_check_blacklist(pc, context_->pkgid.get().c_str(),
-          &result, context_->uid.get()) :
-      pkgmgr_client_check_blacklist(pc, context_->pkgid.get().c_str(),
+      pkgmgr_client_usr_get_pkg_restriction_mode(pc, context_->pkgid.get().c_str(),
+          context_->uid.get(), &result) :
+      pkgmgr_client_get_pkg_restriction_mode(pc, context_->pkgid.get().c_str(),
           &result);
   pkgmgr_client_free(pc);
   if (ret != PKGMGR_R_OK)
     return Status::ERROR;
 
-  if (result) {
-    LOG(ERROR) << "This package is blacklisted";
-    return Status::OPERATION_NOT_ALLOWED;
+  common_installer::RequestType type = context_->request_type.get();
+  switch (type) {
+    case common_installer::RequestType::Install:
+    case common_installer::RequestType::Update:
+      if (result & PM_RESTRICTION_MODE_INSTALL) {
+        LOG(ERROR) << "This package is blacklisted";
+        return Status::OPERATION_NOT_ALLOWED;
+      }
+      break;
+    case common_installer::RequestType::Reinstall:
+      if (result & PM_RESTRICTION_MODE_REINSTALL) {
+        LOG(ERROR) << "This package is blacklisted";
+        return Status::OPERATION_NOT_ALLOWED;
+      }
+      break;
+    case common_installer::RequestType::Uninstall:
+      if (result & PM_RESTRICTION_MODE_UNINSTALL) {
+        LOG(ERROR) << "This package is blacklisted";
+        return Status::OPERATION_NOT_ALLOWED;
+      }
+      break;
+    default:
+      return Status::OK;
   }
+
+  // TODO(jungh.yeon) : add user check routine
 
   return Status::OK;
 }
