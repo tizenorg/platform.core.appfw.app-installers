@@ -16,23 +16,61 @@ Step::Status StepCheckBlacklist::process() {
   if (context_->installation_mode.get() == InstallationMode::OFFLINE ||
       context_->is_preload_request.get())
     return Status::OK;
-  bool result;
+  int pkg_result;
+  int usr_result;
   pkgmgr_client* pc = pkgmgr_client_new(PC_REQUEST);
+
   if (!pc)
     return Status::ERROR;
+
   int ret = context_->request_mode.get() != RequestMode::GLOBAL ?
-      pkgmgr_client_usr_check_blacklist(pc, context_->pkgid.get().c_str(),
-          &result, context_->uid.get()) :
-      pkgmgr_client_check_blacklist(pc, context_->pkgid.get().c_str(),
-          &result);
+      pkgmgr_client_usr_get_pkg_restriction_mode(pc, context_->pkgid.get().c_str(),
+          context_->uid.get(), &pkg_result) :
+      pkgmgr_client_get_pkg_restriction_mode(pc, context_->pkgid.get().c_str(),
+          &pkg_result);
+
+  if (ret != PKGMGR_R_OK) {
+    pkgmgr_client_free(pc);
+    return Status::ERROR;
+  }
+
+  ret = context_->request_mode.get() != RequestMode::GLOBAL ?
+      pkgmgr_client_usr_get_restriction_mode(pc, &usr_result, context_->uid.get()) :
+      pkgmgr_client_get_restriction_mode(pc, &usr_result);
+
   pkgmgr_client_free(pc);
   if (ret != PKGMGR_R_OK)
     return Status::ERROR;
 
-  if (result) {
-    LOG(ERROR) << "This package is blacklisted";
-    return Status::OPERATION_NOT_ALLOWED;
+  switch (context_->request_type.get()) {
+    case common_installer::RequestType::Install:
+    case common_installer::RequestType::Update:
+      if ((pkg_result & PM_RESTRICTION_MODE_INSTALL) ||
+          (usr_result & PM_RESTRICTION_MODE_INSTALL)) {
+        LOG(ERROR) << "Restricted operation : INSTALL or UPDATE";
+        return Status::OPERATION_NOT_ALLOWED;
+      }
+      break;
+    case common_installer::RequestType::Reinstall:
+      if ((pkg_result & PM_RESTRICTION_MODE_REINSTALL) ||
+          (usr_result & PM_RESTRICTION_MODE_REINSTALL)) {
+        LOG(ERROR) << "Restricted operation : REINSTALL";
+        return Status::OPERATION_NOT_ALLOWED;
+      }
+      break;
+    case common_installer::RequestType::Uninstall:
+      if ((pkg_result & PM_RESTRICTION_MODE_UNINSTALL) ||
+          (usr_result & PM_RESTRICTION_MODE_UNINSTALL)) {
+        LOG(ERROR) << "Restricted operation : UNINSTALL";
+        return Status::OPERATION_NOT_ALLOWED;
+      }
+      break;
+    default:
+      return Status::OK;
   }
+
+  if (ret != PKGMGR_R_OK)
+    return Status::ERROR;
 
   return Status::OK;
 }
