@@ -49,6 +49,7 @@ SET(SRCS
   step/mount/step_mount_install.cc
   step/mount/step_mount_unpacked.cc
   step/mount/step_mount_update.cc
+  step/pkgmgr/step_check_restriction.cc
   step/pkgmgr/step_check_removable.cc
   step/pkgmgr/step_kill_apps.cc
   step/pkgmgr/step_recover_application.cc
