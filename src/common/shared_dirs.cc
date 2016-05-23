@@ -18,7 +18,9 @@
 #include <unistd.h>
 #include <tzplatform_config.h>
 #include <sys/xattr.h>
-
+#include <gum/gum-user.h>
+#include <gum/gum-user-service.h>
+#include <gum/common/gum-user-types.h>
 
 #include <algorithm>
 #include <cassert>
@@ -44,6 +46,7 @@ namespace ci = common_installer;
 
 namespace {
 
+typedef std::vector<std::pair<uid_t, bf::path>> user_list;
 const std::vector<const char*> kEntries = {
   {"/"},
   {"cache/"},
@@ -245,6 +248,30 @@ bf::path GetDirectoryPathForStorage(uid_t user, std::string apps_prefix) {
   return apps_rw;
 }
 
+user_list GetUserList() {
+  GumUserService* service =
+      gum_user_service_create_sync((getuid() == 0) ? true : false);
+  gchar** user_type_strv = gum_user_type_to_strv(
+      GUM_USERTYPE_ADMIN | GUM_USERTYPE_GUEST | GUM_USERTYPE_NORMAL);
+  GumUserList* gum_user_list =
+      gum_user_service_get_user_list_sync(service, user_type_strv);
+  user_list list;
+  for (GumUser* guser : GListRange<GumUser*>(gum_user_list)) {
+    uid_t uid;
+    g_object_get(G_OBJECT(guser), "uid", &uid, nullptr);
+    gchar* homedir = nullptr;
+    g_object_get(G_OBJECT(guser), "homedir", &homedir, nullptr);
+    if (homedir == nullptr) {
+      LOG(WARNING) << "No homedir for uid: " << uid;
+      continue;
+    }
+    list.emplace_back(uid, bf::path(homedir));
+  }
+  g_strfreev(user_type_strv);
+  gum_user_service_list_free(gum_user_list);
+  return list;
+}
+
 bool CreateUserDirectories(uid_t user, const std::string& pkgid,
     const std::string& author_id,
     const std::string& apps_prefix, const bool set_permissions) {
@@ -293,42 +320,20 @@ bool DeleteDirectories(const bf::path& app_dir, const std::string& pkgid) {
 }
 
 bool DeletePerUserDirectories(const std::string& pkgid) {
-  char buf[1024] = {0, };
+  user_list list = GetUserList();
 
-  for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
-      iter != bf::directory_iterator();
-       ++iter) {
-    if (!bf::is_directory(iter->path()))
-      return false;
-    const bf::path& home_path = iter->path();
-    std::string user = home_path.filename().string();
-    struct passwd pwd;
-    struct passwd *pwd_result;
-    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == nullptr) {
-      LOG(WARNING) << "Failed to get user for home directory: " << user;
-      continue;
-    }
-
-    struct group gr;
-    struct group *gr_result;
-    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
-    if (ret != 0 || gr_result == nullptr ||
-        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
-      continue;
-
-    if (ci::IsPackageInstalled(pkgid, pwd.pw_uid)) continue;
+  for (auto l : list) {
+    if (ci::IsPackageInstalled(pkgid, l.first)) continue;
 
     std::string error_message;
-    if (!ci::UnregisterSecurityContextForPkgId(pkgid, pwd.pw_uid,
+    if (!ci::UnregisterSecurityContextForPkgId(pkgid, l.first,
         &error_message)) {
       LOG(WARNING) << "Failure on unregistering security context for pkg: "
-                   << pkgid << ", uid: " << pwd.pw_uid;
+                   << pkgid << ", uid: " << l.first;
     }
 
-    LOG(DEBUG) << "Deleting directories for uid: " << pwd.pw_uid << ", gid: "
-               << pwd.pw_gid;
-    tzplatform_set_user(pwd.pw_uid);
+    LOG(DEBUG) << "Deleting directories for uid: " << l.first;
+    tzplatform_set_user(l.first);
     bf::path apps_rw(tzplatform_getenv(TZ_USER_APP));
     tzplatform_reset_user();
     if (!DeleteDirectories(apps_rw, pkgid)) {
@@ -385,73 +390,26 @@ bool PerformExternalDirectoryCreationForUser(uid_t user,
 
 bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
                                                  const std::string& author_id) {
-  char buf[1024] = {0, };
-
-  for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
-      iter != bf::directory_iterator();
-         ++iter) {
-    if (!bf::is_directory(iter->path()))
-        continue;
-    const bf::path& home_path = iter->path();
-    std::string user = home_path.filename().string();
-
-    struct passwd pwd;
-    struct passwd *pwd_result;
-    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == nullptr)
-      continue;
-
-    struct group gr;
-    struct group *gr_result;
-    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
-    if (ret != 0 ||
-        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
-      continue;
-
-    if (!PerformInternalDirectoryCreationForUser(pwd.pw_uid,
+  user_list list = GetUserList();
+  for (auto l : list) {
+    if (!PerformInternalDirectoryCreationForUser(l.first,
                                                  pkgid,
                                                  author_id))
       LOG(ERROR) << "Could not create internal storage directories for user: "
-        << user.c_str();
+                 << l.first;
   }
   return true;
 }
 
 bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
                                                  const std::string& author_id) {
-  char buf[1024] = {0, };
-
-  for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
-      iter != bf::directory_iterator();
-         ++iter) {
-    try {
-      if (!bf::is_directory(iter->path())) continue;
-    }
-    catch (const bf::filesystem_error&) {
-      continue;
-    }
-
-    const bf::path& home_path = iter->path();
-    std::string user = home_path.filename().string();
-
-    struct passwd pwd;
-    struct passwd *pwd_result;
-    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == nullptr)
-      continue;
-
-    struct group gr;
-    struct group *gr_result;
-    ret = getgrgid_r(pwd.pw_gid, &gr, buf, sizeof(buf), &gr_result);
-    if (ret != 0 ||
-        strcmp(gr.gr_name, tzplatform_getenv(TZ_SYS_USER_GROUP)) != 0)
-      continue;
-
-    if (!PerformExternalDirectoryCreationForUser(pwd.pw_uid,
+  user_list list = GetUserList();
+  for (auto l : list) {
+    if (!PerformExternalDirectoryCreationForUser(l.first,
                                                  pkgid,
                                                  author_id))
       LOG(WARNING) << "Could not create external storage directories for user: "
-        << user.c_str();
+                   << l.first;
   }
   return true;
 }
@@ -482,29 +440,14 @@ bool SetPackageDirectorySmackRulesForUser(uid_t uid,
 bool SetPackageDirectorySmackRulesForAllUsers(const std::string& pkg_id,
                                               const std::string& author_id,
                                               const std::string& api_version) {
-  char buf[1024] = {0, };
-
-  for (bf::directory_iterator iter(tzplatform_getenv(TZ_SYS_HOME));
-      iter != bf::directory_iterator();
-         ++iter) {
-    if (!bf::is_directory(iter->path()))
-        continue;
-    const bf::path& home_path = iter->path();
-    std::string user = home_path.filename().string();
-
-    struct passwd pwd;
-    struct passwd*pwd_result;
-    int ret = getpwnam_r(user.c_str(), &pwd, buf, sizeof(buf), &pwd_result);
-    if (ret != 0 || pwd_result == nullptr) {
-      LOG(WARNING) << "Failed to get user for home directory: " << user;
-      return false;
-    }
-
-    if (!SetPackageDirectorySmackRulesForUser(pwd.pw_uid,
+  user_list list = GetUserList();
+  for (auto l : list) {
+    if (!SetPackageDirectorySmackRulesForUser(l.first,
                                               pkg_id,
                                               author_id,
                                               api_version)) {
-      LOG(WARNING) << "Failed to set directory smack rules for user: " << user;
+      LOG(WARNING) << "Failed to set directory smack rules for user: "
+                   << l.first;
       continue;
     }
   }
