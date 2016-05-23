@@ -106,13 +106,13 @@ bool CreateDir(const bf::path& path) {
   return true;
 }
 
-bool SetDirPermissions(const boost::filesystem::path& path,
+bool SetPermissions(const boost::filesystem::path& path,
                       boost::filesystem::perms permissions) {
   boost::system::error_code error;
   bf::permissions(path, permissions, error);
 
   if (error) {
-    LOG(ERROR) << "Failed to set permissions for directory: " << path
+    LOG(ERROR) << "Failed to set permissions for path: " << path
                << boost::system::system_error(error).what();
     return false;
   }

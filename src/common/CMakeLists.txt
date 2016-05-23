@@ -36,6 +36,7 @@ SET(SRCS
   step/filesystem/step_create_per_user_storage_directories.cc
   step/filesystem/step_create_storage_directories.cc
   step/filesystem/step_delta_patch.cc
+  step/filesystem/step_grant_permission.cc
   step/filesystem/step_recover_files.cc
   step/filesystem/step_recover_icons.cc
   step/filesystem/step_recover_manifest.cc

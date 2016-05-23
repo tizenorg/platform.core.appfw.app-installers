@@ -28,7 +28,7 @@ bool MoveDir(const boost::filesystem::path& src,
 bool MoveFile(const boost::filesystem::path& src,
               const boost::filesystem::path& dst);
 
-bool SetDirPermissions(const boost::filesystem::path& path,
+bool SetPermissions(const boost::filesystem::path& path,
                        boost::filesystem::perms permissions);
 
 int64_t GetUnpackedPackageSize(const boost::filesystem::path& path);
