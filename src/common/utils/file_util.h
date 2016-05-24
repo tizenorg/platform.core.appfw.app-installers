@@ -11,7 +11,8 @@ namespace common_installer {
 
 enum FSFlag {
   FS_NONE              = 0,
-  FS_MERGE_DIRECTORIES = (1 << 0)
+  FS_MERGE_DIRECTORIES = (1 << 0),
+  FS_COPY_LABEL        = (1 << 1)
 };
 
 bool CreateDir(const boost::filesystem::path& path);
