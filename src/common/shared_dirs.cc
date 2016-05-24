@@ -465,7 +465,7 @@ bool CopyUserDirectories(const std::string& pkgid) {
     bf::path apps_rw(std::get<2>(l) / "apps_rw");
     bf::path src = bf::path(kSkelAppDir) / pkgid;
     bf::path dst = apps_rw / pkgid;
-    if (!ci::CopyDir(src, dst))
+    if (!ci::CopyDir(src, dst, FS_COPY_XATTR))
       continue;
     if (!SetPackageDirectoryOwnerAndPermissions(dst, std::get<0>(l),
         std::get<1>(l)))
