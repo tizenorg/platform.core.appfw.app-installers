@@ -312,7 +312,8 @@ std::string QueryZipMountFile(const std::string& pkgid, uid_t uid) {
       != PMINFO_R_OK)
     return {};
   char* zip_mount_file = nullptr;
-  int ret = pkgmgrinfo_pkginfo_get_zip_mount_file(package_info, &zip_mount_file);
+  int ret = pkgmgrinfo_pkginfo_get_zip_mount_file(package_info,
+          &zip_mount_file);
   if (ret != PMINFO_R_OK) {
     LOG(DEBUG) << "pkgmgrinfo_pkginfo_get_zip_mount_file failed with error: "
                << ret;

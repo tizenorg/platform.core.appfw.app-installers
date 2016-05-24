@@ -5,23 +5,24 @@
 #include "common/step/pkgmgr/step_kill_apps.h"
 
 #include <sys/time.h>
-#include <string>
 #include <systemd/sd-login.h>
 #include <aul.h>
+
+#include <string>
 
 #include "common/utils/glist_range.h"
 
 namespace {
 
 bool CheckAndKill(const std::string& appid, uid_t uid) {
-
   int ret = aul_app_is_running_for_uid(appid.c_str(), uid);
   if (ret == 0)
     return true;
 
   int pid = aul_app_get_pid_for_uid(appid.c_str(), uid);
   if (pid < 0) {
-    LOG(ERROR) << "Failed to get pid for appid[" << appid << "] for uid [" << uid << "]";
+    LOG(ERROR) << "Failed to get pid for appid[" << appid
+               << "] for uid [" << uid << "]";
     return true;
   }
 

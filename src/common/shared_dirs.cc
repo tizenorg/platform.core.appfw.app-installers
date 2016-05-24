@@ -34,6 +34,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <tuple>
 
 #include "common/security_registration.h"
 #include "common/pkgmgr_registration.h"
