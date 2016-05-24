@@ -66,7 +66,8 @@ cp %{SOURCE1000} .
 cp %{SOURCE1001} .
 
 %build
-%cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type}
+%cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type} \
+         -DTIZEN_FULL_VERSION=%{tizen_full_version}
 make %{?_smp_mflags}
 
 %install
