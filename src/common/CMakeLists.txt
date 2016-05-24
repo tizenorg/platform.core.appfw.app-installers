@@ -25,6 +25,7 @@ SET(SRCS
   step/backup/step_backup_manifest.cc
   step/backup/step_copy_backup.cc
   step/configuration/step_block_cross_update.cc
+  step/configuration/step_check_tizen_version.cc
   step/configuration/step_configure.cc
   step/configuration/step_fail.cc
   step/configuration/step_parse_manifest.cc
@@ -120,6 +121,11 @@ SET(PLUGINS_LIST_INSTALL_PATH ${SHAREDIR}/app-installers/)
 SET(PLUGINS_LIST_INSTALL_FILE_PATH ${PLUGINS_LIST_INSTALL_PATH}/${PLUGINS_LIST_FILE_NAME})
 
 ADD_DEFINITIONS("-DPLUGINS_LIST_INSTALL_FILE_PATH=\"${PLUGINS_LIST_INSTALL_FILE_PATH}\"")
+IF(NOT DEFINED TIZEN_FULL_VERSION)
+  MESSAGE(FATAL_ERROR "TIZEN_FULL_VERSION MUST BE defined")
+ELSE(NOT DEFINED TIZEN_FULL_VERSION)
+  ADD_DEFINITIONS("-DTIZEN_FULL_VERSION=\"${TIZEN_FULL_VERSION}\"")
+ENDIF(NOT DEFINED TIZEN_FULL_VERSION)
 CONFIGURE_FILE(${PLUGINS_LIST_FILE_PATH}.in ${PLUGINS_LIST_FILE_PATH} @ONLY)
 INSTALL(FILES ${PLUGINS_LIST_FILE_PATH} DESTINATION ${PLUGINS_LIST_INSTALL_PATH}/)
 
