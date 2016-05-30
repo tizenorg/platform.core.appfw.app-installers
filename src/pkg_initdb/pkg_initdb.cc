@@ -58,6 +58,8 @@ void InitdbLoadDirectory(uid_t uid, const bf::path& directory, bool preload) {
     if (!bf::is_regular_file(iter->path()))
       continue;
 
+    std::cerr << "Manifest : " << iter->path() << std::endl;
+
     tpk::parse::TPKConfigParser parser;
     if (!parser.ParseManifest(iter->path())) {
       std::cerr << "Failed to parse tizen manifest file: "
