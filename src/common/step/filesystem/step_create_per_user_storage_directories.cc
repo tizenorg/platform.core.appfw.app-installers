@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "common/step/filesystem/step_create_per_user_storage_directories.h"
+#include "common/privileges.h"
 
 #include "common/shared_dirs.h"
 #include "common/utils/glist_range.h"
@@ -36,10 +37,8 @@ common_installer::Step::Status StepCreatePerUserStorageDirectories::process() {
 bool StepCreatePerUserStorageDirectories::CreateExternalStorageDir() {
   auto manifest = context_->manifest_data.get();
     bool has_external_storage_priv = false;
-    const char* privilege =
-        "http://tizen.org/privilege/externalstorage.appdata";
     for (const char* priv : GListRange<char*>(manifest->privileges)) {
-      if (strcmp(priv, privilege) == 0) {
+      if (strcmp(priv, common::privileges::kPrivForExternalAppData) == 0) {
         has_external_storage_priv = true;
         LOG(DEBUG) << "External storage privilege has been found.";
         break;

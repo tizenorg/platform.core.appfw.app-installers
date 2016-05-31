@@ -1,5 +1,6 @@
 # Target - sources
 SET(SRCS
+  privileges.cc
   app_installer.cc
   backup_paths.cc
   certificate_validation.cc
