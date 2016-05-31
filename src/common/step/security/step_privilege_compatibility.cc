@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "common/step/security/step_privilege_compatibility.h"
+#include "common/privileges.h"
 
 #include <pkgmgrinfo_basic.h>
 #include <privilege_manager.h>
@@ -15,13 +16,6 @@
 #include "common/utils/glist_range.h"
 
 namespace {
-
-const char kPrivForPublic[] =
-    "http://tizen.org/privilege/internal/default/public";
-const char kPrivForPartner[] =
-    "http://tizen.org/privilege/internal/default/partner";
-const char kPrivForPlatform[] =
-    "http://tizen.org/privilege/internal/default/platform";
 
 bool TranslatePrivilegesForCompatibility(manifest_x* m) {
   if (!m->api_version) {
@@ -78,24 +72,24 @@ Step::Status StepPrivilegeCompatibility::process() {
     case common_installer::PrivilegeLevel::PUBLIC:
       context_->manifest_data.get()->privileges =
           g_list_append(context_->manifest_data.get()->privileges,
-                        strdup(kPrivForPublic));
+                        strdup(common::privileges::kPrivForPublic));
       break;
     case common_installer::PrivilegeLevel::PARTNER:
       context_->manifest_data.get()->privileges =
           g_list_append(context_->manifest_data.get()->privileges,
-                        strdup(kPrivForPartner));
+                        strdup(common::privileges::kPrivForPartner));
       break;
     case common_installer::PrivilegeLevel::PLATFORM:
       context_->manifest_data.get()->privileges =
           g_list_append(context_->manifest_data.get()->privileges,
-                        strdup(kPrivForPlatform));
+                        strdup(common::privileges::kPrivForPlatform));
       break;
     default:
       // TODO(jongmyeong.ko): temporarily, public privileges for untrusted
       // application.
       context_->manifest_data.get()->privileges =
           g_list_append(context_->manifest_data.get()->privileges,
-                        strdup(kPrivForPublic));
+                        strdup(common::privileges::kPrivForPublic));
       break;
   }
   if (!ret) {
