@@ -31,8 +31,10 @@ Step::Status StepBackupIcons::process() {
     for (application_x* app : GListRange<application_x*>(
         context_->old_manifest_data.get()->application)) {
       if (app->icon) {
-        std::string filename = iter->path().filename().string();
-        if (filename.find(app->appid) == 0) {
+        bf::path filename = iter->path().filename();
+        filename.replace_extension();
+        std::string id = filename.string();
+        if (id == app->appid) {
           bf::path icon_backup = GetBackupPathForIconFile(iter->path());
           icons_.emplace_back(iter->path(), icon_backup);
         }
