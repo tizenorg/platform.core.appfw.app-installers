@@ -356,7 +356,7 @@ std::string QueryStorageForPkgId(const std::string& pkg_id, uid_t uid) {
   pkgmgrinfo_pkginfo_h package_info;
   if (pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), uid, &package_info)
       != PMINFO_R_OK) {
-    return false;
+    return "";
   }
 
   pkgmgrinfo_installed_storage storage;
