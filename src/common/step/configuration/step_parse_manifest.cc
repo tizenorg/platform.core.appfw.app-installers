@@ -7,10 +7,13 @@
 #include <pkgmgr/pkgmgr_parser.h>
 #include <pkgmgr-info.h>
 
+#include <system_info.h>
+
 #include <tpk_manifest_handlers/account_handler.h>
 #include <tpk_manifest_handlers/application_manifest_constants.h>
 #include <tpk_manifest_handlers/author_handler.h>
 #include <tpk_manifest_handlers/description_handler.h>
+#include <tpk_manifest_handlers/feature_handler.h>
 #include <tpk_manifest_handlers/package_handler.h>
 #include <tpk_manifest_handlers/privileges_handler.h>
 #include <tpk_manifest_handlers/profile_handler.h>
@@ -562,6 +565,29 @@ bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
   return true;
 }
 
+bool StepParseManifest::CheckFeatures() {
+  auto feature_info =
+        std::static_pointer_cast<const tpk::parse::FeatureInfo>(
+            parser_->GetManifestData(tpk::parse::FeatureInfo::Key()));
+  if (!feature_info)
+    return true;
+  for (auto& feature : feature_info->features()) {
+    bool supported = false;
+    int ret = system_info_get_platform_bool(feature.c_str(), &supported);
+    if (ret != SYSTEM_INFO_ERROR_NONE) {
+      LOG(ERROR) << "Failed to call " << system_info_get_platform_bool
+                 << " for " << feature << ", error code: " << ret;
+      return false;
+    }
+    if (!supported) {
+      LOG(ERROR) << "Feature '" << feature << "' is not supported";
+      return false;
+    }
+  }
+
+  return true;
+}
+
 template <typename T>
 bool StepParseManifest::FillAppControl(application_x* app,
                                        const T& app_control_list) {
@@ -785,6 +811,9 @@ Step::Status StepParseManifest::process() {
                <<  parser_->GetErrorMessage();
     return Step::Status::PARSE_ERROR;
   }
+
+  if (!CheckFeatures())
+    return Status::PARSE_ERROR;
 
   if (manifest_location_ == ManifestLocation::INSTALLED) {
     // recovery of tep value for installed package
