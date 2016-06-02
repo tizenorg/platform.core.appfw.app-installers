@@ -156,6 +156,10 @@ bool PkgMgrInterface::GetIsTepMove() {
   return (pkgmgr_installer_get_tep_move_type(pi_) == 1)?true:false;
 }
 
+bool PkgMgrInterface::GetIsMoveToExternal() {
+  return (pkgmgr_installer_get_move_type(pi_) == 1)?true:false;
+}
+
 bool PkgMgrInterface::GetIsPreloadRequest() {
   return (pkgmgr_installer_get_is_preload(pi_) == 1)?
       true:(install_mode_ == InstallationMode::OFFLINE)?
