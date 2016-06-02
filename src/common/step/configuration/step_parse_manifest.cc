@@ -11,6 +11,7 @@
 #include <tpk_manifest_handlers/application_manifest_constants.h>
 #include <tpk_manifest_handlers/author_handler.h>
 #include <tpk_manifest_handlers/description_handler.h>
+#include <tpk_manifest_handlers/feature_handler.h>
 #include <tpk_manifest_handlers/package_handler.h>
 #include <tpk_manifest_handlers/privileges_handler.h>
 #include <tpk_manifest_handlers/profile_handler.h>
@@ -32,6 +33,7 @@
 
 #include "common/app_installer.h"
 #include "common/backup_paths.h"
+#include "common/feature_validator.h"
 #include "common/installer_context.h"
 #include "common/pkgmgr_registration.h"
 #include "common/step/step.h"
@@ -562,6 +564,23 @@ bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
   return true;
 }
 
+bool StepParseManifest::CheckFeatures() {
+  auto feature_info =
+        std::static_pointer_cast<const tpk::parse::FeatureInfo>(
+            parser_->GetManifestData(tpk::parse::FeatureInfo::Key()));
+  if (!feature_info)
+    return true;
+
+  std::string error;
+  FeatureValidator validator(feature_info->features());
+  if (!validator.Validate(&error)) {
+    LOG(ERROR) << "Feature validation error. " << error;
+    return false;
+  }
+
+  return true;
+}
+
 template <typename T>
 bool StepParseManifest::FillAppControl(application_x* app,
                                        const T& app_control_list) {
@@ -785,6 +804,9 @@ Step::Status StepParseManifest::process() {
                <<  parser_->GetErrorMessage();
     return Step::Status::PARSE_ERROR;
   }
+
+  if (!CheckFeatures())
+    return Status::PARSE_ERROR;
 
   if (manifest_location_ == ManifestLocation::INSTALLED) {
     // recovery of tep value for installed package
