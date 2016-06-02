@@ -44,14 +44,16 @@ Step::Status StepAcquireExternalStorage::process() {
 
   if (storage == Storage::EXTERNAL ||
       (!strcmp(manifest->installlocation, kPreferExternal) &&
-      storage == Storage::NONE)) {
+      storage == Storage::NONE) ||
+      context_->request_type.get() == RequestType::Move) {
     context_->external_storage =
         ExternalStorage::AcquireExternalStorage(context_->request_type.get(),
             context_->root_application_path.get(),
             context_->pkgid.get(),
             context_->pkg_type.get(),
             context_->unpacked_dir_path.get(),
-            context_->uid.get());
+            context_->uid.get(),
+            context_->is_move_to_external.get());
   }
 
   if (storage == Storage::EXTERNAL && !context_->external_storage) {

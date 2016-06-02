@@ -34,13 +34,15 @@ namespace common_installer {
 
 ExternalStorage::ExternalStorage(RequestType type,
     const std::string& pkgid, const std::string& package_type,
-    const boost::filesystem::path& application_root, uid_t uid)
+    const boost::filesystem::path& application_root, uid_t uid,
+    bool is_external_move)
     : type_(type),
       pkgid_(pkgid),
       package_type_(package_type),
       application_root_(application_root),
       uid_(uid),
-      handle_(nullptr) {
+      handle_(nullptr),
+      move_type_(is_external_move){
   if (package_type_ == kWgtType) {
     external_dirs_.push_back(kExternalDirForWgt);
   } else {
@@ -68,6 +70,10 @@ bool ExternalStorage::Finalize(bool success) {
   }
   case RequestType::Uninstall: {
     ret = handle_->interface.client_usr_post_uninstall(pkgid_.c_str(), uid_);
+    break;
+  }
+  case RequestType::Move: {
+    //Do nothing
     break;
   }
   default:
@@ -138,6 +144,11 @@ bool ExternalStorage::Initialize(
     ret = handle_->interface.client_usr_pre_upgrade(pkgid_.c_str(), glist,
                                                     external_size, uid_);
     break;
+  case RequestType::Move:
+    ret = handle_->interface.client_usr_move(pkgid_.c_str(), glist,
+                                             (move_type_)?APP2EXT_MOVE_TO_EXT : APP2EXT_MOVE_TO_PHONE,
+                                             uid_);
+    break;
   case RequestType::Uninstall:
     ret = handle_->interface.client_usr_pre_uninstall(pkgid_.c_str(), uid_);
     break;
@@ -168,9 +179,10 @@ std::unique_ptr<ExternalStorage> ExternalStorage::AcquireExternalStorage(
     RequestType type, const boost::filesystem::path& application_root,
     const std::string& pkgid, const std::string& package_type,
     const boost::filesystem::path& space_requirement,
-    uid_t uid) {
+    uid_t uid,
+    bool is_external_move) {
   std::unique_ptr<ExternalStorage> external_storage(
-      new ExternalStorage(type, pkgid, package_type, application_root, uid));
+      new ExternalStorage(type, pkgid, package_type, application_root, uid, is_external_move));
   if (!external_storage->Initialize(space_requirement)) {
     LOG(WARNING) << "Cannot initialize external storage for request";
     return nullptr;
