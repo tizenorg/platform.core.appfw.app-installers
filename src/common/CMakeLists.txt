@@ -5,6 +5,7 @@ SET(SRCS
   backup_paths.cc
   certificate_validation.cc
   external_storage.cc
+  feature_validator.cc
   installer_context.cc
   plugins/plugin_factory.cc
   plugins/plugin_manager.cc
@@ -108,6 +109,7 @@ APPLY_PKG_CONFIG(${TARGET_LIBNAME_COMMON} PUBLIC
   GDBUS_DEPS
   GUM_DEPS
   APP2SD_DEPS
+  CAPI_SYSTEM_INFO_DEPS
   Boost
 )
 
