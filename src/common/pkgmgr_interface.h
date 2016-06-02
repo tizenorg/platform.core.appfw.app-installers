@@ -104,6 +104,13 @@ class PkgMgrInterface {
   bool GetIsTepMove();
 
   /**
+  * Returns True if move request is to external. Otherwise, return false
+  *
+  * \return True if move request is to external. Otherwise, return false
+  */
+	bool GetIsMoveToExternal();
+
+  /**
   * Returns True if the request is for preload. Otherwise, return false
   *
   * \return True if the request is for preload. Otherwise, return false

@@ -236,6 +236,11 @@ class InstallerContext {
   Property<bool> is_tep_move;
 
   /**
+  * \brief boolean property that indicates request is external move or not
+  */
+	Property<bool> is_move_to_external;
+
+  /**
    * \brief path to temporary directory when package files are unpacked
    *        before coping them to final destination
    */
