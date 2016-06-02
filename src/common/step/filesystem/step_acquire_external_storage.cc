@@ -51,7 +51,8 @@ Step::Status StepAcquireExternalStorage::process() {
             context_->pkgid.get(),
             context_->pkg_type.get(),
             context_->unpacked_dir_path.get(),
-            context_->uid.get());
+            context_->uid.get(),
+            context_->is_move_to_external.get());
   }
 
   if (storage == Storage::EXTERNAL && !context_->external_storage) {
