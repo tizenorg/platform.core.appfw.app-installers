@@ -37,7 +37,7 @@ class StepRecoverStorageDirectories : public recovery::StepRecovery {
                       const boost::filesystem::path& in_dst,
                       const char *key);
 
-  SCOPE_LOG_TAG(RecoverStorageDirectories)
+  STEP_NAME(RecoverStorageDirectories)
 };
 
 }  // namespace filesystem

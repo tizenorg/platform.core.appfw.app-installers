@@ -35,7 +35,7 @@ class StepBlockCrossUpdate : public Step {
   Status undo() override { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(BlockCrossUpdate)
+  STEP_NAME(BlockCrossUpdate)
 };
 
 }  // namespace configuration

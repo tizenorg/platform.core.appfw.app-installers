@@ -92,7 +92,7 @@ class StepCheckBackgroundCategory : public common_installer::Step {
   const BackgroundCatSet known_background_categories_;
   const BackgroundCatSet not_unknown_background_categories_;
 
-  SCOPE_LOG_TAG(CheckBackgroundCategory)
+  STEP_NAME(CheckBackgroundCategory)
 };
 
 }  // namespace security

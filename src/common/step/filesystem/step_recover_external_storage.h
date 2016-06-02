@@ -22,7 +22,7 @@ class StepRecoverExternalStorage : public StepAcquireExternalStorage {
 
   Status process() override;
 
-  SCOPE_LOG_TAG(RecoverExternalStorage)
+  STEP_NAME(RecoverExternalStorage)
 };
 
 }  // namespace filesystem

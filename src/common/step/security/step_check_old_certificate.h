@@ -31,7 +31,7 @@ class StepCheckOldCertificate : public Step {
   Status clean() override { return Status::OK; }
   Status precheck() override { return Status::OK; }
 
-  SCOPE_LOG_TAG(CheckOldCertificate)
+  STEP_NAME(CheckOldCertificate)
 };
 
 }  // namespace security

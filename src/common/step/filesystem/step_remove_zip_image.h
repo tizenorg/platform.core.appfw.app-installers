@@ -29,7 +29,7 @@ class StepRemoveZipImage : public Step {
   Status undo() override  { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(RemoveZipImage)
+  STEP_NAME(RemoveZipImage)
 };
 
 }  // namespace filesystem

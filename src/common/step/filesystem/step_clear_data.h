@@ -28,7 +28,7 @@ class StepClearData : public Step {
   Status clean() override { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(ClearData)
+  STEP_NAME(ClearData)
 };
 
 }  // namespace filesystem

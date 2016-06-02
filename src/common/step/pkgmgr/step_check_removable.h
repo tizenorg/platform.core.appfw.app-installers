@@ -19,7 +19,7 @@ class StepCheckRemovable : public Step {
   Status clean() override { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(CheckRemovable)
+  STEP_NAME(CheckRemovable)
 };
 
 }  // namespace pkgmgr

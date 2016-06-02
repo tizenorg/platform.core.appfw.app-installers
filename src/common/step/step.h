@@ -33,6 +33,11 @@
 
 #include "common/installer_context.h"
 
+// This macro should be defined at the end of class definition
+#define STEP_NAME(NAME)                                                        \
+  SCOPE_LOG_TAG(NAME)                                                          \
+  const char* name() const override { return #NAME; }                          \
+
 namespace common_installer {
 
 /**
@@ -92,6 +97,9 @@ class Step {
 
   /** Checks the input data used during process method */
   virtual Status precheck() = 0;
+
+  /** Returns step name */
+  virtual const char* name() const = 0;
 
   StepErrorSignal on_error;
 

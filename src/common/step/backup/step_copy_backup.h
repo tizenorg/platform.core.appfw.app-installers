@@ -63,7 +63,7 @@ class StepCopyBackup : public Step {
   boost::filesystem::path install_path_;
   boost::filesystem::path backup_path_;
 
-  SCOPE_LOG_TAG(CopyBackup)
+  STEP_NAME(CopyBackup)
 };
 
 }  // namespace backup

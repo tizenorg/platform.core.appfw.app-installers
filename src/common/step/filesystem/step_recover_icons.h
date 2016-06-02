@@ -40,7 +40,7 @@ class StepRecoverIcons : public recovery::StepRecovery {
   std::set<std::pair<boost::filesystem::path, boost::filesystem::path>>
       icons_;
 
-  SCOPE_LOG_TAG(RecoverIcons)
+  STEP_NAME(RecoverIcons)
 };
 
 }  // namespace filesystem

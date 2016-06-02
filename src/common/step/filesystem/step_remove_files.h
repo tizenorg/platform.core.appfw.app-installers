@@ -23,7 +23,7 @@ class StepRemoveFiles : public Step {
   Status undo() override  { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(Remove)
+  STEP_NAME(Remove)
 };
 
 }  // namespace filesystem

@@ -31,7 +31,7 @@ class StepRemoveManifest : public Step {
   Status undo() override { return Status::OK; }
   Status precheck() override { return Status::OK; }
 
-  SCOPE_LOG_TAG(RemoveManifest)
+  STEP_NAME(RemoveManifest)
 };
 
 }  // namespace pkgmgr

@@ -24,7 +24,7 @@ class StepRevokeSecurity : public Step {
   Status clean() override;
   Status precheck() override;
 
-  SCOPE_LOG_TAG(RevokeSecurity)
+  STEP_NAME(RevokeSecurity)
 };
 
 }  // namespace security

@@ -21,7 +21,7 @@ class StepUpdateSecurity : public Step {
   Status clean() override { return Status::OK; }
   Status precheck() override { return Status::OK; }
 
-  SCOPE_LOG_TAG(UpdateSecurity)
+  STEP_NAME(UpdateSecurity)
 };
 
 }  // namespace security
