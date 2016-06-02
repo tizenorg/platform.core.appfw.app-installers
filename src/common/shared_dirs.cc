@@ -61,7 +61,7 @@ const std::vector<const char*> kEntries = {
 const char kTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
-const char kExternalStorageDirPrefix[] = "SDCardA1/apps";
+const char kExternalStorageDirPrefix[] = "SDCardA1";
 const char kDBusServiceName[] = "org.tizen.pkgdir_tool";
 const char kDBusObjectPath[] = "/org/tizen/pkgdir_tool";
 const char kDBusInterfaceName[] = "org.tizen.pkgdir_tool";
@@ -370,8 +370,19 @@ bool PerformExternalDirectoryCreationForUser(uid_t user,
     return false;
   }
 
+  bf::path storage_apps_path = bf::path(storage_path) / "apps";
+  if (!bf::exists(storage_apps_path)) {
+    bs::error_code error;
+    bf::create_directories(storage_apps_path, error);
+    if (error) {
+      LOG(ERROR) << "Failed to create directory: "
+          << storage_apps_path.c_str();
+      return false;
+    }
+  }
+
   if (CreateUserDirectories(user, pkgid, author_id,
-                            storage_path, set_permissions)) {
+                            storage_apps_path.c_str(), set_permissions)) {
   }
   return true;
 }
