@@ -23,7 +23,7 @@ class StepOpenRecoveryFile : public Step {
   Status undo() override;
   Status precheck() override { return Status::OK; }
 
-  SCOPE_LOG_TAG(OpenRecoveryFile)
+  STEP_NAME(OpenRecoveryFile)
 };
 
 }  // namespace recovery

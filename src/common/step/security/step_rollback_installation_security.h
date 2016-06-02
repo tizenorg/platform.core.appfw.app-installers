@@ -24,7 +24,7 @@ class StepRollbackInstallationSecurity : public Step {
   Status clean() override { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(RollbackInstallationSecurity)
+  STEP_NAME(RollbackInstallationSecurity)
 };
 
 }  // namespace security

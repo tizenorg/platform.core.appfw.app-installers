@@ -64,7 +64,7 @@ class StepConfigure : public Step {
 
   PkgMgrPtr pkgmgr_;
 
-  SCOPE_LOG_TAG(Configure)
+  STEP_NAME(Configure)
 };
 
 }  // namespace configuration

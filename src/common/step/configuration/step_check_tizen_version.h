@@ -21,7 +21,7 @@ class StepCheckTizenVersion : public Step {
   Status undo() override { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(CheckTizenVersion)
+  STEP_NAME(CheckTizenVersion)
 };
 
 }  // namespace configuration

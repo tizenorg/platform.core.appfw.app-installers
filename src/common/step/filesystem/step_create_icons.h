@@ -45,7 +45,7 @@ class StepCreateIcons : public Step {
  private:
   std::vector<boost::filesystem::path> icons_;
 
-  SCOPE_LOG_TAG(CreateIcons)
+  STEP_NAME(CreateIcons)
 };
 
 }  // namespace filesystem

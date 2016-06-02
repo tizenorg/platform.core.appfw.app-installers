@@ -28,7 +28,7 @@ class StepRecoverApplication : public recovery::StepRecovery {
  private:
   bool SetXmlPaths();
 
-  SCOPE_LOG_TAG(RecoverApplication)
+  STEP_NAME(RecoverApplication)
 };
 
 }  // namespace pkgmgr

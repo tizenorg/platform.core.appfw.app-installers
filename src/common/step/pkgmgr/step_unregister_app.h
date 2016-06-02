@@ -25,7 +25,7 @@ class StepUnregisterApplication : public Step {
  private:
   bool BackupCertInfo();
 
-  SCOPE_LOG_TAG(Unregister)
+  STEP_NAME(Unregister)
 };
 
 }  // namespace pkgmgr
