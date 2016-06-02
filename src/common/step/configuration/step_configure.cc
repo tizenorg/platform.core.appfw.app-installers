@@ -72,6 +72,10 @@ Step::Status StepConfigure::process() {
       context_->pkgid.set(kStrEmpty);
       context_->file_path.set(pkgmgr_->GetRequestInfo());
       break;
+    case RequestType::Move:
+      context_->pkgid.set(pkgmgr_->GetRequestInfo());
+      context_->is_move_to_external.set(pkgmgr_->GetIsMoveToExternal());
+      break;
     case RequestType::Recovery:
       context_->file_path.set(pkgmgr_->GetRequestInfo());
       context_->pkgid.set(kStrEmpty);

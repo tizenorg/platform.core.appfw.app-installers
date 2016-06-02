@@ -153,7 +153,11 @@ boost::filesystem::path PkgMgrInterface::GetTepPath() const {
 }
 
 bool PkgMgrInterface::GetIsTepMove() {
-  return (pkgmgr_installer_get_tep_move_type(pi_) == 1)?true:false;
+  return (pkgmgr_installer_get_tep_move_type(pi_) == 1) ? true : false;
+}
+
+bool PkgMgrInterface::GetIsMoveToExternal() {
+  return (pkgmgr_installer_get_move_type(pi_) == 1) ? true : false;
 }
 
 bool PkgMgrInterface::GetIsPreloadRequest() {
