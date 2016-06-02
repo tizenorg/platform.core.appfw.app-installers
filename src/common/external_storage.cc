@@ -46,6 +46,28 @@ ExternalStorage::ExternalStorage(RequestType type,
   } else {
     external_dirs_ = kExternalDirsForTpk;
   }
+  move_type_ = -1;
+}
+
+ExternalStorage::ExternalStorage(RequestType type,
+    const std::string& pkgid, const std::string& package_type,
+    const boost::filesystem::path& application_root, uid_t uid,
+    bool is_external_move)
+    : type_(type),
+      pkgid_(pkgid),
+      package_type_(package_type),
+      application_root_(application_root),
+      uid_(uid),
+      handle_(nullptr) {
+  if (package_type_ == kWgtType) {
+    external_dirs_.push_back(kExternalDirForWgt);
+  } else {
+    external_dirs_ = kExternalDirsForTpk;
+  }
+  if (is_external_move)
+    move_type_ = APP2EXT_MOVE_TO_EXT;
+  else
+    move_type_ = APP2EXT_MOVE_TO_PHONE;
 }
 
 ExternalStorage::~ExternalStorage() {
@@ -68,6 +90,9 @@ bool ExternalStorage::Finalize(bool success) {
   }
   case RequestType::Uninstall: {
     ret = handle_->interface.client_usr_post_uninstall(pkgid_.c_str(), uid_);
+    break;
+  }
+  case RequestType::Move: {
     break;
   }
   default:
@@ -138,6 +163,31 @@ bool ExternalStorage::Initialize(
     ret = handle_->interface.client_usr_pre_upgrade(pkgid_.c_str(), glist,
                                                     external_size, uid_);
     break;
+  case RequestType::Move:
+    if (move_type_ == -1) {
+      LOG(ERROR) << "Invalid request [" << move_type_ << "]";
+      ret = -1;
+      break;
+    }
+
+    ret = app2ext_usr_get_app_location(pkgid_.c_str(), uid_);
+    if (ret == APP2EXT_ERROR_INVALID_ARGUMENTS) {
+      LOG(ERROR) << "Failed to get installed location [" << pkgid_ << "]";
+      ret = -1;
+      break;
+    }
+
+    if ((ret == APP2EXT_SD_CARD && move_type_ == APP2EXT_MOVE_TO_EXT) ||
+        (ret == APP2EXT_INTERNAL_MEM && move_type_ == APP2EXT_MOVE_TO_PHONE)) {
+      LOG(ERROR) << "Invalid move request [" << move_type_ << "]";
+      ret = -1;
+      break;
+    }
+
+    ret = handle_->interface.client_usr_move(pkgid_.c_str(), glist,
+                                     (app2ext_move_type_t)move_type_,
+                                     uid_);
+    break;
   case RequestType::Uninstall:
     ret = handle_->interface.client_usr_pre_uninstall(pkgid_.c_str(), uid_);
     break;
@@ -162,6 +212,22 @@ bool ExternalStorage::Initialize(
       free(dir_detail);
     });
   return ret == 0;
+}
+
+std::unique_ptr<ExternalStorage> ExternalStorage::MoveInstalledStorage(
+    RequestType type, const boost::filesystem::path& application_root,
+    const std::string& pkgid, const std::string& package_type,
+    uid_t uid, bool is_external_move) {
+
+  std::unique_ptr<ExternalStorage> external_storage(
+    new ExternalStorage(type, pkgid, package_type, application_root, uid,
+                       is_external_move));
+  if (!external_storage->Initialize(application_root)) {
+    LOG(WARNING) << "Cannot initialize external storage for move";
+    return nullptr;
+  }
+
+  return external_storage;
 }
 
 std::unique_ptr<ExternalStorage> ExternalStorage::AcquireExternalStorage(

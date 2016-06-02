@@ -19,6 +19,11 @@ namespace common_installer {
 
 class ExternalStorage final {
  public:
+  static std::unique_ptr<ExternalStorage> MoveInstalledStorage(
+      RequestType type, const boost::filesystem::path& application_root,
+      const std::string& pkgid, const std::string& package_type,
+      uid_t uid, bool is_external_move);
+
   static std::unique_ptr<ExternalStorage> AcquireExternalStorage(
       RequestType type, const boost::filesystem::path& application_root,
       const std::string& pkgid, const std::string& package_type,
@@ -26,7 +31,12 @@ class ExternalStorage final {
 
   ExternalStorage(RequestType type, const std::string& pkgid,
                   const std::string& package_type,
-                  const boost::filesystem::path& application_root,  uid_t uid);
+                  const boost::filesystem::path& application_root, uid_t uid);
+
+  ExternalStorage(RequestType type, const std::string& pkgid,
+                  const std::string& package_type,
+                  const boost::filesystem::path& application_root, uid_t uid,
+                  bool is_external_move);
   ~ExternalStorage();
 
   bool Commit();
@@ -43,6 +53,7 @@ class ExternalStorage final {
   std::string package_type_;
   boost::filesystem::path application_root_;
   uid_t uid_;
+  int move_type_;
   app2ext_handle* handle_;
   std::vector<std::string> external_dirs_;
 };
