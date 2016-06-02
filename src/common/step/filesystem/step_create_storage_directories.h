@@ -40,7 +40,7 @@ class StepCreateStorageDirectories : public common_installer::Step {
   bool PrivateDir();
   bool CacheDir();
 
-  SCOPE_LOG_TAG(CreateStorageDirectories)
+  STEP_NAME(CreateStorageDirectories)
 };
 
 }  // namespace filesystem

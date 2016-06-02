@@ -32,7 +32,7 @@ class StepFail : public Step {
   Status undo() override { return Status::OK; }
   Status precheck() override { return Status::OK; }
 
-  SCOPE_LOG_TAG(Fail)
+  STEP_NAME(Fail)
 };
 
 }  // namespace configuration

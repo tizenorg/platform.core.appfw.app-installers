@@ -47,6 +47,8 @@ class StepRDSParse : public Step {
 
  private:
   boost::filesystem::path rds_file_path_;
+
+  STEP_NAME(RDSParse)
 };
 
 }  // namespace rds

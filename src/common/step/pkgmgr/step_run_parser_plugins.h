@@ -35,7 +35,7 @@ class StepRunParserPlugin : public Step {
 
   Plugin::ActionType action_type_;
 
-  SCOPE_LOG_TAG(RunParserPlugin)
+  STEP_NAME(RunParserPlugin)
 };
 
 }  // namespace pkgmgr

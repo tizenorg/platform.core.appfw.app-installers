@@ -33,7 +33,7 @@ class StepRemoveTemporaryDirectory : public recovery::StepRecovery {
    */
   void RemoveFiles();
 
-  SCOPE_LOG_TAG(RemoveTemporaryDirectory)
+  STEP_NAME(RemoveTemporaryDirectory)
 };
 
 }  // namespace filesystem

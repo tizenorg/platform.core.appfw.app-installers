@@ -25,7 +25,7 @@ class StepUpdateTep : public Step {
   Status undo() override;
   Status precheck() override { return Status::OK; }
 
-  SCOPE_LOG_TAG(UpdateTep)
+  STEP_NAME(UpdateTep)
 };
 
 }  // namespace pkgmgr

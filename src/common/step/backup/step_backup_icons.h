@@ -53,7 +53,7 @@ class StepBackupIcons : public Step {
   std::vector<std::pair<boost::filesystem::path, boost::filesystem::path>>
       icons_;
 
-  SCOPE_LOG_TAG(BackupIcons)
+  STEP_NAME(BackupIcons)
 };
 
 }  // namespace backup

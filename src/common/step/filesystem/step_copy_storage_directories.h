@@ -51,7 +51,7 @@ class StepCopyStorageDirectories : public common_installer::Step {
                       const char *key, bool merge_dirs = false);
   bool CacheDir();
   boost::filesystem::path backup_path_;
-  SCOPE_LOG_TAG(CopyStorageDirectories)
+  STEP_NAME(CopyStorageDirectories)
 };
 
 }  // namespace filesystem

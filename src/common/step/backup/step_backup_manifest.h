@@ -44,7 +44,7 @@ class StepBackupManifest : public Step {
 
   Status precheck() override;
 
-  SCOPE_LOG_TAG(BackupManifest)
+  STEP_NAME(BackupManifest)
 };
 
 }  // namespace backup

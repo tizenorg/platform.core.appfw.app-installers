@@ -20,7 +20,7 @@ class StepRegisterApplication : public Step {
   Status undo() override;
   Status precheck() override;
 
-  SCOPE_LOG_TAG(RegisterApp)
+  STEP_NAME(RegisterApp)
 };
 
 }  // namespace pkgmgr

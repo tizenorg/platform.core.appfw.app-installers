@@ -32,7 +32,7 @@ class StepMountUnpacked : public Step {
   Status undo() override;
   Status precheck() override;
 
-  SCOPE_LOG_TAG(MountUnpacked)
+  STEP_NAME(MountUnpacked)
 };
 
 }  // namespace mount

@@ -48,11 +48,18 @@ AppInstaller::Result AppInstaller::Run() {
   for (; it != itEnd; ++it, ++current_step) {
     try {
       process_status = (*it)->precheck();
+    } catch (const std::exception& err) {
+      LOG(ERROR) << "Exception occurred in precheck(): " << err.what()
+                 << " in step: " << (*it)->name();
+      process_status = Step::Status::ERROR;
+    }
+    try {
       if (process_status == Step::Status::OK) {
         process_status = (*it)->process();
       }
     } catch (const std::exception& err) {
-      LOG(ERROR) << "Exception occurred in process(): " << err.what();
+      LOG(ERROR) << "Exception occurred in process(): " << err.what()
+                 << " in step: " << (*it)->name();
       process_status = Step::Status::ERROR;
     }
 
@@ -86,7 +93,8 @@ AppInstaller::Result AppInstaller::Run() {
           ret = Result::UNDO_ERROR;
         }
       } catch (const std::exception& err) {
-        LOG(ERROR) << "Exception occurred in undo(): " << err.what();
+        LOG(ERROR) << "Exception occurred in undo(): " << err.what()
+                   << " in step: " << (*it)->name();
         ret = Result::UNDO_ERROR;
       }
     } while (it-- != itStart);
@@ -99,7 +107,8 @@ AppInstaller::Result AppInstaller::Run() {
           break;
         }
       } catch (const std::exception& err) {
-        LOG(ERROR) << "Exception occurred in clean(): " << err.what();
+        LOG(ERROR) << "Exception occurred in clean(): " << err.what()
+                   << " in step: " << step->name();
         ret = Result::CLEANUP_ERROR;
         break;
       }

@@ -23,7 +23,7 @@ class StepRollbackDeinstallationSecurity : public Step {
   Status clean() override { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(RollbackDeinstallationSecurity)
+  STEP_NAME(RollbackDeinstallationSecurity)
 };
 
 }  // namespace security

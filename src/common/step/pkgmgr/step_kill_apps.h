@@ -38,7 +38,7 @@ class StepKillApps : public Step {
    */
   Status precheck() override;
 
-  SCOPE_LOG_TAG(KillApps)
+  STEP_NAME(KillApps)
 };
 
 }  // namespace pkgmgr

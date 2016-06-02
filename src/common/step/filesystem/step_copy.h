@@ -47,7 +47,7 @@ class StepCopy : public Step {
    */
   Status precheck() override;
 
-  SCOPE_LOG_TAG(Copy)
+  STEP_NAME(Copy)
 };
 
 }  // namespace filesystem

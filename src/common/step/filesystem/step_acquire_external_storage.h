@@ -26,7 +26,7 @@ class StepAcquireExternalStorage : public Step {
   Status undo() override { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(AcquireExternalStorage)
+  STEP_NAME(AcquireExternalStorage)
 };
 
 }  // namespace filesystem

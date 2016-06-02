@@ -98,7 +98,7 @@ class StepParseManifest : public common_installer::Step {
   ManifestLocation manifest_location_;
   StoreLocation store_location_;
 
-  SCOPE_LOG_TAG(ParseManifest)
+  STEP_NAME(ParseManifest)
 };
 
 }  // namespace configuration
