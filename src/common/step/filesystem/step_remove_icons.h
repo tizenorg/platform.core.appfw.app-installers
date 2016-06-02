@@ -27,7 +27,7 @@ class StepRemoveIcons : public Step {
   Status undo() override { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(RemoveIcons)
+  STEP_NAME(RemoveIcons)
 };
 
 }  // namespace filesystem

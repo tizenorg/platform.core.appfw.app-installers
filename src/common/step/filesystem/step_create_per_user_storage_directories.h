@@ -31,7 +31,7 @@ class StepCreatePerUserStorageDirectories : public common_installer::Step {
   Status undo() override { return Status::OK; }
   Status precheck() override { return Status::OK; }
 
-  SCOPE_LOG_TAG(CreatePerUserStorageDirectories)
+  STEP_NAME(CreatePerUserStorageDirectories)
 
  private:
   bool CreateExternalStorageDir();

@@ -31,7 +31,7 @@ class StepRecoverFiles : public recovery::StepRecovery {
  private:
   bool SetPackagePath();
 
-  SCOPE_LOG_TAG(RecoverBackup)
+  STEP_NAME(RecoverBackup)
 };
 
 }  // namespace filesystem

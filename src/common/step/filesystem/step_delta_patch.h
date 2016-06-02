@@ -48,7 +48,7 @@ class StepDeltaPatch : public Step {
   boost::filesystem::path patch_dir_;
   std::string delta_root_;
 
-  SCOPE_LOG_TAG(DeltaPatch)
+  STEP_NAME(DeltaPatch)
 };
 
 }  // namespace filesystem

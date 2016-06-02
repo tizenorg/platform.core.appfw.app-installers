@@ -35,7 +35,7 @@ class StepMountUpdate : public Step {
   Status undo() override;
   Status precheck() override;
 
-  SCOPE_LOG_TAG(MountUpdate)
+  STEP_NAME(MountUpdate)
 };
 
 }  // namespace mount

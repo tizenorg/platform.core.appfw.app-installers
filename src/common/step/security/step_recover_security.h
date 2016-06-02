@@ -32,7 +32,7 @@ class StepRecoverSecurity : public recovery::StepRecovery {
  private:
   bool Check();
 
-  SCOPE_LOG_TAG(RecoverSecurity)
+  STEP_NAME(RecoverSecurity)
 };
 
 }  // namespace security

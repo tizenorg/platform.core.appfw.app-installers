@@ -31,7 +31,7 @@ class StepRecoverManifest : public recovery::StepRecovery {
  private:
   bool SetXmlPaths();
 
-  SCOPE_LOG_TAG(RecoverManifest)
+  STEP_NAME(RecoverManifest)
 };
 
 }  // namespace filesystem

@@ -22,7 +22,7 @@ class StepUpdateApplication : public Step {
   Status undo() override;
   Status precheck() override;
 
-  SCOPE_LOG_TAG(UpdateApplication)
+  STEP_NAME(UpdateApplication)
 };
 
 }  // namespace pkgmgr

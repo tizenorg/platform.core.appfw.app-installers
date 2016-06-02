@@ -21,7 +21,7 @@ class StepRegisterSecurity : public Step {
   Status clean() override { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(Security)
+  STEP_NAME(Security)
 };
 
 }  // namespace security

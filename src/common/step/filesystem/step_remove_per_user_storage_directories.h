@@ -33,7 +33,7 @@ class StepRemovePerUserStorageDirectories : public common_installer::Step {
   Status undo() override { return Status::OK; }
   Status precheck() override { return Status::OK; }
 
-  SCOPE_LOG_TAG(RemovePerUserStorageDirectories)
+  STEP_NAME(RemovePerUserStorageDirectories)
 };
 
 }  // namespace filesystem

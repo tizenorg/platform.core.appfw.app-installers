@@ -52,7 +52,7 @@ class StepCheckSignature : public Step {
   Status CheckSignatureMismatch();
   Status CheckPrivilegeLevel(PrivilegeLevel level);
 
-  SCOPE_LOG_TAG(Signature)
+  STEP_NAME(Signature)
 };
 
 }  // namespace security

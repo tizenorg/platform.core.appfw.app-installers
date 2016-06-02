@@ -38,7 +38,7 @@ class StepUnzip : public Step {
   Status undo() override;
   Status precheck() override;
 
-  SCOPE_LOG_TAG(Unzip)
+  STEP_NAME(Unzip)
 };
 
 }  // namespace filesystem

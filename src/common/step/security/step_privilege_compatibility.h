@@ -27,7 +27,7 @@ class StepPrivilegeCompatibility : public Step {
   Status undo() override { return Status::OK; }
   Status precheck() override;
 
-  SCOPE_LOG_TAG(PrivilegeCompatibility)
+  STEP_NAME(PrivilegeCompatibility)
 };
 
 }  // namespace security
