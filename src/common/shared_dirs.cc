@@ -18,6 +18,7 @@
 #include <grp.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <tzplatform_config.h>
 #include <sys/xattr.h>
 #include <gum/gum-user.h>
@@ -161,7 +162,13 @@ bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
     LOG(ERROR) << "Failed to set permissions for: " << subpath;
     return false;
   }
-  int ret = chown(subpath.c_str(), uid, gid);
+  int fd = open(subpath.c_str(), O_RDONLY);
+  if (fd < 0) {
+    LOG(ERROR) << "Can't open directory : " << subpath;
+    return false;
+  }
+  int ret = fchown(fd, uid, gid);
+  close(fd);
   if (ret != 0) {
     LOG(ERROR) << "Failed to change owner of: " << subpath;
     return false;
