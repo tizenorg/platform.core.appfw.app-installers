@@ -218,13 +218,9 @@ bool StepParseManifest::FillPackageInfo(manifest_x* manifest) {
   // set installed_storage if package is installed
   // this is internal field in package manager but after reading configuration
   // we must know it
-  if (manifest_location_ == ManifestLocation::INSTALLED ||
-      manifest_location_ == ManifestLocation::RECOVERY) {
-    std::string storage = QueryStorageForPkgId(manifest->package,
-                                               context_->uid.get());
-    if (!storage.empty())
-      manifest->installed_storage = strdup(storage.c_str());
-  }
+  std::string storage = QueryStorageForPkgId(manifest->package,
+                                            context_->uid.get());
+  manifest->installed_storage = strdup(storage.c_str());
 
   if (ui_application_list) {
     manifest->mainapp_id =

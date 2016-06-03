@@ -353,10 +353,12 @@ bool QueryPrivilegesForPkgId(const std::string& pkg_id, uid_t uid,
 }
 
 std::string QueryStorageForPkgId(const std::string& pkg_id, uid_t uid) {
+  // initial & default : internal
+  std::string installed_location = "installed_internal";
   pkgmgrinfo_pkginfo_h package_info;
   if (pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), uid, &package_info)
       != PMINFO_R_OK) {
-    return "";
+    return installed_location;
   }
 
   pkgmgrinfo_installed_storage storage;
@@ -365,17 +367,12 @@ std::string QueryStorageForPkgId(const std::string& pkg_id, uid_t uid) {
   pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
 
   if (!ok)
-    return "";
+    return installed_location;
 
-  // TODO(t.iwanek): enum is used in pkgmgr API, whereas here we assign internal
-  // values known to pkgmgr
-  if (storage == PMINFO_INTERNAL_STORAGE) {
-    return "installed_internal";
-  } else if (storage == PMINFO_EXTERNAL_STORAGE) {
-    return "installed_external";
-  } else {
-    return "";
-  }
+  if (storage == PMINFO_EXTERNAL_STORAGE)
+    installed_location = "installed_external";
+
+  return installed_location;
 }
 
 bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode) {
