@@ -49,14 +49,6 @@ Step::Status StepMountInstall::process() {
       strdup(zip_destination_path.c_str());
 
   bf::path mount_point = GetMountLocation(context_->pkg_path.get());
-  if (!bf::exists(mount_point)) {
-    bs::error_code error;
-    bf::create_directories(mount_point, error);
-    if (error) {
-      LOG(ERROR) << "Failed to create mount point directory: " << mount_point;
-      return Status::APP_DIR_ERROR;
-    }
-  }
   TzipInterface tzip_final(mount_point);
   if (!tzip_final.MountZip(zip_destination_path)) {
     LOG(ERROR) << "Failed to mount zip package in installation path";
@@ -74,8 +66,7 @@ Step::Status StepMountInstall::clean() {
     LOG(ERROR) << "Failed to unmount zip package after installation";
     return Status::APP_DIR_ERROR;
   }
-  bs::error_code error;
-  bf::remove(mount_point, error);
+
   return Status::OK;
 }
 
