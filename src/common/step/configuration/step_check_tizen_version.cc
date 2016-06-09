@@ -6,6 +6,8 @@
 
 #include <manifest_parser/utils/version_number.h>
 
+#include <string>
+
 #include "common/installer_context.h"
 
 namespace {
