@@ -139,7 +139,7 @@ std::string QueryStorageForPkgId(const std::string& pkg_id, uid_t uid) {
   pkgmgrinfo_pkginfo_h package_info;
   if (pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), uid, &package_info)
       != PMINFO_R_OK) {
-    return installed_location;
+    return "";
   }
 
   pkgmgrinfo_installed_storage storage;
@@ -148,7 +148,7 @@ std::string QueryStorageForPkgId(const std::string& pkg_id, uid_t uid) {
   pkgmgrinfo_pkginfo_destroy_pkginfo(package_info);
 
   if (!ok)
-    return installed_location;
+    return "";
 
   if (storage == PMINFO_EXTERNAL_STORAGE)
     installed_location = "installed_external";
