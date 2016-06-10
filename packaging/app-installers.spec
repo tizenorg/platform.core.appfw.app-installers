@@ -70,7 +70,8 @@ cp %{SOURCE1001} .
 %build
 %cmake . -DCMAKE_BUILD_TYPE=%{?build_type:%build_type} \
          -DTIZEN_FULL_VERSION=%{tizen_full_version} \
-	 -DUNITDIR=%{_unitdir}
+         -DUNITDIR=%{_unitdir} \
+         -DUNITDIR_USER=%{_unitdir_user}
 make %{?_smp_mflags}
 
 %install
@@ -92,6 +93,8 @@ make %{?_smp_mflags}
 %{_unitdir}/pkgdir-tool.service
 %{_bindir}/pkg_initdb
 %attr(0755,root,root) %{_sysconfdir}/gumd/useradd.d/10_package-manager-add.post
+%{_bindir}/pkg_recovery
+%{_unitdir_user}/package-recovery.service
 %license LICENSE
 
 %files devel
