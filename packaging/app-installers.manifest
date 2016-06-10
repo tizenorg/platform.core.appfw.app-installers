@@ -3,7 +3,7 @@
                 <domain name="_" />
         </request>
         <assign>
-                <filesystem path="/usr/bin/pkgdir-tool" exec_label="User" />
-                <filesystem path="/usr/bin/pkg_initdb" exec_label="User" />
+                <filesystem path="/usr/bin/pkgdir-tool" label="System" exec_label="none" />
+                <filesystem path="/usr/bin/pkg_initdb" label="System" exec_label="none" />
         </assign>
 </manifest>
