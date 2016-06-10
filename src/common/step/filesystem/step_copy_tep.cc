@@ -9,6 +9,7 @@
 #include <cstring>
 #include <string>
 
+#include "common/backup_paths.h"
 #include "common/utils/file_util.h"
 
 namespace common_installer {
@@ -45,8 +46,17 @@ Step::Status StepCopyTep::process() {
   context_->pkg_path.set(
     context_->root_application_path.get() / context_->pkgid.get());
 
-  bf::path tep_path =
-      context_->pkg_path.get() / "tep" / context_->tep_path.get().filename();
+  bf::path tep_path;
+  if (context_->external_storage) {
+    tep_path = GetExternalTepPath(context_->request_mode.get(),
+                                  context_->uid.get());
+  } else {
+    tep_path = GetInternalTepPath(context_->pkg_path.get());
+  }
+
+  // Keep filename of app store supplied file. Filename contains hash that
+  // appstore uses to identify version of tep on device.
+  tep_path /= context_->tep_path.get().filename();
 
   if (!bf::exists(tep_path.parent_path())) {
     bs::error_code error;
@@ -77,8 +87,20 @@ Step::Status StepCopyTep::process() {
 }
 
 Step::Status StepCopyTep::undo() {
-  if (bf::exists(context_->tep_path.get()))
-    bf::remove_all(context_->tep_path.get());
+  bs::error_code error;
+  if (bf::exists(context_->tep_path.get())) {
+    bf::remove_all(context_->tep_path.get(), error);
+  }
+
+  // remove tep file is installed outside package path
+  if (context_->external_storage) {
+    bf::path tep_path = GetExternalTepPath(context_->request_mode.get(),
+                                           context_->uid.get());
+    tep_path /= context_->tep_path.get().filename();
+    if (bf::exists(tep_path)) {
+      bf::remove_all(tep_path, error);
+    }
+  }
   return Status::OK;
 }
 

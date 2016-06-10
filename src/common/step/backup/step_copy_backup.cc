@@ -122,7 +122,7 @@ bool StepCopyBackup::Backup() {
       }
     } else {
       if (!MoveFile(iter->path(), backup_path_ / iter->path().filename())) {
-        LOG(ERROR) << "Fail to backup package file of: " << iter->path();
+        LOG(ERROR) << "Fail to backup package file: " << iter->path();
         return false;
       }
     }
@@ -144,9 +144,16 @@ bool StepCopyBackup::MoveMountPointContent(const boost::filesystem::path& from,
         LOG(ERROR) << "Fail to backup package directory of: " << iter->path();
         return false;
       }
+    } else if (bf::is_symlink(iter->path())) {
+      bs::error_code error;
+      bf::copy_symlink(iter->path(), to / iter->path().filename(), error);
+      if (error) {
+        LOG(ERROR) << "Failed to backup package symlink: " << iter->path();
+        return false;
+      }
     } else {
       if (!MoveFile(iter->path(), to / iter->path().filename())) {
-        LOG(ERROR) << "Fail to backup package file of: " << iter->path();
+        LOG(ERROR) << "Fail to backup package file: " << iter->path();
         return false;
       }
     }

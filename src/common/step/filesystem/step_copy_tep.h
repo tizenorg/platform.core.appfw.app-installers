@@ -17,7 +17,7 @@ namespace filesystem {
 
 /**
  * \brief step responsible for moving/copying TEP files from designated path to
- *        final installed package destination during INSTALLATION/UPDATE.
+ *        final installed package destination during INSTALLATION.
  *        Used by WGT and TPK
  */
 class StepCopyTep : public Step {
