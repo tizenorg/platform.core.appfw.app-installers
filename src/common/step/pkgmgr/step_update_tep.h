@@ -16,6 +16,14 @@
 namespace common_installer {
 namespace pkgmgr {
 
+/**
+ * @brief The StepUpdateTep class
+ *        Handles preserving tep package file during update if there is no new
+ *        tep supplied.
+ *
+ * During normal update mode, new package directory is created. Therefore, tep
+ * package must be copied to new location.
+ */
 class StepUpdateTep : public Step {
  public:
   using Step::Step;
