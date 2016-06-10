@@ -18,8 +18,16 @@ class StepMoveInstalledStorage : public Step {
   Status process() override;
 
   Status clean() override { return Status::OK; }
-  Status undo() override { return Status::OK; }
+  Status undo() override;
   Status precheck() override { return Status::OK; }
+
+ private:
+  void SetTepPaths();
+  bool MoveTep();
+  bool MoveBackTep();
+
+  boost::filesystem::path old_location_;
+  boost::filesystem::path new_location_;
 
   STEP_NAME(MoveInstalledStorage)
 };
