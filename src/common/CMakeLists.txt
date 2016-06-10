@@ -50,6 +50,7 @@ SET(SRCS
   step/filesystem/step_remove_icons.cc
   step/filesystem/step_remove_per_user_storage_directories.cc
   step/filesystem/step_remove_temporary_directory.cc
+  step/filesystem/step_remove_tep.cc
   step/filesystem/step_remove_zip_image.cc
   step/filesystem/step_unzip.cc
   step/mount/step_mount_install.cc
