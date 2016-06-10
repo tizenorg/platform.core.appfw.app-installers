@@ -1,4 +1,5 @@
 ADD_SUBDIRECTORY(common)
 ADD_SUBDIRECTORY(pkg_initdb)
+ADD_SUBDIRECTORY(pkg_recovery)
 ADD_SUBDIRECTORY(pkgdir_tool)
 ADD_SUBDIRECTORY(unit_tests)
