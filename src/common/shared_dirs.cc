@@ -37,6 +37,7 @@
 #include <vector>
 #include <tuple>
 
+#include "common/backup_paths.h"
 #include "common/security_registration.h"
 #include "common/pkgmgr_registration.h"
 #include "common/utils/base64.h"
@@ -62,7 +63,6 @@ const std::vector<const char*> kEntries = {
 const char kTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
-const char kExternalStorageDirPrefix[] = "SDCardA1";
 const int32_t kPWBufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 const int32_t kGRBufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
 
@@ -309,9 +309,7 @@ std::string GetDirectoryPathForInternalStorage() {
 }
 
 std::string GetDirectoryPathForExternalStorage() {
-  const char* storage_path = tzplatform_mkpath(TZ_SYS_MEDIA,
-                                               kExternalStorageDirPrefix);
-  return std::string(storage_path);
+  return GetExternalCardPath().string();
 }
 
 bool PerformInternalDirectoryCreationForUser(uid_t user,
@@ -327,21 +325,21 @@ bool PerformInternalDirectoryCreationForUser(uid_t user,
 
 bool PerformExternalDirectoryCreationForUser(uid_t user,
                                              const std::string& pkgid) {
+  bf::path storage_path = GetExternalCardPath();
+
   // TODO(t.iwanek): trusted in this context means that we have signature
   // this argument is not longer needed as all package must be signed
   // so that trusted directory may be labeled correctly by security-manager in
   // all cases. This parameter and its propagation should be removed.
   bool trusted = true;
 
-  const char* storage_path = tzplatform_mkpath(TZ_SYS_MEDIA,
-                                               kExternalStorageDirPrefix);
   const bool set_permissions = false;
   if (!bf::exists(storage_path)) {
     LOG(WARNING) << "External storage (SD Card) is not mounted.";
     return false;
   }
 
-  bf::path storage_apps_path = bf::path(storage_path) / "apps";
+  bf::path storage_apps_path = storage_path / "apps";
   if (!bf::exists(storage_apps_path)) {
     bs::error_code error;
     bf::create_directories(storage_apps_path, error);
@@ -360,8 +358,7 @@ bool PerformExternalDirectoryCreationForUser(uid_t user,
 
 bool PerformExternalDirectoryDeletionForUser(uid_t user,
                                              const std::string& pkgid) {
-  const char* storage_path = tzplatform_mkpath(TZ_SYS_MEDIA,
-                                               kExternalStorageDirPrefix);
+  bf::path storage_path = GetExternalCardPath();
   if (!bf::exists(storage_path)) {
     LOG(WARNING) << "External storage (SD Card) is not mounted.";
     return false;

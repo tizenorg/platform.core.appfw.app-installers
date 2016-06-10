@@ -6,8 +6,13 @@
 #define COMMON_BACKUP_PATHS_H_
 
 #include <boost/filesystem/path.hpp>
+#include <unistd.h>
 
 #include <string>
+
+#include "common/request.h"
+
+// TODO(t.iwanek): rename this file from "backup_paths.h" to "paths.h"
 
 namespace common_installer {
 
@@ -85,6 +90,34 @@ boost::filesystem::path GetZipPackageLocation(
  * @return full path of package mount point
  */
 boost::filesystem::path GetMountLocation(
+    const boost::filesystem::path& pkg_path);
+
+/**
+ * @brief GetExternalCardPath
+ *        Returns full path to mounted filesystem of sd card
+ *
+ * @return path
+ */
+boost::filesystem::path GetExternalCardPath();
+
+/**
+ * @brief GetExternalTepPath
+ *        Returns external installation location for tep package
+ * @param request_mode request type
+ * @param uid user id of request
+ *
+ * @return full directory path
+ */
+boost::filesystem::path GetExternalTepPath(RequestMode request_mode, uid_t uid);
+
+/**
+ * @brief GetInternalTepPath
+ *        Returns internal installation location for tep package
+ * @param package path of installation request
+ *
+ * @return full directory path
+ */
+boost::filesystem::path GetInternalTepPath(
     const boost::filesystem::path& pkg_path);
 
 }  // namespace common_installer

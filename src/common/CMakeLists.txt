@@ -51,8 +51,10 @@ SET(SRCS
   step/filesystem/step_remove_icons.cc
   step/filesystem/step_remove_per_user_storage_directories.cc
   step/filesystem/step_remove_temporary_directory.cc
+  step/filesystem/step_remove_tep.cc
   step/filesystem/step_remove_zip_image.cc
   step/filesystem/step_unzip.cc
+  step/filesystem/step_update_tep.cc
   step/mount/step_mount_install.cc
   step/mount/step_mount_unpacked.cc
   step/mount/step_mount_update.cc
@@ -65,7 +67,6 @@ SET(SRCS
   step/pkgmgr/step_run_parser_plugins.cc
   step/pkgmgr/step_unregister_app.cc
   step/pkgmgr/step_update_app.cc
-  step/pkgmgr/step_update_tep.cc
   step/rds/step_rds_modify.cc
   step/rds/step_rds_parse.cc
   step/recovery/step_open_recovery_file.cc
