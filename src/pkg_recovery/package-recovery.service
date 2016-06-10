@@ -1,0 +1,6 @@
+[Unit]
+Description=Installation Recovery Service
+Requires=dbus.service
+
+[Service]
+ExecStart=/usr/bin/pkg_recovery
