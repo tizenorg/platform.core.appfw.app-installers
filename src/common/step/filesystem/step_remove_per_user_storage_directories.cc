@@ -8,13 +8,15 @@
 #include <vector>
 
 #include "common/installer_context.h"
+#include "common/pkgdir_tool_request.h"
 #include "common/shared_dirs.h"
 
 namespace common_installer {
 namespace filesystem {
 
 Step::Status StepRemovePerUserStorageDirectories::process() {
-  if (GLOBAL_USER != context_->uid.get()) return Step::Status::OK;
+  if (context_->request_mode.get() != RequestMode::GLOBAL)
+    return Step::Status::OK;
 
   std::string package_id = context_->pkgid.get();
 
