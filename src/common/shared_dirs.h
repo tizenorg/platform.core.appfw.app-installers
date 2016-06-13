@@ -6,6 +6,7 @@
 #define COMMON_SHARED_DIRS_H_
 
 #include <boost/filesystem/path.hpp>
+#include <pkgmgrinfo_basic.h>
 
 #include <string>
 #include <vector>
@@ -29,21 +30,20 @@ using PkgList = std::vector<PkgInfo>;
  * \brief Performs a creation of directories for specific user in internal storage
  *
  * \param pkgid id of package
- * \param author_id id of author
+ * \param trusted is package trusted
  * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
- *
  */
 bool PerformInternalDirectoryCreationForUser(uid_t uid,
                                              const std::string& pkgid,
-                                             const std::string& author_id);
+                                             bool trusted);
 
 /**
  * \brief Performs a creation of directories for specific user in external storage
  *
  * \param pkgid id of package
- * \param author_id id of author
+ * \param trusted is package trusted
  * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
@@ -51,20 +51,30 @@ bool PerformInternalDirectoryCreationForUser(uid_t uid,
  */
 bool PerformExternalDirectoryCreationForUser(uid_t uid,
                                              const std::string& pkgid,
-                                             const std::string& author_id);
+                                             bool trusted);
+
+/**
+ * \brief Performs a removal of directories for specific user in external storage
+ * \param user id of user
+ * \param pkgid id of package
+ *
+ * \return true if succeed, false otherwise
+ */
+bool PerformExternalDirectoryDeletionForUser(uid_t user,
+                                            const std::string& pkgid);
 
 /**
  * \brief Performs a creation of directories in internal storage
  *
  * \param pkgid id of package
- * \param author_id id of author
+ * \param trusted is package trusted
  * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
  *
  */
 bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 const std::string& author_id);
+                                                 bool trusted);
 
 /**
  * \brief Performs a creation of directories in external storage (eg. SD card)
@@ -77,17 +87,15 @@ bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
  *
  */
 bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 const std::string& author_id);
+                                                 bool trusted);
 
 /**
- * \brief Performs deletion of directories
- *
- * \param pkg_path package path
+ * \brief Performs a removal of directories in external storage (eg. SD card)
+ * \param pkgid id of package
  *
  * \return true if succeed, false otherwise
- *
  */
-bool PerformDirectoryDeletionForAllUsers(const std::string& pkgid);
+bool PerformExternalDirectoryDeletionForAllUsers(const std::string& pkgid);
 
 /**
  * \brief Helper function fetching information about packages

@@ -32,9 +32,6 @@ class StepCreatePerUserStorageDirectories : public common_installer::Step {
   Status precheck() override { return Status::OK; }
 
   STEP_NAME(CreatePerUserStorageDirectories)
-
- private:
-  bool CreateExternalStorageDir();
 };
 
 }  // namespace filesystem

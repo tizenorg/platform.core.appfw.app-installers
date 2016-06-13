@@ -15,8 +15,8 @@ namespace common_installer {
 namespace filesystem {
 
 common_installer::Step::Status StepCreatePerUserStorageDirectories::process() {
-  if (!CreateExternalStorageDir()) return Step::Status::APP_DIR_ERROR;
-  if (GLOBAL_USER != context_->uid.get()) return Step::Status::OK;
+  if (context_->request_mode.get() != RequestMode::GLOBAL)
+    return Step::Status::OK;
 
   std::string package_id = context_->pkgid.get();
   LOG(INFO) << "Creating per-user directories for package: " << package_id;
@@ -32,49 +32,6 @@ common_installer::Step::Status StepCreatePerUserStorageDirectories::process() {
   }
 
   return Status::OK;
-}
-
-bool StepCreatePerUserStorageDirectories::CreateExternalStorageDir() {
-  auto manifest = context_->manifest_data.get();
-    bool has_external_storage_priv = false;
-    for (const char* priv : GListRange<char*>(manifest->privileges)) {
-      if (strcmp(priv, common::privileges::kPrivForExternalAppData) == 0) {
-        has_external_storage_priv = true;
-        LOG(DEBUG) << "External storage privilege has been found.";
-        break;
-      }
-    }
-    if (!has_external_storage_priv) {
-      LOG(DEBUG) << "External storage privilege not found, skipping.";
-      return true;
-    }
-    std::vector<std::string> pkg_ids = { context_->pkgid.get() };
-    auto pkg_list = CreatePkgInformationList(context_->uid.get(), pkg_ids);
-
-    if (pkg_list.empty()) {
-      LOG(ERROR) << "Could not create pkg information list.";
-      return false;
-    }
-
-    PkgInfo pkg = *pkg_list.begin();
-
-    switch (context_->request_mode.get()) {
-      case RequestMode::GLOBAL: {
-        LOG(DEBUG) << "Creating external directories for all users";
-        PerformExternalDirectoryCreationForAllUsers(pkg.pkg_id,
-                                                    pkg.author_id);
-      }
-      break;
-      case RequestMode::USER: {
-        LOG(DEBUG) << "Creating external directories for user: "
-            << context_->uid.get();
-        PerformExternalDirectoryCreationForUser(context_->uid.get(),
-                                                pkg.pkg_id,
-                                                pkg.author_id);
-      }
-      break;
-    }
-    return true;
 }
 
 }  // namespace filesystem
