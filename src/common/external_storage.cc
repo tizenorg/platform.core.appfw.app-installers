@@ -155,6 +155,11 @@ bool ExternalStorage::Initialize(
   int ret = 0;
   switch (type_) {
   case RequestType::Install:
+    ret = handle_->interface.client_usr_force_clean(pkgid_.c_str(), uid_);
+    if (ret) {
+      LOG(ERROR) << "force_clean failed";
+      break;
+    }
     ret = handle_->interface.client_usr_pre_install(pkgid_.c_str(), glist,
                                                     external_size, uid_);
     break;
