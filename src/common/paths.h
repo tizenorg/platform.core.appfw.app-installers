@@ -2,8 +2,8 @@
 // Use of this source code is governed by an apache-2.0 license that can be
 // found in the LICENSE file.
 
-#ifndef COMMON_BACKUP_PATHS_H_
-#define COMMON_BACKUP_PATHS_H_
+#ifndef COMMON_PATHS_H_
+#define COMMON_PATHS_H_
 
 #include <boost/filesystem/path.hpp>
 #include <unistd.h>
@@ -11,8 +11,6 @@
 #include <string>
 
 #include "common/request.h"
-
-// TODO(t.iwanek): rename this file from "backup_paths.h" to "paths.h"
 
 namespace common_installer {
 
@@ -122,4 +120,4 @@ boost::filesystem::path GetInternalTepPath(
 
 }  // namespace common_installer
 
-#endif  // COMMON_BACKUP_PATHS_H_
+#endif  // COMMON_PATHS_H_

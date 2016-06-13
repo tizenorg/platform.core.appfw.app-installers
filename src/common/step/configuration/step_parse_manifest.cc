@@ -31,7 +31,7 @@
 #include <vector>
 
 #include "common/app_installer.h"
-#include "common/backup_paths.h"
+#include "common/paths.h"
 #include "common/installer_context.h"
 #include "common/pkgmgr_registration.h"
 #include "common/step/step.h"
