@@ -286,18 +286,26 @@ bool RequestUserDirectoryOperation(const char* method,
   GDBusProxy* proxy = g_dbus_proxy_new_sync(con, G_DBUS_PROXY_FLAGS_NONE,
       nullptr, kDBusServiceName, kDBusObjectPath, kDBusInterfaceName, nullptr,
       &err);
-  if (!proxy || err) {
-    LOG(ERROR) << "Failed to get dbus proxy: " << err->message;
-    g_error_free(err);
+  if (!proxy) {
+    std::string err_msg;
+    if (err) {
+      err_msg = std::string(err->message);
+      g_error_free(err);
+    }
+    LOG(ERROR) << "Failed to get dbus proxy: " << err_msg;
     g_object_unref(con);
     return false;
   }
   GVariant* r = g_dbus_proxy_call_sync(proxy, method,
       g_variant_new("(s)", pkgid.c_str()), G_DBUS_CALL_FLAGS_NONE, -1, nullptr,
       &err);
-  if (!r || err) {
-    LOG(ERROR) << "Failed to request: " << err->message;
-    g_error_free(err);
+  if (!r) {
+    std::string err_msg;
+    if (err) {
+      err_msg = std::string(err->message);
+      g_error_free(err);
+    }
+    LOG(ERROR) << "Failed to request: " << err_msg;
     g_object_unref(proxy);
     g_object_unref(con);
     return false;
