@@ -41,8 +41,8 @@ Step::Status StepCheckRestriction::process() {
     return Status::ERROR;
 
   int mode;
-  int ret = pkgmgr_client_usr_get_pkg_restriction_mode(
-      pc, nullptr, &mode, context_->uid.get());
+  int ret = pkgmgr_client_usr_get_restriction_mode(
+      pc, &mode, context_->uid.get());
   if (ret != PKGMGR_R_OK) {
     LOG(ERROR) << "Failed to get restriction mode bit";
     pkgmgr_client_free(pc);
