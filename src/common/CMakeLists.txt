@@ -2,11 +2,11 @@
 SET(SRCS
   privileges.cc
   app_installer.cc
-  backup_paths.cc
   certificate_validation.cc
   external_storage.cc
   feature_validator.cc
   installer_context.cc
+  paths.cc
   pkgdir_tool_request.cc
   plugins/plugin_factory.cc
   plugins/plugin_manager.cc

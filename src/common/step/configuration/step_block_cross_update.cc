@@ -6,7 +6,7 @@
 
 #include <boost/filesystem/operations.hpp>
 
-#include "common/backup_paths.h"
+#include "common/paths.h"
 
 namespace bf = boost::filesystem;
 
