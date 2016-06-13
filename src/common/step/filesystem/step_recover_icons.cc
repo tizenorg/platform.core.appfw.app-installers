@@ -8,7 +8,7 @@
 #include <boost/system/error_code.hpp>
 #include <pkgmgr-info.h>
 
-#include "common/backup_paths.h"
+#include "common/paths.h"
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
 

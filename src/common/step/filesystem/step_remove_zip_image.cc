@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "common/backup_paths.h"
+#include "common/paths.h"
 #include "common/pkgmgr_registration.h"
 
 namespace bs = boost::system;

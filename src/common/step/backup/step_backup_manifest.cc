@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <string>
 
-#include "common/backup_paths.h"
+#include "common/paths.h"
 #include "common/utils/file_util.h"
 
 namespace bf = boost::filesystem;

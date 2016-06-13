@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "common/backup_paths.h"
+#include "common/paths.h"
 #include "common/request.h"
 #include "common/tzip_interface.h"
 #include "common/utils/file_util.h"

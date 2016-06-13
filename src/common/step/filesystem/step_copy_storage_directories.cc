@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "common/backup_paths.h"
+#include "common/paths.h"
 #include "utils/file_util.h"
 
 namespace bf = boost::filesystem;

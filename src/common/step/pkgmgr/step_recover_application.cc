@@ -6,7 +6,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include "common/backup_paths.h"
+#include "common/paths.h"
 #include "common/pkgmgr_registration.h"
 
 namespace bf = boost::filesystem;
