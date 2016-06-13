@@ -6,6 +6,7 @@ SET(SRCS
   certificate_validation.cc
   external_storage.cc
   installer_context.cc
+  pkgdir_tool_request.cc
   plugins/plugin_factory.cc
   plugins/plugin_manager.cc
   plugins/plugin_list_parser.cc

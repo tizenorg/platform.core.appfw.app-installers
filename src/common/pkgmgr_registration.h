@@ -154,7 +154,7 @@ bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode);
 
 /**
  * \brief Adapter interface for external PkgMgr module used for checking
- *        if given package is installed/registered
+ *        if given package is installed/registered per given uid only
  *
  * \param pkg_id package id
  * \param uid user id

@@ -63,9 +63,6 @@ const char kTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
 const char kExternalStorageDirPrefix[] = "SDCardA1";
-const char kDBusServiceName[] = "org.tizen.pkgdir_tool";
-const char kDBusObjectPath[] = "/org/tizen/pkgdir_tool";
-const char kDBusInterfaceName[] = "org.tizen.pkgdir_tool";
 const int32_t kPWBufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 const int32_t kGRBufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
 
@@ -177,7 +174,7 @@ bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
 }
 
 bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
-                       const std::string& author_id,
+                       bool trusted,
                        uid_t uid, gid_t gid, const bool set_permissions) {
   bf::path base_dir = app_dir / pkgid;
   if (bf::exists(base_dir)) {
@@ -187,7 +184,7 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
 
   bs::error_code error;
   std::vector<const char*> dirs(kEntries);
-  if (!author_id.empty())
+  if (trusted)
     dirs.push_back(kTrustedDir);
   for (auto& entry : dirs) {
     bf::path subpath = base_dir / entry;
@@ -228,7 +225,7 @@ bf::path GetDirectoryPathForStorage(uid_t user, std::string apps_prefix) {
 }
 
 bool CreateUserDirectories(uid_t user, const std::string& pkgid,
-    const std::string& author_id,
+    bool trusted,
     const std::string& apps_prefix, const bool set_permissions) {
   struct passwd pwd;
   struct passwd *pwd_result;
@@ -256,7 +253,7 @@ bool CreateUserDirectories(uid_t user, const std::string& pkgid,
     return false;
   }
 
-  if (!CreateDirectories(apps_rw, pkgid, author_id,
+  if (!CreateDirectories(apps_rw, pkgid, trusted,
       pwd.pw_uid, pwd.pw_gid, set_permissions)) {
     return false;
   }
@@ -272,52 +269,6 @@ bool DeleteDirectories(const bf::path& app_dir, const std::string& pkgid) {
     return false;
   }
   return true;
-}
-
-bool RequestUserDirectoryOperation(const char* method,
-    const std::string& pkgid) {
-  GError* err = nullptr;
-  GDBusConnection* con = g_bus_get_sync(G_BUS_TYPE_SYSTEM, nullptr, &err);
-  if (!con || err) {
-    LOG(WARNING) << "Failed to get dbus connection: " << err->message;
-    g_error_free(err);
-    return false;
-  }
-  GDBusProxy* proxy = g_dbus_proxy_new_sync(con, G_DBUS_PROXY_FLAGS_NONE,
-      nullptr, kDBusServiceName, kDBusObjectPath, kDBusInterfaceName, nullptr,
-      &err);
-  if (!proxy) {
-    std::string err_msg;
-    if (err) {
-      err_msg = std::string(err->message);
-      g_error_free(err);
-    }
-    LOG(ERROR) << "Failed to get dbus proxy: " << err_msg;
-    g_object_unref(con);
-    return false;
-  }
-  GVariant* r = g_dbus_proxy_call_sync(proxy, method,
-      g_variant_new("(s)", pkgid.c_str()), G_DBUS_CALL_FLAGS_NONE, -1, nullptr,
-      &err);
-  if (!r) {
-    std::string err_msg;
-    if (err) {
-      err_msg = std::string(err->message);
-      g_error_free(err);
-    }
-    LOG(ERROR) << "Failed to request: " << err_msg;
-    g_object_unref(proxy);
-    g_object_unref(con);
-    return false;
-  }
-  bool result;
-  g_variant_get(r, "(b)", &result);
-
-  g_variant_unref(r);
-  g_object_unref(proxy);
-  g_object_unref(con);
-
-  return result;
 }
 
 user_list GetUserList() {
@@ -365,18 +316,23 @@ std::string GetDirectoryPathForExternalStorage() {
 
 bool PerformInternalDirectoryCreationForUser(uid_t user,
                                              const std::string& pkgid,
-                                             const std::string& author_id) {
+                                             bool trusted) {
   const char* internal_storage_prefix = tzplatform_getenv(TZ_SYS_HOME);
   const bool set_permissions = true;
-  if (!CreateUserDirectories(user, pkgid, author_id,
+  if (!CreateUserDirectories(user, pkgid, trusted,
                              internal_storage_prefix, set_permissions))
     return false;
   return true;
 }
 
 bool PerformExternalDirectoryCreationForUser(uid_t user,
-                                             const std::string& pkgid,
-                                             const std::string& author_id) {
+                                             const std::string& pkgid) {
+  // TODO(t.iwanek): trusted in this context means that we have signature
+  // this argument is not longer needed as all package must be signed
+  // so that trusted directory may be labeled correctly by security-manager in
+  // all cases. This parameter and its propagation should be removed.
+  bool trusted = true;
+
   const char* storage_path = tzplatform_mkpath(TZ_SYS_MEDIA,
                                                kExternalStorageDirPrefix);
   const bool set_permissions = false;
@@ -396,34 +352,64 @@ bool PerformExternalDirectoryCreationForUser(uid_t user,
     }
   }
 
-  if (CreateUserDirectories(user, pkgid, author_id,
+  if (CreateUserDirectories(user, pkgid, trusted,
                             storage_apps_path.c_str(), set_permissions)) {
   }
   return true;
 }
 
+bool PerformExternalDirectoryDeletionForUser(uid_t user,
+                                             const std::string& pkgid) {
+  const char* storage_path = tzplatform_mkpath(TZ_SYS_MEDIA,
+                                               kExternalStorageDirPrefix);
+  if (!bf::exists(storage_path)) {
+    LOG(WARNING) << "External storage (SD Card) is not mounted.";
+    return false;
+  }
+
+  bf::path storage_apps_path = bf::path(storage_path) / "apps";
+  return DeleteDirectories(
+      GetDirectoryPathForStorage(user, storage_apps_path.string()), pkgid);
+}
+
 bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 const std::string& author_id) {
+                                                 bool trusted) {
   user_list list = GetUserList();
   for (auto l : list) {
     if (!PerformInternalDirectoryCreationForUser(std::get<0>(l),
                                                  pkgid,
-                                                 author_id))
+                                                 trusted))
       LOG(ERROR) << "Could not create internal storage directories for user: "
                  << std::get<0>(l);
   }
   return true;
 }
 
-bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 const std::string& author_id) {
+bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid) {
   user_list list = GetUserList();
   for (auto l : list) {
     if (!PerformExternalDirectoryCreationForUser(std::get<0>(l),
-                                                 pkgid,
-                                                 author_id))
+                                                 pkgid))
       LOG(WARNING) << "Could not create external storage directories for user: "
                    << std::get<0>(l);
+  }
+  return true;
+}
+
+bool PerformExternalDirectoryDeletionForAllUsers(const std::string& pkgid) {
+  user_list list = GetUserList();
+  for (auto l : list) {
+    uid_t uid = std::get<0>(l);
+    LOG(DEBUG) << "Deleting directories for user: " << uid;
+    if (IsPackageInstalled(pkgid, uid)) {
+      LOG(DEBUG) << "Package: " << pkgid << " for uid: " << uid
+                 << " still exists. Skipping";
+      continue;
+    }
+
+    if (!PerformExternalDirectoryDeletionForUser(uid, pkgid))
+      LOG(WARNING) << "Could not delete external storage directories for user: "
+                   << uid;
   }
   return true;
 }
@@ -483,6 +469,24 @@ bool DeleteUserDirectories(const std::string& pkgid) {
   return true;
 }
 
+bool DeleteUserExternalDirectories(const std::string& pkgid) {
+  user_list list = GetUserList();
+  for (auto l : list) {
+    if (ci::IsPackageInstalled(pkgid, std::get<0>(l))) {
+      LOG(INFO) << pkgid << " is installed for user " << std::get<0>(l);
+      continue;
+    }
+
+    LOG(DEBUG) << "Deleting external directories of " << pkgid
+               << ", for uid: " << std::get<0>(l);
+    bf::path apps_rw(std::get<2>(l) / "apps_rw");
+    if (!DeleteDirectories(apps_rw, pkgid)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 
 bool CopyUserDirectories(const std::string& pkgid) {
   user_list list = GetUserList();
@@ -502,22 +506,6 @@ bool CopyUserDirectories(const std::string& pkgid) {
           std::get<0>(l), std::get<1>(l)))
         return false;
     }
-  }
-  return true;
-}
-
-bool RequestCopyUserDirectories(const std::string& pkgid) {
-  if (!RequestUserDirectoryOperation("CopyUserDirs", pkgid)) {
-    LOG(INFO) << "Try to copy user directories directly";
-    return CopyUserDirectories(pkgid);
-  }
-  return true;
-}
-
-bool RequestDeleteUserDirectories(const std::string& pkgid) {
-  if (!RequestUserDirectoryOperation("DeleteUserDirs", pkgid)) {
-    LOG(INFO) << "Try to delete user directories directly";
-    return DeleteUserDirectories(pkgid);
   }
   return true;
 }
