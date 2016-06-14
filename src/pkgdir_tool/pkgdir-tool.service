@@ -3,5 +3,3 @@ Description=User Directory Creator
 
 [Service]
 ExecStart=/usr/bin/pkgdir-tool
-CapabilityBoundingSet=~CAP_MAC_ADMIN
-CapabilityBoundingSet=~CAP_MAC_OVERRIDE
