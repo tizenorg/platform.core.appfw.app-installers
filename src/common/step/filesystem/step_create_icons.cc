@@ -25,8 +25,12 @@ Step::Status StepCreateIcons::undo() {
 }
 
 Step::Status StepCreateIcons::process() {
-  bf::path destination =
-      getIconPath(context_->uid.get(), context_->is_preload_request.get());
+  const char *extra_icon_path = getIconPath(context_->uid.get(),
+      context_->is_preload_request.get());
+  if (!extra_icon_path)
+    return Status::OK;
+
+  bf::path destination = extra_icon_path;
   bs::error_code error;
   if (!bf::exists(destination)) {
     bf::create_directories(destination, error);
