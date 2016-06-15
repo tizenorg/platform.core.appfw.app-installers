@@ -39,7 +39,7 @@
 
 #include "common/paths.h"
 #include "common/security_registration.h"
-#include "common/pkgmgr_registration.h"
+#include "common/pkgmgr_query.h"
 #include "common/utils/base64.h"
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
@@ -398,7 +398,7 @@ bool PerformExternalDirectoryDeletionForAllUsers(const std::string& pkgid) {
   for (auto l : list) {
     uid_t uid = std::get<0>(l);
     LOG(DEBUG) << "Deleting directories for user: " << uid;
-    if (IsPackageInstalled(pkgid, uid)) {
+    if (QueryIsPackageInstalled(pkgid, uid)) {
       LOG(DEBUG) << "Package: " << pkgid << " for uid: " << uid
                  << " still exists. Skipping";
       continue;
@@ -451,7 +451,7 @@ bool DeleteSkelDirectories(const std::string& pkgid) {
 bool DeleteUserDirectories(const std::string& pkgid) {
   user_list list = GetUserList();
   for (auto l : list) {
-    if (ci::IsPackageInstalled(pkgid, std::get<0>(l))) {
+    if (ci::QueryIsPackageInstalled(pkgid, std::get<0>(l))) {
       LOG(INFO) << pkgid << " is installed for user " << std::get<0>(l);
       continue;
     }
@@ -469,7 +469,7 @@ bool DeleteUserDirectories(const std::string& pkgid) {
 bool DeleteUserExternalDirectories(const std::string& pkgid) {
   user_list list = GetUserList();
   for (auto l : list) {
-    if (ci::IsPackageInstalled(pkgid, std::get<0>(l))) {
+    if (ci::QueryIsPackageInstalled(pkgid, std::get<0>(l))) {
       LOG(INFO) << pkgid << " is installed for user " << std::get<0>(l);
       continue;
     }

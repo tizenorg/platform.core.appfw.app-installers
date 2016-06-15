@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "common/pkgmgr_registration.h"
+#include "common/pkgmgr_query.h"
 
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
@@ -59,7 +59,7 @@ Step::Status StepRemoveFiles::process() {
   if (context_->external_storage)
     context_->external_storage->Commit();
 
-  if (IsPackageInstalled(context_->pkgid.get(), GLOBAL_USER)) {
+  if (QueryIsPackageInstalled(context_->pkgid.get(), GLOBAL_USER)) {
     for (bf::directory_iterator itr(pkg_path); itr != bf::directory_iterator();
         ++itr) {
       if (bf::is_directory(itr->status())) {

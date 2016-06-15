@@ -34,8 +34,9 @@
 #include "common/app_installer.h"
 #include "common/feature_validator.h"
 #include "common/installer_context.h"
-#include "common/pkgmgr_registration.h"
 #include "common/paths.h"
+#include "common/pkgmgr_registration.h"
+#include "common/pkgmgr_query.h"
 #include "common/step/step.h"
 #include "common/utils/glist_range.h"
 

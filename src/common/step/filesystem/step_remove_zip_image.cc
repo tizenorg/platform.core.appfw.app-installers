@@ -13,6 +13,7 @@
 
 #include "common/paths.h"
 #include "common/pkgmgr_registration.h"
+#include "common/pkgmgr_query.h"
 
 namespace bs = boost::system;
 namespace bf = boost::filesystem;
