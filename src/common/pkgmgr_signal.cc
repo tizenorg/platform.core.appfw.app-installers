@@ -13,7 +13,7 @@
 #include <map>
 #include <vector>
 
-#include "common/pkgmgr_registration.h"
+#include "common/pkgmgr_query.h"
 
 namespace {
 

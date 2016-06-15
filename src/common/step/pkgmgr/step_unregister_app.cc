@@ -15,6 +15,7 @@
 #include <string>
 
 #include "common/pkgmgr_registration.h"
+#include "common/pkgmgr_query.h"
 #include "common/utils/file_util.h"
 
 namespace common_installer {

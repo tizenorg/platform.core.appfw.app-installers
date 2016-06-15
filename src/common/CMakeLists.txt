@@ -18,6 +18,7 @@ SET(SRCS
   pkgmgr_interface.cc
   pkgmgr_registration.cc
   pkgmgr_signal.cc
+  pkgmgr_query.cc
   rds_parser.cc
   recovery_file.cc
   request.cc
