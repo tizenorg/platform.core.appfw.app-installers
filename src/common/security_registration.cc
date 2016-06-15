@@ -14,7 +14,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "common/pkgmgr_registration.h"
+#include "common/pkgmgr_query.h"
 #include "common/utils/glist_range.h"
 
 namespace bf = boost::filesystem;
