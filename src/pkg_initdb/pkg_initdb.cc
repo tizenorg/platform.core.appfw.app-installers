@@ -119,22 +119,29 @@ int main(int argc, char *argv[]) {
   }
 
   bpo::options_description options("Allowed options");
-  options.add_options()
-      ("uid,u", bpo::value<int>()->default_value(kUserRoot), "user id")
-      ("help,h", "display this help message");
   bpo::variables_map opt_map;
+  uid_t uid;
   try {
+    options.add_options()
+        ("uid,u", bpo::value<int>()->default_value(kUserRoot), "user id")
+        ("help,h", "display this help message");
     bpo::store(bpo::parse_command_line(argc, argv, options), opt_map);
     if (opt_map.count("help")) {
       std::cerr << options << std::endl;
       return -1;
     }
     bpo::notify(opt_map);
+    uid = opt_map["uid"].as<int>();
   } catch (const bpo::error& error) {
     std::cerr << error.what() << std::endl;
     return -1;
+  } catch (const boost::bad_any_cast& error) {
+    std::cerr << error.what() << std::endl;
+    return -1;
+  } catch (const boost::bad_lexical_cast& error) {
+    std::cerr << error.what() << std::endl;
+    return -1;
   }
-  uid_t uid = opt_map["uid"].as<int>();
 
   RemoveOldDatabases(uid);
 
