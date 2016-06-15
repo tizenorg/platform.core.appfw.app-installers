@@ -57,9 +57,9 @@ const std::vector<const char*> kEntries = {
   {"data/"},
   {"shared/"},
   {"shared/cache/"},
+  {"shared/trusted"},
 };
 
-const char kTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
 const char kExternalStorageDirPrefix[] = "SDCardA1";
@@ -177,7 +177,6 @@ bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
 }
 
 bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
-                       bool trusted,
                        uid_t uid, gid_t gid, const bool set_permissions) {
   bf::path base_dir = app_dir / pkgid;
   if (bf::exists(base_dir)) {
@@ -187,8 +186,6 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
 
   bs::error_code error;
   std::vector<const char*> dirs(kEntries);
-  if (trusted)
-    dirs.push_back(kTrustedDir);
   for (auto& entry : dirs) {
     bf::path subpath = base_dir / entry;
     bf::create_directories(subpath, error);
@@ -228,7 +225,6 @@ bf::path GetDirectoryPathForStorage(uid_t user, std::string apps_prefix) {
 }
 
 bool CreateUserDirectories(uid_t user, const std::string& pkgid,
-    bool trusted,
     const std::string& apps_prefix, const bool set_permissions) {
   struct passwd pwd;
   struct passwd *pwd_result;
@@ -256,8 +252,8 @@ bool CreateUserDirectories(uid_t user, const std::string& pkgid,
     return false;
   }
 
-  if (!CreateDirectories(apps_rw, pkgid, trusted,
-      pwd.pw_uid, pwd.pw_gid, set_permissions)) {
+  if (!CreateDirectories(apps_rw, pkgid, pwd.pw_uid, pwd.pw_gid,
+                         set_permissions)) {
     return false;
   }
   return true;
@@ -363,20 +359,8 @@ std::string GetDirectoryPathForExternalStorage() {
   return std::string(storage_path);
 }
 
-bool PerformInternalDirectoryCreationForUser(uid_t user,
-                                             const std::string& pkgid,
-                                             bool trusted) {
-  const char* internal_storage_prefix = tzplatform_getenv(TZ_SYS_HOME);
-  const bool set_permissions = true;
-  if (!CreateUserDirectories(user, pkgid, trusted,
-                             internal_storage_prefix, set_permissions))
-    return false;
-  return true;
-}
-
 bool PerformExternalDirectoryCreationForUser(uid_t user,
-                                             const std::string& pkgid,
-                                             bool trusted) {
+                                             const std::string& pkgid) {
   const char* storage_path = tzplatform_mkpath(TZ_SYS_MEDIA,
                                                kExternalStorageDirPrefix);
   const bool set_permissions = false;
@@ -396,7 +380,7 @@ bool PerformExternalDirectoryCreationForUser(uid_t user,
     }
   }
 
-  if (CreateUserDirectories(user, pkgid, trusted,
+  if (CreateUserDirectories(user, pkgid,
                             storage_apps_path.c_str(), set_permissions)) {
   }
   return true;
@@ -416,26 +400,11 @@ bool PerformExternalDirectoryDeletionForUser(uid_t user,
       GetDirectoryPathForStorage(user, storage_apps_path.string()), pkgid);
 }
 
-bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 bool trusted) {
-  user_list list = GetUserList();
-  for (auto l : list) {
-    if (!PerformInternalDirectoryCreationForUser(std::get<0>(l),
-                                                 pkgid,
-                                                 trusted))
-      LOG(ERROR) << "Could not create internal storage directories for user: "
-                 << std::get<0>(l);
-  }
-  return true;
-}
-
-bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 bool trusted) {
+bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid) {
   user_list list = GetUserList();
   for (auto l : list) {
     if (!PerformExternalDirectoryCreationForUser(std::get<0>(l),
-                                                 pkgid,
-                                                 trusted))
+                                                 pkgid))
       LOG(WARNING) << "Could not create external storage directories for user: "
                    << std::get<0>(l);
   }
