@@ -27,31 +27,16 @@ struct PkgInfo {
 using PkgList = std::vector<PkgInfo>;
 
 /**
- * \brief Performs a creation of directories for specific user in internal storage
- *
- * \param pkgid id of package
- * \param trusted is package trusted
- * \param create_skel_directories flag
- *
- * \return true if succeed, false otherwise
- */
-bool PerformInternalDirectoryCreationForUser(uid_t uid,
-                                             const std::string& pkgid,
-                                             bool trusted);
-
-/**
  * \brief Performs a creation of directories for specific user in external storage
  *
  * \param pkgid id of package
- * \param trusted is package trusted
  * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
  *
  */
 bool PerformExternalDirectoryCreationForUser(uid_t uid,
-                                             const std::string& pkgid,
-                                             bool trusted);
+                                             const std::string& pkgid);
 
 /**
  * \brief Performs a removal of directories for specific user in external storage
@@ -64,30 +49,15 @@ bool PerformExternalDirectoryDeletionForUser(uid_t user,
                                             const std::string& pkgid);
 
 /**
- * \brief Performs a creation of directories in internal storage
- *
- * \param pkgid id of package
- * \param trusted is package trusted
- * \param create_skel_directories flag
- *
- * \return true if succeed, false otherwise
- *
- */
-bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 bool trusted);
-
-/**
  * \brief Performs a creation of directories in external storage (eg. SD card)
  *
  * \param pkgid id of package
- * \param author_id id of author
  * \param create_skel_directories flag
  *
  * \return true if succeed, false otherwise
  *
  */
-bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 bool trusted);
+bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid);
 
 /**
  * \brief Performs a removal of directories in external storage (eg. SD card)
