@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "common/backup_paths.h"
-#include "common/pkgmgr_registration.h"
+#include "common/pkgmgr_query.h"
 
 namespace bs = boost::system;
 namespace bf = boost::filesystem;

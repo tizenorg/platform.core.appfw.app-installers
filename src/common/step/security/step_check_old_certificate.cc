@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <string>
 
-#include "common/pkgmgr_registration.h"
+#include "common/pkgmgr_query.h"
 
 namespace common_installer {
 namespace security {

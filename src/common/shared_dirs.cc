@@ -38,7 +38,7 @@
 #include <tuple>
 
 #include "common/security_registration.h"
-#include "common/pkgmgr_registration.h"
+#include "common/pkgmgr_query.h"
 #include "common/utils/base64.h"
 #include "common/utils/file_util.h"
 #include "common/utils/glist_range.h"
