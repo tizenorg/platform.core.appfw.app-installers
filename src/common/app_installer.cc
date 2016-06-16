@@ -85,11 +85,12 @@ AppInstaller::Result AppInstaller::Run() {
   }
 
   if (it != itEnd) {
-    LOG(ERROR) << "Failure occurs";
+    LOG(ERROR) << "Failure occurs in step: " << (*it)->name();
     do {
       try {
         if ((*it)->undo() != Step::Status::OK) {
-          LOG(ERROR) << "Error during undo operation, but continuing...";
+          LOG(ERROR) << "Error during undo operation(" << (*it)->name()
+                     << "), but continuing...";
           ret = Result::UNDO_ERROR;
         }
       } catch (const std::exception& err) {
@@ -102,7 +103,7 @@ AppInstaller::Result AppInstaller::Run() {
     for (auto& step : steps_) {
       try {
         if (step->clean() != Step::Status::OK) {
-          LOG(ERROR) << "Error during clean operation";
+          LOG(ERROR) << "Error during clean operation(" << step->name() << ")";
           ret = Result::CLEANUP_ERROR;
           break;
         }
