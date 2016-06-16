@@ -14,6 +14,9 @@ namespace common_installer {
 namespace pkgmgr {
 
 Step::Status StepCheckRestriction::process() {
+  if (context_->installation_mode.get() == InstallationMode::OFFLINE)
+    return Status::OK;
+
   int type;
   switch (context_->request_type.get()) {
   case ci::RequestType::Install:
