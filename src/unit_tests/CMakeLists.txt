@@ -17,6 +17,6 @@ APPLY_PKG_CONFIG(signature_unittest PUBLIC
 # FindGTest module do not sets all needed libraries in GTEST_LIBRARIES and
 # GTest main libraries is still missing, so additional linking of
 # GTEST_MAIN_LIBRARIES is needed.
-target_link_libraries(signature_unittest PUBLIC ${TARGET_LIBNAME_COMMON} ${GTEST_MAIN_LIBRARIES} pthread)
+TARGET_LINK_LIBRARIES(signature_unittest PUBLIC ${TARGET_LIBNAME_COMMON} ${GTEST_MAIN_LIBRARIES} pthread)
 
 INSTALL(TARGETS signature_unittest DESTINATION ${BINDIR}/${DESTINATION_DIR})
