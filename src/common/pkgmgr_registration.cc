@@ -380,7 +380,8 @@ bool IsPackageInstalled(const std::string& pkg_id, RequestMode request_mode) {
   int ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), getuid(),
                                                &handle);
   if (ret != PMINFO_R_OK) {
-    LOG(ERROR) << "Failed to call pkgmgrinfo_pkginfo_get_usr_pkginfo";
+    if (ret != PMINFO_R_ENOENT)
+      LOG(ERROR) << "Failed to call pkgmgrinfo_pkginfo_get_usr_pkginfo";
     return false;
   }
   bool is_global = false;
@@ -402,7 +403,8 @@ bool IsPackageInstalled(const std::string& pkg_id, uid_t uid) {
   pkgmgrinfo_pkginfo_h handle;
   int ret = pkgmgrinfo_pkginfo_get_usr_pkginfo(pkg_id.c_str(), uid, &handle);
   if (ret != PMINFO_R_OK) {
-    LOG(ERROR) << "Failed to call pkgmgrinfo_pkginfo_get_usr_pkginfo";
+    if (ret != PMINFO_R_ENOENT)
+      LOG(ERROR) << "Failed to call pkgmgrinfo_pkginfo_get_usr_pkginfo";
     return false;
   }
 
