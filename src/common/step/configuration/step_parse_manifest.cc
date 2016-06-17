@@ -450,8 +450,9 @@ bool StepParseManifest::FillUIApplication(manifest_x* manifest) {
     if (!application.app_info.landscape_image().empty())
       ui_app->landscapeimg =
           strdup(application.app_info.landscape_image().c_str());
-    ui_app->submode_mainid =
-        strdup(application.app_info.submode_mainid().c_str());
+    if (!application.app_info.submode_mainid().empty())
+      ui_app->submode_mainid =
+          strdup(application.app_info.submode_mainid().c_str());
     ui_app->hwacceleration =
         strdup(application.app_info.hwacceleration().c_str());
     ui_app->onboot = strdup("false");
