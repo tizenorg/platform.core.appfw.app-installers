@@ -91,6 +91,7 @@ make %{?_smp_mflags}
 %{_sysconfdir}/dbus-1/system.d/org.tizen.pkgdir_tool.conf
 %{_unitdir}/pkgdir-tool.service
 %{_bindir}/pkg_initdb
+%{_sysconfdir}/gumd/useradd.d/10_package-manager-add.post
 %license LICENSE
 
 %files devel
