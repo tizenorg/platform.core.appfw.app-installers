@@ -19,7 +19,7 @@ class StepMoveInstalledStorage : public Step {
 
   Status clean() override;
   Status undo() override;
-  Status precheck() override { return Status::OK; }
+  Status precheck() override;
 
  private:
   void SetTepPaths();
