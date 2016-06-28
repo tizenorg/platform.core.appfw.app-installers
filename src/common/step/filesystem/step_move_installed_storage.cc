@@ -9,6 +9,7 @@
 #include <tzplatform_config.h>
 
 #include <string>
+#include <cstring>
 
 #include "common/paths.h"
 #include "common/external_storage.h"
@@ -17,6 +18,12 @@
 
 namespace bf = boost::filesystem;
 namespace bs = boost::system;
+
+namespace {
+
+const char kInternalOnly[] = "internal-only";
+
+}  // namespace
 
 namespace common_installer {
 namespace filesystem {
@@ -58,6 +65,18 @@ Step::Status StepMoveInstalledStorage::undo() {
 Step::Status StepMoveInstalledStorage::clean() {
   if (context_->external_storage)
     context_->external_storage->Commit();
+  return Status::OK;
+}
+
+Step::Status StepMoveInstalledStorage::precheck() {
+  if (context_->manifest_data.get()->installlocation == nullptr) {
+    LOG(ERROR) << "Cannot get installlocation value";
+    return Status::INVALID_VALUE;
+  }
+  if (!strcmp(context_->manifest_data.get()->installlocation, kInternalOnly)) {
+    LOG(ERROR) << "This package is interanl-only";
+    return Status::OPERATION_NOT_ALLOWED;
+  }
   return Status::OK;
 }
 
