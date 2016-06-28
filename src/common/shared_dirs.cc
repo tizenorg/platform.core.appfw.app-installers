@@ -58,9 +58,9 @@ const std::vector<const char*> kEntries = {
   {"data/"},
   {"shared/"},
   {"shared/cache/"},
-  {"shared/trusted/"},
 };
 
+const char kTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
 const int32_t kPWBufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
@@ -174,6 +174,7 @@ bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
 }
 
 bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
+                       bool trusted,
                        uid_t uid, gid_t gid, const bool set_permissions) {
   bf::path base_dir = app_dir / pkgid;
   if (bf::exists(base_dir)) {
@@ -183,6 +184,8 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
 
   bs::error_code error;
   std::vector<const char*> dirs(kEntries);
+  if (trusted)
+    dirs.push_back(kTrustedDir);
   for (auto& entry : dirs) {
     bf::path subpath = base_dir / entry;
     bf::create_directories(subpath, error);
@@ -222,6 +225,7 @@ bf::path GetDirectoryPathForStorage(uid_t user, std::string apps_prefix) {
 }
 
 bool CreateUserDirectories(uid_t user, const std::string& pkgid,
+    bool trusted,
     const std::string& apps_prefix, const bool set_permissions) {
   struct passwd pwd;
   struct passwd *pwd_result;
@@ -249,8 +253,8 @@ bool CreateUserDirectories(uid_t user, const std::string& pkgid,
     return false;
   }
 
-  if (!CreateDirectories(apps_rw, pkgid, pwd.pw_uid, pwd.pw_gid,
-                         set_permissions)) {
+  if (!CreateDirectories(apps_rw, pkgid, trusted,
+      pwd.pw_uid, pwd.pw_gid, set_permissions)) {
     return false;
   }
   return true;
@@ -308,9 +312,27 @@ std::string GetDirectoryPathForExternalStorage() {
   return GetExternalCardPath().string();
 }
 
+bool PerformInternalDirectoryCreationForUser(uid_t user,
+                                             const std::string& pkgid,
+                                             bool trusted) {
+  const char* internal_storage_prefix = tzplatform_getenv(TZ_SYS_HOME);
+  const bool set_permissions = true;
+  if (!CreateUserDirectories(user, pkgid, trusted,
+                             internal_storage_prefix, set_permissions))
+    return false;
+  return true;
+}
+
 bool PerformExternalDirectoryCreationForUser(uid_t user,
                                              const std::string& pkgid) {
   bf::path storage_path = GetExternalCardPath();
+
+  // TODO(t.iwanek): trusted in this context means that we have signature
+  // this argument is not longer needed as all package must be signed
+  // so that trusted directory may be labeled correctly by security-manager in
+  // all cases. This parameter and its propagation should be removed.
+  bool trusted = true;
+
   const bool set_permissions = false;
   if (!bf::exists(storage_path)) {
     LOG(WARNING) << "External storage (SD Card) is not mounted.";
@@ -328,7 +350,7 @@ bool PerformExternalDirectoryCreationForUser(uid_t user,
     }
   }
 
-  if (CreateUserDirectories(user, pkgid,
+  if (CreateUserDirectories(user, pkgid, trusted,
                             storage_apps_path.c_str(), set_permissions)) {
   }
   return true;
@@ -345,6 +367,19 @@ bool PerformExternalDirectoryDeletionForUser(uid_t user,
   bf::path storage_apps_path = bf::path(storage_path) / "apps";
   return DeleteDirectories(
       GetDirectoryPathForStorage(user, storage_apps_path.string()), pkgid);
+}
+
+bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
+                                                 bool trusted) {
+  user_list list = GetUserList();
+  for (auto l : list) {
+    if (!PerformInternalDirectoryCreationForUser(std::get<0>(l),
+                                                 pkgid,
+                                                 trusted))
+      LOG(ERROR) << "Could not create internal storage directories for user: "
+                 << std::get<0>(l);
+  }
+  return true;
 }
 
 bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid) {
