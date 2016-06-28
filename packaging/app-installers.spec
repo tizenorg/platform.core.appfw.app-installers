@@ -37,6 +37,8 @@ BuildRequires:  pkgconfig(aul)
 BuildRequires:  pkgconfig(libgum)
 BuildRequires:  pkgconfig(app2sd)
 BuildRequires:  pkgconfig(capi-system-info)
+BuildRequires:  pkgconfig(vconf)
+BuildRequires:  pkgconfig(vconf-internal-keys)
 
 Requires: ca-certificates-tizen
 Requires: libtzplatform-config
