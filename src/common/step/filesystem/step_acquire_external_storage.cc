@@ -4,12 +4,17 @@
 
 #include "common/step/filesystem/step_acquire_external_storage.h"
 
+#include <vconf.h>
+#include <vconf-internal-keys.h>
+
 #include "common/external_storage.h"
 
 namespace {
 
 const char kInstalledExternally[] = "installed_external";
-const char kPreferExternal[] = "prefer-external";
+const char kInternalOnly[] = "internal-only";
+const char kDefaultStorageVconfKey[] =
+    VCONFKEY_SETAPPL_DEFAULT_MEM_INSTALL_APPLICATIONS_INT;
 
 enum class Storage {
   NONE,
@@ -35,17 +40,30 @@ Step::Status StepAcquireExternalStorage::process() {
   manifest_x* old_manifest = context_->old_manifest_data.get();
 
   Storage storage = Storage::NONE;
+  // in case of update
   if (old_manifest) {
     storage = Storage::INTERNAL;
     if (old_manifest->installed_storage)
       if (!strcmp(old_manifest->installed_storage, kInstalledExternally))
         storage = Storage::EXTERNAL;
+  } else {
+    if (!strcmp(manifest->installlocation, kInternalOnly)) {
+      storage = Storage::INTERNAL;
+    } else {
+      // int type vconf value:
+      // 0 means internal storage, 1 means external storage
+      int default_storage = 0;
+      if (vconf_get_int(kDefaultStorageVconfKey, &default_storage))
+        LOG(WARNING) << "Cannot get default storage type, set internal storage "
+                     << "as default value";
+      if (default_storage == 0)
+        storage = Storage::INTERNAL;
+      else
+        storage = Storage::EXTERNAL;
+    }
   }
 
-  if (storage == Storage::EXTERNAL ||
-      (!strcmp(manifest->installlocation, kPreferExternal) &&
-      storage == Storage::NONE) ||
-      context_->request_type.get() == RequestType::Move) {
+  if (storage == Storage::EXTERNAL)
     context_->external_storage =
         ExternalStorage::AcquireExternalStorage(context_->request_type.get(),
             context_->root_application_path.get(),
@@ -53,7 +71,6 @@ Step::Status StepAcquireExternalStorage::process() {
             context_->pkg_type.get(),
             context_->unpacked_dir_path.get(),
             context_->uid.get());
-  }
 
   if (storage == Storage::EXTERNAL && !context_->external_storage) {
     LOG(ERROR) << "Cannot initialize external storage for installed package";
