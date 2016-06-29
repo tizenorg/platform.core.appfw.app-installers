@@ -503,6 +503,13 @@ bool CopyUserDirectories(const std::string& pkgid) {
           std::get<0>(l), std::get<1>(l)))
         return false;
     }
+    std::string error_message;
+    if (!RegisterSecurityContextForPath(pkgid, dst, std::get<0>(l),
+        &error_message)) {
+      LOG(ERROR) << "Failed to register security context for path: " << dst
+                 << ", error_message: " << error_message;
+      return false;
+    }
   }
   return true;
 }
