@@ -134,11 +134,9 @@ bool CopyDir(const bf::path& src, const bf::path& dst, FSFlag flags) {
         LOG(ERROR) << "Unable to create destination directory" << dst;
         return false;
       }
-      if (flags & FS_COPY_XATTR) {
-        if (attr_copy_file(src.c_str(), dst.c_str(), NULL, NULL)) {
-          LOG(ERROR) << "attr_copy_file failed";
-          return false;
-        }
+      if (attr_copy_file(src.c_str(), dst.c_str(), NULL, NULL)) {
+        LOG(ERROR) << "attr_copy_file failed";
+        return false;
       }
     } else {
       if (!(flags & FS_MERGE_DIRECTORIES)) {
@@ -173,11 +171,9 @@ bool CopyDir(const bf::path& src, const bf::path& dst, FSFlag flags) {
           continue;
         bf::copy_file(current, target);
       }
-      if (flags & FS_COPY_XATTR) {
-        if (attr_copy_file(src.c_str(), dst.c_str(), NULL, NULL)) {
-          LOG(ERROR) << "attr_copy_file failed";
-          return false;
-        }
+      if (attr_copy_file(src.c_str(), dst.c_str(), NULL, NULL)) {
+        LOG(ERROR) << "attr_copy_file failed";
+        return false;
       }
     } catch (const bf::filesystem_error& error) {
       LOG(ERROR) << "Failed to copy directory: " << error.what();
