@@ -164,8 +164,8 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
 }
 
 bool PreparePathRequest(const std::string& pkg_id,
-    const boost::filesystem::path& path, uid_t uid, path_req* req,
-    std::string* error_message) {
+    const boost::filesystem::path& path, uid_t uid, bool is_userdir,
+    path_req* req, std::string* error_message) {
   if (pkg_id.empty() || path.empty()) {
     LOG(ERROR) << "Pkgid or path is empty. Both values must be set";
     return false;
@@ -188,7 +188,9 @@ bool PreparePathRequest(const std::string& pkg_id,
   }
 
   app_install_type type =
-      (getuid() == 0) ? SM_APP_INSTALL_PRELOADED : SM_APP_INSTALL_GLOBAL;
+      is_userdir ? SM_APP_INSTALL_LOCAL :
+      getuid() == 0 ? SM_APP_INSTALL_PRELOADED :
+      SM_APP_INSTALL_GLOBAL;
 
   error = security_manager_path_req_set_install_type(req, type);
   if (error != SECURITY_MANAGER_SUCCESS) {
@@ -358,7 +360,7 @@ bool UnregisterSecurityContextForPkgId(const std::string &pkg_id,
 }
 
 bool RegisterSecurityContextForPath(const std::string &pkg_id,
-    const boost::filesystem::path& path, uid_t uid,
+    const boost::filesystem::path& path, uid_t uid, bool is_userdir,
     std::string* error_message) {
   path_req* req;
   int error = security_manager_path_req_new(&req);
@@ -372,7 +374,7 @@ bool RegisterSecurityContextForPath(const std::string &pkg_id,
     return false;
   }
 
-  if (!PreparePathRequest(pkg_id, path, uid, req, error_message)) {
+  if (!PreparePathRequest(pkg_id, path, uid, is_userdir, req, error_message)) {
     LOG(ERROR) << "Failed while preparing security_manager_app_inst_req";
     security_manager_path_req_free(req);
     return false;
