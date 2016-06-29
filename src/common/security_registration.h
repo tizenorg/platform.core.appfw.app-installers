@@ -118,12 +118,13 @@ bool UnregisterSecurityContextForPkgId(const std::string& pkg_id, uid_t uid,
  * \param pkg_id pkgid of given package
  * \param path path for registering
  * \param uid uid
+ * \param is_skel path is skel dir or not
  * \param error_message extra/detailed error message
  *
  * \return true if success
  */
 bool RegisterSecurityContextForPath(const std::string &pkg_id,
-    const boost::filesystem::path& path, uid_t uid,
+    const boost::filesystem::path& path, uid_t uid, bool is_skel,
     std::string* error_message);
 
 }  // namespace common_installer

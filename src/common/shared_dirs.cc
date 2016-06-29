@@ -433,7 +433,7 @@ bool CreateSkelDirectories(const std::string& pkgid) {
 
   std::string error_message;
   if (!RegisterSecurityContextForPath(pkgid, path,
-      tzplatform_getuid(TZ_SYS_GLOBALAPP_USER), &error_message)) {
+      tzplatform_getuid(TZ_SYS_GLOBALAPP_USER), true, &error_message)) {
     LOG(ERROR) << "Failed to register security context for path: " << path
                << ", error_message: " << error_message;
     return false;
@@ -502,6 +502,13 @@ bool CopyUserDirectories(const std::string& pkgid) {
       if (!SetPackageDirectoryOwnerAndPermissions(iter->path(),
           std::get<0>(l), std::get<1>(l)))
         return false;
+    }
+    std::string error_message;
+    if (!RegisterSecurityContextForPath(pkgid, dst, std::get<0>(l), false,
+        &error_message)) {
+      LOG(ERROR) << "Failed to register security context for path: " << dst
+                 << ", error_message: " << error_message;
+      return false;
     }
   }
   return true;
