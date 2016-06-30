@@ -31,7 +31,8 @@ const std::map<ci::RequestType, const char*> kEventStr = {
   {ci::RequestType::MountInstall, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
   {ci::RequestType::MountUpdate, PKGMGR_INSTALLER_UPGRADE_EVENT_STR},
   {ci::RequestType::ManifestDirectInstall, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
-  {ci::RequestType::ManifestDirectUpdate, PKGMGR_INSTALLER_UPGRADE_EVENT_STR}
+  {ci::RequestType::ManifestDirectUpdate, PKGMGR_INSTALLER_UPGRADE_EVENT_STR},
+  {ci::RequestType::Unknown, PKGMGR_INSTALLER_UNKNOWN_KEY_STR}
 };
 
 }  // namespace
