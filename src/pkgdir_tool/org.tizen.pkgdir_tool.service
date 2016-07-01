@@ -1,5 +1,4 @@
 [D-BUS Service]
-User=root
 Name=org.tizen.pkgdir_tool
 Exec=/bin/false
 SystemdService=pkgdir-tool.service
