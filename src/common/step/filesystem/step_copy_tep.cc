@@ -60,7 +60,7 @@ Step::Status StepCopyTep::process() {
 
   if (!bf::exists(tep_path.parent_path())) {
     bs::error_code error;
-    bf::create_directory(tep_path.parent_path(), error);
+    bf::create_directories(tep_path.parent_path(), error);
     if (error) {
       LOG(ERROR) << "Cannot create tep parent directory";
       return Status::APP_DIR_ERROR;
