@@ -176,6 +176,7 @@ bool StepConfigure::SetupRootAppDirectory() {
   if (context_->root_application_path.get().empty()) {
     std::string root_app_path =
         GetRootAppPath(context_->is_preload_request.get());
+    LOG(INFO) << "jungh root path [" << root_app_path << "]";
     if (root_app_path.empty())
       return false;
 
@@ -197,6 +198,11 @@ bool StepConfigure::SetupRootAppDirectory() {
 
 void StepConfigure::SetupRequestMode() {
   context_->request_mode.set(GetRequestMode());
+  //jungh.yeon temp
+  if (context_->request_mode.get() == RequestMode::USER)
+    LOG(INFO) << "jungh requestmode user";
+  else
+    LOG(INFO) << "juingh requestmode global";
 }
 
 void StepConfigure::SetupRequestType() {
