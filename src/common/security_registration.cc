@@ -36,7 +36,8 @@ const std::vector<std::pair<const char*,
   {"shared/trusted", SECURITY_MANAGER_PATH_TRUSTED_RW},
   {"tep", SECURITY_MANAGER_PATH_RO},
   {".image", SECURITY_MANAGER_PATH_RO},
-  {"tmp", SECURITY_MANAGER_PATH_RW}
+  {"tmp", SECURITY_MANAGER_PATH_RW},
+  {".mmc", SECURITY_MANAGER_PATH_RO}
 };
 
 bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,

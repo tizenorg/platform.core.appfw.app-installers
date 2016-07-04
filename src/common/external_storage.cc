@@ -93,6 +93,9 @@ bool ExternalStorage::Finalize(bool success) {
     break;
   }
   case RequestType::Move: {
+    ret = handle_->interface.client_usr_post_move(pkgid_.c_str(),
+                               static_cast<app2ext_move_type_t>(move_type_),
+                               uid_);
     break;
   }
   default:
@@ -189,9 +192,11 @@ bool ExternalStorage::Initialize(
       break;
     }
 
-    ret = handle_->interface.client_usr_move(pkgid_.c_str(), glist,
-                                     (app2ext_move_type_t)move_type_,
-                                     uid_);
+    ret = handle_->interface.client_usr_disable(pkgid_.c_str(), uid_);
+
+    ret = handle_->interface.client_usr_pre_move(pkgid_.c_str(), glist,
+                               static_cast<app2ext_move_type_t>(move_type_),
+                               uid_);
     break;
   case RequestType::Uninstall:
     ret = handle_->interface.client_usr_pre_uninstall(pkgid_.c_str(), uid_);
