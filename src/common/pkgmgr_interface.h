@@ -68,6 +68,13 @@ class PkgMgrInterface {
   RequestType GetRequestType() const;
 
   /**
+   * Returns uid passed from pkgmgr_installer
+   *
+   * \return uid retrieved from pkgmgr_installer
+   */
+  uid_t GetUid() const;
+
+  /**
    * Returns Request info passed from pkgmgr_installer
    *
    * \return request info retrieved from pkgmgr_installer
