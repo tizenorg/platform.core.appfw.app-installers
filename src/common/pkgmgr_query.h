@@ -89,11 +89,12 @@ std::string QueryStorageForPkgId(const std::string& pkg_id, uid_t uid);
  *
  * \param pkg_id package id
  * \param request_mode request mode
+ * \param uid user id
  *
  * \return true if package is installed
  */
 bool QueryIsPackageInstalled(const std::string& pkg_id,
-                             RequestMode request_mode);
+                             RequestMode request_mode, uid_t uid);
 
 /**
  * \brief Adapter interface for external PkgMgr module used for checking
