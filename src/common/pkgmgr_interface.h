@@ -67,6 +67,10 @@ class PkgMgrInterface {
    */
   RequestType GetRequestType() const;
 
+	//jungh should add description
+	uid_t GetUid() const;
+
+
   /**
    * Returns Request info passed from pkgmgr_installer
    *
