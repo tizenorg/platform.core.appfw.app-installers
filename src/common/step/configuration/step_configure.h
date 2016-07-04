@@ -56,7 +56,7 @@ class StepConfigure : public Step {
 
  private:
   bool SetupRootAppDirectory();
-  void SetupRequestMode();
+  void SetupRequestMode(uid_t uid);
   void SetupRequestType();
   void SetupFileCreationMask();
   void SetupIsPreloadRequest();

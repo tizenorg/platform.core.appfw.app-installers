@@ -157,7 +157,7 @@ const char* PkgmgrSignal::GetResultKey(Step::Status result) const {
 bool PkgmgrSignal::SendAppids(const std::string& type,
                               const std::string& pkgid) const {
   std::vector<std::string> appids;
-  if (!QueryAppidsForPkgId(pkgid, &appids, getuid()))
+  if (!QueryAppidsForPkgId(pkgid, &appids, pkgmgr_installer_get_uid(pi_)))
     return true;
   for (auto& appid : appids) {
     if (pkgmgr_installer_send_app_uninstall_signal(pi_, type.c_str(),
