@@ -35,6 +35,7 @@ SET(SRCS
   step/configuration/step_fail.cc
   step/configuration/step_parse_manifest.cc
   step/filesystem/step_acquire_external_storage.cc
+  step/filesystem/step_change_owner.cc
   step/filesystem/step_clear_data.cc
   step/filesystem/step_copy.cc
   step/filesystem/step_copy_storage_directories.cc
