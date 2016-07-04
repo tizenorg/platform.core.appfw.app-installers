@@ -35,12 +35,11 @@ bool CheckAndKill(const std::string& appid, uid_t uid) {
   return true;
 }
 
-bool KillApp(const std::string& appid) {
+bool KillApp(const std::string& appid, const uid_t uid) {
   uid_t* uids = nullptr;
   int ret = -1;
   int i;
 
-  uid_t uid = getuid();
   if (uid == 0 || uid == tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) {
     ret = sd_get_uids(&uids);
     if (ret < 0 || (ret == 0 || uids == nullptr)) {
@@ -73,7 +72,7 @@ Step::Status StepKillApps::process() {
       context_->old_manifest_data.get() : context_->manifest_data.get();
   for (application_x* app :
        GListRange<application_x*>(old_manifest->application)) {
-    (void) KillApp(app->appid);
+    (void) KillApp(app->appid, context_->uid.get());
   }
   return Status::OK;
 }

@@ -145,6 +145,10 @@ RequestType PkgMgrInterface::GetRequestType() const {
   }
 }
 
+uid_t PkgMgrInterface::GetUid() const {
+  return pkgmgr_installer_get_uid(pi_);
+}
+
 const char* PkgMgrInterface::GetRequestInfo() const {
   return pkgmgr_installer_get_request_info(pi_);
 }
