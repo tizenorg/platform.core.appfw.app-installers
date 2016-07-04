@@ -93,6 +93,9 @@ bool ExternalStorage::Finalize(bool success) {
     break;
   }
   case RequestType::Move: {
+    ret = handle_->interface.client_usr_post_move(pkgid_.c_str(),
+                                     (app2ext_move_type_t)move_type_,
+                                     uid_);
     break;
   }
   default:
@@ -189,7 +192,7 @@ bool ExternalStorage::Initialize(
       break;
     }
 
-    ret = handle_->interface.client_usr_move(pkgid_.c_str(), glist,
+    ret = handle_->interface.client_usr_pre_move(pkgid_.c_str(), glist,
                                      (app2ext_move_type_t)move_type_,
                                      uid_);
     break;
