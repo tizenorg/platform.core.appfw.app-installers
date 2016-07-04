@@ -55,6 +55,12 @@ Step::Status StepMoveInstalledStorage::undo() {
   return Status::OK;
 }
 
+Step::Status StepMoveInstalledStorage::clean() {
+  if (context_->external_storage)
+    context_->external_storage->Commit();
+  return Status::OK;
+}
+
 void StepMoveInstalledStorage::SetTepPaths() {
   old_location_ = context_->manifest_data.get()->tep_name;
   if (context_->is_move_to_external.get()) {

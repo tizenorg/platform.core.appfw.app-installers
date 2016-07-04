@@ -17,7 +17,7 @@ class StepMoveInstalledStorage : public Step {
 
   Status process() override;
 
-  Status clean() override { return Status::OK; }
+  Status clean() override;
   Status undo() override;
   Status precheck() override { return Status::OK; }
 
