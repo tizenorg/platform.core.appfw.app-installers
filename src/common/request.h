@@ -41,14 +41,14 @@ enum class RequestMode : int {
  *
  * \return request mode
  */
-RequestMode GetRequestMode();
+RequestMode GetRequestMode(uid_t uid);
 
 /**
  * Get apps root path for current request (GLOBAL/USER)
  *
  * \return root application path (eg. $HOME/apps_rw/)
  */
-const char *GetRootAppPath(bool is_preload);
+const char* GetRootAppPath(bool is_preload, uid_t uid);
 
 }  // namespace common_installer
 
