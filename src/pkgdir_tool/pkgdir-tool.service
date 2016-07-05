@@ -2,5 +2,6 @@
 Description=User Directory Creator
 
 [Service]
+User=app_fw
+Group=app_fw
 ExecStart=/usr/bin/pkgdir-tool
-CapabilityBoundingSet=~CAP_MAC_ADMIN
