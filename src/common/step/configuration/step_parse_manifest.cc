@@ -729,6 +729,8 @@ bool StepParseManifest::FillSplashScreen(application_x* app,
       splashscreen->operation = strdup(splash_screen.operation().c_str());
     if (!splash_screen.colordepth().empty())
       splashscreen->color_depth = strdup(splash_screen.colordepth().c_str());
+    else
+      splashscreen->color_depth = strdup("24");
     app->splashscreens = g_list_append(app->splashscreens, splashscreen);
   }
   return true;
