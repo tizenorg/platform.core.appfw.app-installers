@@ -178,20 +178,7 @@ bool ExternalStorage::Initialize(
       break;
     }
 
-    ret = app2ext_usr_get_app_location(pkgid_.c_str(), uid_);
-    if (ret == APP2EXT_ERROR_INVALID_ARGUMENTS) {
-      LOG(ERROR) << "Failed to get installed location [" << pkgid_ << "]";
-      ret = -1;
-      break;
-    }
-
-    if ((ret == APP2EXT_SD_CARD && move_type_ == APP2EXT_MOVE_TO_EXT) ||
-        (ret == APP2EXT_INTERNAL_MEM && move_type_ == APP2EXT_MOVE_TO_PHONE)) {
-      LOG(ERROR) << "Invalid move request [" << move_type_ << "]";
-      ret = -1;
-      break;
-    }
-
+    // try umount before move
     ret = handle_->interface.client_usr_disable(pkgid_.c_str(), uid_);
 
     ret = handle_->interface.client_usr_pre_move(pkgid_.c_str(), glist,
