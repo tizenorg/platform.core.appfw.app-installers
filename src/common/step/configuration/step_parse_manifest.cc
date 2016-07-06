@@ -47,6 +47,7 @@ namespace {
 
 const char kManifestFileName[] = "tizen-manifest.xml";
 const char kInstalledInternally[] = "installed_internal";
+const utils::VersionNumber ver30("3.0");
 
 }  // namepsace
 
@@ -821,9 +822,13 @@ Step::Status StepParseManifest::process() {
     return Step::Status::PARSE_ERROR;
   }
 
-  // TODO: need to be checked more (offline mode and store app)
-  //if (!CheckFeatures())
-  //  return Status::PARSE_ERROR;
+  std::string str_ver(manifest->api_version);
+  utils::VersionNumber api_version(str_ver);
+  if (api_version >= ver30 &&
+      context_->installation_mode.get() != InstallationMode::OFFLINE) {
+    if (!CheckFeatures())
+      return Status::PARSE_ERROR;
+  }
 
   if (manifest_location_ == ManifestLocation::INSTALLED) {
     // recovery of tep value for installed package
