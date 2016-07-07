@@ -136,6 +136,10 @@ RequestType PkgMgrInterface::GetRequestType() const {
         return RequestType::MountInstall;
       else
         return RequestType::MountUpdate;
+    case PKGMGR_REQ_DISABLE_PKG:
+      return RequestType::DisablePkg;
+    case PKGMGR_REQ_ENABLE_PKG:
+      return RequestType::EnablePkg;
     default:
       return RequestType::Unknown;
   }
