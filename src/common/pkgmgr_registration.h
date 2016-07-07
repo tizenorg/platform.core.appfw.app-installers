@@ -87,6 +87,32 @@ bool UpdateTepInfoInPkgmgr(const boost::filesystem::path& tep_path,
                            uid_t uid,
                            RequestMode request_mode);
 
+/**
+ * \brief Adapter interface for external PkgMgr module used for updating
+ *        pkg disable info about package within pkgmgr
+ *
+ * \param pkgid package pkgid
+ * \param uid user id
+ * \param request_mode current request mode
+ *
+ * \return true if success
+ */
+bool DisablePkgInPkgmgr(const std::string& pkgid, uid_t uid,
+                        RequestMode request_mode);
+
+/**
+ * \brief Adapter interface for external PkgMgr module used for updating
+ *        pkg enable info about package within pkgmgr
+ *
+ * \param pkgid package pkgid
+ * \param uid user id
+ * \param request_mode current request mode
+ *
+ * \return true if success
+ */
+bool EnablePkgInPkgmgr(const std::string& pkgid, uid_t uid,
+                        RequestMode request_mode);
+
 }  // namespace common_installer
 
 #endif  // COMMON_PKGMGR_REGISTRATION_H_
