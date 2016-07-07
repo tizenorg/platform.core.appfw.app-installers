@@ -25,7 +25,9 @@ enum class RequestType : int {
   MountInstall,
   MountUpdate,
   ManifestDirectInstall,
-  ManifestDirectUpdate
+  ManifestDirectUpdate,
+  DisablePkg,
+  EnablePkg
 };
 
 /** Request mode (USER vs GLOBAL) */
