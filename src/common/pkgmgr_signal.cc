@@ -32,6 +32,8 @@ const std::map<ci::RequestType, const char*> kEventStr = {
   {ci::RequestType::MountUpdate, PKGMGR_INSTALLER_UPGRADE_EVENT_STR},
   {ci::RequestType::ManifestDirectInstall, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
   {ci::RequestType::ManifestDirectUpdate, PKGMGR_INSTALLER_UPGRADE_EVENT_STR},
+  {ci::RequestType::DisablePkg, PKGMGR_INSTALLER_UNINSTALL_EVENT_STR},
+  {ci::RequestType::EnablePkg, PKGMGR_INSTALLER_INSTALL_EVENT_STR},
   {ci::RequestType::Unknown, PKGMGR_INSTALLER_UNKNOWN_EVENT_STR}
 };
 
