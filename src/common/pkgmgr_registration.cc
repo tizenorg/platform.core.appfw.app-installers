@@ -253,4 +253,30 @@ bool UpdateTepInfoInPkgmgr(const bf::path& tep_path, const std::string& pkgid,
   return true;
 }
 
+bool DisablePkgInPkgmgr(const std::string& pkgid, uid_t uid,
+                        RequestMode request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
+        pkgmgr_parser_update_pkg_disable_info_in_usr_db(pkgid.c_str(), uid, 1) :
+        pkgmgr_parser_update_pkg_disable_info_in_db(pkgid.c_str(), 1);
+  if (ret != 0) {
+    LOG(ERROR) << "Failed to disable pkg: " << pkgid;
+    return false;
+  }
+
+  return true;
+}
+
+bool EnablePkgInPkgmgr(const std::string& pkgid, uid_t uid,
+                        RequestMode request_mode) {
+  int ret = request_mode != RequestMode::GLOBAL ?
+        pkgmgr_parser_update_pkg_disable_info_in_usr_db(pkgid.c_str(), uid, 0) :
+        pkgmgr_parser_update_pkg_disable_info_in_db(pkgid.c_str(), 0);
+  if (ret != 0) {
+    LOG(ERROR) << "Failed to disable pkg: " << pkgid;
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace common_installer
