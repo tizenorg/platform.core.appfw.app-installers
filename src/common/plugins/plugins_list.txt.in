@@ -16,3 +16,4 @@ flag="0x00004000";type="tag";name="watch-application";path="/etc/package-manager
 flag="0x00008000";type="tag";name="widget-application";path="/etc/package-manager/parserlib/libwidget-application.so"
 flag="0x00010000";type="metadata";name="http://tizen.org/metadata/nfc_cardemulation";path="/usr/etc/package-manager/parserlib/metadata/libcardemulation_plugin.so"
 flag="0x00020000";type="metadata";name="http://developer.samsung.com/tizen/metadata/useese";path="/usr/etc/package-manager/parserlib/metadata/libuseese_plugin.so"
+flag="0x00040000";type="tag";name="app-context";path="/etc/package-manager/parserlib/libapp-context.so"
