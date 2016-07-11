@@ -56,7 +56,7 @@ common_installer::Step::Status StepCopyStorageDirectories::process() {
     return Status::OK;
   if (!MoveAppStorage(backup_path_,
                       context_->pkg_path.get(),
-                      kDataLocation)) {
+                      kDataLocation, true)) {
     LOG(ERROR) << "Failed to restore private directory for widget in update";
     return Status::APP_DIR_ERROR;
   }
