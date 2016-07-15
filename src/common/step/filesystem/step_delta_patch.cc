@@ -32,6 +32,8 @@ const char kSharedTrusted[] = "shared/trusted";
 const char kDeltaFile[] = "delta_info.xml";
 const char kXDeltaBinary[] = "/usr/bin/xdelta3";
 
+const char kExternalMemoryMountPoint[] = ".mmc";
+
 bool ValidateDeltaInfo(const delta::DeltaInfo& info) {
   for (auto& item : info.added()) {
     if (ci::HasDirectoryClimbing(item))
@@ -190,6 +192,35 @@ bool ApplyPatch(const delta::DeltaInfo& info, const bf::path& app_dir,
   return true;
 }
 
+bool CopySkipMount(const bf::path& from, const bf::path& to) {
+  bs::error_code error;
+  bf::create_directory(to, error);
+  if (error) {
+    LOG(ERROR) << "Failed to create target directory";
+    return false;
+  }
+  for (bf::directory_iterator iter(from); iter != bf::directory_iterator();
+       ++iter) {
+    if (iter->path().filename() == kExternalMemoryMountPoint)
+      continue;
+
+    if (bf::is_directory(iter->path())) {
+      if (!ci::CopyDir(iter->path(), to / iter->path().filename())) {
+        LOG(ERROR) << "Failed to create copy of: " << iter->path();
+        return false;
+      }
+    } else {
+      bs::error_code error;
+      bf::copy(iter->path(), to / iter->path().filename(), error);
+      if (error) {
+        LOG(ERROR) << "Failed to create copy of: " << iter->path();
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 }  // namespace
 
 namespace common_installer {
@@ -246,8 +277,10 @@ Step::Status StepDeltaPatch::process() {
     return Status::DELTA_ERROR;
   }
 
-  if (!CopyDir(context_->root_application_path.get() / context_->pkgid.get()
-               / delta_root_, context_->unpacked_dir_path.get())) {
+  if (!CopySkipMount(
+      context_->root_application_path.get() / context_->pkgid.get()
+          / delta_root_,
+      context_->unpacked_dir_path.get())) {
     LOG(ERROR) << "Failed to copy package files";
     return Status::DELTA_ERROR;
   }
