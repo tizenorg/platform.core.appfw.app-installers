@@ -78,26 +78,23 @@ ExternalStorage::~ExternalStorage() {
 bool ExternalStorage::Finalize(bool success) {
   int ret = APP2EXT_STATUS_SUCCESS;
   switch (type_) {
-  case RequestType::Install: {
+  case RequestType::Install:
     ret = handle_->interface.client_usr_post_install(pkgid_.c_str(),
         success ? APP2EXT_STATUS_SUCCESS : APP2EXT_STATUS_FAILED, uid_);
     break;
-  }
-  case RequestType::Update: {
+  case RequestType::Update:
+  case RequestType::Delta:
     ret = handle_->interface.client_usr_post_upgrade(pkgid_.c_str(),
         success ? APP2EXT_STATUS_SUCCESS : APP2EXT_STATUS_FAILED, uid_);
     break;
-  }
-  case RequestType::Uninstall: {
+  case RequestType::Uninstall:
     ret = handle_->interface.client_usr_post_uninstall(pkgid_.c_str(), uid_);
     break;
-  }
-  case RequestType::Move: {
+  case RequestType::Move:
     ret = handle_->interface.client_usr_post_move(pkgid_.c_str(),
                                static_cast<app2ext_move_type_t>(move_type_),
                                uid_);
     break;
-  }
   default:
     assert(false && "Not supported installation mode");
   }

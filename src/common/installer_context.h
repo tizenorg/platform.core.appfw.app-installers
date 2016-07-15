@@ -19,6 +19,7 @@
 #include <utility>
 #include <vector>
 
+#include "common/external_mount.h"
 #include "common/external_storage.h"
 #include "common/pkgmgr_interface.h"
 #include "common/recovery_file.h"
@@ -325,6 +326,11 @@ class InstallerContext {
    * @brief External Storage object if installing in external
    */
   std::unique_ptr<ExternalStorage> external_storage;
+
+  /**
+   * @brief External package mount object if delta update with external
+   */
+  std::unique_ptr<ExternalMount> external_mount;
 };
 
 }  // namespace common_installer
