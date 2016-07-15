@@ -13,32 +13,6 @@
 
 namespace common_installer {
 
-struct PkgInfo {
-  PkgInfo(std::string pkg_id_, std::string api_version_, std::string author_)
-    : pkg_id(pkg_id_),
-      api_version(api_version_),
-      author_id(author_) {}
-
-  std::string pkg_id;
-  std::string api_version;
-  std::string author_id;
-};
-
-using PkgList = std::vector<PkgInfo>;
-
-/**
- * \brief Performs a creation of directories for specific user in internal storage
- *
- * \param pkgid id of package
- * \param trusted is package trusted
- * \param create_skel_directories flag
- *
- * \return true if succeed, false otherwise
- */
-bool PerformInternalDirectoryCreationForUser(uid_t uid,
-                                             const std::string& pkgid,
-                                             bool trusted);
-
 /**
  * \brief Performs a creation of directories for specific user in external storage
  *
@@ -62,19 +36,6 @@ bool PerformExternalDirectoryDeletionForUser(uid_t user,
                                             const std::string& pkgid);
 
 /**
- * \brief Performs a creation of directories in internal storage
- *
- * \param pkgid id of package
- * \param trusted is package trusted
- * \param create_skel_directories flag
- *
- * \return true if succeed, false otherwise
- *
- */
-bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
-                                                 bool trusted);
-
-/**
  * \brief Performs a creation of directories in external storage (eg. SD card)
  *
  * \param pkgid id of package
@@ -92,19 +53,6 @@ bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid);
  * \return true if succeed, false otherwise
  */
 bool PerformExternalDirectoryDeletionForAllUsers(const std::string& pkgid);
-
-/**
- * \brief Helper function fetching information about packages
- *
- * \param pkgs  list of packages requested to fetch information about. If list
- *              is empty, all possible pkg id's are considered.
- *
- * \return pkg_list list containing information about requested packages
- *
- */
-PkgList CreatePkgInformationList(uid_t uid = getuid(),
-                                 const std::vector<std::string>& pkgs =
-    std::vector<std::string>());
 
 /**
  * \brief Create skeleton directories for package
