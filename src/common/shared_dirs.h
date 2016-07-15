@@ -120,11 +120,15 @@ bool CreateSkelDirectories(const std::string& pkgid);
  * \brief Performs deletion of directories
  *
  * \param pkgid package id
+ * \param api_version package api version
+ * \param trusted signed package flag
  *
  * \return true if succeed, false otherwise
  *
  */
-bool DeleteSkelDirectories(const std::string& pkgid);
+bool DeleteSkelDirectories(const std::string& pkgid,
+                           const std::string& api_version,
+                           bool trusted);
 
 /**
  * \brief Delete per-user directories

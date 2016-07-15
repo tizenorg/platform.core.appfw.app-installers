@@ -4,6 +4,8 @@
 
 #include "common/step/filesystem/step_create_storage_directories.h"
 
+#include <manifest_parser/utils/version_number.h>
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
@@ -24,6 +26,7 @@ const char kData[] = "data";
 const char kShared[] = "shared";
 const char kSharedData[] = "data";
 const char kSharedTrusted[] = "trusted";
+const utils::VersionNumber ver30("3.0");
 
 }  // namespace
 
@@ -67,18 +70,44 @@ bool StepCreateStorageDirectories::SubShareDir() {
     return false;
   }
 
-  bf::path shared_data_path = shared_path / kSharedData;
-  bf::create_directory(shared_data_path, error_code);
-  if (error_code) {
-    LOG(ERROR) << "Failed to create shared/data directory for package";
+  manifest_x* manifest = context_->manifest_data.get();
+  if (!manifest) {
+    LOG(ERROR) << "Failed to get manifest info";
     return false;
   }
+  std::string str_ver(manifest->api_version);
+  utils::VersionNumber api_version(str_ver);
 
+  bf::path shared_data_path = shared_path / kSharedData;
   bf::path shared_cache_path = shared_path / kCache;
-  bf::create_directory(shared_cache_path, error_code);
-  if (error_code) {
-    LOG(ERROR) << "Failed to create shared/cache directory for package";
-    return false;
+
+  if (api_version >= ver30) {
+    // remove shared/data & shared/cache (deprecated)
+    bs::error_code error;
+
+    bf::remove_all(shared_data_path, error);
+    if (error) {
+      LOG(ERROR) << "Can't remove dir:" << shared_data_path;
+      return false;
+    }
+
+    bf::remove_all(shared_cache_path, error);
+    if (error) {
+      LOG(ERROR) << "Can't remove dir:" << shared_cache_path;
+      return false;
+    }
+  } else {
+    bf::create_directory(shared_data_path, error_code);
+    if (error_code) {
+      LOG(ERROR) << "Failed to create shared/data directory for package";
+      return false;
+    }
+
+    bf::create_directory(shared_cache_path, error_code);
+    if (error_code) {
+      LOG(ERROR) << "Failed to create shared/cache directory for package";
+      return false;
+    }
   }
 
   return true;
