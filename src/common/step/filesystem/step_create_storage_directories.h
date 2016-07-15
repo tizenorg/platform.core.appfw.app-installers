@@ -39,6 +39,7 @@ class StepCreateStorageDirectories : public common_installer::Step {
   bool SubShareDir();
   bool PrivateDir();
   bool CacheDir();
+  void RemoveAll();
 
   STEP_NAME(CreateStorageDirectories)
 };

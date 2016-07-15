@@ -4,6 +4,9 @@
 
 #include "common/shared_dirs.h"
 
+#include <manifest_parser/utils/logging.h>
+#include <manifest_parser/utils/version_number.h>
+
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/program_options.hpp>
@@ -11,7 +14,6 @@
 
 #include <glib.h>
 #include <gio/gio.h>
-#include <manifest_parser/utils/logging.h>
 #include <vcore/Certificate.h>
 #include <pkgmgr-info.h>
 #include <pwd.h>
@@ -51,15 +53,17 @@ namespace ci = common_installer;
 
 namespace {
 
+const utils::VersionNumber ver30("3.0");
+
 typedef std::vector<std::tuple<uid_t, gid_t, bf::path>> user_list;
 const std::vector<const char*> kEntries = {
   {"/"},
   {"cache/"},
   {"data/"},
   {"shared/"},
-  {"shared/cache/"},
 };
 
+const char kSharedDataDir[] = "shared/data";
 const char kTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
@@ -411,9 +415,14 @@ bool PerformExternalDirectoryDeletionForAllUsers(const std::string& pkgid) {
   return true;
 }
 
-bool CreateSkelDirectories(const std::string& pkgid) {
+bool CreateSkelDirectories(const std::string& pkgid,
+                           const std::string& api_version,
+                           bool trusted) {
   bf::path path = bf::path(kSkelAppDir) / pkgid;
   LOG(DEBUG) << "Creating directories in: " << path;
+
+  utils::VersionNumber api_ver(api_version);
+
   bs::error_code error;
   bf::create_directories(path, error);
 
@@ -422,7 +431,13 @@ bool CreateSkelDirectories(const std::string& pkgid) {
     return false;
   }
 
-  for (auto& entry : kEntries) {
+  std::vector<const char*> dirs(kEntries);
+  if (trusted)
+    dirs.push_back(kTrustedDir);
+  if (api_ver < ver30) {
+    dirs.push_back(kSharedDataDir);
+  }
+  for (auto& entry : dirs) {
     bf::path subpath = path / entry;
     bf::create_directories(subpath, error);
     if (error && !bf::exists(subpath)) {
