@@ -17,6 +17,11 @@
 
 namespace common_installer {
 
+/**
+ * @brief The ExternalStorage class
+ *        Encapsulates mounting package in external memory for performing
+ *        installation request.
+ */
 class ExternalStorage final {
  public:
   static std::unique_ptr<ExternalStorage> MoveInstalledStorage(
