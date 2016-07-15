@@ -3,6 +3,7 @@ SET(SRCS
   privileges.cc
   app_installer.cc
   certificate_validation.cc
+  external_mount.cc
   external_storage.cc
   feature_validator.cc
   installer_context.cc
@@ -44,6 +45,8 @@ SET(SRCS
   step/filesystem/step_create_legacy_directories.cc
   step/filesystem/step_create_storage_directories.cc
   step/filesystem/step_delta_patch.cc
+  step/filesystem/step_disable_external_mount.cc
+  step/filesystem/step_enable_external_mount.cc
   step/filesystem/step_move_installed_storage.cc
   step/filesystem/step_recover_files.cc
   step/filesystem/step_recover_icons.cc
