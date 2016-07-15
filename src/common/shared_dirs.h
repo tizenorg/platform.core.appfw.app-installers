@@ -110,11 +110,15 @@ PkgList CreatePkgInformationList(uid_t uid = getuid(),
  * \brief Create skeleton directories for package
  *
  * \param pkgid package id
+ * \param api_version package api version
+ * \param trusted signed package flag
  *
  * \return bool true if succeed, false otherwise
  *
  */
-bool CreateSkelDirectories(const std::string& pkgid);
+bool CreateSkelDirectories(const std::string& pkgid,
+                           const std::string& api_version,
+                           bool trusted);
 
 /**
  * \brief Performs deletion of directories
