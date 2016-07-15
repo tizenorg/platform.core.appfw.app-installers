@@ -5,6 +5,7 @@
 
 #include <cstdio>
 #include <fstream>
+#include <unistd.h>
 
 #include "common/app_installer.h"
 #include "common/installer_context.h"
@@ -115,6 +116,7 @@ AppInstaller::Result AppInstaller::Run() {
       }
     }
   }
+  sync();
 
   if (pi_) {
     // send START if pkgid was not parsed
