@@ -64,8 +64,9 @@ const std::vector<const char*> kEntries = {
 };
 
 const char kSharedDataDir[] = "shared/data";
-const char kTrustedDir[] = "shared/trusted";
+const char kSharedTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
+const char kLegacyAppDir[] = "/opt/usr/apps";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
 const int32_t kPWBufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 const int32_t kGRBufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
@@ -120,7 +121,7 @@ int PkgmgrListCallback(const pkgmgrinfo_pkginfo_h handle, void *user_data) {
 ci::PkgList GetAllGlobalAppsInformation() {
   ci::PkgList pkgs;
   if (pkgmgrinfo_pkginfo_get_usr_list(&PkgmgrListCallback,
-      &pkgs, tzplatform_getuid(TZ_SYS_GLOBALAPP_USER)) != PMINFO_R_OK) {
+      &pkgs, GLOBAL_USER) != PMINFO_R_OK) {
     LOG(ERROR) << "Failed to query global application list";
     return {};
   }
@@ -149,15 +150,9 @@ ci::PkgList GetPkgInformation(uid_t uid, const std::string& pkgid) {
   return pkgs;
 }
 
-bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
-                                            gid_t gid) {
+bool SetOwnerAndPermissions(const bf::path& subpath, uid_t uid,
+                            gid_t gid, bf::perms perms) {
   bs::error_code error;
-  bf::perms perms = bf::owner_read |
-                    bf::owner_write |
-                    bf::group_read;
-  if (bf::is_directory(subpath)) {
-    perms |= bf::owner_exe | bf::group_exe | bf::others_exe;
-  }
   bf::permissions(subpath, perms, error);
   if (error) {
     LOG(ERROR) << "Failed to set permissions for: " << subpath;
@@ -177,6 +172,32 @@ bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
   return true;
 }
 
+bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
+                                            gid_t gid) {
+  bs::error_code error;
+  bf::perms perms = bf::owner_read |
+                    bf::owner_write |
+                    bf::group_read;
+  if (bf::is_directory(subpath))
+    perms |= bf::owner_exe | bf::group_exe | bf::others_exe;
+
+  return SetOwnerAndPermissions(subpath, uid, gid, perms);
+}
+
+bool SetLegacyDirectoryOwnerAndPermissions(const bf::path& subpath) {
+  bs::error_code error;
+  bf::perms perms = bf::owner_read |
+                    bf::owner_write |
+                    bf::group_read |
+                    bf::others_read;
+  if (bf::is_directory(subpath))
+    perms |= bf::owner_exe | bf::group_exe | bf::others_exe;
+
+  return SetOwnerAndPermissions(subpath, GLOBAL_USER,
+                                tzplatform_getgid(TZ_SYS_GLOBALAPP_USER),
+                                perms);
+}
+
 bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
                        bool trusted,
                        uid_t uid, gid_t gid, const bool set_permissions) {
@@ -189,7 +210,7 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
   bs::error_code error;
   std::vector<const char*> dirs(kEntries);
   if (trusted)
-    dirs.push_back(kTrustedDir);
+    dirs.push_back(kSharedTrustedDir);
   for (auto& entry : dirs) {
     bf::path subpath = base_dir / entry;
     bf::create_directories(subpath, error);
@@ -433,7 +454,7 @@ bool CreateSkelDirectories(const std::string& pkgid,
 
   std::vector<const char*> dirs(kEntries);
   if (trusted)
-    dirs.push_back(kTrustedDir);
+    dirs.push_back(kSharedTrustedDir);
   if (api_ver < ver30) {
     dirs.push_back(kSharedDataDir);
   }
@@ -447,8 +468,8 @@ bool CreateSkelDirectories(const std::string& pkgid,
   }
 
   std::string error_message;
-  if (!RegisterSecurityContextForPath(pkgid, path,
-      tzplatform_getuid(TZ_SYS_GLOBALAPP_USER), false, &error_message)) {
+  if (!RegisterSecurityContextForPath(pkgid, path, GLOBAL_USER,
+                                      false, &error_message)) {
     LOG(ERROR) << "Failed to register security context for path: " << path
                << ", error_message: " << error_message;
     return false;
@@ -533,6 +554,77 @@ ci::PkgList CreatePkgInformationList(uid_t uid,
                                      const std::vector<std::string>& pkgs) {
   return pkgs.empty() ?
       GetAllGlobalAppsInformation() : GetPkgInformation(uid, *pkgs.begin());
+}
+
+bool CreateLegacyDirectories(const std::string& pkgid) {
+  // create lagcay directories for backward compatibility
+  bs::error_code error;
+  bf::path path = bf::path(kLegacyAppDir) / pkgid;
+  bf::create_directories(path, error);
+  if (error && !bf::exists(path)) {
+    LOG(ERROR) << "Failed to create directory: " << path;
+    return false;
+  }
+
+  std::vector<const char*> dirs(kEntries);
+  dirs.push_back(kSharedTrustedDir);
+  dirs.push_back(kSharedDataDir);
+  for (auto& entry : dirs) {
+    bf::path subpath = path / entry;
+    bf::create_directories(subpath, error);
+    if (error && !bf::exists(subpath)) {
+      LOG(ERROR) << "Failed to create directory: " << subpath;
+      return false;
+    }
+    if (!SetLegacyDirectoryOwnerAndPermissions(subpath)) {
+      LOG(ERROR) << "Failed to set permission: " << subpath;
+      return false;
+    }
+  }
+
+  std::string error_message;
+  if (!RegisterSecurityContextForPath(pkgid, path, GLOBAL_USER,
+                                      false, &error_message)) {
+    LOG(ERROR) << "Failed to register security context for path: " << path
+               << ", error_message: " << error_message;
+    return false;
+  }
+
+  return true;
+}
+
+bool DeleteLegacyDirectories(uid_t uid, const std::string& pkgid) {
+  bool del_flag = true;
+  uid_t chk_uid;
+
+  user_list list = GetUserList();
+  for (auto l : list) {
+    chk_uid = std::get<0>(l);
+    if (chk_uid == uid)
+      continue;
+    LOG(DEBUG) << "Check package existence for uid: " << chk_uid;
+    if (QueryIsPackageInstalled(pkgid, chk_uid)) {
+      LOG(DEBUG) << "Package: " << pkgid << " for uid: " << chk_uid
+                 << " still exists.";
+      del_flag = false;
+      break;;
+    }
+  }
+
+  if (del_flag && uid != GLOBAL_USER) {
+    if (QueryIsPackageInstalled(pkgid, GLOBAL_USER)) {
+      LOG(DEBUG) << "Package: " << pkgid << " for uid: " << GLOBAL_USER
+                 << " still exists.";
+      del_flag = false;
+    }
+  }
+
+  if (del_flag) {
+    LOG(DEBUG) << "Delete legacy directories for package: " << pkgid;
+    DeleteDirectories(bf::path(kLegacyAppDir), pkgid);
+  }
+
+  return true;
 }
 
 }  // namespace common_installer
