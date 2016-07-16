@@ -53,6 +53,24 @@ bool RequestCreateExternalDirectories(const std::string& pkgid);
  */
 bool RequestDeleteExternalDirectories(const std::string& pkgid);
 
+/**
+ * \brief Request to create legacy directories
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ */
+bool RequestCreateLegacyDirectories(const std::string& pkgid);
+
+/**
+ * \brief Request to delete legacy directories
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ */
+bool RequestDeleteLegacyDirectories(const std::string& pkgid);
+
 }  // namespace common_installer
 
 #endif  // COMMON_PKGDIR_TOOL_REQUEST_H_
