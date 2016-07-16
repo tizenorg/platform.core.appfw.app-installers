@@ -19,7 +19,6 @@ Step::Status StepRemovePerUserStorageDirectories::process() {
     return Step::Status::OK;
 
   std::string package_id = context_->pkgid.get();
-
   if (!common_installer::DeleteSkelDirectories(package_id)) {
     LOG(ERROR) << "Failed to delete skel dirs";
     return Status::APP_DIR_ERROR;
