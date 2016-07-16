@@ -64,8 +64,9 @@ const std::vector<const char*> kEntries = {
 };
 
 const char kSharedDataDir[] = "shared/data";
-const char kTrustedDir[] = "shared/trusted";
+const char kSharedTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
+const char kLegacyAppDir[] = "/opt/usr/apps";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
 const int32_t kPWBufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 const int32_t kGRBufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
@@ -189,7 +190,7 @@ bool CreateDirectories(const bf::path& app_dir, const std::string& pkgid,
   bs::error_code error;
   std::vector<const char*> dirs(kEntries);
   if (trusted)
-    dirs.push_back(kTrustedDir);
+    dirs.push_back(kSharedTrustedDir);
   for (auto& entry : dirs) {
     bf::path subpath = base_dir / entry;
     bf::create_directories(subpath, error);
@@ -433,7 +434,7 @@ bool CreateSkelDirectories(const std::string& pkgid,
 
   std::vector<const char*> dirs(kEntries);
   if (trusted)
-    dirs.push_back(kTrustedDir);
+    dirs.push_back(kSharedTrustedDir);
   if (api_ver < ver30) {
     dirs.push_back(kSharedDataDir);
   }
@@ -533,6 +534,57 @@ ci::PkgList CreatePkgInformationList(uid_t uid,
                                      const std::vector<std::string>& pkgs) {
   return pkgs.empty() ?
       GetAllGlobalAppsInformation() : GetPkgInformation(uid, *pkgs.begin());
+}
+
+bool CreateLegacyDirectories(const std::string& pkgid) {
+  // create lagcay directories for backward compatibility
+  bs::error_code error;
+  bf::path path = bf::path(kLegacyAppDir) / pkgid;
+  bf::create_directories(path, error);
+  if (error && !bf::exists(path)) {
+    LOG(ERROR) << "Failed to create directory: " << path;
+    return false;
+  }
+
+  std::vector<const char*> dirs(kEntries);
+  dirs.push_back(kSharedTrustedDir);
+  dirs.push_back(kSharedDataDir);
+  for (auto& entry : dirs) {
+    bf::path subpath = path / entry;
+    bf::create_directories(subpath, error);
+    if (error && !bf::exists(subpath)) {
+      LOG(ERROR) << "Failed to create directory: " << subpath;
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool DeleteLegacyDirectories(uid_t uid, const std::string& pkgid) {
+  bool del_flag = true;
+  uid_t chk_uid;
+
+  user_list list = GetUserList();
+  for (auto l : list) {
+    chk_uid = std::get<0>(l);
+    if (chk_uid == uid)
+      continue;
+    LOG(DEBUG) << "Check package existence for uid: " << chk_uid;
+    if (QueryIsPackageInstalled(pkgid, chk_uid)) {
+      LOG(DEBUG) << "Package: " << pkgid << " for uid: " << chk_uid
+                 << " still exists.";
+      del_flag = false;
+      break;;
+    }
+  }
+
+  if (del_flag) {
+    LOG(DEBUG) << "Delete legacy directories for package: " << pkgid;
+    DeleteDirectories(bf::path(kLegacyAppDir), pkgid);
+  }
+
+  return true;
 }
 
 }  // namespace common_installer

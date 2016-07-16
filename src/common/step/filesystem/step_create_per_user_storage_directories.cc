@@ -17,10 +17,13 @@ namespace common_installer {
 namespace filesystem {
 
 common_installer::Step::Status StepCreatePerUserStorageDirectories::process() {
-  if (context_->request_mode.get() != RequestMode::GLOBAL)
-    return Step::Status::OK;
-
   std::string package_id = context_->pkgid.get();
+
+  if (context_->request_mode.get() != RequestMode::GLOBAL) {
+    common_installer::RequestCreateLegacyDirectories(package_id);
+    return Step::Status::OK;
+  }
+
   LOG(INFO) << "Creating per-user directories for package: " << package_id;
 
   manifest_x* manifest = context_->manifest_data.get();
@@ -40,6 +43,8 @@ common_installer::Step::Status StepCreatePerUserStorageDirectories::process() {
     LOG(ERROR) << "Failed to create shared dirs for users";
     return Status::APP_DIR_ERROR;
   }
+
+  common_installer::RequestCreateLegacyDirectories(package_id);
 
   return Status::OK;
 }

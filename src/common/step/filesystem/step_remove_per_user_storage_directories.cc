@@ -15,10 +15,12 @@ namespace common_installer {
 namespace filesystem {
 
 Step::Status StepRemovePerUserStorageDirectories::process() {
-  if (context_->request_mode.get() != RequestMode::GLOBAL)
-    return Step::Status::OK;
-
   std::string package_id = context_->pkgid.get();
+
+  if (context_->request_mode.get() != RequestMode::GLOBAL) {
+    common_installer::RequestDeleteLegacyDirectories(package_id);
+    return Step::Status::OK;
+  }
 
   if (!common_installer::DeleteSkelDirectories(package_id)) {
     LOG(ERROR) << "Failed to delete skel dirs";
@@ -29,6 +31,8 @@ Step::Status StepRemovePerUserStorageDirectories::process() {
     LOG(ERROR) << "Failed to delete shared dirs for users";
     return Status::APP_DIR_ERROR;
   }
+
+  common_installer::RequestDeleteLegacyDirectories(package_id);
 
   return Step::Status::OK;
 }

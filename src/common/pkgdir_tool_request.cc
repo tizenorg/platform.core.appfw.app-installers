@@ -98,4 +98,14 @@ bool RequestDeleteExternalDirectories(const std::string& pkgid) {
   return true;
 }
 
+bool RequestCreateLegacyDirectories(const std::string& pkgid) {
+  RequestUserDirectoryOperation("CreateLegacyDirs", pkgid);
+  return true;
+}
+
+bool RequestDeleteLegacyDirectories(const std::string& pkgid) {
+  RequestUserDirectoryOperation("DeleteLegacyDirs", pkgid);
+  return true;
+}
+
 }  // namespace common_installer
