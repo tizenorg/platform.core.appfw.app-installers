@@ -166,6 +166,27 @@ std::string GetDirectoryPathForInternalStorage();
  */
 std::string GetDirectoryPathForExternalStorage();
 
+/**
+ * \brief Create Legacy directories
+ *
+ * \param uid user id
+ * \param pkgid package id
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool CreateLegacyDirectories(const std::string& pkgid);
+
+/**
+ * \brief Delete Legacy directories
+ *
+ * \param pkgid package id
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool DeleteLegacyDirectories(uid_t uid, const std::string& pkgid);
+
 }  // namespace common_installer
 
 #endif  // COMMON_SHARED_DIRS_H_
