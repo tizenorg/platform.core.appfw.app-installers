@@ -39,6 +39,7 @@ const char kDBusInstropectionXml[] =
   "    </method>"
   "    <method name='DeleteLegacyDirs'>"
   "      <arg type='s' name='pkgid' direction='in'/>"
+  "    <method name='CreateExternalDirsForAllPkgs'>"
   "      <arg type='b' name='result' direction='out'/>"
   "    </method>"
   "  </interface>"
@@ -176,20 +177,25 @@ void PkgdirToolService::HandleMethodCall(GDBusConnection* connection,
   UNUSED(interface_name);
   UNUSED(user_data);
   char* val;
-  g_variant_get(parameters, "(s)", &val);
 
+  g_variant_get(parameters, "(s)", &val);
   bool r = false;
   LOG(INFO) << "Incomming method call: " << method_name;
 
   if (g_strcmp0(method_name, "CopyUserDirs") == 0) {
+    g_variant_get(parameters, "(s)", &val);
     r = ci::CopyUserDirectories(std::string(val));
   } else if (g_strcmp0(method_name, "DeleteUserDirs") == 0) {
+    g_variant_get(parameters, "(s)", &val);
     r = ci::DeleteUserDirectories(std::string(val));
   } else if (g_strcmp0(method_name, "CreateExternalDirs") == 0) {
+    g_variant_get(parameters, "(s)", &val);
     r = ci::PerformExternalDirectoryCreationForAllUsers(std::string(val));
   } else if (g_strcmp0(method_name, "DeleteExternalDirs") == 0) {
+    g_variant_get(parameters, "(s)", &val);
     r = ci::PerformExternalDirectoryDeletionForAllUsers(std::string(val));
   } else if (g_strcmp0(method_name, "CreateLegacyDirs") == 0) {
+    g_variant_get(parameters, "(s)", &val);
     r = ci::CreateLegacyDirectories(std::string(val));
   } else if (g_strcmp0(method_name, "DeleteLegacyDirs") == 0) {
     int sender_uid = GetSenderUnixId(connection, sender);
@@ -198,6 +204,8 @@ void PkgdirToolService::HandleMethodCall(GDBusConnection* connection,
     } else {
       r = ci::DeleteLegacyDirectories((uid_t)sender_uid, std::string(val));
     }
+  } else if (g_strcmp0(method_name, "CreateExternalDirsForAllPkgs") == 0) {
+    r = ci::PerformExternalDirectoryCreationForAllPkgs();
   } else {
     LOG(ERROR) << "Unknown method call: " << method_name;
   }
