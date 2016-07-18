@@ -63,6 +63,8 @@ const std::vector<const char*> kEntries = {
 const char kTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
 const char kPackagePattern[] = R"(^[0-9a-zA-Z_-]+(\.?[0-9a-zA-Z_-]+)*$)";
+const char kExternalStoragePrivilege[] =
+    "http://tizen.org/privilege/externalstorage.appdata";
 const int32_t kPWBufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 const int32_t kGRBufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
 
@@ -391,6 +393,47 @@ bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid) {
       LOG(WARNING) << "Could not create external storage directories for user: "
                    << std::get<0>(l);
   }
+  return true;
+}
+
+int privilege_cb(const pkgmgrinfo_pkginfo_h handle, void *user_data)
+{
+  uid_t uid = (uid_t)user_data;
+  char *pkgid = nullptr;
+  int ret = pkgmgrinfo_pkginfo_get_pkgid(handle, &pkgid);
+  if (ret != PMINFO_R_OK)
+    return -1;
+  if (!PerformExternalDirectoryCreationForUser(uid, pkgid))
+    return -1;
+
+  return 0;
+}
+
+bool PerformExternalDirectoryCreationForAllPkgs(void) {
+  user_list list = GetUserList();
+  for (auto l  : list) {
+    uid_t uid = std::get<0>(l);
+    pkgmgrinfo_pkginfo_filter_h filter_handle = nullptr;
+    int ret = pkgmgrinfo_pkginfo_filter_create(&filter_handle);
+    if (ret != PMINFO_R_OK)
+      return false;
+    ret = pkgmgrinfo_pkginfo_filter_add_string(filter_handle,
+        PMINFO_PKGINFO_PROP_PACKAGE_PRIVILEGE, kExternalStoragePrivilege);
+    if (ret != PMINFO_R_OK) {
+      pkgmgrinfo_pkginfo_filter_destroy(filter_handle);
+      return false;
+    }
+
+    ret = pkgmgrinfo_pkginfo_filter_foreach_pkginfo(filter_handle,
+        privilege_cb, (void *)uid);
+    if (ret != PMINFO_R_OK) {
+      LOG(DEBUG) << "Failed to create external directoy";
+      pkgmgrinfo_pkginfo_filter_destroy(filter_handle);
+      return false;
+    }
+    pkgmgrinfo_pkginfo_filter_destroy(filter_handle);
+  }
+
   return true;
 }
 
