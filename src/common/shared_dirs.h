@@ -86,6 +86,15 @@ bool PerformInternalDirectoryCreationForAllUsers(const std::string& pkgid,
 bool PerformExternalDirectoryCreationForAllUsers(const std::string& pkgid);
 
 /**
+ * \brief Find pkgs which has external storage privilege for each user and make
+ * directories in external storage (eg. SD card)
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool PerformExternalDirectoryCreationForAllPkgs(void);
+
+/**
  * \brief Performs a removal of directories in external storage (eg. SD card)
  * \param pkgid id of package
  *
