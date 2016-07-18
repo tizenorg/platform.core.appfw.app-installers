@@ -33,6 +33,9 @@ const char kDBusInstropectionXml[] =
   "      <arg type='s' name='pkgid' direction='in'/>"
   "      <arg type='b' name='result' direction='out'/>"
   "    </method>"
+  "    <method name='CreateExternalDirForAll'>"
+  "      <arg type='b' name='result' direction='out'/>"
+  "    </method>"
   "  </interface>"
   "</node>";
 const char kDBusServiceName[] = "org.tizen.pkgdir_tool";
@@ -131,17 +134,23 @@ void PkgdirToolService::HandleMethodCall(GDBusConnection* connection,
   UNUSED(interface_name);
   UNUSED(user_data);
   char* val;
-  g_variant_get(parameters, "(s)", &val);
+
   bool r = false;
   LOG(INFO) << "Incomming method call: " << method_name;
   if (g_strcmp0(method_name, "CopyUserDirs") == 0) {
+    g_variant_get(parameters, "(s)", &val);
     r = ci::CopyUserDirectories(std::string(val));
   } else if (g_strcmp0(method_name, "DeleteUserDirs") == 0) {
+    g_variant_get(parameters, "(s)", &val);
     r = ci::DeleteUserDirectories(std::string(val));
   } else if (g_strcmp0(method_name, "CreateExternalDirs") == 0) {
+    g_variant_get(parameters, "(s)", &val);
     r = ci::PerformExternalDirectoryCreationForAllUsers(std::string(val));
   } else if (g_strcmp0(method_name, "DeleteExternalDirs") == 0) {
+    g_variant_get(parameters, "(s)", &val);
     r = ci::PerformExternalDirectoryDeletionForAllUsers(std::string(val));
+  } else if (g_strcmp0(method_name, "CreateExternalDirForAll") == 0) {
+    r = ci::PerformExternalDirectoryCreationForAllPkgs();\
   } else {
     LOG(ERROR) << "Unknown method call: " << method_name;
   }
