@@ -275,7 +275,8 @@ user_list GetUserList() {
   GumUserService* service =
       gum_user_service_create_sync((getuid() == 0) ? TRUE : FALSE);
   gchar** user_type_strv = gum_user_type_to_strv(
-      GUM_USERTYPE_ADMIN | GUM_USERTYPE_GUEST | GUM_USERTYPE_NORMAL);
+      GUM_USERTYPE_ADMIN | GUM_USERTYPE_GUEST | GUM_USERTYPE_NORMAL |
+      GUM_USERTYPE_SECURITY);
   GumUserList* gum_user_list =
       gum_user_service_get_user_list_sync(service, user_type_strv);
   user_list list;
