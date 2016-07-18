@@ -33,6 +33,9 @@ const char kDBusInstropectionXml[] =
   "      <arg type='s' name='pkgid' direction='in'/>"
   "      <arg type='b' name='result' direction='out'/>"
   "    </method>"
+  "    <method name='CreateExternalDirForAll'>"
+  "      <arg type='b' name='result' direction='out'/>"
+  "    </method>"
   "  </interface>"
   "</node>";
 const char kDBusServiceName[] = "org.tizen.pkgdir_tool";
@@ -142,6 +145,8 @@ void PkgdirToolService::HandleMethodCall(GDBusConnection* connection,
     r = ci::PerformExternalDirectoryCreationForAllUsers(std::string(val));
   } else if (g_strcmp0(method_name, "DeleteExternalDirs") == 0) {
     r = ci::PerformExternalDirectoryDeletionForAllUsers(std::string(val));
+  } else if (g_strcmp0(method_name, "CreateExternalDirForAll") == 0) {
+    r = ci::PerformExternalDirectoryCreationForAllPkgs();\
   } else {
     LOG(ERROR) << "Unknown method call: " << method_name;
   }
