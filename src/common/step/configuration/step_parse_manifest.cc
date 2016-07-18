@@ -561,6 +561,7 @@ bool StepParseManifest::FillWatchApplication(manifest_x* manifest) {
     watch_app->launch_mode = strdup("single");
     watch_app->ambient_support =
         strdup(watch_application.app_info.ambient_support().c_str());
+    watch_app->package = strdup(manifest->package);
     if (!FillLabel(watch_app, watch_application.label))
       return false;
     if (!FillApplicationIconPaths(watch_app, watch_application.app_icons))
