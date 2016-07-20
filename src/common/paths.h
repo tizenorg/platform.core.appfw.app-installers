@@ -6,6 +6,7 @@
 #define COMMON_PATHS_H_
 
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <unistd.h>
 
 #include <string>
