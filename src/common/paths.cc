@@ -4,8 +4,11 @@
 
 #include "common/paths.h"
 
+#include <manifest_parser/utils/logging.h>
+
 #include <pwd.h>
 #include <tzplatform_config.h>
+#include <storage-internal.h>
 
 namespace bf = boost::filesystem;
 
@@ -14,7 +17,27 @@ namespace {
 const int32_t kPWBufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 const char kImageDir[] = ".image";
 const char kBckExtension[] = ".bck";
-const char kExternalStorageDirPrefix[] = "SDCardA1";
+
+std::string GetSdcardMountPath(void) {
+  char *sdpath = nullptr;
+  int storage_id = 0;
+  int ret;
+
+  ret = storage_get_primary_sdcard(&storage_id, &sdpath);
+  if (ret != STORAGE_ERROR_NONE) {
+    if (sdpath)
+      free(sdpath);
+    return {};
+  }
+
+  if (sdpath) {
+    std::string mount_path(sdpath);
+    free(sdpath);
+    return mount_path;
+  }
+
+  return {};
+}
 
 boost::filesystem::path GetBackupPath(
     const boost::filesystem::path& pkg_path) {
@@ -71,12 +94,16 @@ boost::filesystem::path GetZipPackageLocation(
 }
 
 boost::filesystem::path GetExternalCardPath() {
-  return bf::path(tzplatform_mkpath(TZ_SYS_MEDIA, kExternalStorageDirPrefix));
+  return bf::path(GetSdcardMountPath());
 }
 
 boost::filesystem::path GetExternalTepPath(RequestMode request_mode,
                                            uid_t uid) {
-  bf::path result = GetExternalCardPath() / "tep";
+  bf::path result;
+  bf::path ext_mount_path = GetExternalCardPath();
+  if (bf::is_empty(ext_mount_path))
+    return result;
+  result = ext_mount_path / "tep";
   if (request_mode == RequestMode::USER)
     result /= GetUserNameForUID(uid);
   return result;
