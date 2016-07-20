@@ -4,4 +4,5 @@ Description=User Directory Creator
 [Service]
 User=app_fw
 Group=app_fw
+SmackProcessLabel=System
 ExecStart=/usr/bin/pkgdir-tool
