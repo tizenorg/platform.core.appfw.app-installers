@@ -92,6 +92,7 @@ make %{?_smp_mflags}
 %{_unitdir}/pkgdir-tool.service
 %{_bindir}/pkg_initdb
 %attr(0755,root,root) %{_sysconfdir}/gumd/useradd.d/10_package-manager-add.post
+%attr(0755,root,root) %{_sysconfdir}/gumd/userdel.d/11_package-manager-del.post
 %license LICENSE
 
 %files devel
