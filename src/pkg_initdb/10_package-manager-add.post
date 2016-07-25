@@ -1,1 +1,12 @@
+#!/bin/sh
+
+PATH=/bin:/usr/bin:/sbin:/usr/bin
+
+mkdir -p -Z User::Home -m 755 /opt/dbspace/user
+
+export `tzplatform-get --user $2 TZ_USER_NAME`
+
+mkdir -p -Z User::Home -m 770 /opt/dbspace/user/$2
+chown $TZ_USER_NAME:system_share /opt/dbspace/user/$2
+
 pkg_initdb --uid $2
