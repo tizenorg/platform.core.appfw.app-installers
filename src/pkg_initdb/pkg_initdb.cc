@@ -84,15 +84,17 @@ void RemoveOldDatabases(uid_t uid) {
   if (!IsGlobal(uid))
     tzplatform_set_user(uid);
 
+  char *parser_db = getUserPkgParserDBPathUID(uid);
+  char *cert_db = getUserPkgCertDBPathUID(uid);
+  std::string journal = "-journal";
+  std::string parser_db_journal = parser_db + journal;
+  std::string cert_db_journal = cert_db + journal;
+
   bs::error_code error;
-  bf::path info_db_path(tzplatform_mkpath(
-      IsGlobal(uid) ? TZ_SYS_DB : TZ_USER_DB, ".pkgmgr_parser.db"));
-  bf::path info_db_journal_path(tzplatform_mkpath(
-      IsGlobal(uid) ? TZ_SYS_DB : TZ_USER_DB, ".pkgmgr_parser.db-journal"));
-  bf::path cert_db_path(tzplatform_mkpath(
-      IsGlobal(uid) ? TZ_SYS_DB : TZ_USER_DB, ".pkgmgr_cert.db"));
-  bf::path  cert_db_journal_path(tzplatform_mkpath(
-      IsGlobal(uid) ? TZ_SYS_DB : TZ_USER_DB, ".pkgmgr_cert.db-journal"));
+  bf::path info_db_path(parser_db);
+  bf::path info_db_journal_path(parser_db_journal.c_str());
+  bf::path cert_db_path(cert_db);
+  bf::path cert_db_journal_path(cert_db_journal.c_str());
 
   bf::remove(info_db_path, error);
   if (error)
@@ -106,6 +108,9 @@ void RemoveOldDatabases(uid_t uid) {
   bf::remove(cert_db_journal_path, error);
   if (error)
     std::cerr << cert_db_journal_path << " is not removed" << std::endl;
+
+  free(cert_db);
+  free(parser_db);
 
   tzplatform_reset_user();
 }
