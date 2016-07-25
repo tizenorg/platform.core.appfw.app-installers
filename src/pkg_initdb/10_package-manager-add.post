@@ -1,1 +1,2 @@
+mkdir -p -Z User::Home -m 755 /opt/dbspace/user
 pkg_initdb --uid $2
