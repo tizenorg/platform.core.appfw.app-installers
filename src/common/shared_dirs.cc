@@ -62,7 +62,14 @@ const std::vector<const char*> kEntries = {
   {"data/"},
   {"shared/"},
 };
+const std::vector<const char*> kReadOnlyEntries = {
+  {"bin"},
+  {"lib"},
+  {"res"},
+  {"shared/res"},
+};
 
+const char kSharedResDir[] = "shared/res";
 const char kSharedDataDir[] = "shared/data";
 const char kSharedTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
@@ -70,14 +77,8 @@ const char kLegacyAppDir[] = "/opt/usr/apps";
 const int32_t kPWBufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 const int32_t kGRBufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
 
-bool SetOwnerAndPermissions(const bf::path& subpath, uid_t uid,
-                            gid_t gid, bf::perms perms) {
+bool SetFileOwner(const bf::path& subpath, uid_t uid, gid_t gid) {
   bs::error_code error;
-  bf::permissions(subpath, perms, error);
-  if (error) {
-    LOG(ERROR) << "Failed to set permissions for: " << subpath;
-    return false;
-  }
   int fd = open(subpath.c_str(), O_RDONLY);
   if (fd < 0) {
     LOG(ERROR) << "Can't open directory : " << subpath;
@@ -87,6 +88,21 @@ bool SetOwnerAndPermissions(const bf::path& subpath, uid_t uid,
   close(fd);
   if (ret != 0) {
     LOG(ERROR) << "Failed to change owner of: " << subpath;
+    return false;
+  }
+  return true;
+}
+
+bool SetOwnerAndPermissions(const bf::path& subpath, uid_t uid,
+                            gid_t gid, bf::perms perms) {
+  bs::error_code error;
+  bf::permissions(subpath, perms, error);
+  if (error) {
+    LOG(ERROR) << "Failed to set permissions for: " << subpath;
+    return false;
+  }
+
+  if (!SetFileOwner(subpath, uid, gid)) {
     return false;
   }
   return true;
@@ -241,6 +257,78 @@ user_list GetUserList() {
   g_strfreev(user_type_strv);
   gum_user_service_list_free(gum_user_list);
   return list;
+}
+
+bool CreateSymlinkFiles(const bf::path& src_dir, const bf::path& dst_dir) {
+  std::vector<char*> rofiles;
+  for (auto& entry : kReadOnlyEntries)
+    rofiles.push_back(strdup(entry));
+
+  for (bf::directory_iterator file(src_dir);
+      file != bf::directory_iterator();
+      ++file) {
+    if (bf::is_regular_file(file->path())) {
+      bf::path current(file->path());
+      bf::path file_name = current.filename();
+      LOG(DEBUG) << "file_name: " << file_name;
+      rofiles.push_back(strdup(file_name.c_str()));
+    }
+  }
+
+  bs::error_code error;
+  for (auto& entry : rofiles) {
+    bf::path src_path = src_dir / entry;
+    bf::path dst_path = dst_dir / entry;
+    free(const_cast<char*>(entry));
+    if (!bf::exists(src_path)) {
+      LOG(ERROR) << "src_path not exist : " << src_path;
+      continue;
+    }
+    if (bf::exists(dst_path)) {
+      LOG(WARNING) << "dst_path exist, skip : " << dst_path;
+      continue;
+    }
+    bf::create_symlink(src_path, dst_path, error);
+    if (error) {
+      LOG(ERROR) << "Symlink creation failure src_path: " << src_path
+                 << " dst_path: " << dst_path;
+      continue;
+    }
+  }
+  return true;
+}
+
+bool DeleteSymlinkFiles(const bf::path& src_dir, const bf::path& dst_dir) {
+  bs::error_code error;
+  for (bf::directory_iterator file(dst_dir);
+      file != bf::directory_iterator();
+      ++file) {
+    bf::path current(file->path());
+    if (bf::is_symlink(current)) {
+      bf::path cano_path = bf::canonical(current, error);
+      if (error) {
+        LOG(ERROR) << "Getting cano_path failure for: " << current;
+        continue;
+      }
+      bf::path parent = cano_path.parent_path();
+      if (!parent.empty() && !parent.compare(src_dir)) {
+        bf::remove(current, error);
+        if (error) {
+          LOG(ERROR) << "Symlink deletion failure for: " << current;
+        }
+      } else {
+        LOG(ERROR) << "Parent is empty or not equal to src, parenet: ("
+                   << parent << ")";
+      }
+    }
+  }
+  bf::path shared_res = dst_dir / kSharedResDir;
+  if (bf::is_symlink(shared_res)) {
+      bf::remove(shared_res, error);
+      if (error)
+          LOG(ERROR) << "Symlink deletion failure for: " << shared_res;
+  }
+  return true;
 }
 
 }  // namespace
@@ -518,6 +606,92 @@ bool DeleteLegacyDirectories(uid_t uid, const std::string& pkgid) {
   }
 
   return true;
+}
+
+bool CreateGlobalAppSymlinksForAllUsers(const std::string& pkgid) {
+  bf::path src_dir = bf::path(tzplatform_getenv(TZ_SYS_RW_APP)) / pkgid;
+  if (!bf::exists(src_dir)) {
+    LOG(ERROR) << "src_dir not exists";
+    return false;
+  }
+
+  user_list list = GetUserList();
+  for (auto l : list) {
+    uid_t uid = std::get<0>(l);
+    LOG(DEBUG) << "Creating symlinks for uid: " << uid;
+    // check installed user private app.
+    if (QueryIsPackageInstalled(pkgid, uid))
+      continue;
+    bf::path apps_rw(std::get<2>(l) / "apps_rw");
+    bf::path dst_dir = apps_rw / pkgid;
+    if (!bf::exists(dst_dir)) {
+      LOG(ERROR) << "dst_dir not exists";
+      continue;
+    }
+    CreateSymlinkFiles(src_dir, dst_dir);
+  }
+  return true;
+}
+
+bool CreateGlobalAppSymlinksForUser(const std::string& pkgid, uid_t uid) {
+  bf::path src_dir = bf::path(tzplatform_getenv(TZ_SYS_RW_APP)) / pkgid;
+  if (!bf::exists(src_dir)) {
+    LOG(ERROR) << "src_dir not exists";
+    return false;
+  }
+
+  tzplatform_set_user(uid);
+  bf::path dst_dir = bf::path(tzplatform_getenv(TZ_USER_APP)) / pkgid;
+  tzplatform_reset_user();
+  if (!bf::exists(dst_dir)) {
+    LOG(ERROR) << "dst_dir not exists";
+    return false;
+  }
+  CreateSymlinkFiles(src_dir, dst_dir);
+
+  return true;
+}
+
+bool DeleteGlobalAppSymlinksForAllUsers(const std::string& pkgid) {
+  bf::path src_dir = bf::path(tzplatform_getenv(TZ_SYS_RW_APP)) / pkgid;
+  if (!bf::exists(src_dir)) {
+    LOG(ERROR) << "src_dir not exists";
+    return false;
+  }
+
+  user_list list = GetUserList();
+  for (auto l : list) {
+    uid_t uid = std::get<0>(l);
+    LOG(DEBUG) << "Deleting symlinks for uid: " << uid;
+    // check installed user private app.
+    if (QueryIsPackageInstalled(pkgid, uid))
+      continue;
+    bf::path apps_rw(std::get<2>(l) / "apps_rw");
+    bf::path dst_dir = apps_rw / pkgid;
+    if (!bf::exists(dst_dir)) {
+      LOG(ERROR) << "dst_dir not exists";
+      continue;
+    }
+    DeleteSymlinkFiles(src_dir, dst_dir);
+  }
+  return true;
+}
+
+bool DeleteGlobalAppSymlinksForUser(const std::string& pkgid, uid_t uid) {
+  bf::path src_dir = bf::path(tzplatform_getenv(TZ_SYS_RW_APP)) / pkgid;
+  if (!bf::exists(src_dir)) {
+    LOG(ERROR) << "src_dir not exists";
+    return false;
+  }
+
+  tzplatform_set_user(uid);
+  bf::path dst_dir = bf::path(tzplatform_getenv(TZ_USER_APP)) / pkgid;
+  tzplatform_reset_user();
+  if (!bf::exists(dst_dir)) {
+    LOG(ERROR) << "dst_dir not exists";
+    return false;
+  }
+  DeleteSymlinkFiles(src_dir, dst_dir);
 }
 
 }  // namespace common_installer
