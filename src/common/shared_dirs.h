@@ -13,6 +13,11 @@
 
 namespace common_installer {
 
+enum class GlobalAppType {
+  PRELOADED_APP,
+  RW_GLOBAL_APP
+};
+
 /**
  * \brief Performs a creation of directories for specific user in external storage
  *
@@ -134,6 +139,26 @@ bool CreateLegacyDirectories(const std::string& pkgid);
  *
  */
 bool DeleteLegacyDirectories(uid_t uid, const std::string& pkgid);
+
+/**
+ * \brief Create symlinks for read-only Files of global app.
+ *
+ * \param pkgid package id
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool CreateSymlinksForGlobalApp(const std::string& pkgid);
+
+/**
+ * \brief Delete symlinks for read-only Files of global app.
+ *
+ * \param pkgid package id
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool DeleteSymlinksForGlobalApp(const std::string& pkgid);
 
 }  // namespace common_installer
 

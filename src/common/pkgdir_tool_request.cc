@@ -108,4 +108,20 @@ bool RequestDeleteLegacyDirectories(const std::string& pkgid) {
   return true;
 }
 
+bool RequestCreateSymlinksForGlobalApp(const std::string& pkgid) {
+  if (!RequestUserDirectoryOperation("CreateSymlinksForGlobalApp", pkgid)) {
+    LOG(INFO) << "Try to create symlinks for global app directly";
+    return CreateSymlinksForGlobalApp(pkgid);
+  }
+  return true;
+}
+
+bool RequestDeleteSymlinksForGlobalApp(const std::string& pkgid) {
+  if (!RequestUserDirectoryOperation("DeleteSymlinksForGlobalApp", pkgid)) {
+    LOG(INFO) << "Try to delete symlinks for global app directly";
+    return DeleteSymlinksForGlobalApp(pkgid);
+  }
+  return true;
+}
+
 }  // namespace common_installer

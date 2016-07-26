@@ -41,6 +41,14 @@ const char kDBusInstropectionXml[] =
   "      <arg type='s' name='pkgid' direction='in'/>"
   "      <arg type='b' name='result' direction='out'/>"
   "    </method>"
+  "    <method name='CreateSymlinksForGlobalApp'>"
+  "      <arg type='s' name='pkgid' direction='in'/>"
+  "      <arg type='b' name='result' direction='out'/>"
+  "    </method>"
+  "    <method name='DeleteSymlinksForGlobalApp'>"
+  "      <arg type='s' name='pkgid' direction='in'/>"
+  "      <arg type='b' name='result' direction='out'/>"
+  "    </method>"
   "  </interface>"
   "</node>";
 const char kDBusServiceName[] = "org.tizen.pkgdir_tool";
@@ -198,6 +206,10 @@ void PkgdirToolService::HandleMethodCall(GDBusConnection* connection,
     } else {
       r = ci::DeleteLegacyDirectories((uid_t)sender_uid, std::string(val));
     }
+  } else if (g_strcmp0(method_name, "CreateSymlinksForGlobalApp") == 0) {
+    r = ci::CreateSymlinksForGlobalApp(std::string(val));
+  } else if (g_strcmp0(method_name, "DeleteSymlinksForGlobalApp") == 0) {
+    r = ci::DeleteSymlinksForGlobalApp(std::string(val));
   } else {
     LOG(ERROR) << "Unknown method call: " << method_name;
   }
