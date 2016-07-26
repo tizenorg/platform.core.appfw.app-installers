@@ -17,7 +17,7 @@ namespace bs = boost::system;
 namespace bf = boost::filesystem;
 
 namespace {
-const char kSharedRes[] = "shared/res";
+
 bool SkipDirectoryIfGlobal(const bf::path& path) {
   static const std::vector<std::string> dirs_to_ignore = {
     {"cache"},
@@ -27,6 +27,7 @@ bool SkipDirectoryIfGlobal(const bf::path& path) {
   return std::find(dirs_to_ignore.begin(), dirs_to_ignore.end(), path) !=
       dirs_to_ignore.end();
 }
+
 }  // namespace
 
 
@@ -60,10 +61,7 @@ Step::Status StepRemoveFiles::process() {
   if (context_->external_storage)
     context_->external_storage->Commit();
 
-  // If global package, then some RW directories won't be removed here,
-  // instead, following StepRemoveLegacyDirectories will check and remove them.
-  if (QueryIsPackageInstalled(context_->pkgid.get(), GLOBAL_USER) ||
-      context_->uid.get() == GLOBAL_USER) {
+  if (QueryIsPackageInstalled(context_->pkgid.get(), GLOBAL_USER)) {
     for (bf::directory_iterator itr(pkg_path); itr != bf::directory_iterator();
         ++itr) {
       if (bf::is_directory(itr->status())) {
@@ -79,9 +77,6 @@ Step::Status StepRemoveFiles::process() {
         bf::remove_all(itr->path(), error);
       }
     }
-    // The shared/res will be removed if it exists.
-    bf::path shared_res_path = pkg_path / kSharedRes;
-    bf::remove_all(shared_res_path, error);
   } else {
     bf::remove_all(pkg_path, error);
     if (error) {

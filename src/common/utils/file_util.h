@@ -17,7 +17,8 @@ enum FSFlag {
 bool CreateDir(const boost::filesystem::path& path);
 
 bool CopyDir(const boost::filesystem::path& src,
-             const boost::filesystem::path& dst, FSFlag flags = FS_NONE);
+             const boost::filesystem::path& dst,
+             FSFlag flags = FS_NONE, bool skip_symlink = false);
 
 bool CopyFile(const boost::filesystem::path& src,
              const boost::filesystem::path& dst);

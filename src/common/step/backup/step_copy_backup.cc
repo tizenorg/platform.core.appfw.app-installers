@@ -144,7 +144,7 @@ bool StepCopyBackup::MoveMountPointContent(const boost::filesystem::path& from,
         LOG(ERROR) << "Fail to backup package directory of: " << iter->path();
         return false;
       }
-    } else if (bf::is_symlink(iter->path())) {
+    } else if (bf::is_symlink(symlink_status(iter->path()))) {
       bs::error_code error;
       bf::copy_symlink(iter->path(), to / iter->path().filename(), error);
       if (error) {
