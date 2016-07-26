@@ -42,6 +42,7 @@ SET(SRCS
   step/filesystem/step_create_icons.cc
   step/filesystem/step_create_per_user_storage_directories.cc
   step/filesystem/step_create_legacy_directories.cc
+  step/filesystem/step_create_globalapp_symlinks.cc
   step/filesystem/step_create_storage_directories.cc
   step/filesystem/step_delta_patch.cc
   step/filesystem/step_move_installed_storage.cc
@@ -54,6 +55,7 @@ SET(SRCS
   step/filesystem/step_remove_icons.cc
   step/filesystem/step_remove_per_user_storage_directories.cc
   step/filesystem/step_remove_legacy_directories.cc
+  step/filesystem/step_remove_globalapp_symlinks.cc
   step/filesystem/step_remove_temporary_directory.cc
   step/filesystem/step_remove_tep.cc
   step/filesystem/step_remove_zip_image.cc
