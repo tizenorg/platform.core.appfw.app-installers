@@ -119,7 +119,8 @@ bool SetDirPermissions(const boost::filesystem::path& path,
   return true;
 }
 
-bool CopyDir(const bf::path& src, const bf::path& dst, FSFlag flags) {
+bool CopyDir(const bf::path& src, const bf::path& dst,
+             FSFlag flags, bool skip_symlink) {
   try {
     // Check whether the function call is valid
     if (!bf::exists(src) || !bf::is_directory(src)) {
@@ -152,15 +153,18 @@ bool CopyDir(const bf::path& src, const bf::path& dst, FSFlag flags) {
     try {
       bf::path current(file->path());
       bf::path target = dst / current.filename();
-      if (bf::is_directory(current)) {
-        // Found directory: Recursion
-        if (!CopyDir(current, target, flags)) {
-          return false;
-        }
-      } else if (bf::is_symlink(current)) {
+
+      if (bf::is_symlink(symlink_status(current))) {
+        if (skip_symlink)
+          continue;
         if ((flags & FS_MERGE_DIRECTORIES) && bf::exists(target))
           continue;
         bf::copy_symlink(current, target);
+      } else if (bf::is_directory(current)) {
+        // Found directory: Recursion
+        if (!CopyDir(current, target, flags, skip_symlink)) {
+          return false;
+        }
       } else {
         if ((flags & FS_MERGE_DIRECTORIES) && bf::exists(target))
           continue;
@@ -195,7 +199,7 @@ bool MoveDir(const bf::path& src, const bf::path& dst, FSFlag flags) {
   bf::rename(src, dst, error);
   if (error) {
     LOG(WARNING) << "Cannot move directory: " << src << ". Will copy/remove...";
-    if (!CopyDir(src, dst, flags)) {
+    if (!CopyDir(src, dst, flags, false)) {
       LOG(ERROR) << "Cannot copy directory: " << src;
       return false;
     }
