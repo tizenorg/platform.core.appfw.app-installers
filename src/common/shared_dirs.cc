@@ -62,7 +62,14 @@ const std::vector<const char*> kEntries = {
   {"data/"},
   {"shared/"},
 };
+const std::vector<const char*> kReadOnlyEntries = {
+  {"bin"},
+  {"lib"},
+  {"res"},
+  {"shared/res"},
+};
 
+const char kSharedResDir[] = "shared/res";
 const char kSharedDataDir[] = "shared/data";
 const char kSharedTrustedDir[] = "shared/trusted";
 const char kSkelAppDir[] = "/etc/skel/apps_rw";
@@ -70,14 +77,8 @@ const char kLegacyAppDir[] = "/opt/usr/apps";
 const int32_t kPWBufSize = sysconf(_SC_GETPW_R_SIZE_MAX);
 const int32_t kGRBufSize = sysconf(_SC_GETGR_R_SIZE_MAX);
 
-bool SetOwnerAndPermissions(const bf::path& subpath, uid_t uid,
-                            gid_t gid, bf::perms perms) {
+bool SetFileOwner(const bf::path& subpath, uid_t uid, gid_t gid) {
   bs::error_code error;
-  bf::permissions(subpath, perms, error);
-  if (error) {
-    LOG(ERROR) << "Failed to set permissions for: " << subpath;
-    return false;
-  }
   int fd = open(subpath.c_str(), O_RDONLY);
   if (fd < 0) {
     LOG(ERROR) << "Can't open directory : " << subpath;
@@ -92,16 +93,39 @@ bool SetOwnerAndPermissions(const bf::path& subpath, uid_t uid,
   return true;
 }
 
+bool SetOwnerAndPermissions(const bf::path& subpath, uid_t uid,
+                            gid_t gid, bf::perms perms) {
+  bs::error_code error;
+  bf::permissions(subpath, perms, error);
+  if (error) {
+    LOG(ERROR) << "Failed to set permissions for: " << subpath;
+    return false;
+  }
+
+  if (!SetFileOwner(subpath, uid, gid)) {
+    return false;
+  }
+  return true;
+}
+
 bool SetPackageDirectoryOwnerAndPermissions(const bf::path& subpath, uid_t uid,
                                             gid_t gid) {
   bs::error_code error;
   bf::perms perms = bf::owner_read |
                     bf::owner_write |
                     bf::group_read;
-  if (bf::is_directory(subpath))
-    perms |= bf::owner_exe | bf::group_exe | bf::others_exe;
+  // symlink will be skipped
+  if (bf::is_symlink(symlink_status(subpath)))
+    return true;
 
-  return SetOwnerAndPermissions(subpath, uid, gid, perms);
+  // non directory will be skipped
+  bool result = true;
+  if (bf::is_directory(subpath)) {
+    perms |= bf::owner_exe | bf::group_exe | bf::others_exe;
+    result = SetOwnerAndPermissions(subpath, uid, gid, perms);
+  }
+
+  return result;
 }
 
 bool SetLegacyDirectoryOwnerAndPermissions(const bf::path& subpath) {
@@ -243,6 +267,85 @@ user_list GetUserList() {
   return list;
 }
 
+bool CreateSymlinkFiles(const bf::path& src_dir, const bf::path& dst_dir) {
+  std::vector<char*> rofiles;
+  for (auto& entry : kReadOnlyEntries)
+    rofiles.push_back(strdup(entry));
+
+  for (bf::directory_iterator file(src_dir);
+      file != bf::directory_iterator();
+      ++file) {
+    if (bf::is_regular_file(file->path())) {
+      bf::path current(file->path());
+      bf::path file_name = current.filename();
+      LOG(DEBUG) << "file_name: " << file_name;
+      rofiles.push_back(strdup(file_name.c_str()));
+    }
+  }
+
+  bs::error_code error;
+  for (auto& entry : rofiles) {
+    bf::path src_path = src_dir / entry;
+    bf::path dst_path = dst_dir / entry;
+    free(const_cast<char*>(entry));
+    if (!bf::exists(src_path)) {
+      LOG(ERROR) << "src_path not exist : " << src_path;
+      continue;
+    }
+    if (bf::exists(dst_path)) {
+      LOG(WARNING) << "dst_path exist, skip : " << dst_path;
+      continue;
+    }
+    bf::create_symlink(src_path, dst_path, error);
+    if (error) {
+      LOG(ERROR) << "Symlink creation failure src_path: " << src_path
+                 << " dst_path: " << dst_path;
+      LOG(ERROR) << "error: " << error.message();
+      return false;
+    }
+  }
+  return true;
+}
+
+bool DeleteSymlinkFiles(const bf::path& src_dir, const bf::path& dst_dir) {
+  bs::error_code error;
+  for (bf::directory_iterator file(dst_dir);
+      file != bf::directory_iterator();
+      ++file) {
+    bf::path current(file->path());
+    if (bf::is_symlink(symlink_status(current))) {
+      bf::path cano_path = bf::canonical(current, error);
+      if (error) {
+        LOG(ERROR) << "Getting cano_path failure for: " << current;
+        LOG(ERROR) << "error: " << error.message();
+        return false;
+      }
+      bf::path parent = cano_path.parent_path();
+      if (!parent.empty() && !parent.compare(src_dir)) {
+        bf::remove(current, error);
+        if (error) {
+          LOG(ERROR) << "Symlink deletion failure for: " << current;
+          LOG(ERROR) << "error: " << error.message();
+          return false;
+        }
+      } else {
+        LOG(WARNING) << "Parent is empty or not equal to src, parenet: ("
+                   << parent << ")";
+      }
+    }
+  }
+  bf::path shared_res = dst_dir / kSharedResDir;
+  if (bf::is_symlink(symlink_status(shared_res))) {
+      bf::remove(shared_res, error);
+      if (error) {
+          LOG(ERROR) << "Symlink deletion failure for: " << shared_res;
+          LOG(ERROR) << "error: " << error.message();
+          return false;
+      }
+  }
+  return true;
+}
+
 }  // namespace
 
 namespace common_installer {
@@ -335,7 +438,7 @@ bool PerformExternalDirectoryDeletionForAllUsers(const std::string& pkgid) {
 
 bool CreateSkelDirectories(const std::string& pkgid,
                            const std::string& api_version,
-                           bool trusted) {
+                           bool trusted, bool is_preload) {
   bf::path path = bf::path(kSkelAppDir) / pkgid;
   LOG(DEBUG) << "Creating directories in: " << path;
 
@@ -343,7 +446,6 @@ bool CreateSkelDirectories(const std::string& pkgid,
 
   bs::error_code error;
   bf::create_directories(path, error);
-
   if (error) {
     LOG(ERROR) << "Failed to create directory: " << path;
     return false;
@@ -372,7 +474,13 @@ bool CreateSkelDirectories(const std::string& pkgid,
     return false;
   }
 
-  return true;
+  bool result = true;
+  if (!is_preload) {
+    bf::path src_dir = bf::path(tzplatform_getenv(TZ_SYS_RW_APP)) / pkgid;
+    result = CreateSymlinkFiles(src_dir, path);
+  }
+
+  return result;
 }
 
 
@@ -421,19 +529,20 @@ bool DeleteUserExternalDirectories(const std::string& pkgid) {
 bool CopyUserDirectories(const std::string& pkgid) {
   user_list list = GetUserList();
   for (auto l : list) {
-    LOG(DEBUG) << "Copying directories for uid: " << std::get<0>(l);
+    uid_t uid = std::get<0>(l);
+    LOG(DEBUG) << "Copying directories for uid: " << uid;
     bf::path apps_rw(std::get<2>(l) / "apps_rw");
     bf::path src = bf::path(kSkelAppDir) / pkgid;
     bf::path dst = apps_rw / pkgid;
-    if (!ci::CopyDir(src, dst))
+    if (!ci::CopyDir(src, dst, FSFlag::FS_NONE, true))
       continue;
-    if (!SetPackageDirectoryOwnerAndPermissions(dst, std::get<0>(l),
-        std::get<1>(l)))
+    gid_t gid = std::get<1>(l);
+    if (!SetPackageDirectoryOwnerAndPermissions(dst, uid, gid))
       return false;
     for (bf::recursive_directory_iterator iter(dst);
         iter != bf::recursive_directory_iterator(); ++iter) {
       if (!SetPackageDirectoryOwnerAndPermissions(iter->path(),
-          std::get<0>(l), std::get<1>(l)))
+          uid, gid))
         return false;
     }
     std::string error_message;
@@ -447,77 +556,93 @@ bool CopyUserDirectories(const std::string& pkgid) {
   return true;
 }
 
-bool CreateLegacyDirectories(const std::string& pkgid) {
-  // create lagcay directories for backward compatibility
-  bs::error_code error;
-  bf::path path = bf::path(kLegacyAppDir) / pkgid;
-  bf::create_directories(path, error);
-  if (error && !bf::exists(path)) {
-    LOG(ERROR) << "Failed to create directory: " << path;
+bool CreateGlobalAppSymlinksForAllUsers(const std::string& pkgid) {
+  bf::path src_dir = bf::path(tzplatform_getenv(TZ_SYS_RW_APP)) / pkgid;
+  if (!bf::exists(src_dir)) {
+    LOG(ERROR) << "src_dir not exists";
     return false;
   }
 
-  std::vector<const char*> dirs(kEntries);
-  dirs.push_back(kSharedTrustedDir);
-  dirs.push_back(kSharedDataDir);
-  for (auto& entry : dirs) {
-    bf::path subpath = path / entry;
-    bf::create_directories(subpath, error);
-    if (error && !bf::exists(subpath)) {
-      LOG(ERROR) << "Failed to create directory: " << subpath;
-      return false;
+  bool result = true;
+  user_list list = GetUserList();
+  for (auto l : list) {
+    uid_t uid = std::get<0>(l);
+    LOG(DEBUG) << "Creating symlinks for uid: " << uid;
+    // check installed user private app.
+    if (QueryIsPackageInstalled(pkgid, uid))
+      continue;
+    bf::path apps_rw(std::get<2>(l) / "apps_rw");
+    bf::path dst_dir = apps_rw / pkgid;
+    if (!bf::exists(dst_dir)) {
+      LOG(WARNING) << "dst_dir not exists";
+      continue;
     }
-    if (!SetLegacyDirectoryOwnerAndPermissions(subpath)) {
-      LOG(ERROR) << "Failed to set permission: " << subpath;
-      return false;
-    }
+    result = CreateSymlinkFiles(src_dir, dst_dir);
   }
-
-  std::string error_message;
-  if (!RegisterSecurityContextForPath(pkgid, path, GLOBAL_USER,
-                                      false, &error_message)) {
-    LOG(ERROR) << "Failed to register security context for path: " << path
-               << ", error_message: " << error_message;
-    return false;
-  }
-
-  return true;
+  return result;
 }
 
-bool DeleteLegacyDirectories(uid_t uid, const std::string& pkgid) {
-  bool del_flag = true;
-  uid_t chk_uid;
+bool CreateGlobalAppSymlinksForUser(const std::string& pkgid, uid_t uid) {
+  bf::path src_dir = bf::path(tzplatform_getenv(TZ_SYS_RW_APP)) / pkgid;
+  if (!bf::exists(src_dir)) {
+    LOG(ERROR) << "src_dir not exists";
+    return false;
+  }
 
-  user_list list = GetUserList();
-  if (list.empty())
+  tzplatform_set_user(uid);
+  bf::path dst_dir = bf::path(tzplatform_getenv(TZ_USER_APP)) / pkgid;
+  tzplatform_reset_user();
+  if (!bf::exists(dst_dir)) {
+    LOG(WARNING) << "dst_dir not exists";
     return true;
+  }
+  bool result = CreateSymlinkFiles(src_dir, dst_dir);
+
+  return result;
+}
+
+bool DeleteGlobalAppSymlinksForAllUsers(const std::string& pkgid) {
+  bf::path src_dir = bf::path(tzplatform_getenv(TZ_SYS_RW_APP)) / pkgid;
+  if (!bf::exists(src_dir)) {
+    LOG(ERROR) << "src_dir not exists";
+    return false;
+  }
+
+  bool result = true;
+  user_list list = GetUserList();
   for (auto l : list) {
-    chk_uid = std::get<0>(l);
-    if (chk_uid == uid)
+    uid_t uid = std::get<0>(l);
+    LOG(DEBUG) << "Deleting symlinks for uid: " << uid;
+    // check installed user private app.
+    if (QueryIsPackageInstalled(pkgid, uid))
       continue;
-    LOG(DEBUG) << "Check package existence for uid: " << chk_uid;
-    if (QueryIsPackageInstalled(pkgid, chk_uid)) {
-      LOG(DEBUG) << "Package: " << pkgid << " for uid: " << chk_uid
-                 << " still exists.";
-      del_flag = false;
-      break;;
+    bf::path apps_rw(std::get<2>(l) / "apps_rw");
+    bf::path dst_dir = apps_rw / pkgid;
+    if (!bf::exists(dst_dir)) {
+      LOG(WARNING) << "dst_dir not exists";
+      continue;
     }
+    result = DeleteSymlinkFiles(src_dir, dst_dir);
+  }
+  return result;
+}
+
+bool DeleteGlobalAppSymlinksForUser(const std::string& pkgid, uid_t uid) {
+  bf::path src_dir = bf::path(tzplatform_getenv(TZ_SYS_RW_APP)) / pkgid;
+  if (!bf::exists(src_dir)) {
+    LOG(ERROR) << "src_dir not exists";
+    return false;
   }
 
-  if (del_flag && uid != GLOBAL_USER) {
-    if (QueryIsPackageInstalled(pkgid, GLOBAL_USER)) {
-      LOG(DEBUG) << "Package: " << pkgid << " for uid: " << GLOBAL_USER
-                 << " still exists.";
-      del_flag = false;
-    }
+  tzplatform_set_user(uid);
+  bf::path dst_dir = bf::path(tzplatform_getenv(TZ_USER_APP)) / pkgid;
+  tzplatform_reset_user();
+  if (!bf::exists(dst_dir)) {
+    LOG(WARNING) << "dst_dir not exists";
+    return true;
   }
-
-  if (del_flag) {
-    LOG(DEBUG) << "Delete legacy directories for package: " << pkgid;
-    DeleteDirectories(bf::path(kLegacyAppDir), pkgid);
-  }
-
-  return true;
+  bool result = DeleteSymlinkFiles(src_dir, dst_dir);
+  return result;
 }
 
 }  // namespace common_installer

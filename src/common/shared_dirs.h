@@ -60,13 +60,14 @@ bool PerformExternalDirectoryDeletionForAllUsers(const std::string& pkgid);
  * \param pkgid package id
  * \param api_version package api version
  * \param trusted signed package flag
+ * \param is_preload preload flag
  *
  * \return bool true if succeed, false otherwise
  *
  */
 bool CreateSkelDirectories(const std::string& pkgid,
                            const std::string& api_version,
-                           bool trusted);
+                           bool trusted, bool is_preload);
 
 /**
  * \brief Performs deletion of directories
@@ -115,25 +116,46 @@ std::string GetDirectoryPathForInternalStorage();
 std::string GetDirectoryPathForExternalStorage();
 
 /**
- * \brief Create Legacy directories
+ * \brief Create symlinks for read-only files of global app for all users.
  *
- * \param uid user id
  * \param pkgid package id
  *
  * \return true if succeed, false otherwise
  *
  */
-bool CreateLegacyDirectories(const std::string& pkgid);
+bool CreateGlobalAppSymlinksForAllUsers(const std::string& pkgid);
 
 /**
- * \brief Delete Legacy directories
+ * \brief Create symlinks for read-only files of global app for user.
+ *
+ * \param pkgid package id
+ * \param uid user id
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool CreateGlobalAppSymlinksForUser(const std::string& pkgid, uid_t uid);
+
+/**
+ * \brief Delete symlinks for read-only files of global app for all users.
  *
  * \param pkgid package id
  *
  * \return true if succeed, false otherwise
  *
  */
-bool DeleteLegacyDirectories(uid_t uid, const std::string& pkgid);
+bool DeleteGlobalAppSymlinksForAllUsers(const std::string& pkgid);
+
+/**
+ * \brief Delete symlinks for read-only files of global app for user.
+ *
+ * \param pkgid package id
+ * \param uid user id
+ *
+ * \return true if succeed, false otherwise
+ *
+ */
+bool DeleteGlobalAppSymlinksForUser(const std::string& pkgid, uid_t uid);
 
 }  // namespace common_installer
 

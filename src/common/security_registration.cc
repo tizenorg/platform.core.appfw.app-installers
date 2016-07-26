@@ -134,7 +134,7 @@ bool PrepareRequest(const std::string& app_id, const std::string& pkg_id,
     for (auto& policy : kSecurityPolicies) {
       bf::path subpath = path / policy.first;
       if (bf::exists(subpath)) {
-        if (bf::is_symlink(subpath)) {
+        if (bf::is_symlink(symlink_status(subpath))) {
           LOG(DEBUG) << "Path " << subpath << " is a symlink."
                      << "Path will not be registered";
           continue;
@@ -205,7 +205,7 @@ bool PreparePathRequest(const std::string& pkg_id,
   for (auto& policy : kSecurityPolicies) {
     bf::path subpath = path / policy.first;
     if (bf::exists(subpath)) {
-      if (bf::is_symlink(subpath)) {
+      if (bf::is_symlink(symlink_status(subpath))) {
         LOG(DEBUG) << "Path " << subpath << " is a symlink."
                    << "Path will not be registered";
         continue;

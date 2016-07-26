@@ -31,7 +31,7 @@ common_installer::Step::Status StepCreatePerUserStorageDirectories::process() {
     trusted = true;
 
   if (!common_installer::CreateSkelDirectories(package_id,
-      str_ver, trusted)) {
+      str_ver, trusted, context_->is_preload_request.get())) {
     LOG(ERROR) << "Failed to create skel dirs";
     return Status::APP_DIR_ERROR;
   }
