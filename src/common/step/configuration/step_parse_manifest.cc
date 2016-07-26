@@ -821,10 +821,6 @@ Step::Status StepParseManifest::process() {
     return Step::Status::PARSE_ERROR;
   }
 
-  // TODO: need to be checked more (offline mode and store app)
-  //if (!CheckFeatures())
-  //  return Status::PARSE_ERROR;
-
   if (manifest_location_ == ManifestLocation::INSTALLED) {
     // recovery of tep value for installed package
     std::string old_tep =
