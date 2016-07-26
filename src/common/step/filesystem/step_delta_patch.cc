@@ -51,7 +51,7 @@ bool ValidateDeltaInfo(const delta::DeltaInfo& info) {
 void RemoveBinarySymlinks(const bf::path& dir) {
   for (bf::directory_iterator iter(dir / kBinaryDir);
       iter != bf::directory_iterator(); ++iter) {
-    if (bf::is_symlink(iter->path())) {
+    if (bf::is_symlink(symlink_status(iter->path()))) {
       // FIXME: note that this assumes that it is not possible to create
       // explicitly symlinks in bin/ directory pointing to whatever
       bs::error_code error;
@@ -247,7 +247,8 @@ Step::Status StepDeltaPatch::process() {
   }
 
   if (!CopyDir(context_->root_application_path.get() / context_->pkgid.get()
-               / delta_root_, context_->unpacked_dir_path.get())) {
+               / delta_root_, context_->unpacked_dir_path.get(),
+               FSFlag::FS_NONE, false)) {
     LOG(ERROR) << "Failed to copy package files";
     return Status::DELTA_ERROR;
   }
