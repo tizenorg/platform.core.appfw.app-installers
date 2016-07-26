@@ -50,6 +50,7 @@ class Step {
  public:
   /** Possible code returned by process, undo, clean, precheck methods. */
   enum class Status {
+    GLOBALSYMLINK_ERROR = -26, // TODO(jongmyeong.ko)
     GRANT_PERMISSION_ERROR = PKGCMD_ERRCODE_GRANT_PERMISSION_ERROR,
     IMAGE_ERROR = PKGCMD_ERRCODE_IMAGE_ERROR,
     UNZIP_ERROR = PKGCMD_ERRCODE_UNZIP_ERROR,
