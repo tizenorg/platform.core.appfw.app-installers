@@ -71,6 +71,44 @@ bool RequestCreateLegacyDirectories(const std::string& pkgid);
  */
 bool RequestDeleteLegacyDirectories(const std::string& pkgid);
 
+/**
+ * \brief Request to create symlinks of global app for all users
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ */
+bool RequestCreateGlobalAppSymlinks(const std::string& pkgid);
+
+/**
+ * \brief Request to create symlinks of global app for user
+ *
+ * \param pkgid package id
+ * \param uid user id
+ *
+ * \return bool true if succeed, false otherwise
+ */
+bool RequestCreateGlobalAppSymlinksForUser(const std::string& pkgid, uid_t uid);
+
+/**
+ * \brief Request to delete symlinks of global app for all users
+ *
+ * \param pkgid package id
+ *
+ * \return bool true if succeed, false otherwise
+ */
+bool RequestDeleteGlobalAppSymlinks(const std::string& pkgid);
+
+/**
+ * \brief Request to delete symlinks of global app for user
+ *
+ * \param pkgid package id
+ * \param uid user id
+ *
+ * \return bool true if succeed, false otherwise
+ */
+bool RequestDeleteGlobalAppSymlinksForUser(const std::string& pkgid, uid_t uid);
+
 }  // namespace common_installer
 
 #endif  // COMMON_PKGDIR_TOOL_REQUEST_H_
