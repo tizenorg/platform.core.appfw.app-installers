@@ -16,8 +16,8 @@ const char kDBusServiceName[] = "org.tizen.pkgdir_tool";
 const char kDBusObjectPath[] = "/org/tizen/pkgdir_tool";
 const char kDBusInterfaceName[] = "org.tizen.pkgdir_tool";
 
-bool RequestUserDirectoryOperation(const char* method,
-    const std::string& pkgid) {
+bool DbusRequestForDirectoryOperation(const char* method,
+    GVariant* parameter) {
   GError* err = nullptr;
   GDBusConnection* con = g_bus_get_sync(G_BUS_TYPE_SYSTEM, nullptr, &err);
   if (!con || err) {
@@ -39,7 +39,7 @@ bool RequestUserDirectoryOperation(const char* method,
     return false;
   }
   GVariant* r = g_dbus_proxy_call_sync(proxy, method,
-      g_variant_new("(s)", pkgid.c_str()), G_DBUS_CALL_FLAGS_NONE, -1, nullptr,
+      parameter, G_DBUS_CALL_FLAGS_NONE, -1, nullptr,
       &err);
   if (!r) {
     std::string err_msg;
@@ -58,6 +58,26 @@ bool RequestUserDirectoryOperation(const char* method,
   g_variant_unref(r);
   g_object_unref(proxy);
   g_object_unref(con);
+
+  return result;
+}
+
+bool RequestUserDirectoryOperation(const char* method,
+    const std::string& pkgid) {
+  GVariant* parameter = g_variant_new("(s)", pkgid.c_str());
+
+  bool result;
+  result = DbusRequestForDirectoryOperation(method, parameter);
+
+  return result;
+}
+
+bool RequestUserDirectoryOperationForUser(const char* method,
+    const std::string& pkgid, uid_t uid) {
+  GVariant* parameter = g_variant_new("(si)", pkgid.c_str(), uid);
+
+  bool result;
+  result = DbusRequestForDirectoryOperation(method, parameter);
 
   return result;
 }
@@ -105,6 +125,42 @@ bool RequestCreateLegacyDirectories(const std::string& pkgid) {
 
 bool RequestDeleteLegacyDirectories(const std::string& pkgid) {
   RequestUserDirectoryOperation("DeleteLegacyDirs", pkgid);
+  return true;
+}
+
+bool RequestCreateGlobalAppSymlinks(const std::string& pkgid) {
+  if (!RequestUserDirectoryOperation("CreateGlobalAppSymlinks", pkgid)) {
+    LOG(INFO) << "Try to create symlinks for global app directly";
+    return CreateGlobalAppSymlinksForAllUsers(pkgid);
+  }
+  return true;
+}
+
+bool RequestCreateGlobalAppSymlinksForUser(const std::string& pkgid,
+                                           uid_t uid) {
+  if (!RequestUserDirectoryOperationForUser("CreateGlobalAppSymlinksForUser",
+                                     pkgid, uid)) {
+    LOG(INFO) << "Try to create symlinks for global app directly";
+    return CreateGlobalAppSymlinksForUser(pkgid, uid);
+  }
+  return true;
+}
+
+bool RequestDeleteGlobalAppSymlinks(const std::string& pkgid) {
+  if (!RequestUserDirectoryOperation("DeleteGlobalAppSymlinks", pkgid)) {
+    LOG(INFO) << "Try to delete symlinks for global app directly";
+    return DeleteGlobalAppSymlinksForAllUsers(pkgid);
+  }
+  return true;
+}
+
+bool RequestDeleteGlobalAppSymlinksForUser(const std::string& pkgid,
+                                           uid_t uid) {
+  if (!RequestUserDirectoryOperationForUser("DeleteGlobalAppSymlinksForUser",
+                                     pkgid, uid)) {
+    LOG(INFO) << "Try to delete symlinks for global app directly";
+    return DeleteGlobalAppSymlinksForUser(pkgid, uid);
+  }
   return true;
 }
 

@@ -33,12 +33,22 @@ const char kDBusInstropectionXml[] =
   "      <arg type='s' name='pkgid' direction='in'/>"
   "      <arg type='b' name='result' direction='out'/>"
   "    </method>"
-  "    <method name='CreateLegacyDirs'>"
+  "    <method name='CreateGlobalAppSymlinks'>"
   "      <arg type='s' name='pkgid' direction='in'/>"
   "      <arg type='b' name='result' direction='out'/>"
   "    </method>"
-  "    <method name='DeleteLegacyDirs'>"
+  "    <method name='DeleteGlobalAppSymlinks'>"
   "      <arg type='s' name='pkgid' direction='in'/>"
+  "      <arg type='b' name='result' direction='out'/>"
+  "    </method>"
+  "    <method name='CreateGlobalAppSymlinksForUser'>"
+  "      <arg type='s' name='pkgid' direction='in'/>"
+  "      <arg type='i' name='uid' direction='in'/>"
+  "      <arg type='b' name='result' direction='out'/>"
+  "    </method>"
+  "    <method name='DeleteGlobalAppSymlinksForUser'>"
+  "      <arg type='s' name='pkgid' direction='in'/>"
+  "      <arg type='i' name='uid' direction='in'/>"
   "      <arg type='b' name='result' direction='out'/>"
   "    </method>"
   "  </interface>"
@@ -63,7 +73,6 @@ class PkgdirToolService {
       gpointer user_data);
   void OnBusAcquired(GDBusConnection* connection, const gchar* name,
       gpointer user_data);
-  int GetSenderUnixId(GDBusConnection *connection, const gchar* sender);
 
   GDBusNodeInfo* node_info_;
   guint owner_id_;
@@ -130,53 +139,18 @@ void PkgdirToolService::RenewTimeout(int ms) {
       this);
 }
 
-int PkgdirToolService::GetSenderUnixId(GDBusConnection* connection,
-    const gchar* sender) {
-  int uid = -1;
-
-  GDBusMessage* msg = nullptr;
-  msg = g_dbus_message_new_method_call("org.freedesktop.DBus",
-                                       "/org/freedesktop/DBus",
-                                       "org.freedesktop.DBus",
-                                       "GetConnectionUnixUser");
-  if (!msg) {
-    LOG(ERROR) << "Failed to setup dbus message";
-    return -1;
-  }
-  g_dbus_message_set_body(msg, g_variant_new("(s)", sender));
-
-  GError* err = nullptr;
-  GDBusMessage* reply = nullptr;
-  reply = g_dbus_connection_send_message_with_reply_sync(connection, msg,
-      G_DBUS_SEND_MESSAGE_FLAGS_NONE, -1, nullptr, nullptr, &err);
-  if (!reply) {
-    LOG(ERROR) << "Failed to send dbus message";
-    if (err) {
-      LOG(ERROR) << "error message: " <<  err->message;
-      g_error_free(err);
-    }
-    g_object_unref(msg);
-    return -1;
-  }
-
-  GVariant* body = g_dbus_message_get_body(reply);
-  g_variant_get(body, "(u)", &uid);
-
-  g_object_unref(msg);
-  g_object_unref(reply);
-
-  return uid;
-}
-
 void PkgdirToolService::HandleMethodCall(GDBusConnection* connection,
     const gchar* sender, const gchar* object_path, const gchar* interface_name,
     const gchar* method_name, GVariant* parameters,
     GDBusMethodInvocation* invocation, gpointer user_data) {
+  UNUSED(connection);
+  UNUSED(sender);
   UNUSED(object_path);
   UNUSED(interface_name);
   UNUSED(user_data);
   char* val;
-  g_variant_get(parameters, "(s)", &val);
+
+  g_variant_get(parameters, "(&s)", &val);
 
   bool r = false;
   LOG(INFO) << "Incomming method call: " << method_name;
@@ -189,15 +163,18 @@ void PkgdirToolService::HandleMethodCall(GDBusConnection* connection,
     r = ci::PerformExternalDirectoryCreationForAllUsers(std::string(val));
   } else if (g_strcmp0(method_name, "DeleteExternalDirs") == 0) {
     r = ci::PerformExternalDirectoryDeletionForAllUsers(std::string(val));
-  } else if (g_strcmp0(method_name, "CreateLegacyDirs") == 0) {
-    r = ci::CreateLegacyDirectories(std::string(val));
-  } else if (g_strcmp0(method_name, "DeleteLegacyDirs") == 0) {
-    int sender_uid = GetSenderUnixId(connection, sender);
-    if (sender_uid < 0) {
-      LOG(ERROR) << "Failed to get sender_uid: " << sender_uid;
-    } else {
-      r = ci::DeleteLegacyDirectories((uid_t)sender_uid, std::string(val));
-    }
+  } else if (g_strcmp0(method_name, "CreateGlobalAppSymlinks") == 0) {
+    r = ci::CreateGlobalAppSymlinksForAllUsers(std::string(val));
+  } else if (g_strcmp0(method_name, "DeleteGlobalAppSymlinks") == 0) {
+    r = ci::DeleteGlobalAppSymlinksForAllUsers(std::string(val));
+  } else if (g_strcmp0(method_name, "CreateGlobalAppSymlinksForUser") == 0) {
+    uid_t uid;
+    g_variant_get(parameters, "(&si)", &val, &uid);
+    r = ci::CreateGlobalAppSymlinksForUser(std::string(val), uid);
+  } else if (g_strcmp0(method_name, "DeleteGlobalAppSymlinksForUser") == 0) {
+    uid_t uid;
+    g_variant_get(parameters, "(&si)", &val, &uid);
+    r = ci::DeleteGlobalAppSymlinksForUser(std::string(val), uid);
   } else {
     LOG(ERROR) << "Unknown method call: " << method_name;
   }
