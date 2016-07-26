@@ -54,7 +54,7 @@ bool ValidateDeltaInfo(const delta::DeltaInfo& info) {
 void RemoveBinarySymlinks(const bf::path& dir) {
   for (bf::directory_iterator iter(dir / kBinaryDir);
       iter != bf::directory_iterator(); ++iter) {
-    if (bf::is_symlink(iter->path())) {
+    if (bf::is_symlink(symlink_status(iter->path()))) {
       // FIXME: note that this assumes that it is not possible to create
       // explicitly symlinks in bin/ directory pointing to whatever
       bs::error_code error;
