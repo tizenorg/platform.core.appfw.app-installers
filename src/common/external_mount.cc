@@ -7,7 +7,17 @@
 #include <app2ext_interface.h>
 #include <manifest_parser/utils/logging.h>
 
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+
+#include "common/paths.h"
+#include "common/pkgmgr_query.h"
+
+namespace bf = boost::filesystem;
+
 namespace common_installer {
+
+const char kInstalledExternally[] = "installed_external";
 
 ExternalMount::ExternalMount(const std::string& pkgid, uid_t uid)
     : pkgid_(pkgid),
@@ -26,7 +36,16 @@ ExternalMount::~ExternalMount() {
 }
 
 bool ExternalMount::IsAvailable() const {
-  return app2ext_usr_get_app_location(pkgid_.c_str(), uid_) == APP2EXT_SD_CARD;
+  bf::path storage_path = GetExternalCardPath();
+  if (!bf::exists(storage_path)) {
+    LOG(WARNING) << "External storage (SD Card) is not mounted.";
+    return false;
+  }
+  std::string storage = QueryStorageForPkgId(pkgid_.c_str(), uid_);
+  if (storage != kInstalledExternally)
+    return false;
+
+  return true;
 }
 
 bool ExternalMount::Mount() {
