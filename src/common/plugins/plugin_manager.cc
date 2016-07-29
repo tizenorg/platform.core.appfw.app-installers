@@ -68,7 +68,7 @@ bool PluginManager::LoadPlugins() {
       if (iter != xml_tags.end() && *iter == plugin_info->name()) {
         plugin = factory.CreatePluginByPluginInfo(*plugin_info);
         if (!plugin) {
-          LOG(ERROR) << "Failed to load plugin: " << plugin_info->path()
+          LOG(WARNING) << "Failed to load plugin: " << plugin_info->path()
                      << " Plugin has been skipped.";
         }
       }
@@ -80,7 +80,7 @@ bool PluginManager::LoadPlugins() {
           if (std::string(meta->key).find(plugin_info->name()) == 0) {
             plugin = factory.CreatePluginByPluginInfo(*plugin_info);
             if (!plugin) {
-              LOG(ERROR) << "Failed to load plugin: " << plugin_info->path()
+              LOG(WARNING) << "Failed to load plugin: " << plugin_info->path()
                          << " Plugin has been skipped.";
             }
             done = true;
@@ -98,7 +98,7 @@ bool PluginManager::LoadPlugins() {
           if (std::string(category).find(plugin_info->name()) == 0) {
             plugin = factory.CreatePluginByPluginInfo(*plugin_info);
             if (!plugin) {
-              LOG(ERROR) << "Failed to load plugin: " << plugin_info->path()
+              LOG(WARNING) << "Failed to load plugin: " << plugin_info->path()
                          << " Plugin has been skipped.";
             }
             done = true;
