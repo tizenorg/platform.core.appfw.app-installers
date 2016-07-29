@@ -21,7 +21,7 @@ bool Plugin::Load() {
 
   lib_handle_ = dlopen(plugin_info_.path().c_str(), RTLD_LAZY | RTLD_LOCAL);
   if (!lib_handle_) {
-    LOG(ERROR) << "Failed to open library: " << plugin_info_.path().c_str()
+    LOG(WARNING) << "Failed to open library: " << plugin_info_.path().c_str()
                << " (" << dlerror() << ")";
     return false;
   }
