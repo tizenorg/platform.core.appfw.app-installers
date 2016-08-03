@@ -821,9 +821,8 @@ Step::Status StepParseManifest::process() {
     return Step::Status::PARSE_ERROR;
   }
 
-  // TODO: need to be checked more (offline mode and store app)
-  //if (!CheckFeatures())
-  //  return Status::PARSE_ERROR;
+  // TODO(jongmyeongko): check package features...
+  // Implementation of this need more consideration (offline mode and store app)
 
   if (manifest_location_ == ManifestLocation::INSTALLED) {
     // recovery of tep value for installed package

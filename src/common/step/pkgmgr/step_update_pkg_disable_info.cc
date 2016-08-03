@@ -23,13 +23,17 @@ Step::Status StepUpdatePkgDisableInfo::precheck() {
 
 Step::Status StepUpdatePkgDisableInfo::process() {
   if (action_type_ ==  ActionType::Disable) {
-    if (!DisablePkgInPkgmgr(context_->pkgid.get(), context_->uid.get(), context_->request_mode.get())) {
-      LOG(ERROR) << "Failed to update pkg info to disable :" << context_->pkgid.get();
+    if (!DisablePkgInPkgmgr(context_->pkgid.get(), context_->uid.get(),
+                            context_->request_mode.get())) {
+      LOG(ERROR) << "Failed to update pkg info to disable :"
+                 << context_->pkgid.get();
       return Status::REGISTER_ERROR;
     }
   } else {
-    if (!EnablePkgInPkgmgr(context_->pkgid.get(), context_->uid.get(), context_->request_mode.get())) {
-      LOG(ERROR) << "Failed to update pkg info to enable :" << context_->pkgid.get();
+    if (!EnablePkgInPkgmgr(context_->pkgid.get(), context_->uid.get(),
+                           context_->request_mode.get())) {
+      LOG(ERROR) << "Failed to update pkg info to enable :"
+                 << context_->pkgid.get();
       return Status::REGISTER_ERROR;
     }
   }
@@ -39,13 +43,17 @@ Step::Status StepUpdatePkgDisableInfo::process() {
 
 Step::Status StepUpdatePkgDisableInfo::undo() {
   if (action_type_ ==  ActionType::Disable) {
-    if (!EnablePkgInPkgmgr(context_->pkgid.get(), context_->uid.get(), context_->request_mode.get())) {
-      LOG(ERROR) << "Failed to update pkg info to enable : " << context_->pkgid.get();
+    if (!EnablePkgInPkgmgr(context_->pkgid.get(), context_->uid.get(),
+                           context_->request_mode.get())) {
+      LOG(ERROR) << "Failed to update pkg info to enable : "
+                 << context_->pkgid.get();
       return Status::REGISTER_ERROR;
     }
   } else {
-    if (!DisablePkgInPkgmgr(context_->pkgid.get(), context_->uid.get(), context_->request_mode.get())) {
-      LOG(ERROR) << "Failed to update pkg info to disable : " << context_->pkgid.get();
+    if (!DisablePkgInPkgmgr(context_->pkgid.get(), context_->uid.get(),
+                            context_->request_mode.get())) {
+      LOG(ERROR) << "Failed to update pkg info to disable : "
+                 << context_->pkgid.get();
       return Status::REGISTER_ERROR;
     }
   }

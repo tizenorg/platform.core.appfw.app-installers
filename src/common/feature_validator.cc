@@ -58,7 +58,8 @@ bool FeatureValidator::Validate(std::string* error) {
 }
 
 bool FeatureValidator::ValidateBoolean(
-    const std::string& feature, const std::string& /* value */, std::string* error) {
+    const std::string& feature, const std::string& /*value*/,
+    std::string* error) {
   bool supported = false;
   int ret = system_info_get_platform_bool(feature.c_str(), &supported);
   if (ret != SYSTEM_INFO_ERROR_NONE) {
@@ -70,7 +71,8 @@ bool FeatureValidator::ValidateBoolean(
 }
 
 bool FeatureValidator::ValidateInteger(
-    const std::string& feature, const std::string& /* value */, std::string* error) {
+    const std::string& feature, const std::string& /*value*/,
+    std::string* error) {
   int platform_value = 0;
   int ret = system_info_get_platform_int(feature.c_str(), &platform_value);
   if (ret != SYSTEM_INFO_ERROR_NONE) {
@@ -82,7 +84,8 @@ bool FeatureValidator::ValidateInteger(
 }
 
 bool FeatureValidator::ValidateString(
-    const std::string& feature, const std::string& /* value */, std::string* error) {
+    const std::string& feature, const std::string& /*value*/,
+    std::string* error) {
   char* text = nullptr;
   BOOST_SCOPE_EXIT_ALL(text) {
     free(text);

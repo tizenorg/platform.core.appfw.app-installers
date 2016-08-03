@@ -33,4 +33,4 @@ class StepUpdatePkgDisableInfo : public common_installer::Step {
 }  // namespace pkgmgr
 }  // namespace common_installer
 
-#endif  //COMMON_STEP_PKGMGR_STEP_UPDATE_PKG_DISABLE_INFO_H_
+#endif  // COMMON_STEP_PKGMGR_STEP_UPDATE_PKG_DISABLE_INFO_H_
