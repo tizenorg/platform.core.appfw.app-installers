@@ -319,7 +319,11 @@ bool RegisterSecurityContextForManifest(
     if (!app->appid) {
       return false;
     }
-    auto sec_app_type = (strcmp(manifest->preload, "true") == 0) ?
+
+    // At this stage is_preload_request will indicate if request is preload or
+    // not. If preload hadn't been permitted, it would have been blocked at
+    // StepConfigure
+    auto sec_app_type = context_->is_preload_request.get() ?
             ci::SecurityAppInstallType::Preload :
             ((uid == GLOBAL_USER || uid == 0) ?
                 ci::SecurityAppInstallType::Global :
